@@ -25,7 +25,7 @@ export default function AdminPage() {
             <Shield size={24} className="text-amber-400" />
             Admin Panel
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Schoonhoven Sports Performance Hub beheer</p>
+          <p className="text-slate-600 text-sm mt-1">Schoonhoven Sports Performance Hub beheer</p>
         </div>
       </div>
 
@@ -66,7 +66,7 @@ export default function AdminPage() {
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-semibold text-slate-900">{u.name}</div>
-                  <div className="text-xs text-slate-500">{u.email}</div>
+                  <div className="text-xs text-slate-600">{u.email}</div>
                 </div>
                 <div className="text-right">
                   <span className={`hub-tag text-[10px] ${
@@ -102,7 +102,7 @@ export default function AdminPage() {
                     <div className="text-xs font-semibold text-slate-900 truncate">
                       {p.first_name} {p.last_name}
                     </div>
-                    <div className="text-[10px] text-slate-500">{POSITION_LABELS[p.position]} · {p.team_name}</div>
+                    <div className="text-[10px] text-slate-600">{POSITION_LABELS[p.position]} · {p.team_name}</div>
                   </div>
                   {badge && (
                     <span className="hub-tag text-[9px]" style={{ background: badge.bg, color: badge.color }}>
@@ -126,13 +126,13 @@ export default function AdminPage() {
           {[
             { label: "AI Engine", desc: "Claude API integratie", status: "Actief", color: "#00d4aa" },
             { label: "Supabase Auth", desc: "Database & RLS", status: "Configuratie nodig", color: "#f59e0b" },
-            { label: "Email Notificaties", desc: "Evaluatie alerts", status: "Inactief", color: "#64748b" },
+            { label: "Email Notificaties", desc: "Evaluatie alerts", status: "Inactief", color: "#475569" },
             { label: "Export (PDF)", desc: "Player card exports", status: "Beta", color: "#6366f1" },
           ].map((s) => (
             <div key={s.label} className="flex items-center gap-3 p-4 rounded-xl bg-hub-surface border border-hub-border">
               <div className="flex-1">
                 <div className="text-sm font-semibold text-slate-900">{s.label}</div>
-                <div className="text-xs text-slate-500">{s.desc}</div>
+                <div className="text-xs text-slate-600">{s.desc}</div>
               </div>
               <span className="hub-tag text-xs" style={{ color: s.color, background: `${s.color}15` }}>
                 {s.status}

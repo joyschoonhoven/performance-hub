@@ -61,7 +61,7 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-2 rounded-xl transition-colors"
-            style={{ color: "#64748b" }}
+            style={{ color: "#475569" }}
             onTouchStart={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#e2e8f0"; (e.currentTarget as HTMLButtonElement).style.background = "#1e2236"; }}
             onTouchEnd={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#64748b"; (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
           >
@@ -76,7 +76,7 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
                 style={{ background: "rgba(0,184,145,0.2)", color: "#6475f5" }}>
                 {userName.charAt(0).toUpperCase()}
               </div>
-              <span className="text-xs text-slate-400 hidden xs:block">{roleLabel}</span>
+              <span className="text-xs text-slate-600 hidden xs:block">{roleLabel}</span>
             </div>
             <button
               onClick={handleLogout}

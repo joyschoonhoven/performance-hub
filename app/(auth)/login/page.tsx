@@ -72,7 +72,7 @@ export default function LoginPage() {
           <h1 className="text-2xl font-black text-white tracking-tight">
             Performance Hub
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Schoonhoven Sports Intelligence</p>
+          <p className="text-slate-600 text-sm mt-1">Schoonhoven Sports Intelligence</p>
         </div>
       </div>
 
@@ -80,7 +80,7 @@ export default function LoginPage() {
       <div className="rounded-2xl p-6 space-y-4" style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">
               E-mail
             </label>
             <input
@@ -89,14 +89,14 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="coach@club.nl"
-              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all"
+              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none transition-all"
               style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "#00b891"; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = "#323754"; }}
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">
               Wachtwoord
             </label>
             <div className="relative">
@@ -106,7 +106,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full rounded-xl px-4 py-3 pr-11 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all"
+                className="w-full rounded-xl px-4 py-3 pr-11 text-sm text-white placeholder:text-slate-400 focus:outline-none transition-all"
                 style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
                 onFocus={(e) => { e.currentTarget.style.borderColor = "#00b891"; }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = "#323754"; }}
@@ -146,7 +146,7 @@ export default function LoginPage() {
             <div className="w-full border-t" style={{ borderColor: "#323754" }} />
           </div>
           <div className="relative flex justify-center">
-            <span className="px-3 text-xs text-slate-500" style={{ background: "#ffffff" }}>of probeer demo</span>
+            <span className="px-3 text-xs text-slate-600" style={{ background: "#ffffff" }}>of probeer demo</span>
           </div>
         </div>
 
@@ -168,7 +168,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <p className="text-center text-xs text-slate-500">
+      <p className="text-center text-xs text-slate-600">
         Geen account?{" "}
         <Link href="/register" className="text-hub-teal hover:underline font-medium">
           Aanmelden

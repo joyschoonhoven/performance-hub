@@ -80,7 +80,7 @@ export default function PlayerSettingsPage() {
     <div className="space-y-6 max-w-xl">
       <div>
         <h1 className="text-2xl font-black text-slate-900">Instellingen</h1>
-        <p className="text-slate-400 text-sm mt-1">Jouw spelersprofiel bewerken</p>
+        <p className="text-slate-600 text-sm mt-1">Jouw spelersprofiel bewerken</p>
       </div>
 
       <div className="hub-card p-6 space-y-4">
@@ -88,7 +88,7 @@ export default function PlayerSettingsPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs text-slate-400 font-medium">Voornaam</label>
+            <label className="text-xs text-slate-600 font-medium">Voornaam</label>
             <input
               className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.first_name}
@@ -97,7 +97,7 @@ export default function PlayerSettingsPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs text-slate-400 font-medium">Achternaam</label>
+            <label className="text-xs text-slate-600 font-medium">Achternaam</label>
             <input
               className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.last_name}
@@ -108,7 +108,7 @@ export default function PlayerSettingsPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs text-slate-400 font-medium">Positie</label>
+          <label className="text-xs text-slate-600 font-medium">Positie</label>
           <select
             className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
             value={form.position}
@@ -122,7 +122,7 @@ export default function PlayerSettingsPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs text-slate-400 font-medium">Rugnummer</label>
+            <label className="text-xs text-slate-600 font-medium">Rugnummer</label>
             <input
               className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.jersey_number}
@@ -132,7 +132,7 @@ export default function PlayerSettingsPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs text-slate-400 font-medium">Team</label>
+            <label className="text-xs text-slate-600 font-medium">Team</label>
             <input
               className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.team_name}
@@ -144,7 +144,7 @@ export default function PlayerSettingsPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs text-slate-400 font-medium">Nationaliteit</label>
+            <label className="text-xs text-slate-600 font-medium">Nationaliteit</label>
             <input
               className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.nationality}
@@ -153,7 +153,7 @@ export default function PlayerSettingsPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs text-slate-400 font-medium">Geboortedatum</label>
+            <label className="text-xs text-slate-600 font-medium">Geboortedatum</label>
             <input
               className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.date_of_birth}

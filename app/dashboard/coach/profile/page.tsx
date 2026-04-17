@@ -101,7 +101,7 @@ export default function CoachProfilePage() {
   const topPlayer = [...players].sort((a, b) => b.overall_rating - a.overall_rating)[0];
 
   const inputStyle = { background: "#20243a", border: "1px solid #323754" };
-  const inputClass = "w-full rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none transition-all";
+  const inputClass = "w-full rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all";
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -109,7 +109,7 @@ export default function CoachProfilePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-slate-900">Mijn Profiel</h1>
-          <p className="text-slate-500 text-sm mt-1">Jouw coachprofiel & statistieken</p>
+          <p className="text-slate-600 text-sm mt-1">Jouw coachprofiel & statistieken</p>
         </div>
         <div className="flex items-center gap-2">
           {saveMsg && (
@@ -164,33 +164,33 @@ export default function CoachProfilePage() {
                 </span>
               )}
             </div>
-            {profile.club && <p className="text-slate-400 text-sm mb-3">{profile.club}</p>}
+            {profile.club && <p className="text-slate-600 text-sm mb-3">{profile.club}</p>}
 
             {editMode ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                 <div>
-                  <label className="block text-xs text-slate-500 mb-1 uppercase tracking-wider">Club</label>
+                  <label className="block text-xs text-slate-600 mb-1 uppercase tracking-wider">Club</label>
                   <input value={editClub} onChange={(e) => setEditClub(e.target.value)}
                     placeholder="Schoonhoven FC" className={inputClass} style={inputStyle} />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-500 mb-1 uppercase tracking-wider">Telefoon</label>
+                  <label className="block text-xs text-slate-600 mb-1 uppercase tracking-wider">Telefoon</label>
                   <input value={editPhone} onChange={(e) => setEditPhone(e.target.value)}
                     placeholder="+31 6 12345678" className={inputClass} style={inputStyle} />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-500 mb-1 uppercase tracking-wider">Licentie</label>
+                  <label className="block text-xs text-slate-600 mb-1 uppercase tracking-wider">Licentie</label>
                   <input value={editLicense} onChange={(e) => setEditLicense(e.target.value)}
                     placeholder="UEFA B, KNVB Trainer 2..." className={inputClass} style={inputStyle} />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-500 mb-1 uppercase tracking-wider">Locatie</label>
+                  <label className="block text-xs text-slate-600 mb-1 uppercase tracking-wider">Locatie</label>
                   <input value={editLocation} onChange={(e) => setEditLocation(e.target.value)}
                     placeholder="Schoonhoven, Nederland" className={inputClass} style={inputStyle} />
                 </div>
               </div>
             ) : (
-              <div className="flex flex-wrap gap-4 text-sm text-slate-400">
+              <div className="flex flex-wrap gap-4 text-sm text-slate-600">
                 <div className="flex items-center gap-2"><Mail size={14} /> {profile.email}</div>
                 {profile.phone && <div className="flex items-center gap-2"><Phone size={14} /> {profile.phone}</div>}
                 {profile.location && <div className="flex items-center gap-2">{profile.location}</div>}
@@ -233,7 +233,7 @@ export default function CoachProfilePage() {
               <div className="p-2 rounded-lg" style={{ background: `${s.color}12`, color: s.color }}>{s.icon}</div>
             </div>
             <div className="text-2xl font-black tabular-nums" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
+            <div className="text-xs text-slate-600 mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
@@ -263,7 +263,7 @@ export default function CoachProfilePage() {
                           <div className="font-semibold text-slate-900 text-sm group-hover:text-hub-teal transition-colors truncate">
                             {p.first_name} {p.last_name}
                           </div>
-                          <div className="text-xs text-slate-500">{POSITION_LABELS[p.position]}</div>
+                          <div className="text-xs text-slate-600">{POSITION_LABELS[p.position]}</div>
                         </div>
                         <div className="font-black tabular-nums text-lg" style={{ color: rColor }}>{p.overall_rating}</div>
                         <ChevronRight size={14} className="text-slate-600" />
@@ -299,7 +299,7 @@ export default function CoachProfilePage() {
                     <div className="font-bold text-slate-900 text-sm group-hover:text-hub-teal transition-colors">
                       {topPlayer.first_name} {topPlayer.last_name}
                     </div>
-                    <div className="text-xs text-slate-500">{POSITION_LABELS[topPlayer.position]}</div>
+                    <div className="text-xs text-slate-600">{POSITION_LABELS[topPlayer.position]}</div>
                     {topPlayer.badge && (
                       <span className="hub-tag text-[10px] mt-1"
                         style={{ background: BADGE_CONFIG[topPlayer.badge].bg, color: BADGE_CONFIG[topPlayer.badge].color }}>
@@ -327,7 +327,7 @@ export default function CoachProfilePage() {
                 { href: "/dashboard/coach/analytics", icon: <TrendingUp size={15} />, label: "Team analytics" },
               ].map((link) => (
                 <Link key={link.href} href={link.href}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-900 hover:bg-hub-surface transition-all border border-transparent hover:border-hub-border">
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-hub-surface transition-all border border-transparent hover:border-hub-border">
                   <span>{link.icon}</span>
                   {link.label}
                   <ChevronRight size={14} className="ml-auto text-slate-600" />

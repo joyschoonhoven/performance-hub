@@ -71,19 +71,19 @@
   }
 
   .hub-label {
-    @apply text-xs font-semibold uppercase tracking-wider text-slate-500;
+    @apply text-xs font-semibold uppercase tracking-wider text-slate-600;
   }
 
   .hub-value {
-    @apply text-2xl font-bold text-white tabular-nums;
+    @apply text-2xl font-bold text-slate-900 tabular-nums;
   }
 
   .hub-heading {
-    @apply text-2xl font-black text-white;
+    @apply text-2xl font-black text-slate-900;
   }
 
   .hub-subtext {
-    @apply text-sm text-slate-400;
+    @apply text-sm text-slate-600;
   }
 
   .hub-btn-primary {
@@ -91,7 +91,7 @@
   }
 
   .hub-btn-ghost {
-    @apply text-slate-300 hover:text-white hover:bg-hub-surface border border-hub-border rounded-xl px-4 py-2 text-sm transition-all;
+    @apply text-slate-600 hover:text-slate-900 hover:bg-hub-surface border border-hub-border rounded-xl px-4 py-2 text-sm transition-all;
   }
 
   .hub-btn-outline {
@@ -108,15 +108,15 @@
 
   /* Input fields — dark */
   .hub-input {
-    @apply w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-hub-teal focus:ring-1 focus:ring-hub-teal/20 transition-all;
+    @apply w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-hub-teal focus:ring-1 focus:ring-hub-teal/20 transition-all;
   }
 
   .hub-select {
-    @apply w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-hub-teal transition-all;
+    @apply w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-hub-teal transition-all;
   }
 
   .hub-textarea {
-    @apply w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-hub-teal focus:ring-1 focus:ring-hub-teal/20 transition-all resize-none;
+    @apply w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-hub-teal focus:ring-1 focus:ring-hub-teal/20 transition-all resize-none;
   }
 
   /* Data table */
@@ -132,7 +132,7 @@
   /* Trend */
   .trend-up   { @apply text-hub-teal; }
   .trend-down { @apply text-red-500; }
-  .trend-stable { @apply text-slate-400; }
+  .trend-stable { @apply text-slate-600; }
 
   /* Rating ring */
   .rating-ring {

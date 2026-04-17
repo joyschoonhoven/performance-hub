@@ -55,7 +55,7 @@ export default function PlayerAnalyticsPage() {
           <BarChart3 size={24} className="text-indigo-400" />
           Mijn Progressie
         </h1>
-        <p className="text-slate-400 text-sm mt-1">Jouw ontwikkeling over tijd</p>
+        <p className="text-slate-600 text-sm mt-1">Jouw ontwikkeling over tijd</p>
       </div>
 
       <div className="grid grid-cols-3 gap-4">

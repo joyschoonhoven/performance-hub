@@ -65,7 +65,7 @@ export default function PlayersPage() {
       <div className="hub-card p-12 text-center max-w-md mx-auto">
         <UserPlus size={40} className="mx-auto mb-4 text-slate-600" />
         <h2 className="text-lg font-bold text-slate-900 mb-2">Nog geen spelers</h2>
-        <p className="text-slate-400 text-sm">Zodra spelers zich registreren en hun profiel invullen, verschijnen ze hier.</p>
+        <p className="text-slate-600 text-sm">Zodra spelers zich registreren en hun profiel invullen, verschijnen ze hier.</p>
       </div>
     </div>
   );
@@ -76,7 +76,7 @@ export default function PlayersPage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-black text-slate-900">Spelers</h1>
-          <p className="text-slate-400 text-sm mt-1">{allPlayers.length} spelers in jouw squad</p>
+          <p className="text-slate-600 text-sm mt-1">{allPlayers.length} spelers in jouw squad</p>
         </div>
         <Link href="/dashboard/coach/players/new" className="hub-btn-primary flex items-center gap-2">
           <Plus size={16} />
@@ -88,12 +88,12 @@ export default function PlayersPage() {
       <div className="hub-card p-4 flex flex-wrap items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 min-w-48">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Zoek speler..."
-            className="w-full bg-hub-surface border border-hub-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none focus:border-hub-teal transition-all"
+            className="w-full bg-hub-surface border border-hub-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-hub-teal transition-all"
           />
         </div>
 
@@ -101,7 +101,7 @@ export default function PlayersPage() {
         <div className="flex items-center gap-1.5 flex-wrap">
           <button
             onClick={() => setPositionFilter("all")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${positionFilter === "all" ? "bg-hub-teal text-hub-bg" : "bg-hub-surface text-slate-400 hover:text-slate-900 border border-hub-border"}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${positionFilter === "all" ? "bg-hub-teal text-hub-bg" : "bg-hub-surface text-slate-600 hover:text-slate-900 border border-hub-border"}`}
           >
             Alle
           </button>
@@ -109,7 +109,7 @@ export default function PlayersPage() {
             <button
               key={pos}
               onClick={() => setPositionFilter(pos)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${positionFilter === pos ? "bg-hub-teal text-hub-bg" : "bg-hub-surface text-slate-400 hover:text-slate-900 border border-hub-border"}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${positionFilter === pos ? "bg-hub-teal text-hub-bg" : "bg-hub-surface text-slate-600 hover:text-slate-900 border border-hub-border"}`}
             >
               {pos}
             </button>
@@ -134,7 +134,7 @@ export default function PlayersPage() {
             <button
               key={v}
               onClick={() => setView(v)}
-              className={`px-3 py-2 text-xs font-medium transition-all ${view === v ? "bg-hub-teal text-hub-bg" : "text-slate-400 hover:text-slate-900"}`}
+              className={`px-3 py-2 text-xs font-medium transition-all ${view === v ? "bg-hub-teal text-hub-bg" : "text-slate-600 hover:text-slate-900"}`}
             >
               {v === "cards" ? "Cards" : "Lijst"}
             </button>
@@ -143,7 +143,7 @@ export default function PlayersPage() {
       </div>
 
       {/* Results count */}
-      <div className="text-sm text-slate-500">
+      <div className="text-sm text-slate-600">
         {filtered.length} speler{filtered.length !== 1 ? "s" : ""} gevonden
       </div>
 
@@ -190,7 +190,7 @@ export default function PlayersPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-slate-400 text-xs">{POSITION_LABELS[player.position]}</td>
+                    <td className="px-4 py-3 text-slate-600 text-xs">{POSITION_LABELS[player.position]}</td>
                     <td className="px-4 py-3">
                       <span className="text-lg font-black tabular-nums" style={{ color: rColor }}>
                         {player.overall_rating}
@@ -198,18 +198,18 @@ export default function PlayersPage() {
                     </td>
                     <td className="px-4 py-3">
                       {arch && (
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-slate-600">
                           {arch.replace(/_/g, " ")}
                         </span>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`flex items-center gap-1 text-xs font-medium ${player.trend === "up" ? "text-hub-teal" : player.trend === "down" ? "text-red-400" : "text-slate-500"}`}>
+                      <span className={`flex items-center gap-1 text-xs font-medium ${player.trend === "up" ? "text-hub-teal" : player.trend === "down" ? "text-red-400" : "text-slate-600"}`}>
                         {player.trend === "up" ? <TrendingUp size={12} /> : player.trend === "down" ? <TrendingDown size={12} /> : <Minus size={12} />}
                         {player.trend ?? "stable"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-500 text-xs">
+                    <td className="px-4 py-3 text-slate-600 text-xs">
                       {player.evaluations?.length ?? 0}x
                     </td>
                     <td className="px-4 py-3">

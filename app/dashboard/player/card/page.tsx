@@ -33,7 +33,7 @@ export default function PlayerCardPage() {
       </div>
       <div className="hub-card p-12 text-center">
         <Star size={40} className="text-slate-700 mx-auto mb-3" />
-        <div className="text-slate-500">Vul eerst je spelersprofiel in om je player card te zien.</div>
+        <div className="text-slate-600">Vul eerst je spelersprofiel in om je player card te zien.</div>
       </div>
     </div>
   );
@@ -50,7 +50,7 @@ export default function PlayerCardPage() {
           <Star size={24} className="text-amber-400" />
           Mijn Player Card
         </h1>
-        <p className="text-slate-400 text-sm mt-1">Jouw spelersprofiel</p>
+        <p className="text-slate-600 text-sm mt-1">Jouw spelersprofiel</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
@@ -63,28 +63,28 @@ export default function PlayerCardPage() {
             <div className="hub-label mb-3">Profiel Info</div>
             <div className="space-y-3">
               <div className="data-row">
-                <span className="text-slate-500 text-sm">Overall Rating</span>
+                <span className="text-slate-600 text-sm">Overall Rating</span>
                 <span className="text-xl font-black tabular-nums" style={{ color: rColor }}>{player.overall_rating}</span>
               </div>
               <div className="data-row">
-                <span className="text-slate-500 text-sm">Positie</span>
+                <span className="text-slate-600 text-sm">Positie</span>
                 <span className="text-sm font-semibold text-slate-900">{player.position}</span>
               </div>
               {player.jersey_number && (
                 <div className="data-row">
-                  <span className="text-slate-500 text-sm">Rugnummer</span>
+                  <span className="text-slate-600 text-sm">Rugnummer</span>
                   <span className="text-sm font-semibold text-slate-900">#{player.jersey_number}</span>
                 </div>
               )}
               {player.team_name && (
                 <div className="data-row">
-                  <span className="text-slate-500 text-sm">Team</span>
+                  <span className="text-slate-600 text-sm">Team</span>
                   <span className="text-sm font-semibold text-slate-900">{player.team_name}</span>
                 </div>
               )}
               {player.nationality && (
                 <div className="data-row">
-                  <span className="text-slate-500 text-sm">Nationaliteit</span>
+                  <span className="text-slate-600 text-sm">Nationaliteit</span>
                   <span className="text-sm font-semibold text-slate-900">{player.nationality}</span>
                 </div>
               )}
@@ -105,7 +105,7 @@ export default function PlayerCardPage() {
                         <AIcon size={18} style={{ color: arch.color }} strokeWidth={1.75} />
                       </div>
                       <div>
-                        <div className="text-xs text-slate-500">Archetype</div>
+                        <div className="text-xs text-slate-600">Archetype</div>
                         <div className="font-bold text-slate-900 text-sm">{arch.label}</div>
                       </div>
                     </div>
@@ -121,7 +121,7 @@ export default function PlayerCardPage() {
                         <SIcon size={18} style={{ color: socio.color_hex }} strokeWidth={1.75} />
                       </div>
                       <div>
-                        <div className="text-xs text-slate-500">Sociotype</div>
+                        <div className="text-xs text-slate-600">Sociotype</div>
                         <div className="font-bold text-slate-900 text-sm">{socio.label}</div>
                       </div>
                     </div>
@@ -140,7 +140,7 @@ export default function PlayerCardPage() {
                   <div>
                     <div className="hub-label text-[10px]">Fit Score</div>
                     <div className="text-2xl font-black tabular-nums" style={{ color: rColor }}>
-                      {identity.ai_fit_score}<span className="text-xs text-slate-500 font-normal">/100</span>
+                      {identity.ai_fit_score}<span className="text-xs text-slate-600 font-normal">/100</span>
                     </div>
                   </div>
                 </div>

@@ -56,7 +56,7 @@ export default function RegisterPage() {
         </div>
         <div>
           <h1 className="text-2xl font-black text-white tracking-tight">Account aanmaken</h1>
-          <p className="text-slate-400 text-sm mt-1">Schoonhoven Sports Performance Hub</p>
+          <p className="text-slate-600 text-sm mt-1">Schoonhoven Sports Performance Hub</p>
         </div>
       </div>
 
@@ -64,7 +64,7 @@ export default function RegisterPage() {
         <form onSubmit={handleRegister} className="space-y-4">
           {/* Role selector */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
               Ik ben een
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -83,14 +83,14 @@ export default function RegisterPage() {
                   }}
                 >
                   <div className="text-xs font-bold" style={{ color: role === r.value ? "#00b891" : "#e2e8f0" }}>{r.label}</div>
-                  <div className="text-xs mt-0.5" style={{ color: "#64748b" }}>{r.desc}</div>
+                  <div className="text-xs mt-0.5" style={{ color: "#475569" }}>{r.desc}</div>
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">
               Volledige naam
             </label>
             <input
@@ -98,7 +98,7 @@ export default function RegisterPage() {
               onChange={(e) => setFullName(e.target.value)}
               required
               placeholder="Jan de Vries"
-              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all"
+              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none transition-all"
               style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "#00b891"; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = "#323754"; }}
@@ -106,7 +106,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">
               E-mail
             </label>
             <input
@@ -115,7 +115,7 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="jan@club.nl"
-              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all"
+              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none transition-all"
               style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "#00b891"; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = "#323754"; }}
@@ -123,7 +123,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">
               Wachtwoord
             </label>
             <input
@@ -133,7 +133,7 @@ export default function RegisterPage() {
               required
               minLength={6}
               placeholder="Minimaal 6 tekens"
-              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all"
+              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none transition-all"
               style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "#00b891"; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = "#323754"; }}
@@ -159,7 +159,7 @@ export default function RegisterPage() {
         </form>
       </div>
 
-      <p className="text-center text-xs text-slate-500">
+      <p className="text-center text-xs text-slate-600">
         Al een account?{" "}
         <Link href="/login" className="text-hub-teal hover:underline font-medium">
           Inloggen

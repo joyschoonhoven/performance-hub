@@ -18,7 +18,7 @@ function CoreValueBar({ label, value, color }: { label: string; value: number; c
   return (
     <div className="space-y-1">
       <div className="flex justify-between items-center">
-        <span className="text-xs text-slate-500 uppercase tracking-wider font-medium">{label}</span>
+        <span className="text-xs text-slate-600 uppercase tracking-wider font-medium">{label}</span>
         <span className="text-xs font-bold tabular-nums" style={{ color }}>{value}</span>
       </div>
       <div className="h-1.5 rounded-full bg-hub-border overflow-hidden">
@@ -70,14 +70,14 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
           <div className="text-sm font-semibold text-slate-900 truncate">
             {player.first_name} {player.last_name}
           </div>
-          <div className="text-xs text-slate-500">{POSITION_LABELS[player.position]}</div>
+          <div className="text-xs text-slate-600">{POSITION_LABELS[player.position]}</div>
         </div>
         <div className="text-right flex-shrink-0">
           <div className="text-lg font-bold tabular-nums" style={{ color: ratingColor }}>
             {player.overall_rating}
           </div>
           {player.trend && (
-            <div className={cn("flex items-center justify-end", player.trend === "up" ? "text-hub-teal" : player.trend === "down" ? "text-red-400" : "text-slate-500")}>
+            <div className={cn("flex items-center justify-end", player.trend === "up" ? "text-hub-teal" : player.trend === "down" ? "text-red-400" : "text-slate-600")}>
               {player.trend === "up" ? <TrendingUp size={12} /> : player.trend === "down" ? <TrendingDown size={12} /> : <Minus size={12} />}
             </div>
           )}
@@ -124,15 +124,15 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
               )}
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs font-medium px-2 py-0.5 rounded-lg bg-hub-surface text-slate-400">
+              <span className="text-xs font-medium px-2 py-0.5 rounded-lg bg-hub-surface text-slate-600">
                 {POSITION_LABELS[player.position]}
               </span>
               {player.jersey_number && (
-                <span className="text-xs text-slate-500">#{player.jersey_number}</span>
+                <span className="text-xs text-slate-600">#{player.jersey_number}</span>
               )}
               {player.trend && (
                 <span className={cn("flex items-center gap-0.5 text-xs font-medium",
-                  player.trend === "up" ? "text-hub-teal" : player.trend === "down" ? "text-red-400" : "text-slate-500")}>
+                  player.trend === "up" ? "text-hub-teal" : player.trend === "down" ? "text-red-400" : "text-slate-600")}>
                   {player.trend === "up" ? <TrendingUp size={12} /> : player.trend === "down" ? <TrendingDown size={12} /> : <Minus size={12} />}
                 </span>
               )}
@@ -199,7 +199,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
             <div className="text-5xl font-black tabular-nums leading-none" style={{ color: ratingColor }}>
               {player.overall_rating}
             </div>
-            <div className="text-sm font-bold text-slate-400 mt-1 uppercase tracking-widest">
+            <div className="text-sm font-bold text-slate-600 mt-1 uppercase tracking-widest">
               {POSITION_LABELS[player.position]}
             </div>
             {player.jersey_number && (
@@ -293,13 +293,13 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
           <div className="px-6 py-4 flex items-center justify-between">
             <div>
               <div className="hub-label">AI Fit Score</div>
-              <div className="text-xs text-slate-500 mt-0.5">Scouting analyse</div>
+              <div className="text-xs text-slate-600 mt-0.5">Scouting analyse</div>
             </div>
             <div className="flex items-center gap-2">
               <div className="text-2xl font-black tabular-nums" style={{ color: getRatingColor(identity.ai_fit_score) }}>
                 {identity.ai_fit_score}
               </div>
-              <div className="text-xs text-slate-500">/100</div>
+              <div className="text-xs text-slate-600">/100</div>
             </div>
           </div>
         </>

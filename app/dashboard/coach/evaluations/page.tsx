@@ -31,7 +31,7 @@ export default function EvaluationsPage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-black text-slate-900">Evaluaties</h1>
-          <p className="text-slate-400 text-sm mt-1">{allEvals.length} evaluaties in totaal</p>
+          <p className="text-slate-600 text-sm mt-1">{allEvals.length} evaluaties in totaal</p>
         </div>
         <Link href="/dashboard/coach/evaluations/new" className="hub-btn-primary flex items-center gap-2">
           <Plus size={16} /> Nieuwe evaluatie
@@ -42,7 +42,7 @@ export default function EvaluationsPage() {
         <div className="hub-card p-12 text-center">
           <ClipboardList size={40} className="text-slate-700 mx-auto mb-3" />
           <div className="text-slate-900 font-bold mb-2">Nog geen evaluaties</div>
-          <p className="text-slate-500 text-sm mb-4">
+          <p className="text-slate-600 text-sm mb-4">
             {players.length === 0
               ? "Evalueer een speler nadat ze zich hebben aangemeld."
               : "Maak je eerste evaluatie aan voor een van je spelers."}
@@ -68,8 +68,8 @@ export default function EvaluationsPage() {
                         className="font-bold text-slate-900 text-sm hover:text-hub-teal transition-colors">
                         {ev.player.first_name} {ev.player.last_name}
                       </Link>
-                      <span className="text-xs text-slate-500">{ev.player.position}</span>
-                      <div className="flex items-center gap-1 text-xs text-slate-500">
+                      <span className="text-xs text-slate-600">{ev.player.position}</span>
+                      <div className="flex items-center gap-1 text-xs text-slate-600">
                         <Calendar size={11} />
                         {formatDate(ev.evaluation_date)}
                       </div>
@@ -87,7 +87,7 @@ export default function EvaluationsPage() {
                         })}
                       </div>
                     )}
-                    {ev.notes && <p className="text-xs text-slate-500 italic mt-2">&ldquo;{ev.notes}&rdquo;</p>}
+                    {ev.notes && <p className="text-xs text-slate-600 italic mt-2">&ldquo;{ev.notes}&rdquo;</p>}
                   </div>
                   <div className="text-xl font-black tabular-nums" style={{ color: rColor }}>
                     {ev.overall_score?.toFixed(1)}

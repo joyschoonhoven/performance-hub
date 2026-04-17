@@ -29,7 +29,7 @@ function EmptyState({ userName }: { userName?: string }) {
         <h1 className="text-2xl font-black text-slate-900">
           Hey{userName ? `, ${userName.split(" ")[0]}` : ""} 👋
         </h1>
-        <p className="text-slate-400 text-sm mt-1">Jouw performance dashboard</p>
+        <p className="text-slate-600 text-sm mt-1">Jouw performance dashboard</p>
       </div>
       <div className="hub-card p-12 text-center max-w-md mx-auto">
         <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
@@ -37,7 +37,7 @@ function EmptyState({ userName }: { userName?: string }) {
           <UserPlus size={28} style={{ color: "#00b891" }} />
         </div>
         <h2 className="text-lg font-bold text-slate-900 mb-2">Profiel nog niet compleet</h2>
-        <p className="text-slate-400 text-sm mb-6">Vul je spelersprofiel in zodat je coach je kan evalueren en challenges kan aanmaken.</p>
+        <p className="text-slate-600 text-sm mb-6">Vul je spelersprofiel in zodat je coach je kan evalueren en challenges kan aanmaken.</p>
         <Link href="/onboarding" className="hub-btn-primary inline-flex items-center gap-2">
           Profiel aanvullen
         </Link>
@@ -152,7 +152,7 @@ export default function PlayerDashboardPage() {
         <h1 className="text-2xl font-black text-slate-900">
           Hey, {player.first_name} 👋
         </h1>
-        <p className="text-slate-400 text-sm mt-1">Jouw performance dashboard</p>
+        <p className="text-slate-600 text-sm mt-1">Jouw performance dashboard</p>
       </div>
 
       {/* Top stats */}
@@ -166,7 +166,7 @@ export default function PlayerDashboardPage() {
         <div className="hub-card p-5">
           <div className="hub-label mb-3">Evaluaties</div>
           <div className="text-4xl font-black text-slate-900">{player.evaluations?.length ?? 0}</div>
-          <div className="text-xs text-slate-500 mt-2">
+          <div className="text-xs text-slate-600 mt-2">
             {player.evaluations?.[0] ? `Laatste: ${formatDate(player.evaluations[0].evaluation_date)}` : "Nog geen evaluaties"}
           </div>
         </div>
@@ -183,7 +183,7 @@ export default function PlayerDashboardPage() {
           <div className="text-4xl font-black tabular-nums" style={{ color: getRatingColor(identity?.ai_fit_score ?? 0) }}>
             {identity?.ai_fit_score ?? "—"}
           </div>
-          <div className="text-xs text-slate-500 mt-2">Scouting analyse</div>
+          <div className="text-xs text-slate-600 mt-2">Scouting analyse</div>
         </div>
       </div>
 
@@ -213,7 +213,7 @@ export default function PlayerDashboardPage() {
             <button
               onClick={() => player && generateDevPlan(player)}
               disabled={devPlanLoading}
-              className="text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-slate-600 hover:text-slate-300 transition-colors"
               title="Vernieuwen"
             >
               <RefreshCw size={13} className={devPlanLoading ? "animate-spin" : ""} />
@@ -222,7 +222,7 @@ export default function PlayerDashboardPage() {
         </div>
 
         {devPlanLoading ? (
-          <div className="flex items-center gap-2 text-slate-500 text-sm py-2">
+          <div className="flex items-center gap-2 text-slate-600 text-sm py-2">
             <Loader2 size={14} className="animate-spin" />
             Plan wordt gegenereerd...
           </div>
@@ -240,7 +240,7 @@ export default function PlayerDashboardPage() {
           </ul>
         ) : (
           <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-600">
               {(player?.evaluations?.length ?? 0) === 0
                 ? "Beschikbaar na je eerste evaluatie."
                 : "Genereer een persoonlijk plan op basis van jouw data."}
@@ -303,14 +303,14 @@ export default function PlayerDashboardPage() {
                       <SocioIcon size={18} style={{ color: primarySocio.color_hex }} strokeWidth={1.75} />
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-500 uppercase tracking-wider">Persoonlijkheid</div>
+                      <div className="text-[10px] text-slate-600 uppercase tracking-wider">Persoonlijkheid</div>
                       <div className="font-bold text-slate-900 text-sm">{primarySocio.label}</div>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-400">{primarySocio.description}</p>
+                  <p className="text-xs text-slate-600">{primarySocio.description}</p>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {primarySocio.traits.map((t) => (
-                      <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-hub-border text-slate-400">{t}</span>
+                      <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-hub-border text-slate-600">{t}</span>
                     ))}
                   </div>
                 </div>
@@ -360,7 +360,7 @@ export default function PlayerDashboardPage() {
                     <div className="flex-1">
                       <div className="font-semibold text-slate-900 text-sm">{ch.title}</div>
                       {ch.category && (
-                        <div className="text-xs text-slate-500 mt-0.5">
+                        <div className="text-xs text-slate-600 mt-0.5">
                           {CATEGORY_ICONS[ch.category as keyof typeof CATEGORY_ICONS]} {CATEGORY_LABELS[ch.category as keyof typeof CATEGORY_LABELS]}
                         </div>
                       )}
@@ -374,7 +374,7 @@ export default function PlayerDashboardPage() {
                       style={{ width: `${ch.progress}%`, backgroundColor: statusColor }} />
                   </div>
                   {ch.deadline && (
-                    <div className="flex items-center gap-1 text-xs text-slate-500 mt-2">
+                    <div className="flex items-center gap-1 text-xs text-slate-600 mt-2">
                       <Clock size={10} />
                       {formatDate(ch.deadline)}
                     </div>
@@ -421,7 +421,7 @@ export default function PlayerDashboardPage() {
       {(player.evaluations?.length ?? 0) === 0 && openChallenges.length === 0 && (
         <div className="hub-card p-8 text-center">
           <Trophy size={36} className="text-slate-700 mx-auto mb-3" />
-          <div className="text-slate-400 text-sm">Je coach heeft nog geen evaluaties of challenges aangemaakt.</div>
+          <div className="text-slate-600 text-sm">Je coach heeft nog geen evaluaties of challenges aangemaakt.</div>
         </div>
       )}
     </div>

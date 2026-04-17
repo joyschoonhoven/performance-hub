@@ -8,7 +8,7 @@ import type { ChallengeStatus, Challenge } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 
 const STATUS_CONFIG: Record<ChallengeStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  open: { label: "Open", color: "#64748b", icon: <Clock size={12} /> },
+  open: { label: "Open", color: "#475569", icon: <Clock size={12} /> },
   in_progress: { label: "Bezig", color: "#f59e0b", icon: <Zap size={12} /> },
   completed: { label: "Voltooid", color: "#00d4aa", icon: <CheckCircle2 size={12} /> },
   expired: { label: "Verlopen", color: "#ef4444", icon: <Target size={12} /> },
@@ -67,7 +67,7 @@ export default function ChallengesPage() {
           <Trophy size={24} className="text-amber-400" />
           Mijn Challenges
         </h1>
-        <p className="text-slate-400 text-sm mt-1">Jouw persoonlijke trainingsdoelen</p>
+        <p className="text-slate-600 text-sm mt-1">Jouw persoonlijke trainingsdoelen</p>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
@@ -80,7 +80,7 @@ export default function ChallengesPage() {
           <div className="hub-label mt-1">Bezig</div>
         </div>
         <div className="hub-card p-4 text-center">
-          <div className="text-3xl font-black text-slate-400">{stats.open}</div>
+          <div className="text-3xl font-black text-slate-600">{stats.open}</div>
           <div className="hub-label mt-1">Open</div>
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function ChallengesPage() {
         {(["all", "open", "in_progress", "completed"] as const).map((s) => (
           <button key={s} onClick={() => setFilter(s)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              filter === s ? "bg-hub-teal text-slate-900" : "bg-hub-surface text-slate-400 border border-hub-border hover:text-slate-900"
+              filter === s ? "bg-hub-teal text-slate-900" : "bg-hub-surface text-slate-600 border border-hub-border hover:text-slate-900"
             }`}>
             {s === "all" ? "Alle" : STATUS_CONFIG[s as ChallengeStatus].label}
           </button>
@@ -133,7 +133,7 @@ export default function ChallengesPage() {
                   </div>
                   <h3 className="font-bold text-slate-900 text-sm">{ch.title}</h3>
                   {ch.description && (
-                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">{ch.description}</p>
+                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">{ch.description}</p>
                   )}
                 </div>
                 <div className="flex-shrink-0">
@@ -153,7 +153,7 @@ export default function ChallengesPage() {
                 </div>
               )}
               {ch.deadline && (
-                <div className="flex items-center gap-1.5 mt-3 text-xs text-slate-500">
+                <div className="flex items-center gap-1.5 mt-3 text-xs text-slate-600">
                   <Target size={11} />
                   Deadline: {formatDate(ch.deadline)}
                 </div>
@@ -164,7 +164,7 @@ export default function ChallengesPage() {
         {filtered.length === 0 && (
           <div className="hub-card p-12 text-center col-span-2">
             <Trophy size={40} className="text-slate-700 mx-auto mb-3" />
-            <div className="text-slate-500">
+            <div className="text-slate-600">
               {challenges.length === 0
                 ? "Je coach heeft nog geen challenges aangemaakt voor jou."
                 : "Geen challenges in deze categorie."}

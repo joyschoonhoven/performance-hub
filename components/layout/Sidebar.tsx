@@ -86,7 +86,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
           </div>
           <div>
             <div className="text-sm font-bold leading-tight" style={{ color: "#1e293b" }}>Performance Hub</div>
-            <div className="text-xs" style={{ color: "#64748b" }}>Schoonhoven Sports</div>
+            <div className="text-xs" style={{ color: "#475569" }}>Schoonhoven Sports</div>
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
                 color: "#6475f5",
               } : {
                 border: "1px solid transparent",
-                color: "#64748b",
+                color: "#475569",
               }}
             >
               <span style={{ color: active ? "#6475f5" : undefined }}>
@@ -139,7 +139,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
         <Link
           href={`/dashboard/${role}/settings`}
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all"
-          style={{ color: "#64748b" }}
+          style={{ color: "#475569" }}
           onMouseEnter={(e) => { e.currentTarget.style.color = "#e2e8f0"; e.currentTarget.style.background = "#1e2236"; }}
           onMouseLeave={(e) => { e.currentTarget.style.color = "#64748b"; e.currentTarget.style.background = "transparent"; }}
         >

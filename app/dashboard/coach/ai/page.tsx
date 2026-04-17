@@ -65,7 +65,7 @@ export default function AIScoutingPage() {
           </div>
           AI Scouting Engine
         </h1>
-        <p className="text-slate-400 text-sm mt-2">
+        <p className="text-slate-600 text-sm mt-2">
           Analyseer spelers automatisch op archetype, sociotype en kernwaarden
         </p>
       </div>
@@ -74,7 +74,7 @@ export default function AIScoutingPage() {
       <div className="hub-card p-5 space-y-4">
         <div className="hub-label">Analyse Configuratie</div>
         <div>
-          <label className="block text-xs text-slate-500 mb-2">Selecteer speler</label>
+          <label className="block text-xs text-slate-600 mb-2">Selecteer speler</label>
           <select
             value={selectedId}
             onChange={(e) => { setSelectedId(e.target.value); setResult(null); }}
@@ -93,7 +93,7 @@ export default function AIScoutingPage() {
         <div className="flex items-center justify-between p-3 rounded-xl bg-hub-surface border border-hub-border">
           <div>
             <div className="text-sm font-semibold text-slate-900">Claude AI Engine</div>
-            <div className="text-xs text-slate-500">Geavanceerdere analyse via Claude API</div>
+            <div className="text-xs text-slate-600">Geavanceerdere analyse via Claude API</div>
           </div>
           <button
             onClick={() => setUseClaudeAPI(!useClaudeAPI)}
@@ -125,7 +125,7 @@ export default function AIScoutingPage() {
             <div className="absolute inset-0 flex items-center justify-center text-2xl">🧬</div>
           </div>
           <div className="text-slate-900 font-semibold">AI analyseert speler...</div>
-          <div className="text-xs text-slate-500 space-y-1">
+          <div className="text-xs text-slate-600 space-y-1">
             <div>Evaluaties verwerken</div>
             <div>Archetype bepalen</div>
             <div>Kernwaarden berekenen</div>
@@ -154,7 +154,7 @@ export default function AIScoutingPage() {
                 </div>
                 <p className="text-slate-300 text-sm leading-relaxed">{result.summary}</p>
                 {result.reasoning && (
-                  <p className="text-xs text-slate-500 mt-2 italic">{result.reasoning}</p>
+                  <p className="text-xs text-slate-600 mt-2 italic">{result.reasoning}</p>
                 )}
               </div>
             </div>
@@ -176,9 +176,9 @@ export default function AIScoutingPage() {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-slate-900 text-sm">{meta.label}</span>
-                          <span className="hub-tag text-[9px] bg-hub-border text-slate-400">{label}</span>
+                          <span className="hub-tag text-[9px] bg-hub-border text-slate-600">{label}</span>
                         </div>
-                        <p className="text-xs text-slate-500 mt-0.5">{meta.description}</p>
+                        <p className="text-xs text-slate-600 mt-0.5">{meta.description}</p>
                       </div>
                     </div>
                   ) : null;
@@ -201,9 +201,9 @@ export default function AIScoutingPage() {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-slate-900 text-sm">{meta.label}</span>
-                          <span className="hub-tag text-[9px] bg-hub-border text-slate-400">{label}</span>
+                          <span className="hub-tag text-[9px] bg-hub-border text-slate-600">{label}</span>
                         </div>
-                        <p className="text-xs text-slate-500 mt-0.5">{meta.description}</p>
+                        <p className="text-xs text-slate-600 mt-0.5">{meta.description}</p>
                       </div>
                     </div>
                   ) : null;
@@ -258,7 +258,7 @@ export default function AIScoutingPage() {
                   </div>
                   <div className="flex-1">
                     <div className="text-sm font-semibold text-slate-900">{p.first_name} {p.last_name}</div>
-                    <div className="text-xs text-slate-500">{archLabel}</div>
+                    <div className="text-xs text-slate-600">{archLabel}</div>
                   </div>
                   {aiScore > 0 && (
                     <div className="text-sm font-bold" style={{ color: getRatingColor(aiScore) }}>{aiScore}</div>

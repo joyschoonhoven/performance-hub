@@ -48,7 +48,7 @@ export default function CoachDashboardPage() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-black text-slate-900">Coach Dashboard</h1>
-            <p className="text-slate-400 text-sm mt-1">Schoonhoven Sports Performance Hub</p>
+            <p className="text-slate-600 text-sm mt-1">Schoonhoven Sports Performance Hub</p>
           </div>
           <Link href="/dashboard/coach/evaluations/new" className="hub-btn-primary flex items-center gap-2">
             <Plus size={16} /> Nieuwe evaluatie
@@ -60,7 +60,7 @@ export default function CoachDashboardPage() {
             <UserPlus size={28} style={{ color: "#00b891" }} />
           </div>
           <h2 className="text-lg font-bold text-slate-900 mb-2">Nog geen spelers</h2>
-          <p className="text-slate-400 text-sm mb-6">
+          <p className="text-slate-600 text-sm mb-6">
             Zodra spelers een account aanmaken via de app worden ze hier zichtbaar.
             Je kunt ook direct een evaluatie aanmaken.
           </p>
@@ -85,7 +85,7 @@ export default function CoachDashboardPage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-black text-slate-900">Coach Dashboard</h1>
-          <p className="text-slate-400 text-sm mt-1">Schoonhoven Sports Performance Hub</p>
+          <p className="text-slate-600 text-sm mt-1">Schoonhoven Sports Performance Hub</p>
         </div>
         <Link href="/dashboard/coach/evaluations/new" className="hub-btn-primary flex items-center gap-2">
           <Plus size={16} /> Nieuwe evaluatie
@@ -108,7 +108,7 @@ export default function CoachDashboardPage() {
               <span className="hub-label">{stat.label}</span>
             </div>
             <div className="text-3xl font-black tabular-nums" style={{ color: stat.color }}>{stat.value}</div>
-            <div className="text-xs text-slate-500 mt-1">{stat.sub}</div>
+            <div className="text-xs text-slate-600 mt-1">{stat.sub}</div>
           </div>
         ))}
       </div>
@@ -171,7 +171,7 @@ export default function CoachDashboardPage() {
               <div className="space-y-2">
                 {(selectedPlayer.evaluations ?? []).slice(0, 3).map((ev) => (
                   <div key={ev.id} className="flex items-center gap-3 p-3 rounded-xl bg-hub-surface border border-hub-border">
-                    <div className="text-xs text-slate-500 w-20 flex-shrink-0">{formatDate(ev.evaluation_date)}</div>
+                    <div className="text-xs text-slate-600 w-20 flex-shrink-0">{formatDate(ev.evaluation_date)}</div>
                     <div className="flex-1 flex gap-2 flex-wrap">
                       {ev.scores?.map((s) => (
                         <span key={s.category} className="text-xs px-2 py-0.5 rounded-lg"
@@ -227,7 +227,7 @@ export default function CoachDashboardPage() {
                       <div className="font-bold text-slate-900 text-sm group-hover:text-hub-teal transition-colors">
                         {player.first_name} {player.last_name}
                       </div>
-                      <div className="text-xs text-slate-500">{POSITION_LABELS[player.position]}</div>
+                      <div className="text-xs text-slate-600">{POSITION_LABELS[player.position]}</div>
                       {badge && (
                         <span className="hub-tag text-[10px] mt-1" style={{ background: badge.bg, color: badge.color }}>
                           {badge.label}

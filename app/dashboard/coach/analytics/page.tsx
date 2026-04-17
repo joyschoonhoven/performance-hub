@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
       </div>
       <div className="hub-card p-12 text-center">
         <BarChart3 size={40} className="text-slate-700 mx-auto mb-3" />
-        <div className="text-slate-500">Nog geen spelers om te analyseren.</div>
+        <div className="text-slate-600">Nog geen spelers om te analyseren.</div>
       </div>
     </div>
   );
@@ -94,7 +94,7 @@ export default function AnalyticsPage() {
           <BarChart3 size={24} className="text-indigo-400" />
           Analytics
         </h1>
-        <p className="text-slate-400 text-sm mt-1">Team performance inzichten</p>
+        <p className="text-slate-600 text-sm mt-1">Team performance inzichten</p>
       </div>
 
       <div className="flex gap-1 bg-hub-surface border border-hub-border rounded-xl p-1 w-fit">
@@ -104,7 +104,7 @@ export default function AnalyticsPage() {
         ].map((t) => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-              tab === t.id ? "bg-hub-teal text-hub-bg" : "text-slate-400 hover:text-slate-900"
+              tab === t.id ? "bg-hub-teal text-hub-bg" : "text-slate-600 hover:text-slate-900"
             }`}>
             {t.icon}{t.label}
           </button>
@@ -149,14 +149,14 @@ export default function AnalyticsPage() {
               <div className="space-y-2">
                 {positionData.map((pd) => (
                   <div key={pd.position} className="flex items-center gap-3">
-                    <div className="w-10 text-xs font-semibold text-slate-400">{pd.position}</div>
+                    <div className="w-10 text-xs font-semibold text-slate-600">{pd.position}</div>
                     <div className="flex-1 h-6 bg-hub-border rounded-lg overflow-hidden">
                       <div className="h-full rounded-lg bg-indigo-500/60 flex items-center px-2"
                         style={{ width: `${(pd.count / players.length) * 100}%` }}>
                         <span className="text-[10px] font-bold text-slate-900">{pd.count}</span>
                       </div>
                     </div>
-                    <div className="text-xs text-slate-500 w-12 text-right">
+                    <div className="text-xs text-slate-600 w-12 text-right">
                       {POSITION_LABELS[pd.position as keyof typeof POSITION_LABELS]}
                     </div>
                   </div>
@@ -251,13 +251,13 @@ export default function AnalyticsPage() {
                   return (
                     <tr key={row.label} className="border-t border-hub-border">
                       <td className="py-3">
-                        <span className={`text-sm font-bold tabular-nums ${aWins ? "text-hub-teal" : tie ? "text-slate-900" : "text-slate-400"}`}>
+                        <span className={`text-sm font-bold tabular-nums ${aWins ? "text-hub-teal" : tie ? "text-slate-900" : "text-slate-600"}`}>
                           {row.format(row.a)}
                         </span>
                       </td>
-                      <td className="py-3 text-center text-xs text-slate-500">{row.label}</td>
+                      <td className="py-3 text-center text-xs text-slate-600">{row.label}</td>
                       <td className="py-3 text-right">
-                        <span className={`text-sm font-bold tabular-nums ${!aWins && !tie ? "text-hub-teal" : tie ? "text-slate-900" : "text-slate-400"}`}>
+                        <span className={`text-sm font-bold tabular-nums ${!aWins && !tie ? "text-hub-teal" : tie ? "text-slate-900" : "text-slate-600"}`}>
                           {row.format(row.b)}
                         </span>
                       </td>

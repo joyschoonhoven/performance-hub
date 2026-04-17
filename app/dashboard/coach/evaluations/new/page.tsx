@@ -17,7 +17,7 @@ import {
 import type { PlayerWithDetails } from "@/lib/types";
 
 const inputStyle = { background: "#20243a", border: "1px solid #323754" };
-const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none transition-all";
+const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all";
 
 // ─── Score button grid (1–10) ─────────────────────────────────────────────────
 function ScoreGrid({ value, onChange, color }: { value: number; onChange: (v: number) => void; color: string }) {
@@ -33,7 +33,7 @@ function ScoreGrid({ value, onChange, color }: { value: number; onChange: (v: nu
             className="py-1.5 rounded-lg text-xs font-bold transition-all"
             style={active
               ? { background: color, color: "#fff" }
-              : { background: "#20243a", color: "#64748b", border: "1px solid #323754" }
+              : { background: "#20243a", color: "#475569", border: "1px solid #323754" }
             }
           >
             {score}
@@ -77,7 +77,7 @@ function CategorySection({
         </div>
         <div className="flex-1">
           <div className="font-bold text-slate-900 text-base">{category.label}</div>
-          <div className="text-xs text-slate-400 mt-0.5">
+          <div className="text-xs text-slate-600 mt-0.5">
             {category.subcategories.length} criteria
           </div>
         </div>
@@ -98,9 +98,9 @@ function CategorySection({
           <div className="text-2xl font-black tabular-nums" style={{ color: scoreColor }}>
             {avg.toFixed(1)}
           </div>
-          <div className="text-xs text-slate-400">gemiddeld</div>
+          <div className="text-xs text-slate-600">gemiddeld</div>
         </div>
-        {isOpen ? <ChevronUp size={18} className="text-slate-400 flex-shrink-0" /> : <ChevronDown size={18} className="text-slate-400 flex-shrink-0" />}
+        {isOpen ? <ChevronUp size={18} className="text-slate-600 flex-shrink-0" /> : <ChevronDown size={18} className="text-slate-600 flex-shrink-0" />}
       </button>
 
       {isOpen && (
@@ -114,7 +114,7 @@ function CategorySection({
                 <div className="flex items-start justify-between mb-3 gap-3">
                   <div className="flex-1">
                     <div className="font-semibold text-slate-900 text-sm">{sub.label}</div>
-                    <div className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
+                    <div className="text-xs text-slate-600 mt-0.5 flex items-center gap-1">
                       <Info size={10} />
                       {sub.description}
                     </div>
@@ -281,7 +281,7 @@ function NewEvaluationPageInner() {
         </div>
         <div>
           <h2 className="text-2xl font-black text-slate-900">Rapport opgeslagen!</h2>
-          <p className="text-slate-500 mt-2 text-sm">
+          <p className="text-slate-600 mt-2 text-sm">
             Het scoutingsrapport voor {selectedPlayer?.first_name} is succesvol bewaard.
           </p>
         </div>
@@ -303,12 +303,12 @@ function NewEvaluationPageInner() {
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/dashboard/coach/players"
-          className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-hub-surface transition-all border border-hub-border">
+          className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-hub-surface transition-all border border-hub-border">
           <ArrowLeft size={18} />
         </Link>
         <div>
           <h1 className="text-2xl font-black text-slate-900">Scoutingsrapport</h1>
-          <p className="text-slate-500 text-sm mt-0.5">UEFA PRO niveau beoordeling — {EVALUATION_SCHEMA.reduce((a, c) => a + c.subcategories.length, 0)} criteria</p>
+          <p className="text-slate-600 text-sm mt-0.5">UEFA PRO niveau beoordeling — {EVALUATION_SCHEMA.reduce((a, c) => a + c.subcategories.length, 0)} criteria</p>
         </div>
       </div>
 
@@ -317,13 +317,13 @@ function NewEvaluationPageInner() {
         <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Identificatie</h2>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Speler</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Speler</label>
           {playersLoading ? (
-            <div className="flex items-center gap-2 text-slate-500 text-sm py-3">
+            <div className="flex items-center gap-2 text-slate-600 text-sm py-3">
               <Loader2 size={14} className="animate-spin" /> Spelers laden...
             </div>
           ) : players.length === 0 ? (
-            <div className="text-slate-500 text-sm py-3">
+            <div className="text-slate-600 text-sm py-3">
               Nog geen spelers aangemeld. Deel de registratielink zodat spelers zich kunnen aanmelden.
             </div>
           ) : (
@@ -344,7 +344,7 @@ function NewEvaluationPageInner() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Datum observatie</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Datum observatie</label>
             <input
               type="date"
               value={evaluationDate}
@@ -353,7 +353,7 @@ function NewEvaluationPageInner() {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Observatiecontext</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Observatiecontext</label>
             <select value={observationContext} onChange={(e) => setObservationContext(e.target.value)} className={inputClass} style={inputStyle}>
               <option value="">— Kies context —</option>
               {OBSERVATION_CONTEXTS.map((c) => (
@@ -362,7 +362,7 @@ function NewEvaluationPageInner() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Tegenstander / Training</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Tegenstander / Training</label>
             <input
               value={opponent}
               onChange={(e) => setOpponent(e.target.value)}
@@ -378,7 +378,7 @@ function NewEvaluationPageInner() {
         <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Kwalitatieve Inschatting</h2>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+          <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
             Spelertype omschrijving
           </label>
           <textarea
@@ -391,7 +391,7 @@ function NewEvaluationPageInner() {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+          <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
             Positie & rol inschatting
           </label>
           <textarea
@@ -404,7 +404,7 @@ function NewEvaluationPageInner() {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Potentieelinschatting</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Potentieelinschatting</label>
           <select value={potentieel} onChange={(e) => setPotentieel(e.target.value)} className={inputClass} style={inputStyle}>
             <option value="">— Selecteer niveau —</option>
             {POTENTIAL_LEVELS.map((l) => (
@@ -415,7 +415,7 @@ function NewEvaluationPageInner() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Sterkste punten</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Sterkste punten</label>
             <textarea
               value={sterkstePunten}
               onChange={(e) => setSterkstePunten(e.target.value)}
@@ -425,7 +425,7 @@ function NewEvaluationPageInner() {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Ontwikkelpunten</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Ontwikkelpunten</label>
             <textarea
               value={verbeterpunten}
               onChange={(e) => setVerbeterpunten(e.target.value)}
@@ -441,12 +441,12 @@ function NewEvaluationPageInner() {
       <div className="hub-card p-6 space-y-5">
         <div>
           <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Spelertype Inschatting</h2>
-          <p className="text-xs text-slate-400 mt-1">Over meerdere beoordelingen wordt het consensus-type automatisch bepaald.</p>
+          <p className="text-xs text-slate-600 mt-1">Over meerdere beoordelingen wordt het consensus-type automatisch bepaald.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Beste positie</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Beste positie</label>
             <select
               value={assessedPosition}
               onChange={(e) => { setAssessedPosition(e.target.value as PositionType | ""); setAssessedArchetype(""); }}
@@ -460,7 +460,7 @@ function NewEvaluationPageInner() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Speelstijl / Archetype</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Speelstijl / Archetype</label>
             <select
               value={assessedArchetype}
               onChange={(e) => setAssessedArchetype(e.target.value as ArchetypeType | "")}
@@ -475,14 +475,14 @@ function NewEvaluationPageInner() {
                 ))}
             </select>
             {assessedArchetype && ARCHETYPES[assessedArchetype as ArchetypeType] && (
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-600 mt-1">
                 {ARCHETYPES[assessedArchetype as ArchetypeType].description}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Persoonlijkheidstype</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Persoonlijkheidstype</label>
             <select
               value={assessedSociotype}
               onChange={(e) => setAssessedSociotype(e.target.value as SociotypeName | "")}
@@ -494,7 +494,7 @@ function NewEvaluationPageInner() {
               ))}
             </select>
             {assessedSociotype && SOCIOTYPES[assessedSociotype as SociotypeName] && (
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-600 mt-1">
                 {SOCIOTYPES[assessedSociotype as SociotypeName].description}
               </p>
             )}
@@ -530,10 +530,10 @@ function NewEvaluationPageInner() {
         <div className="flex items-center justify-between px-1">
           <div>
             <h2 className="font-bold text-slate-900">Kwantitatieve Beoordeling</h2>
-            <p className="text-sm text-slate-400 mt-0.5">Klik op een categorie om de subcriteria te beoordelen</p>
+            <p className="text-sm text-slate-600 mt-0.5">Klik op een categorie om de subcriteria te beoordelen</p>
           </div>
           <div className="text-right">
-            <div className="text-xs text-slate-400 mb-1">Overall gemiddeld</div>
+            <div className="text-xs text-slate-600 mb-1">Overall gemiddeld</div>
             <div className="text-3xl font-black tabular-nums" style={{ color: getRatingColor(fifaRating) }}>
               {overallAvg.toFixed(1)}
             </div>
@@ -559,7 +559,7 @@ function NewEvaluationPageInner() {
                   <div className="text-lg font-black tabular-nums" style={{ color: cat.color }}>
                     {avg.toFixed(1)}
                   </div>
-                  <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                  <div className="text-[10px] text-slate-600 mt-0.5 leading-tight">
                     {cat.label}
                   </div>
                 </button>
@@ -567,7 +567,7 @@ function NewEvaluationPageInner() {
             })}
           </div>
           <div className="mt-4 pt-3 border-t border-hub-border flex items-center gap-3">
-            <div className="text-xs text-slate-500 flex-shrink-0 w-28">Overall rating</div>
+            <div className="text-xs text-slate-600 flex-shrink-0 w-28">Overall rating</div>
             <div className="flex-1 h-3 bg-hub-surface rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-500"
@@ -642,7 +642,7 @@ function NewEvaluationPageInner() {
 
 export default function NewEvaluationPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-slate-400">Laden...</div>}>
+    <Suspense fallback={<div className="p-8 text-slate-600">Laden...</div>}>
       <NewEvaluationPageInner />
     </Suspense>
   );

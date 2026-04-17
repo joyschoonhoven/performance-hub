@@ -87,7 +87,7 @@ export default function CoachChallengesPage() {
             <Trophy size={24} className="text-amber-400" />
             Team Challenges
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Trainingsdoelen beheren en toewijzen</p>
+          <p className="text-slate-600 text-sm mt-1">Trainingsdoelen beheren en toewijzen</p>
         </div>
         <button
           onClick={() => setTab("templates")}
@@ -117,8 +117,8 @@ export default function CoachChallengesPage() {
           <div className="hub-label mt-1">Bezig</div>
         </div>
         <div className="hub-card p-5 text-center">
-          <Clock size={20} className="text-slate-400 mx-auto mb-2" />
-          <div className="text-3xl font-black text-slate-400">{stats.open}</div>
+          <Clock size={20} className="text-slate-600 mx-auto mb-2" />
+          <div className="text-3xl font-black text-slate-600">{stats.open}</div>
           <div className="hub-label mt-1">Open</div>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function CoachChallengesPage() {
         {(["overzicht", "templates"] as TabType[]).map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className="px-4 py-2 rounded-lg text-xs font-semibold transition-all capitalize"
-            style={tab === t ? { background: "#00b891", color: "#fff" } : { color: "#64748b" }}>
+            style={tab === t ? { background: "#00b891", color: "#fff" } : { color: "#475569" }}>
             {t === "overzicht" ? "Overzicht" : "Maandelijkse Challenges"}
           </button>
         ))}
@@ -141,7 +141,7 @@ export default function CoachChallengesPage() {
             {(["all", "open", "in_progress", "completed"] as const).map((s) => (
               <button key={s} onClick={() => setFilter(s)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  filter === s ? "bg-hub-teal text-slate-900" : "bg-hub-surface text-slate-400 border border-hub-border hover:text-slate-900"
+                  filter === s ? "bg-hub-teal text-slate-900" : "bg-hub-surface text-slate-600 border border-hub-border hover:text-slate-900"
                 }`}>
                 {s === "all" ? `Alle (${allChallenges.length})` :
                  s === "open" ? `Open (${stats.open})` :
@@ -154,7 +154,7 @@ export default function CoachChallengesPage() {
           <div className="space-y-3">
             {filtered.map((ch) => {
               const statusConfig = {
-                open: { color: "#64748b", label: "Open" },
+                open: { color: "#475569", label: "Open" },
                 in_progress: { color: "#f59e0b", label: "Bezig" },
                 completed: { color: "#00d4aa", label: "Voltooid" },
                 expired: { color: "#ef4444", label: "Verlopen" },
@@ -179,7 +179,7 @@ export default function CoachChallengesPage() {
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-slate-600">
                         {ch.player.first_name} {ch.player.last_name}
                         {ch.player.team_name ? ` · ${ch.player.team_name}` : ""}
                       </div>
@@ -192,7 +192,7 @@ export default function CoachChallengesPage() {
                       </div>
                     </div>
                     {ch.deadline && (
-                      <div className="flex items-center gap-1 text-xs text-slate-500 flex-shrink-0">
+                      <div className="flex items-center gap-1 text-xs text-slate-600 flex-shrink-0">
                         <Target size={11} />
                         {formatDate(ch.deadline)}
                       </div>
@@ -204,7 +204,7 @@ export default function CoachChallengesPage() {
             {filtered.length === 0 && (
               <div className="hub-card p-12 text-center">
                 <Trophy size={40} className="text-slate-700 mx-auto mb-3" />
-                <div className="text-slate-500 mb-4">Geen challenges gevonden</div>
+                <div className="text-slate-600 mb-4">Geen challenges gevonden</div>
                 <button onClick={() => setTab("templates")} className="hub-btn-outline">
                   Challenge toewijzen
                 </button>
@@ -217,7 +217,7 @@ export default function CoachChallengesPage() {
       {/* TAB: Templates */}
       {tab === "templates" && (
         <div className="space-y-4">
-          <p className="text-slate-400 text-sm">
+          <p className="text-slate-600 text-sm">
             Kies een maandelijkse challenge en wijs die toe aan een speler.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -227,7 +227,7 @@ export default function CoachChallengesPage() {
                 <div key={t.id} className="hub-card p-5">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <div className="text-xs font-semibold mb-1" style={{ color: "#64748b" }}>{t.month_label}</div>
+                      <div className="text-xs font-semibold mb-1" style={{ color: "#475569" }}>{t.month_label}</div>
                       <div className="font-bold text-slate-900 text-sm">{t.title}</div>
                     </div>
                     {t.category && (
@@ -236,7 +236,7 @@ export default function CoachChallengesPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-400 mb-4 leading-relaxed">{t.description}</p>
+                  <p className="text-xs text-slate-600 mb-4 leading-relaxed">{t.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-600 flex items-center gap-1">
                       <Calendar size={11} /> {t.duration_weeks} weken
@@ -259,7 +259,7 @@ export default function CoachChallengesPage() {
             })}
             {templates.length === 0 && (
               <div className="hub-card p-8 text-center col-span-2">
-                <div className="text-slate-500 text-sm">
+                <div className="text-slate-600 text-sm">
                   Geen templates gevonden. Voer eerst het schema-update.sql bestand uit in Supabase.
                 </div>
               </div>
@@ -276,18 +276,18 @@ export default function CoachChallengesPage() {
             style={{ background: "#262b42", border: "1px solid #323754" }}>
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-slate-900">Challenge toewijzen</h3>
-              <button onClick={() => setAssignModal(null)} className="text-slate-500 hover:text-slate-900 transition-colors">
+              <button onClick={() => setAssignModal(null)} className="text-slate-600 hover:text-slate-900 transition-colors">
                 <X size={18} />
               </button>
             </div>
 
             <div className="p-3 rounded-xl" style={{ background: "#20243a", border: "1px solid #323754" }}>
-              <div className="text-xs text-slate-500 mb-1">{assignModal.template.month_label}</div>
+              <div className="text-xs text-slate-600 mb-1">{assignModal.template.month_label}</div>
               <div className="font-semibold text-slate-900 text-sm">{assignModal.template.title}</div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
                 Speler *
               </label>
               <select
@@ -305,7 +305,7 @@ export default function CoachChallengesPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
                 Deadline (optioneel)
               </label>
               <input

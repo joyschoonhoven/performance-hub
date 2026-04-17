@@ -83,7 +83,7 @@ export default function PlayerDetailPage() {
 
   if (!player) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-slate-500">
+      <div className="flex flex-col items-center justify-center h-64 text-slate-600">
         <p className="text-lg font-bold text-slate-900 mb-2">Speler niet gevonden</p>
         <Link href="/dashboard/coach/players" className="text-hub-teal hover:underline mt-2 text-sm">
           ← Terug naar spelers
@@ -119,7 +119,7 @@ export default function PlayerDetailPage() {
     <div className="space-y-6">
       {/* Back + header */}
       <div className="flex items-center gap-4">
-        <Link href="/dashboard/coach/players" className="p-2 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-hub-card transition-all border border-transparent hover:border-hub-border">
+        <Link href="/dashboard/coach/players" className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-hub-card transition-all border border-transparent hover:border-hub-border">
           <ArrowLeft size={18} />
         </Link>
         <div className="flex-1">
@@ -132,13 +132,13 @@ export default function PlayerDetailPage() {
             )}
             <span className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg ${
               player.trend === "up" ? "bg-hub-teal/10 text-hub-teal" :
-              player.trend === "down" ? "bg-red-500/10 text-red-400" : "bg-hub-surface text-slate-400"
+              player.trend === "down" ? "bg-red-500/10 text-red-400" : "bg-hub-surface text-slate-600"
             }`}>
               {player.trend === "up" ? <TrendingUp size={11} /> : player.trend === "down" ? <TrendingDown size={11} /> : <Minus size={11} />}
               {player.trend === "up" ? "Progressie" : player.trend === "down" ? "Terugval" : "Stabiel"}
             </span>
           </div>
-          <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
+          <div className="flex items-center gap-3 mt-1 text-xs text-slate-600">
             <span>{POSITION_LABELS[player.position]}</span>
             {player.jersey_number && <span>#{player.jersey_number}</span>}
             {player.date_of_birth && <span>{getAge(player.date_of_birth)} jaar</span>}
@@ -150,7 +150,7 @@ export default function PlayerDetailPage() {
           <div className="text-4xl font-black tabular-nums" style={{ color: rColor }}>
             {player.overall_rating}
           </div>
-          <div className="text-xs text-slate-500 text-right">Overall</div>
+          <div className="text-xs text-slate-600 text-right">Overall</div>
         </div>
       </div>
 
@@ -161,7 +161,7 @@ export default function PlayerDetailPage() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all flex-1 justify-center ${
-              activeTab === tab.id ? "bg-hub-teal text-hub-bg" : "text-slate-400 hover:text-slate-900"
+              activeTab === tab.id ? "bg-hub-teal text-hub-bg" : "text-slate-600 hover:text-slate-900"
             }`}
           >
             {tab.icon}
@@ -208,7 +208,7 @@ export default function PlayerDetailPage() {
                     const sColor = getScoreColor(score);
                     return (
                       <div key={cat} className="flex items-center gap-3">
-                        <div className="w-24 text-xs text-slate-400 font-medium flex items-center gap-1.5">
+                        <div className="w-24 text-xs text-slate-600 font-medium flex items-center gap-1.5">
                           <span>{CATEGORY_ICONS[cat as keyof typeof CATEGORY_ICONS]}</span>
                           {CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]}
                         </div>
@@ -236,7 +236,7 @@ export default function PlayerDetailPage() {
             <div className="hub-card p-12 text-center space-y-4">
               <Brain size={40} className="text-slate-700 mx-auto" />
               <div className="text-slate-900 font-bold">Player DNA nog niet ingesteld</div>
-              <p className="text-slate-500 text-sm">Gebruik de AI engine om automatisch het DNA te bepalen, of stel het handmatig in via evaluaties.</p>
+              <p className="text-slate-600 text-sm">Gebruik de AI engine om automatisch het DNA te bepalen, of stel het handmatig in via evaluaties.</p>
               <Link href={`/dashboard/coach/ai?player=${player.id}`} className="hub-btn-primary inline-flex items-center gap-2">
                 <Brain size={16} /> AI Analyse starten
               </Link>
@@ -253,7 +253,7 @@ export default function PlayerDetailPage() {
                       <div className="font-bold text-slate-900 text-sm">AI Scouting Analyse</div>
                     </div>
                     {identity.last_ai_analysis && (
-                      <span className="text-xs text-slate-500">{formatDate(identity.last_ai_analysis)}</span>
+                      <span className="text-xs text-slate-600">{formatDate(identity.last_ai_analysis)}</span>
                     )}
                   </div>
                   <p className="text-slate-300 text-sm leading-relaxed">{identity.ai_summary}</p>
@@ -262,7 +262,7 @@ export default function PlayerDetailPage() {
                       <div>
                         <div className="hub-label">Fit Score</div>
                         <div className="text-2xl font-black tabular-nums mt-1" style={{ color: getRatingColor(identity.ai_fit_score) }}>
-                          {identity.ai_fit_score}<span className="text-sm text-slate-500 font-normal">/100</span>
+                          {identity.ai_fit_score}<span className="text-sm text-slate-600 font-normal">/100</span>
                         </div>
                       </div>
                     </div>
@@ -284,10 +284,10 @@ export default function PlayerDetailPage() {
                               <span className="font-bold text-slate-900 text-sm">{primaryArch.label}</span>
                               <span className="hub-tag text-[10px]" style={{ background: `${primaryArch.color}20`, color: primaryArch.color }}>Primair</span>
                             </div>
-                            <p className="text-xs text-slate-400 mt-1">{primaryArch.description}</p>
+                            <p className="text-xs text-slate-600 mt-1">{primaryArch.description}</p>
                             <div className="flex flex-wrap gap-1 mt-2">
                               {primaryArch.traits.map((t) => (
-                                <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-hub-border text-slate-400">{t}</span>
+                                <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-hub-border text-slate-600">{t}</span>
                               ))}
                             </div>
                           </div>
@@ -301,9 +301,9 @@ export default function PlayerDetailPage() {
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="font-semibold text-slate-300 text-sm">{secondaryArch.label}</span>
-                              <span className="hub-tag text-[10px] bg-hub-border text-slate-500">Secundair</span>
+                              <span className="hub-tag text-[10px] bg-hub-border text-slate-600">Secundair</span>
                             </div>
-                            <p className="text-xs text-slate-500 mt-1">{secondaryArch.description}</p>
+                            <p className="text-xs text-slate-600 mt-1">{secondaryArch.description}</p>
                           </div>
                         </div>
                       </div>
@@ -327,7 +327,7 @@ export default function PlayerDetailPage() {
                               <span className="font-bold text-slate-900 text-sm">{primarySocio.label}</span>
                               <span className="hub-tag text-[10px]" style={{ background: `${primarySocio.color_hex}20`, color: primarySocio.color_hex }}>Primair</span>
                             </div>
-                            <p className="text-xs text-slate-400 mt-1">{primarySocio.description}</p>
+                            <p className="text-xs text-slate-600 mt-1">{primarySocio.description}</p>
                           </div>
                         </div>
                       </div>
@@ -339,9 +339,9 @@ export default function PlayerDetailPage() {
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="font-semibold text-slate-300 text-sm">{secondarySocio.label}</span>
-                              <span className="hub-tag text-[10px] bg-hub-border text-slate-500">Secundair</span>
+                              <span className="hub-tag text-[10px] bg-hub-border text-slate-600">Secundair</span>
                             </div>
-                            <p className="text-xs text-slate-500 mt-1">{secondarySocio.description}</p>
+                            <p className="text-xs text-slate-600 mt-1">{secondarySocio.description}</p>
                           </div>
                         </div>
                       </div>
@@ -377,7 +377,7 @@ export default function PlayerDetailPage() {
                               <span className="text-sm font-black tabular-nums" style={{ color: kv.color }}>{kv.value}</span>
                             </div>
                           </div>
-                          <div className="text-xs text-slate-500 leading-snug">{kv.desc}</div>
+                          <div className="text-xs text-slate-600 leading-snug">{kv.desc}</div>
                         </div>
                         <div className="h-1.5 bg-hub-border rounded-full overflow-hidden">
                           <div className="h-full rounded-full transition-all duration-1000"
@@ -402,7 +402,7 @@ export default function PlayerDetailPage() {
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-slate-400">{evals.length} evaluaties totaal</div>
+              <div className="text-sm text-slate-600">{evals.length} evaluaties totaal</div>
               <Link href={`/dashboard/coach/evaluations/new?player=${player.id}`}
                 className="hub-btn-primary flex items-center gap-2 text-xs">
                 <Plus size={14} /> Nieuwe evaluatie
@@ -416,7 +416,7 @@ export default function PlayerDetailPage() {
                     <Brain size={14} style={{ color: "#00b891" }} />
                   </div>
                   <span className="text-sm font-bold text-slate-900">Consensus Spelertype</span>
-                  <span className="text-xs text-slate-400">— op basis van {consensus.totalAssessments} beoordelingen</span>
+                  <span className="text-xs text-slate-600">— op basis van {consensus.totalAssessments} beoordelingen</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {consensusArch && (
@@ -432,7 +432,7 @@ export default function PlayerDetailPage() {
                     </span>
                   )}
                   {consensus.position && (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl bg-hub-surface text-slate-400 border border-hub-border">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl bg-hub-surface text-slate-600 border border-hub-border">
                       {POSITION_LABELS[consensus.position as keyof typeof POSITION_LABELS]}
                     </span>
                   )}
@@ -449,11 +449,11 @@ export default function PlayerDetailPage() {
                     <div className="flex items-start justify-between mb-3">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <Calendar size={14} className="text-slate-400" />
+                          <Calendar size={14} className="text-slate-600" />
                           <span className="text-sm font-semibold text-slate-900">{formatDate(ev.evaluation_date)}</span>
                         </div>
                         {ev.coach_name && (
-                          <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                          <div className="flex items-center gap-1.5 text-xs text-slate-600">
                             <UserCircle size={12} />
                             {ev.coach_name}
                           </div>
@@ -469,7 +469,7 @@ export default function PlayerDetailPage() {
                           const sc = getScoreColor(s.score);
                           return (
                             <div key={s.category} className="p-2.5 rounded-xl border border-hub-border bg-hub-surface">
-                              <div className="text-[10px] font-bold text-slate-500 mb-1">{CATEGORY_ICONS[s.category as keyof typeof CATEGORY_ICONS]}</div>
+                              <div className="text-[10px] font-bold text-slate-600 mb-1">{CATEGORY_ICONS[s.category as keyof typeof CATEGORY_ICONS]}</div>
                               <div className="hub-label text-[10px]">{CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS]}</div>
                               <div className="text-sm font-black tabular-nums mt-1" style={{ color: sc }}>{s.score.toFixed(1)}</div>
                               <div className="h-1 bg-hub-border rounded-full mt-1.5 overflow-hidden">
@@ -482,7 +482,7 @@ export default function PlayerDetailPage() {
                     )}
                     {(arch || socio) && (
                       <div className="flex flex-wrap items-center gap-2 mb-3">
-                        <span className="text-xs text-slate-400">Inschatting:</span>
+                        <span className="text-xs text-slate-600">Inschatting:</span>
                         {arch && (
                           <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-lg"
                             style={{ background: `${arch.color}15`, color: arch.color }}>
@@ -498,7 +498,7 @@ export default function PlayerDetailPage() {
                       </div>
                     )}
                     {ev.notes && (
-                      <div className="p-3 rounded-xl bg-hub-surface border border-hub-border text-xs text-slate-400 italic">
+                      <div className="p-3 rounded-xl bg-hub-surface border border-hub-border text-xs text-slate-600 italic">
                         &ldquo;{ev.notes}&rdquo;
                       </div>
                     )}
@@ -508,7 +508,7 @@ export default function PlayerDetailPage() {
               {!evals.length && (
                 <div className="hub-card p-12 text-center">
                   <Target size={40} className="text-slate-700 mx-auto mb-3" />
-                  <div className="text-slate-500 font-bold mb-2">Nog geen evaluaties</div>
+                  <div className="text-slate-600 font-bold mb-2">Nog geen evaluaties</div>
                   <Link href={`/dashboard/coach/evaluations/new?player=${player.id}`}
                     className="hub-btn-primary inline-flex items-center gap-2 text-sm mt-3">
                     <Plus size={14} /> Eerste evaluatie maken
@@ -524,7 +524,7 @@ export default function PlayerDetailPage() {
       {activeTab === "challenges" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-slate-400">{player.challenges?.length ?? 0} challenges</div>
+            <div className="text-sm text-slate-600">{player.challenges?.length ?? 0} challenges</div>
             <Link href="/dashboard/coach/challenges" className="hub-btn-ghost text-xs flex items-center gap-2">
               <Plus size={14} /> Challenge toewijzen
             </Link>
@@ -532,7 +532,7 @@ export default function PlayerDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {(player.challenges ?? []).map((ch) => {
               const statusConfig = {
-                open: { color: "#64748b", label: "Open" },
+                open: { color: "#475569", label: "Open" },
                 in_progress: { color: "#f59e0b", label: "Bezig" },
                 completed: { color: "#00d4aa", label: "Voltooid" },
                 expired: { color: "#ef4444", label: "Verlopen" },
@@ -569,7 +569,7 @@ export default function PlayerDetailPage() {
                     {updatingProgress === ch.id && <Loader2 size={12} className="animate-spin text-hub-teal" />}
                   </div>
                   {ch.deadline && (
-                    <div className="flex items-center gap-1.5 mt-3 text-xs text-slate-500">
+                    <div className="flex items-center gap-1.5 mt-3 text-xs text-slate-600">
                       <Target size={11} />
                       Deadline: {formatDate(ch.deadline)}
                     </div>
@@ -580,7 +580,7 @@ export default function PlayerDetailPage() {
             {!(player.challenges?.length) && (
               <div className="hub-card p-12 text-center col-span-2">
                 <Trophy size={40} className="text-slate-700 mx-auto mb-3" />
-                <div className="text-slate-500 font-bold mb-2">Nog geen challenges</div>
+                <div className="text-slate-600 font-bold mb-2">Nog geen challenges</div>
                 <Link href="/dashboard/coach/challenges" className="hub-btn-outline inline-flex items-center gap-2 text-sm mt-3">
                   <Plus size={14} /> Challenge toewijzen
                 </Link>

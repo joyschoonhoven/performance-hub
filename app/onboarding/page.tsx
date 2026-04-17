@@ -153,7 +153,7 @@ export default function OnboardingPage() {
   }
 
   const inputStyle = { background: "#ffffff", border: "1px solid #e2e8f0" };
-  const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none transition-all";
+  const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all";
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: "#f1f5f9" }}>
@@ -173,7 +173,7 @@ export default function OnboardingPage() {
           <h1 className="text-2xl font-black text-slate-900">
             {role === "coach" ? "Coach profiel instellen" : "Spelersprofiel instellen"}
           </h1>
-          <p className="text-slate-400 text-sm mt-2">
+          <p className="text-slate-600 text-sm mt-2">
             {role === "coach"
               ? "Vertel ons over jouw achtergrond als trainer."
               : "Vul je basisgegevens in zodat je coach je kan evalueren."}
@@ -187,7 +187,7 @@ export default function OnboardingPage() {
           {role === "player" && (
             <>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Positie *</label>
+                <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Positie *</label>
                 <select value={position} onChange={(e) => setPosition(e.target.value as PositionType)} required
                   className={inputClass} style={inputStyle}>
                   {POSITIONS.map(([val, label]) => (
@@ -197,23 +197,23 @@ export default function OnboardingPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Rugnummer</label>
+                  <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Rugnummer</label>
                   <input type="number" value={jerseyNumber} onChange={(e) => setJerseyNumber(e.target.value)}
                     placeholder="10" min={1} max={99} className={inputClass} style={inputStyle} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Geboortedatum</label>
+                  <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Geboortedatum</label>
                   <input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)}
                     className={inputClass} style={{ ...inputStyle, colorScheme: "dark" }} />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Team / Club</label>
+                <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Team / Club</label>
                 <input type="text" value={team} onChange={(e) => setTeam(e.target.value)}
                   placeholder="Schoonhoven FC" className={inputClass} style={inputStyle} />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Nationaliteit</label>
+                <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Nationaliteit</label>
                 <input type="text" value={nationality} onChange={(e) => setNationality(e.target.value)}
                   placeholder="NL" maxLength={3} className={`${inputClass} uppercase`} style={inputStyle} />
               </div>
@@ -225,7 +225,7 @@ export default function OnboardingPage() {
             <>
               {/* Club */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
                   Club / Voetbalorganisatie *
                 </label>
                 <input type="text" value={coachClub} onChange={(e) => setCoachClub(e.target.value)}
@@ -234,7 +234,7 @@ export default function OnboardingPage() {
 
               {/* Team name */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
                   Team dat je traint
                 </label>
                 <input type="text" value={coachTeamName} onChange={(e) => setCoachTeamName(e.target.value)}
@@ -245,7 +245,7 @@ export default function OnboardingPage() {
               {/* License + Experience */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                  <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
                     Coachlicentie
                   </label>
                   <select value={coachLicense} onChange={(e) => setCoachLicense(e.target.value)}
@@ -255,7 +255,7 @@ export default function OnboardingPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                  <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
                     Jaren ervaring
                   </label>
                   <input type="number" value={coachExperience} onChange={(e) => setCoachExperience(e.target.value)}
@@ -265,7 +265,7 @@ export default function OnboardingPage() {
 
               {/* Specialization */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
                   Specialisatie / Rol
                 </label>
                 <select value={coachSpecialization} onChange={(e) => setCoachSpecialization(e.target.value)}
@@ -277,7 +277,7 @@ export default function OnboardingPage() {
 
               {/* Preferred formation */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
                   Favoriete speelwijze / formatie
                 </label>
                 <select value={coachFormation} onChange={(e) => setCoachFormation(e.target.value)}
@@ -289,7 +289,7 @@ export default function OnboardingPage() {
 
               {/* Phone */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
                   Telefoonnummer (optioneel)
                 </label>
                 <input type="tel" value={coachPhone} onChange={(e) => setCoachPhone(e.target.value)}
@@ -298,7 +298,7 @@ export default function OnboardingPage() {
 
               {/* Bio */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
                   Coaching filosofie (optioneel)
                 </label>
                 <textarea value={coachBio} onChange={(e) => setCoachBio(e.target.value)} rows={3}
@@ -309,7 +309,7 @@ export default function OnboardingPage() {
           )}
 
           {role === "admin" && (
-            <p className="text-slate-400 text-sm text-center py-4">
+            <p className="text-slate-600 text-sm text-center py-4">
               Admin profiel is klaar. Klik hieronder om door te gaan.
             </p>
           )}

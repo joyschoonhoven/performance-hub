@@ -42,7 +42,7 @@ export default function PlayerEvaluationsPage() {
           <ClipboardList size={24} className="text-indigo-400" />
           Mijn Evaluaties
         </h1>
-        <p className="text-slate-400 text-sm mt-1">{evaluations.length} evaluaties van jouw coach</p>
+        <p className="text-slate-600 text-sm mt-1">{evaluations.length} evaluaties van jouw coach</p>
       </div>
 
       {progressData.length > 1 && (
@@ -64,7 +64,7 @@ export default function PlayerEvaluationsPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="text-sm font-semibold text-slate-900">{formatDate(ev.evaluation_date)}</div>
                 <div className="text-2xl font-black tabular-nums" style={{ color: rColor }}>
-                  {ev.overall_score?.toFixed(1)}<span className="text-sm text-slate-500 font-normal">/10</span>
+                  {ev.overall_score?.toFixed(1)}<span className="text-sm text-slate-600 font-normal">/10</span>
                 </div>
               </div>
               {ev.scores && ev.scores.length > 0 && (
@@ -73,7 +73,7 @@ export default function PlayerEvaluationsPage() {
                     const sc = getScoreColor(s.score);
                     return (
                       <div key={s.category} className="p-3 rounded-xl bg-hub-surface border border-hub-border text-center">
-                        <div className="text-[10px] font-bold text-slate-500 mb-1">{CATEGORY_ICONS[s.category as keyof typeof CATEGORY_ICONS]}</div>
+                        <div className="text-[10px] font-bold text-slate-600 mb-1">{CATEGORY_ICONS[s.category as keyof typeof CATEGORY_ICONS]}</div>
                         <div className="text-[10px] hub-label">{CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS]}</div>
                         <div className="text-base font-black tabular-nums mt-1" style={{ color: sc }}>{s.score.toFixed(1)}</div>
                         <div className="h-1 bg-hub-border rounded-full mt-1.5 overflow-hidden">
@@ -85,7 +85,7 @@ export default function PlayerEvaluationsPage() {
                 </div>
               )}
               {ev.notes && (
-                <div className="p-3 rounded-xl bg-hub-surface border border-hub-border text-xs text-slate-400 italic">
+                <div className="p-3 rounded-xl bg-hub-surface border border-hub-border text-xs text-slate-600 italic">
                   &ldquo;{ev.notes}&rdquo;
                 </div>
               )}
@@ -95,7 +95,7 @@ export default function PlayerEvaluationsPage() {
         {evaluations.length === 0 && (
           <div className="hub-card p-12 text-center">
             <ClipboardList size={40} className="text-slate-700 mx-auto mb-3" />
-            <div className="text-slate-500">Nog geen evaluaties van je coach</div>
+            <div className="text-slate-600">Nog geen evaluaties van je coach</div>
           </div>
         )}
       </div>

@@ -107,7 +107,7 @@ export function PlayerTypeHero({ archetype, sociotype, overallRating, position }
                 {position} — Spelerstype
               </div>
               <h2 className="text-2xl font-black text-slate-900 leading-tight">{archetype.label}</h2>
-              <p className="text-sm text-slate-400 mt-1 leading-relaxed max-w-xs">
+              <p className="text-sm text-slate-600 mt-1 leading-relaxed max-w-xs">
                 {archetype.description}
               </p>
             </div>
@@ -118,7 +118,7 @@ export function PlayerTypeHero({ archetype, sociotype, overallRating, position }
                 style={{ background: `${ratingColor}12`, borderColor: `${ratingColor}30` }}>
                 <span className="text-2xl font-black tabular-nums leading-none"
                   style={{ color: ratingColor }}>{overallRating}</span>
-                <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">Rating</span>
+                <span className="text-[9px] font-semibold text-slate-600 uppercase tracking-wider mt-0.5">Rating</span>
               </div>
               <div className="text-[10px] font-semibold mt-1.5" style={{ color: ratingColor }}>
                 {ratingLabel}
