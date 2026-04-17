@@ -46,7 +46,7 @@ export default function AnalyticsPage() {
   if (players.length === 0) return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-3">
+        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
           <BarChart3 size={24} className="text-indigo-400" />
           Analytics
         </h1>
@@ -90,7 +90,7 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-3">
+        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
           <BarChart3 size={24} className="text-indigo-400" />
           Analytics
         </h1>
@@ -104,7 +104,7 @@ export default function AnalyticsPage() {
         ].map((t) => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-              tab === t.id ? "bg-hub-teal text-hub-bg" : "text-slate-400 hover:text-white"
+              tab === t.id ? "bg-hub-teal text-hub-bg" : "text-slate-400 hover:text-slate-900"
             }`}>
             {t.icon}{t.label}
           </button>
@@ -130,7 +130,7 @@ export default function AnalyticsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#1a2d47" vertical={false} />
                   <XAxis dataKey="range" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ backgroundColor: "#20243a", border: "1px solid #1a2d47", borderRadius: "12px", color: "#e2e8f0", fontSize: "12px" }} />
+                  <Tooltip contentStyle={{ backgroundColor: "#20243a", border: "1px solid #1a2d47", borderRadius: "12px", color: "#1e293b", fontSize: "12px" }} />
                   <Bar dataKey="count" radius={[6, 6, 0, 0]}>
                     {ratingBuckets.map((entry) => (
                       <Cell key={entry.range} fill={
@@ -153,7 +153,7 @@ export default function AnalyticsPage() {
                     <div className="flex-1 h-6 bg-hub-border rounded-lg overflow-hidden">
                       <div className="h-full rounded-lg bg-indigo-500/60 flex items-center px-2"
                         style={{ width: `${(pd.count / players.length) * 100}%` }}>
-                        <span className="text-[10px] font-bold text-white">{pd.count}</span>
+                        <span className="text-[10px] font-bold text-slate-900">{pd.count}</span>
                       </div>
                     </div>
                     <div className="text-xs text-slate-500 w-12 text-right">
@@ -177,7 +177,7 @@ export default function AnalyticsPage() {
                   return (
                     <div key={p.id} className="p-4 rounded-xl bg-hub-surface border border-hub-border">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="text-sm font-bold text-white">{p.first_name} {p.last_name}</div>
+                        <div className="text-sm font-bold text-slate-900">{p.first_name} {p.last_name}</div>
                         <span className="hub-tag text-[10px] bg-hub-teal/10 text-hub-teal">Progressie</span>
                       </div>
                       {pd.length > 1 && <ProgressLineChart data={pd} height={100} />}
@@ -200,7 +200,7 @@ export default function AnalyticsPage() {
               <div key={label}>
                 <label className="hub-label mb-2 block">{label}</label>
                 <select value={val} onChange={(e) => set(e.target.value)}
-                  className="w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-hub-teal transition-all">
+                  className="w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-hub-teal transition-all">
                   {players.map((p) => (
                     <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.overall_rating})</option>
                   ))}
@@ -251,13 +251,13 @@ export default function AnalyticsPage() {
                   return (
                     <tr key={row.label} className="border-t border-hub-border">
                       <td className="py-3">
-                        <span className={`text-sm font-bold tabular-nums ${aWins ? "text-hub-teal" : tie ? "text-white" : "text-slate-400"}`}>
+                        <span className={`text-sm font-bold tabular-nums ${aWins ? "text-hub-teal" : tie ? "text-slate-900" : "text-slate-400"}`}>
                           {row.format(row.a)}
                         </span>
                       </td>
                       <td className="py-3 text-center text-xs text-slate-500">{row.label}</td>
                       <td className="py-3 text-right">
-                        <span className={`text-sm font-bold tabular-nums ${!aWins && !tie ? "text-hub-teal" : tie ? "text-white" : "text-slate-400"}`}>
+                        <span className={`text-sm font-bold tabular-nums ${!aWins && !tie ? "text-hub-teal" : tie ? "text-slate-900" : "text-slate-400"}`}>
                           {row.format(row.b)}
                         </span>
                       </td>

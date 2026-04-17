@@ -26,7 +26,7 @@ export default function PlayerCardPage() {
   if (!player) return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-3">
+        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
           <Star size={24} className="text-amber-400" />
           Mijn Player Card
         </h1>
@@ -46,7 +46,7 @@ export default function PlayerCardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-3">
+        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
           <Star size={24} className="text-amber-400" />
           Mijn Player Card
         </h1>
@@ -68,24 +68,24 @@ export default function PlayerCardPage() {
               </div>
               <div className="data-row">
                 <span className="text-slate-500 text-sm">Positie</span>
-                <span className="text-sm font-semibold text-white">{player.position}</span>
+                <span className="text-sm font-semibold text-slate-900">{player.position}</span>
               </div>
               {player.jersey_number && (
                 <div className="data-row">
                   <span className="text-slate-500 text-sm">Rugnummer</span>
-                  <span className="text-sm font-semibold text-white">#{player.jersey_number}</span>
+                  <span className="text-sm font-semibold text-slate-900">#{player.jersey_number}</span>
                 </div>
               )}
               {player.team_name && (
                 <div className="data-row">
                   <span className="text-slate-500 text-sm">Team</span>
-                  <span className="text-sm font-semibold text-white">{player.team_name}</span>
+                  <span className="text-sm font-semibold text-slate-900">{player.team_name}</span>
                 </div>
               )}
               {player.nationality && (
                 <div className="data-row">
                   <span className="text-slate-500 text-sm">Nationaliteit</span>
-                  <span className="text-sm font-semibold text-white">{player.nationality}</span>
+                  <span className="text-sm font-semibold text-slate-900">{player.nationality}</span>
                 </div>
               )}
             </div>
@@ -106,7 +106,7 @@ export default function PlayerCardPage() {
                       </div>
                       <div>
                         <div className="text-xs text-slate-500">Archetype</div>
-                        <div className="font-bold text-white text-sm">{arch.label}</div>
+                        <div className="font-bold text-slate-900 text-sm">{arch.label}</div>
                       </div>
                     </div>
                   );
@@ -122,7 +122,7 @@ export default function PlayerCardPage() {
                       </div>
                       <div>
                         <div className="text-xs text-slate-500">Sociotype</div>
-                        <div className="font-bold text-white text-sm">{socio.label}</div>
+                        <div className="font-bold text-slate-900 text-sm">{socio.label}</div>
                       </div>
                     </div>
                   );

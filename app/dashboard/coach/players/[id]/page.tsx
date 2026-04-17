@@ -84,7 +84,7 @@ export default function PlayerDetailPage() {
   if (!player) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-slate-500">
-        <p className="text-lg font-bold text-white mb-2">Speler niet gevonden</p>
+        <p className="text-lg font-bold text-slate-900 mb-2">Speler niet gevonden</p>
         <Link href="/dashboard/coach/players" className="text-hub-teal hover:underline mt-2 text-sm">
           ← Terug naar spelers
         </Link>
@@ -119,12 +119,12 @@ export default function PlayerDetailPage() {
     <div className="space-y-6">
       {/* Back + header */}
       <div className="flex items-center gap-4">
-        <Link href="/dashboard/coach/players" className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-hub-card transition-all border border-transparent hover:border-hub-border">
+        <Link href="/dashboard/coach/players" className="p-2 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-hub-card transition-all border border-transparent hover:border-hub-border">
           <ArrowLeft size={18} />
         </Link>
         <div className="flex-1">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-black text-white">{player.first_name} {player.last_name}</h1>
+            <h1 className="text-2xl font-black text-slate-900">{player.first_name} {player.last_name}</h1>
             {badge && (
               <span className="hub-tag font-black" style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.color}40` }}>
                 {badge.label}
@@ -161,7 +161,7 @@ export default function PlayerDetailPage() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all flex-1 justify-center ${
-              activeTab === tab.id ? "bg-hub-teal text-hub-bg" : "text-slate-400 hover:text-white"
+              activeTab === tab.id ? "bg-hub-teal text-hub-bg" : "text-slate-400 hover:text-slate-900"
             }`}
           >
             {tab.icon}
@@ -235,7 +235,7 @@ export default function PlayerDetailPage() {
           {!identity ? (
             <div className="hub-card p-12 text-center space-y-4">
               <Brain size={40} className="text-slate-700 mx-auto" />
-              <div className="text-white font-bold">Player DNA nog niet ingesteld</div>
+              <div className="text-slate-900 font-bold">Player DNA nog niet ingesteld</div>
               <p className="text-slate-500 text-sm">Gebruik de AI engine om automatisch het DNA te bepalen, of stel het handmatig in via evaluaties.</p>
               <Link href={`/dashboard/coach/ai?player=${player.id}`} className="hub-btn-primary inline-flex items-center gap-2">
                 <Brain size={16} /> AI Analyse starten
@@ -250,7 +250,7 @@ export default function PlayerDetailPage() {
                       <div className="p-1.5 rounded-lg bg-hub-teal/15">
                         <Sparkles size={16} className="text-hub-teal" />
                       </div>
-                      <div className="font-bold text-white text-sm">AI Scouting Analyse</div>
+                      <div className="font-bold text-slate-900 text-sm">AI Scouting Analyse</div>
                     </div>
                     {identity.last_ai_analysis && (
                       <span className="text-xs text-slate-500">{formatDate(identity.last_ai_analysis)}</span>
@@ -281,7 +281,7 @@ export default function PlayerDetailPage() {
                           <span className="text-2xl">{primaryArch.icon}</span>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-white text-sm">{primaryArch.label}</span>
+                              <span className="font-bold text-slate-900 text-sm">{primaryArch.label}</span>
                               <span className="hub-tag text-[10px]" style={{ background: `${primaryArch.color}20`, color: primaryArch.color }}>Primair</span>
                             </div>
                             <p className="text-xs text-slate-400 mt-1">{primaryArch.description}</p>
@@ -324,7 +324,7 @@ export default function PlayerDetailPage() {
                           <span className="text-2xl">{primarySocio.icon}</span>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-white text-sm">{primarySocio.label}</span>
+                              <span className="font-bold text-slate-900 text-sm">{primarySocio.label}</span>
                               <span className="hub-tag text-[10px]" style={{ background: `${primarySocio.color_hex}20`, color: primarySocio.color_hex }}>Primair</span>
                             </div>
                             <p className="text-xs text-slate-400 mt-1">{primarySocio.description}</p>
@@ -364,7 +364,7 @@ export default function PlayerDetailPage() {
                     ].map((kv) => (
                       <div key={kv.key} className="p-4 rounded-xl border border-hub-border bg-hub-surface space-y-3">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-white text-sm">{kv.label}</span>
+                          <span className="font-bold text-slate-900 text-sm">{kv.label}</span>
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="relative w-16 h-16">
@@ -415,7 +415,7 @@ export default function PlayerDetailPage() {
                   <div className="p-1.5 rounded-lg" style={{ background: "rgba(0,184,145,0.12)" }}>
                     <Brain size={14} style={{ color: "#00b891" }} />
                   </div>
-                  <span className="text-sm font-bold text-white">Consensus Spelertype</span>
+                  <span className="text-sm font-bold text-slate-900">Consensus Spelertype</span>
                   <span className="text-xs text-slate-400">— op basis van {consensus.totalAssessments} beoordelingen</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -450,7 +450,7 @@ export default function PlayerDetailPage() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <Calendar size={14} className="text-slate-400" />
-                          <span className="text-sm font-semibold text-white">{formatDate(ev.evaluation_date)}</span>
+                          <span className="text-sm font-semibold text-slate-900">{formatDate(ev.evaluation_date)}</span>
                         </div>
                         {ev.coach_name && (
                           <div className="flex items-center gap-1.5 text-xs text-slate-400">
@@ -543,7 +543,7 @@ export default function PlayerDetailPage() {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-white text-sm">{ch.title}</span>
+                        <span className="font-semibold text-slate-900 text-sm">{ch.title}</span>
                         <span className="hub-tag text-[10px]" style={{ color: statusConfig.color, background: `${statusConfig.color}15` }}>
                           {statusConfig.label}
                         </span>

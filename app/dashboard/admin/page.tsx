@@ -21,7 +21,7 @@ export default function AdminPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-3">
+          <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
             <Shield size={24} className="text-amber-400" />
             Admin Panel
           </h1>
@@ -43,7 +43,7 @@ export default function AdminPage() {
                 {s.icon}
               </div>
             </div>
-            <div className="text-3xl font-black text-white tabular-nums">{s.value}</div>
+            <div className="text-3xl font-black text-slate-900 tabular-nums">{s.value}</div>
             <div className="hub-label mt-1">{s.label}</div>
           </div>
         ))}
@@ -61,11 +61,11 @@ export default function AdminPage() {
           <div className="space-y-2">
             {DEMO_USERS.map((u) => (
               <div key={u.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-hub-surface transition-all">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold bg-hub-surface border border-hub-border text-white">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold bg-hub-surface border border-hub-border text-slate-900">
                   {u.name.charAt(0)}
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm font-semibold text-white">{u.name}</div>
+                  <div className="text-sm font-semibold text-slate-900">{u.name}</div>
                   <div className="text-xs text-slate-500">{u.email}</div>
                 </div>
                 <div className="text-right">
@@ -99,7 +99,7 @@ export default function AdminPage() {
                     {p.first_name[0]}{p.last_name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold text-white truncate">
+                    <div className="text-xs font-semibold text-slate-900 truncate">
                       {p.first_name} {p.last_name}
                     </div>
                     <div className="text-[10px] text-slate-500">{POSITION_LABELS[p.position]} · {p.team_name}</div>
@@ -131,7 +131,7 @@ export default function AdminPage() {
           ].map((s) => (
             <div key={s.label} className="flex items-center gap-3 p-4 rounded-xl bg-hub-surface border border-hub-border">
               <div className="flex-1">
-                <div className="text-sm font-semibold text-white">{s.label}</div>
+                <div className="text-sm font-semibold text-slate-900">{s.label}</div>
                 <div className="text-xs text-slate-500">{s.desc}</div>
               </div>
               <span className="hub-tag text-xs" style={{ color: s.color, background: `${s.color}15` }}>

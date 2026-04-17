@@ -101,14 +101,14 @@ export default function CoachProfilePage() {
   const topPlayer = [...players].sort((a, b) => b.overall_rating - a.overall_rating)[0];
 
   const inputStyle = { background: "#20243a", border: "1px solid #323754" };
-  const inputClass = "w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all";
+  const inputClass = "w-full rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none transition-all";
 
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-white">Mijn Profiel</h1>
+          <h1 className="text-2xl font-black text-slate-900">Mijn Profiel</h1>
           <p className="text-slate-500 text-sm mt-1">Jouw coachprofiel & statistieken</p>
         </div>
         <div className="flex items-center gap-2">
@@ -156,7 +156,7 @@ export default function CoachProfilePage() {
           {/* Info */}
           <div className="flex-1">
             <div className="flex flex-wrap items-start gap-3 mb-2">
-              <h2 className="text-2xl font-black text-white">{profile.full_name}</h2>
+              <h2 className="text-2xl font-black text-slate-900">{profile.full_name}</h2>
               <span className="hub-tag text-xs" style={{ background: "rgba(0,184,145,0.1)", color: "#00b891" }}>Coach</span>
               {profile.coaching_license && (
                 <span className="hub-tag text-xs" style={{ background: "rgba(99,102,241,0.1)", color: "#6366f1" }}>
@@ -260,7 +260,7 @@ export default function CoachProfilePage() {
                           {p.first_name[0]}{p.last_name[0]}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-white text-sm group-hover:text-hub-teal transition-colors truncate">
+                          <div className="font-semibold text-slate-900 text-sm group-hover:text-hub-teal transition-colors truncate">
                             {p.first_name} {p.last_name}
                           </div>
                           <div className="text-xs text-slate-500">{POSITION_LABELS[p.position]}</div>
@@ -296,7 +296,7 @@ export default function CoachProfilePage() {
                     {topPlayer.first_name[0]}{topPlayer.last_name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold text-white text-sm group-hover:text-hub-teal transition-colors">
+                    <div className="font-bold text-slate-900 text-sm group-hover:text-hub-teal transition-colors">
                       {topPlayer.first_name} {topPlayer.last_name}
                     </div>
                     <div className="text-xs text-slate-500">{POSITION_LABELS[topPlayer.position]}</div>
@@ -327,7 +327,7 @@ export default function CoachProfilePage() {
                 { href: "/dashboard/coach/analytics", icon: <TrendingUp size={15} />, label: "Team analytics" },
               ].map((link) => (
                 <Link key={link.href} href={link.href}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-hub-surface transition-all border border-transparent hover:border-hub-border">
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-900 hover:bg-hub-surface transition-all border border-transparent hover:border-hub-border">
                   <span>{link.icon}</span>
                   {link.label}
                   <ChevronRight size={14} className="ml-auto text-slate-600" />

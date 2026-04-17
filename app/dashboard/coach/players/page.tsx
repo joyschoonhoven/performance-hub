@@ -60,11 +60,11 @@ export default function PlayersPage() {
   if (!allPlayers.length) return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
-        <div><h1 className="text-2xl font-black text-white">Spelers</h1></div>
+        <div><h1 className="text-2xl font-black text-slate-900">Spelers</h1></div>
       </div>
       <div className="hub-card p-12 text-center max-w-md mx-auto">
         <UserPlus size={40} className="mx-auto mb-4 text-slate-600" />
-        <h2 className="text-lg font-bold text-white mb-2">Nog geen spelers</h2>
+        <h2 className="text-lg font-bold text-slate-900 mb-2">Nog geen spelers</h2>
         <p className="text-slate-400 text-sm">Zodra spelers zich registreren en hun profiel invullen, verschijnen ze hier.</p>
       </div>
     </div>
@@ -75,7 +75,7 @@ export default function PlayersPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-black text-white">Spelers</h1>
+          <h1 className="text-2xl font-black text-slate-900">Spelers</h1>
           <p className="text-slate-400 text-sm mt-1">{allPlayers.length} spelers in jouw squad</p>
         </div>
         <Link href="/dashboard/coach/players/new" className="hub-btn-primary flex items-center gap-2">
@@ -93,7 +93,7 @@ export default function PlayersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Zoek speler..."
-            className="w-full bg-hub-surface border border-hub-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-hub-teal transition-all"
+            className="w-full bg-hub-surface border border-hub-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none focus:border-hub-teal transition-all"
           />
         </div>
 
@@ -101,7 +101,7 @@ export default function PlayersPage() {
         <div className="flex items-center gap-1.5 flex-wrap">
           <button
             onClick={() => setPositionFilter("all")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${positionFilter === "all" ? "bg-hub-teal text-hub-bg" : "bg-hub-surface text-slate-400 hover:text-white border border-hub-border"}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${positionFilter === "all" ? "bg-hub-teal text-hub-bg" : "bg-hub-surface text-slate-400 hover:text-slate-900 border border-hub-border"}`}
           >
             Alle
           </button>
@@ -109,7 +109,7 @@ export default function PlayersPage() {
             <button
               key={pos}
               onClick={() => setPositionFilter(pos)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${positionFilter === pos ? "bg-hub-teal text-hub-bg" : "bg-hub-surface text-slate-400 hover:text-white border border-hub-border"}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${positionFilter === pos ? "bg-hub-teal text-hub-bg" : "bg-hub-surface text-slate-400 hover:text-slate-900 border border-hub-border"}`}
             >
               {pos}
             </button>
@@ -134,7 +134,7 @@ export default function PlayersPage() {
             <button
               key={v}
               onClick={() => setView(v)}
-              className={`px-3 py-2 text-xs font-medium transition-all ${view === v ? "bg-hub-teal text-hub-bg" : "text-slate-400 hover:text-white"}`}
+              className={`px-3 py-2 text-xs font-medium transition-all ${view === v ? "bg-hub-teal text-hub-bg" : "text-slate-400 hover:text-slate-900"}`}
             >
               {v === "cards" ? "Cards" : "Lijst"}
             </button>
@@ -181,7 +181,7 @@ export default function PlayersPage() {
                           {player.first_name[0]}{player.last_name[0]}
                         </div>
                         <div>
-                          <div className="font-semibold text-white">{player.first_name} {player.last_name}</div>
+                          <div className="font-semibold text-slate-900">{player.first_name} {player.last_name}</div>
                           {badge && (
                             <span className="hub-tag text-[9px]" style={{ background: badge.bg, color: badge.color }}>
                               {badge.label}

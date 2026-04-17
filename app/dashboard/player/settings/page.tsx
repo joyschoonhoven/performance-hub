@@ -79,7 +79,7 @@ export default function PlayerSettingsPage() {
   return (
     <div className="space-y-6 max-w-xl">
       <div>
-        <h1 className="text-2xl font-black text-white">Instellingen</h1>
+        <h1 className="text-2xl font-black text-slate-900">Instellingen</h1>
         <p className="text-slate-400 text-sm mt-1">Jouw spelersprofiel bewerken</p>
       </div>
 
@@ -90,7 +90,7 @@ export default function PlayerSettingsPage() {
           <div className="space-y-1.5">
             <label className="text-xs text-slate-400 font-medium">Voornaam</label>
             <input
-              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-hub-teal/50 transition-colors"
+              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.first_name}
               onChange={(e) => setForm({ ...form, first_name: e.target.value })}
               placeholder="Voornaam"
@@ -99,7 +99,7 @@ export default function PlayerSettingsPage() {
           <div className="space-y-1.5">
             <label className="text-xs text-slate-400 font-medium">Achternaam</label>
             <input
-              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-hub-teal/50 transition-colors"
+              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.last_name}
               onChange={(e) => setForm({ ...form, last_name: e.target.value })}
               placeholder="Achternaam"
@@ -110,7 +110,7 @@ export default function PlayerSettingsPage() {
         <div className="space-y-1.5">
           <label className="text-xs text-slate-400 font-medium">Positie</label>
           <select
-            className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-hub-teal/50 transition-colors"
+            className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
             value={form.position}
             onChange={(e) => setForm({ ...form, position: e.target.value })}
           >
@@ -124,7 +124,7 @@ export default function PlayerSettingsPage() {
           <div className="space-y-1.5">
             <label className="text-xs text-slate-400 font-medium">Rugnummer</label>
             <input
-              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-hub-teal/50 transition-colors"
+              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.jersey_number}
               onChange={(e) => setForm({ ...form, jersey_number: e.target.value })}
               placeholder="bijv. 9"
@@ -134,7 +134,7 @@ export default function PlayerSettingsPage() {
           <div className="space-y-1.5">
             <label className="text-xs text-slate-400 font-medium">Team</label>
             <input
-              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-hub-teal/50 transition-colors"
+              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.team_name}
               onChange={(e) => setForm({ ...form, team_name: e.target.value })}
               placeholder="bijv. U17 A"
@@ -146,7 +146,7 @@ export default function PlayerSettingsPage() {
           <div className="space-y-1.5">
             <label className="text-xs text-slate-400 font-medium">Nationaliteit</label>
             <input
-              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-hub-teal/50 transition-colors"
+              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.nationality}
               onChange={(e) => setForm({ ...form, nationality: e.target.value })}
               placeholder="bijv. Nederlands"
@@ -155,7 +155,7 @@ export default function PlayerSettingsPage() {
           <div className="space-y-1.5">
             <label className="text-xs text-slate-400 font-medium">Geboortedatum</label>
             <input
-              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-hub-teal/50 transition-colors"
+              className="w-full bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-hub-teal/50 transition-colors"
               value={form.date_of_birth}
               onChange={(e) => setForm({ ...form, date_of_birth: e.target.value })}
               type="date"

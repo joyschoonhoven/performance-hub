@@ -106,7 +106,7 @@ export function PlayerTypeHero({ archetype, sociotype, overallRating, position }
                 style={{ color: `${archetype.color}99` }}>
                 {position} — Spelerstype
               </div>
-              <h2 className="text-2xl font-black text-white leading-tight">{archetype.label}</h2>
+              <h2 className="text-2xl font-black text-slate-900 leading-tight">{archetype.label}</h2>
               <p className="text-sm text-slate-400 mt-1 leading-relaxed max-w-xs">
                 {archetype.description}
               </p>

@@ -67,7 +67,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
           {initials(`${player.first_name} ${player.last_name}`)}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold text-white truncate">
+          <div className="text-sm font-semibold text-slate-900 truncate">
             {player.first_name} {player.last_name}
           </div>
           <div className="text-xs text-slate-500">{POSITION_LABELS[player.position]}</div>
@@ -114,7 +114,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
           {/* Info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-bold text-white text-base">
+              <span className="font-bold text-slate-900 text-base">
                 {player.first_name} {player.last_name}
               </span>
               {badge && (
@@ -228,7 +228,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
 
         {/* Name */}
         <div className="mt-5">
-          <div className="text-xl font-black text-white tracking-tight leading-tight">
+          <div className="text-xl font-black text-slate-900 tracking-tight leading-tight">
             {player.first_name}
           </div>
           <div className="text-xl font-black tracking-tight leading-tight" style={{ color: ratingColor }}>

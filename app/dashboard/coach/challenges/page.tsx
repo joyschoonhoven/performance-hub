@@ -83,7 +83,7 @@ export default function CoachChallengesPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-3">
+          <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
             <Trophy size={24} className="text-amber-400" />
             Team Challenges
           </h1>
@@ -128,7 +128,7 @@ export default function CoachChallengesPage() {
         {(["overzicht", "templates"] as TabType[]).map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className="px-4 py-2 rounded-lg text-xs font-semibold transition-all capitalize"
-            style={tab === t ? { background: "#00b891", color: "#fff" } : { color: "#7f93b0" }}>
+            style={tab === t ? { background: "#00b891", color: "#fff" } : { color: "#64748b" }}>
             {t === "overzicht" ? "Overzicht" : "Maandelijkse Challenges"}
           </button>
         ))}
@@ -141,7 +141,7 @@ export default function CoachChallengesPage() {
             {(["all", "open", "in_progress", "completed"] as const).map((s) => (
               <button key={s} onClick={() => setFilter(s)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  filter === s ? "bg-hub-teal text-white" : "bg-hub-surface text-slate-400 border border-hub-border hover:text-white"
+                  filter === s ? "bg-hub-teal text-slate-900" : "bg-hub-surface text-slate-400 border border-hub-border hover:text-slate-900"
                 }`}>
                 {s === "all" ? `Alle (${allChallenges.length})` :
                  s === "open" ? `Open (${stats.open})` :
@@ -169,7 +169,7 @@ export default function CoachChallengesPage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="font-semibold text-white text-sm">{ch.title}</span>
+                        <span className="font-semibold text-slate-900 text-sm">{ch.title}</span>
                         <span className="hub-tag text-[10px]" style={{ color: statusConfig.color, background: `${statusConfig.color}15` }}>
                           {statusConfig.label}
                         </span>
@@ -227,8 +227,8 @@ export default function CoachChallengesPage() {
                 <div key={t.id} className="hub-card p-5">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <div className="text-xs font-semibold mb-1" style={{ color: "#7f93b0" }}>{t.month_label}</div>
-                      <div className="font-bold text-white text-sm">{t.title}</div>
+                      <div className="text-xs font-semibold mb-1" style={{ color: "#64748b" }}>{t.month_label}</div>
+                      <div className="font-bold text-slate-900 text-sm">{t.title}</div>
                     </div>
                     {t.category && (
                       <span className="hub-tag text-[10px] ml-3 flex-shrink-0" style={{ color, background: `${color}15` }}>
@@ -275,15 +275,15 @@ export default function CoachChallengesPage() {
           <div className="relative rounded-2xl p-6 w-full max-w-md space-y-4"
             style={{ background: "#262b42", border: "1px solid #323754" }}>
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-white">Challenge toewijzen</h3>
-              <button onClick={() => setAssignModal(null)} className="text-slate-500 hover:text-white transition-colors">
+              <h3 className="font-bold text-slate-900">Challenge toewijzen</h3>
+              <button onClick={() => setAssignModal(null)} className="text-slate-500 hover:text-slate-900 transition-colors">
                 <X size={18} />
               </button>
             </div>
 
             <div className="p-3 rounded-xl" style={{ background: "#20243a", border: "1px solid #323754" }}>
               <div className="text-xs text-slate-500 mb-1">{assignModal.template.month_label}</div>
-              <div className="font-semibold text-white text-sm">{assignModal.template.title}</div>
+              <div className="font-semibold text-slate-900 text-sm">{assignModal.template.title}</div>
             </div>
 
             <div>
@@ -293,7 +293,7 @@ export default function CoachChallengesPage() {
               <select
                 value={selectedPlayerId}
                 onChange={(e) => setSelectedPlayerId(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-sm text-white focus:outline-none"
+                className="w-full rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none"
                 style={{ background: "#20243a", border: "1px solid #323754" }}
               >
                 {players.map((p) => (
@@ -312,7 +312,7 @@ export default function CoachChallengesPage() {
                 type="date"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-sm text-white focus:outline-none"
+                className="w-full rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none"
                 style={{ background: "#20243a", border: "1px solid #323754", colorScheme: "dark" }}
               />
               <p className="text-xs text-slate-600 mt-1">

@@ -6,25 +6,25 @@
 
 @layer base {
   :root {
-    --background: 232 22% 10%;
-    --foreground: 220 25% 90%;
-    --card: 232 26% 16%;
-    --card-foreground: 220 25% 90%;
-    --popover: 232 26% 16%;
-    --popover-foreground: 220 25% 90%;
-    --primary: 234 86% 68%;
+    --background: 210 40% 96%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 239 84% 59%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 262 70% 75%;
+    --secondary: 263 70% 50%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 232 24% 18%;
-    --muted-foreground: 220 15% 55%;
-    --accent: 232 24% 18%;
-    --accent-foreground: 220 25% 90%;
-    --destructive: 0 84% 70%;
+    --muted: 210 40% 93%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 93%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 232 24% 22%;
-    --input: 232 24% 22%;
-    --ring: 234 86% 68%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 239 84% 59%;
     --radius: 0.75rem;
   }
 
@@ -39,7 +39,7 @@
 
   body {
     @apply bg-hub-bg antialiased;
-    color: #e2e8f0;
+    color: #1e293b;
     font-family: 'Inter', system-ui, sans-serif;
   }
 
@@ -49,21 +49,21 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #191c28;
+    background: #f1f5f9;
   }
   ::-webkit-scrollbar-thumb {
-    background: #272d42;
+    background: #cbd5e1;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #6475f5;
+    background: #4f46e5;
   }
 }
 
 @layer components {
   /* ── Main content cards ── */
   .hub-card {
-    @apply bg-hub-card border border-hub-border rounded-2xl;
+    @apply bg-hub-card border border-hub-border rounded-2xl shadow-sm;
   }
 
   .hub-surface {

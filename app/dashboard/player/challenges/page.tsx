@@ -63,7 +63,7 @@ export default function ChallengesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-3">
+        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
           <Trophy size={24} className="text-amber-400" />
           Mijn Challenges
         </h1>
@@ -95,7 +95,7 @@ export default function ChallengesPage() {
                   style={{ width: `${(stats.completed / Math.max(stats.total, 1)) * 100}%` }} />
               </div>
             </div>
-            <div className="text-sm font-bold text-white whitespace-nowrap">
+            <div className="text-sm font-bold text-slate-900 whitespace-nowrap">
               {stats.completed}/{stats.total}
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function ChallengesPage() {
         {(["all", "open", "in_progress", "completed"] as const).map((s) => (
           <button key={s} onClick={() => setFilter(s)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              filter === s ? "bg-hub-teal text-white" : "bg-hub-surface text-slate-400 border border-hub-border hover:text-white"
+              filter === s ? "bg-hub-teal text-slate-900" : "bg-hub-surface text-slate-400 border border-hub-border hover:text-slate-900"
             }`}>
             {s === "all" ? "Alle" : STATUS_CONFIG[s as ChallengeStatus].label}
           </button>
@@ -131,7 +131,7 @@ export default function ChallengesPage() {
                       </span>
                     )}
                   </div>
-                  <h3 className="font-bold text-white text-sm">{ch.title}</h3>
+                  <h3 className="font-bold text-slate-900 text-sm">{ch.title}</h3>
                   {ch.description && (
                     <p className="text-xs text-slate-500 mt-1 leading-relaxed">{ch.description}</p>
                   )}

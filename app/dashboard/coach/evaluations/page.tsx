@@ -30,7 +30,7 @@ export default function EvaluationsPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-black text-white">Evaluaties</h1>
+          <h1 className="text-2xl font-black text-slate-900">Evaluaties</h1>
           <p className="text-slate-400 text-sm mt-1">{allEvals.length} evaluaties in totaal</p>
         </div>
         <Link href="/dashboard/coach/evaluations/new" className="hub-btn-primary flex items-center gap-2">
@@ -41,7 +41,7 @@ export default function EvaluationsPage() {
       {allEvals.length === 0 ? (
         <div className="hub-card p-12 text-center">
           <ClipboardList size={40} className="text-slate-700 mx-auto mb-3" />
-          <div className="text-white font-bold mb-2">Nog geen evaluaties</div>
+          <div className="text-slate-900 font-bold mb-2">Nog geen evaluaties</div>
           <p className="text-slate-500 text-sm mb-4">
             {players.length === 0
               ? "Evalueer een speler nadat ze zich hebben aangemeld."
@@ -65,7 +65,7 @@ export default function EvaluationsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <Link href={`/dashboard/coach/players/${ev.player.id}`}
-                        className="font-bold text-white text-sm hover:text-hub-teal transition-colors">
+                        className="font-bold text-slate-900 text-sm hover:text-hub-teal transition-colors">
                         {ev.player.first_name} {ev.player.last_name}
                       </Link>
                       <span className="text-xs text-slate-500">{ev.player.position}</span>

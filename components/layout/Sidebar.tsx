@@ -85,8 +85,8 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
             />
           </div>
           <div>
-            <div className="text-sm font-bold leading-tight" style={{ color: "#e2e8f0" }}>Performance Hub</div>
-            <div className="text-xs" style={{ color: "#7f8eaa" }}>Schoonhoven Sports</div>
+            <div className="text-sm font-bold leading-tight" style={{ color: "#1e293b" }}>Performance Hub</div>
+            <div className="text-xs" style={{ color: "#64748b" }}>Schoonhoven Sports</div>
           </div>
         </div>
       </div>
@@ -107,8 +107,8 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group",
                 active
-                  ? "text-white"
-                  : "hover:text-white"
+                  ? "text-slate-900"
+                  : "hover:text-slate-900"
               )}
               style={active ? {
                 background: "rgba(0, 184, 145, 0.12)",
@@ -116,7 +116,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
                 color: "#6475f5",
               } : {
                 border: "1px solid transparent",
-                color: "#7f8eaa",
+                color: "#64748b",
               }}
             >
               <span style={{ color: active ? "#6475f5" : undefined }}>
@@ -139,9 +139,9 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
         <Link
           href={`/dashboard/${role}/settings`}
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all"
-          style={{ color: "#7f8eaa" }}
+          style={{ color: "#64748b" }}
           onMouseEnter={(e) => { e.currentTarget.style.color = "#e2e8f0"; e.currentTarget.style.background = "#1e2236"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = "#7f8eaa"; e.currentTarget.style.background = "transparent"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = "#64748b"; e.currentTarget.style.background = "transparent"; }}
         >
           <Settings size={15} />
           <span>Instellingen</span>
@@ -153,7 +153,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
             {userName.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold truncate" style={{ color: "#e2e8f0" }}>{userName}</div>
+            <div className="text-xs font-semibold truncate" style={{ color: "#1e293b" }}>{userName}</div>
             <div className={cn("text-xs px-1.5 py-0.5 rounded-md inline-block mt-0.5", roleConfig.bg, roleConfig.color)}>
               {roleConfig.icon} {roleConfig.label}
             </div>

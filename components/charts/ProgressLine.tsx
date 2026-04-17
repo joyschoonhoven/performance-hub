@@ -64,7 +64,7 @@ export function ProgressLineChart({ data, showCategories = false, height = 200 }
             backgroundColor: "#20243a",
             border: "1px solid #1a2d47",
             borderRadius: "12px",
-            color: "#e2e8f0",
+            color: "#1e293b",
             fontSize: "12px",
           }}
           formatter={(value: number, name: string) => [value.toFixed(1), name]}

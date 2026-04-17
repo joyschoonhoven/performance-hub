@@ -38,7 +38,7 @@ export default function PlayerEvaluationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-3">
+        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
           <ClipboardList size={24} className="text-indigo-400" />
           Mijn Evaluaties
         </h1>
@@ -62,7 +62,7 @@ export default function PlayerEvaluationsPage() {
                 <div className="hub-tag text-[10px] bg-hub-teal/10 text-hub-teal mb-3">Meest Recent</div>
               )}
               <div className="flex items-center justify-between mb-4">
-                <div className="text-sm font-semibold text-white">{formatDate(ev.evaluation_date)}</div>
+                <div className="text-sm font-semibold text-slate-900">{formatDate(ev.evaluation_date)}</div>
                 <div className="text-2xl font-black tabular-nums" style={{ color: rColor }}>
                   {ev.overall_score?.toFixed(1)}<span className="text-sm text-slate-500 font-normal">/10</span>
                 </div>

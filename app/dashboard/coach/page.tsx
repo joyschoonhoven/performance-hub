@@ -47,7 +47,7 @@ export default function CoachDashboardPage() {
       <div className="space-y-8">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-black text-white">Coach Dashboard</h1>
+            <h1 className="text-2xl font-black text-slate-900">Coach Dashboard</h1>
             <p className="text-slate-400 text-sm mt-1">Schoonhoven Sports Performance Hub</p>
           </div>
           <Link href="/dashboard/coach/evaluations/new" className="hub-btn-primary flex items-center gap-2">
@@ -59,7 +59,7 @@ export default function CoachDashboardPage() {
             style={{ background: "rgba(0,184,145,0.1)", border: "1px solid rgba(0,184,145,0.2)" }}>
             <UserPlus size={28} style={{ color: "#00b891" }} />
           </div>
-          <h2 className="text-lg font-bold text-white mb-2">Nog geen spelers</h2>
+          <h2 className="text-lg font-bold text-slate-900 mb-2">Nog geen spelers</h2>
           <p className="text-slate-400 text-sm mb-6">
             Zodra spelers een account aanmaken via de app worden ze hier zichtbaar.
             Je kunt ook direct een evaluatie aanmaken.
@@ -84,7 +84,7 @@ export default function CoachDashboardPage() {
     <div className="space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-black text-white">Coach Dashboard</h1>
+          <h1 className="text-2xl font-black text-slate-900">Coach Dashboard</h1>
           <p className="text-slate-400 text-sm mt-1">Schoonhoven Sports Performance Hub</p>
         </div>
         <Link href="/dashboard/coach/evaluations/new" className="hub-btn-primary flex items-center gap-2">
@@ -117,7 +117,7 @@ export default function CoachDashboardPage() {
         {/* Left — player list */}
         <div className="xl:col-span-1 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-bold text-white">Jouw Spelers</h2>
+            <h2 className="font-bold text-slate-900">Jouw Spelers</h2>
             <Link href="/dashboard/coach/players" className="text-xs text-hub-teal hover:underline flex items-center gap-1">
               Alle spelers <ArrowRight size={12} />
             </Link>
@@ -139,7 +139,7 @@ export default function CoachDashboardPage() {
         {selectedPlayer && (
           <div className="xl:col-span-2 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-white">
+              <h2 className="font-bold text-slate-900">
                 {selectedPlayer.first_name} {selectedPlayer.last_name}
               </h2>
               <Link href={`/dashboard/coach/players/${selectedPlayer.id}`}
@@ -203,7 +203,7 @@ export default function CoachDashboardPage() {
       {/* Top performers */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-bold text-white flex items-center gap-2">
+          <h2 className="font-bold text-slate-900 flex items-center gap-2">
             <Star size={16} className="text-amber-400" />
             Top Performers
           </h2>
@@ -224,7 +224,7 @@ export default function CoachDashboardPage() {
                       {player.first_name[0]}{player.last_name[0]}
                     </div>
                     <div className="flex-1">
-                      <div className="font-bold text-white text-sm group-hover:text-hub-teal transition-colors">
+                      <div className="font-bold text-slate-900 text-sm group-hover:text-hub-teal transition-colors">
                         {player.first_name} {player.last_name}
                       </div>
                       <div className="text-xs text-slate-500">{POSITION_LABELS[player.position]}</div>

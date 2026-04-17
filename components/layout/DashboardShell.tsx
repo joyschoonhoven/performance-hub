@@ -61,14 +61,14 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-2 rounded-xl transition-colors"
-            style={{ color: "#7f93b0" }}
+            style={{ color: "#64748b" }}
             onTouchStart={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#e2e8f0"; (e.currentTarget as HTMLButtonElement).style.background = "#1e2236"; }}
-            onTouchEnd={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#7f93b0"; (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+            onTouchEnd={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#64748b"; (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
           >
             <Menu size={20} />
           </button>
           <div className="flex-1">
-            <span className="font-bold text-white text-sm">Performance Hub</span>
+            <span className="font-bold text-slate-900 text-sm">Performance Hub</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl" style={{ background: "#1e2236", border: "1px solid #323754" }}>

@@ -51,7 +51,7 @@ export default function PlayerAnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-3">
+        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
           <BarChart3 size={24} className="text-indigo-400" />
           Mijn Progressie
         </h1>
@@ -67,11 +67,11 @@ export default function PlayerAnalyticsPage() {
         </div>
         <div className="hub-card p-4 text-center">
           <div className="hub-label mb-2">Evaluaties</div>
-          <div className="text-3xl font-black text-white">{evaluations.length}</div>
+          <div className="text-3xl font-black text-slate-900">{evaluations.length}</div>
         </div>
         <div className="hub-card p-4 text-center">
           <div className="hub-label mb-2">Totale Groei</div>
-          <div className={`text-3xl font-black tabular-nums ${change > 0 ? "text-hub-teal" : change < 0 ? "text-red-400" : "text-white"}`}>
+          <div className={`text-3xl font-black tabular-nums ${change > 0 ? "text-hub-teal" : change < 0 ? "text-red-400" : "text-slate-900"}`}>
             {evaluations.length > 1 ? `${change > 0 ? "+" : ""}${change.toFixed(1)}` : "—"}
           </div>
         </div>

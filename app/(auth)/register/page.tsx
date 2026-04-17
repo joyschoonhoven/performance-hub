@@ -51,7 +51,7 @@ export default function RegisterPage() {
     <div className="space-y-6">
       <div className="text-center space-y-4">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl overflow-hidden mb-2"
-          style={{ background: "#262b42", border: "1px solid #323754" }}>
+          style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}>
           <Image src="/logo.png" alt="Schoonhoven Sports" width={64} height={64} className="object-contain w-full h-full" />
         </div>
         <div>
@@ -60,7 +60,7 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl p-6 space-y-4" style={{ background: "#262b42", border: "1px solid #323754" }}>
+      <div className="rounded-2xl p-6 space-y-4" style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}>
         <form onSubmit={handleRegister} className="space-y-4">
           {/* Role selector */}
           <div>
@@ -78,8 +78,8 @@ export default function RegisterPage() {
                     background: "rgba(0,184,145,0.12)",
                     border: "1px solid rgba(0,184,145,0.3)",
                   } : {
-                    background: "#20243a",
-                    border: "1px solid #323754",
+                    background: "#ffffff",
+                    border: "1px solid #e2e8f0",
                   }}
                 >
                   <div className="text-xs font-bold" style={{ color: role === r.value ? "#00b891" : "#e2e8f0" }}>{r.label}</div>
@@ -99,7 +99,7 @@ export default function RegisterPage() {
               required
               placeholder="Jan de Vries"
               className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all"
-              style={{ background: "#20243a", border: "1px solid #323754" }}
+              style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "#00b891"; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = "#323754"; }}
             />
@@ -116,7 +116,7 @@ export default function RegisterPage() {
               required
               placeholder="jan@club.nl"
               className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all"
-              style={{ background: "#20243a", border: "1px solid #323754" }}
+              style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "#00b891"; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = "#323754"; }}
             />
@@ -134,7 +134,7 @@ export default function RegisterPage() {
               minLength={6}
               placeholder="Minimaal 6 tekens"
               className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all"
-              style={{ background: "#20243a", border: "1px solid #323754" }}
+              style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "#00b891"; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = "#323754"; }}
             />

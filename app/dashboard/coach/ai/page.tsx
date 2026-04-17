@@ -59,7 +59,7 @@ export default function AIScoutingPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-3">
+        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
           <div className="p-2 rounded-xl bg-hub-teal/15">
             <Brain size={22} className="text-hub-teal" />
           </div>
@@ -78,7 +78,7 @@ export default function AIScoutingPage() {
           <select
             value={selectedId}
             onChange={(e) => { setSelectedId(e.target.value); setResult(null); }}
-            className="w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-hub-teal transition-all"
+            className="w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-hub-teal transition-all"
           >
             <option value="">-- Kies een speler --</option>
             {MOCK_PLAYERS.map((p) => (
@@ -92,7 +92,7 @@ export default function AIScoutingPage() {
         {/* Engine toggle */}
         <div className="flex items-center justify-between p-3 rounded-xl bg-hub-surface border border-hub-border">
           <div>
-            <div className="text-sm font-semibold text-white">Claude AI Engine</div>
+            <div className="text-sm font-semibold text-slate-900">Claude AI Engine</div>
             <div className="text-xs text-slate-500">Geavanceerdere analyse via Claude API</div>
           </div>
           <button
@@ -124,7 +124,7 @@ export default function AIScoutingPage() {
             <div className="absolute inset-0 rounded-full border-t-2 border-hub-teal animate-spin" />
             <div className="absolute inset-0 flex items-center justify-center text-2xl">🧬</div>
           </div>
-          <div className="text-white font-semibold">AI analyseert speler...</div>
+          <div className="text-slate-900 font-semibold">AI analyseert speler...</div>
           <div className="text-xs text-slate-500 space-y-1">
             <div>Evaluaties verwerken</div>
             <div>Archetype bepalen</div>
@@ -145,7 +145,7 @@ export default function AIScoutingPage() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <span className="font-black text-white">
+                  <span className="font-black text-slate-900">
                     {selectedPlayer.first_name} {selectedPlayer.last_name}
                   </span>
                   <span className="hub-tag text-xs bg-hub-teal/15 text-hub-teal font-bold">
@@ -175,7 +175,7 @@ export default function AIScoutingPage() {
                       <span className="text-2xl">{meta.icon}</span>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-white text-sm">{meta.label}</span>
+                          <span className="font-semibold text-slate-900 text-sm">{meta.label}</span>
                           <span className="hub-tag text-[9px] bg-hub-border text-slate-400">{label}</span>
                         </div>
                         <p className="text-xs text-slate-500 mt-0.5">{meta.description}</p>
@@ -200,7 +200,7 @@ export default function AIScoutingPage() {
                       <span className="text-2xl">{meta.icon}</span>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-white text-sm">{meta.label}</span>
+                          <span className="font-semibold text-slate-900 text-sm">{meta.label}</span>
                           <span className="hub-tag text-[9px] bg-hub-border text-slate-400">{label}</span>
                         </div>
                         <p className="text-xs text-slate-500 mt-0.5">{meta.description}</p>
@@ -257,7 +257,7 @@ export default function AIScoutingPage() {
                     {p.first_name[0]}{p.last_name[0]}
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm font-semibold text-white">{p.first_name} {p.last_name}</div>
+                    <div className="text-sm font-semibold text-slate-900">{p.first_name} {p.last_name}</div>
                     <div className="text-xs text-slate-500">{archLabel}</div>
                   </div>
                   {aiScore > 0 && (

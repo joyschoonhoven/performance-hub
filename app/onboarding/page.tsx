@@ -146,17 +146,17 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#1a1d2e" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#f1f5f9" }}>
         <Loader2 size={32} className="animate-spin text-hub-teal" />
       </div>
     );
   }
 
-  const inputStyle = { background: "#20243a", border: "1px solid #323754" };
-  const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all";
+  const inputStyle = { background: "#ffffff", border: "1px solid #e2e8f0" };
+  const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none transition-all";
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: "#1a1d2e" }}>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: "#f1f5f9" }}>
       <div className="absolute inset-0 opacity-[0.025]" style={{
         backgroundImage: "linear-gradient(rgba(0,184,145,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,184,145,1) 1px, transparent 1px)",
         backgroundSize: "48px 48px",
@@ -167,10 +167,10 @@ export default function OnboardingPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 overflow-hidden"
-            style={{ background: "#262b42", border: "1px solid #323754" }}>
+            style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}>
             <Image src="/logo.png" alt="Logo" width={52} height={52} className="object-contain w-full h-full" />
           </div>
-          <h1 className="text-2xl font-black text-white">
+          <h1 className="text-2xl font-black text-slate-900">
             {role === "coach" ? "Coach profiel instellen" : "Spelersprofiel instellen"}
           </h1>
           <p className="text-slate-400 text-sm mt-2">
@@ -181,7 +181,7 @@ export default function OnboardingPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="rounded-2xl p-6 space-y-5"
-          style={{ background: "#262b42", border: "1px solid #323754" }}>
+          style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}>
 
           {/* ── PLAYER ── */}
           {role === "player" && (

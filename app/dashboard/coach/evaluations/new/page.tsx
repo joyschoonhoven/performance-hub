@@ -17,7 +17,7 @@ import {
 import type { PlayerWithDetails } from "@/lib/types";
 
 const inputStyle = { background: "#20243a", border: "1px solid #323754" };
-const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all";
+const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none transition-all";
 
 // ─── Score button grid (1–10) ─────────────────────────────────────────────────
 function ScoreGrid({ value, onChange, color }: { value: number; onChange: (v: number) => void; color: string }) {
@@ -76,7 +76,7 @@ function CategorySection({
           {category.icon}
         </div>
         <div className="flex-1">
-          <div className="font-bold text-white text-base">{category.label}</div>
+          <div className="font-bold text-slate-900 text-base">{category.label}</div>
           <div className="text-xs text-slate-400 mt-0.5">
             {category.subcategories.length} criteria
           </div>
@@ -113,7 +113,7 @@ function CategorySection({
               <div key={sub.id} className="px-5 py-4">
                 <div className="flex items-start justify-between mb-3 gap-3">
                   <div className="flex-1">
-                    <div className="font-semibold text-white text-sm">{sub.label}</div>
+                    <div className="font-semibold text-slate-900 text-sm">{sub.label}</div>
                     <div className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
                       <Info size={10} />
                       {sub.description}
@@ -280,7 +280,7 @@ function NewEvaluationPageInner() {
           <CheckCircle2 size={40} style={{ color: "#00b891" }} />
         </div>
         <div>
-          <h2 className="text-2xl font-black text-white">Rapport opgeslagen!</h2>
+          <h2 className="text-2xl font-black text-slate-900">Rapport opgeslagen!</h2>
           <p className="text-slate-500 mt-2 text-sm">
             Het scoutingsrapport voor {selectedPlayer?.first_name} is succesvol bewaard.
           </p>
@@ -303,18 +303,18 @@ function NewEvaluationPageInner() {
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/dashboard/coach/players"
-          className="p-2 rounded-xl text-slate-500 hover:text-white hover:bg-hub-surface transition-all border border-hub-border">
+          className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-hub-surface transition-all border border-hub-border">
           <ArrowLeft size={18} />
         </Link>
         <div>
-          <h1 className="text-2xl font-black text-white">Scoutingsrapport</h1>
+          <h1 className="text-2xl font-black text-slate-900">Scoutingsrapport</h1>
           <p className="text-slate-500 text-sm mt-0.5">UEFA PRO niveau beoordeling — {EVALUATION_SCHEMA.reduce((a, c) => a + c.subcategories.length, 0)} criteria</p>
         </div>
       </div>
 
       {/* Identificatie */}
       <div className="hub-card p-6 space-y-5">
-        <h2 className="font-bold text-white text-sm uppercase tracking-wider">Identificatie</h2>
+        <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Identificatie</h2>
 
         <div>
           <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Speler</label>
@@ -375,7 +375,7 @@ function NewEvaluationPageInner() {
 
       {/* Kwalitatieve inschatting */}
       <div className="hub-card p-6 space-y-5">
-        <h2 className="font-bold text-white text-sm uppercase tracking-wider">Kwalitatieve Inschatting</h2>
+        <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Kwalitatieve Inschatting</h2>
 
         <div>
           <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
@@ -440,7 +440,7 @@ function NewEvaluationPageInner() {
       {/* Spelertype inschatting */}
       <div className="hub-card p-6 space-y-5">
         <div>
-          <h2 className="font-bold text-white text-sm uppercase tracking-wider">Spelertype Inschatting</h2>
+          <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Spelertype Inschatting</h2>
           <p className="text-xs text-slate-400 mt-1">Over meerdere beoordelingen wordt het consensus-type automatisch bepaald.</p>
         </div>
 
@@ -529,7 +529,7 @@ function NewEvaluationPageInner() {
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <div>
-            <h2 className="font-bold text-white">Kwantitatieve Beoordeling</h2>
+            <h2 className="font-bold text-slate-900">Kwantitatieve Beoordeling</h2>
             <p className="text-sm text-slate-400 mt-0.5">Klik op een categorie om de subcriteria te beoordelen</p>
           </div>
           <div className="text-right">
@@ -598,7 +598,7 @@ function NewEvaluationPageInner() {
 
       {/* Afsluiting */}
       <div className="hub-card p-6 space-y-4">
-        <h2 className="font-bold text-white text-sm uppercase tracking-wider">Algemene Notitie</h2>
+        <h2 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Algemene Notitie</h2>
         <div>
           <textarea
             value={notes}
