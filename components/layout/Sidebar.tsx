@@ -3,6 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/lib/types";
 import {
@@ -57,6 +59,17 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
   const router = useRouter();
   const supabase = createClient();
   const navItems = getNavItems(role);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadAvatar() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle();
+      if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+    }
+    loadAvatar();
+  }, [supabase]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -148,9 +161,13 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
         </Link>
 
         <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ background: "#1e2236", border: "1px solid #323754" }}>
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, rgba(0,184,145,0.2), rgba(99,102,241,0.2))", color: "#6475f5", border: "1px solid rgba(0,184,145,0.2)" }}>
-            {userName.charAt(0).toUpperCase()}
+          <div className="w-8 h-8 rounded-lg flex-shrink-0 overflow-hidden flex items-center justify-center text-sm font-bold"
+            style={avatarUrl ? {} : { background: "linear-gradient(135deg, #4f46e5, #7c3aed)", color: "#fff" }}>
+            {avatarUrl ? (
+              <Image src={avatarUrl} alt={userName} width={32} height={32} className="object-cover w-full h-full" />
+            ) : (
+              userName.charAt(0).toUpperCase()
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-semibold truncate" style={{ color: "#f1f5f9" }}>{userName}</div>

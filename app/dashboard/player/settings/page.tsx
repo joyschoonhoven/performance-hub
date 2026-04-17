@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { POSITION_LABELS } from "@/lib/types";
 import { Save, Loader2, CheckCircle2 } from "lucide-react";
+import { AvatarUpload } from "@/components/AvatarUpload";
 
 const POSITIONS = Object.entries(POSITION_LABELS) as [string, string][];
 
@@ -12,6 +13,8 @@ export default function PlayerSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [playerId, setPlayerId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     first_name: "",
@@ -28,6 +31,10 @@ export default function PlayerSettingsPage() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      setUserId(user.id);
+
+      const { data: profile } = await supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle();
+      if (profile?.avatar_url) setAvatarUrl(profile.avatar_url);
 
       const { data: player } = await supabase
         .from("players")
@@ -84,6 +91,22 @@ export default function PlayerSettingsPage() {
       </div>
 
       <div className="hub-card p-6 space-y-4">
+        <div className="hub-label mb-2">Profielfoto</div>
+        {userId && (
+          <div className="flex items-center gap-4 pb-2">
+            <AvatarUpload
+              currentUrl={avatarUrl}
+              userId={userId}
+              name={`${form.first_name} ${form.last_name}`}
+              onUpload={setAvatarUrl}
+              size={80}
+            />
+            <div>
+              <div className="text-sm font-semibold text-slate-900">Foto uploaden</div>
+              <div className="text-xs text-slate-600 mt-0.5">Klik op het avatar om een foto te kiezen</div>
+            </div>
+          </div>
+        )}
         <div className="hub-label mb-2">Persoonlijke gegevens</div>
 
         <div className="grid grid-cols-2 gap-4">
