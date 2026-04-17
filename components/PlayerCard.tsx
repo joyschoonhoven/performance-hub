@@ -184,7 +184,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
       selected ? "border-hub-teal/60 teal-glow" : "border-hub-border-light"
     )}
       style={{
-        background: `linear-gradient(160deg, #0d1526 0%, #111d33 40%, #0a1020 100%)`,
+        background: `linear-gradient(160deg, #0d1526 0%, #20243a 40%, #15182a 100%)`,
       }}
       onClick={onClick}
     >

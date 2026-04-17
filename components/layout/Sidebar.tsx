@@ -71,9 +71,9 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
   }[role];
 
   return (
-    <aside className="w-64 flex-shrink-0 flex flex-col h-screen sticky top-0" style={{ background: "linear-gradient(180deg, #141720 0%, #13151e 100%)", borderRight: "1px solid #272d42" }}>
+    <aside className="w-64 flex-shrink-0 flex flex-col h-screen sticky top-0" style={{ background: "linear-gradient(180deg, #141720 0%, #1a1d2e 100%)", borderRight: "1px solid #323754" }}>
       {/* Logo */}
-      <div className="p-5" style={{ borderBottom: "1px solid #272d42" }}>
+      <div className="p-5" style={{ borderBottom: "1px solid #323754" }}>
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ background: "#1e2236" }}>
             <Image
@@ -135,7 +135,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
       </nav>
 
       {/* User section */}
-      <div className="p-3 space-y-1.5" style={{ borderTop: "1px solid #272d42" }}>
+      <div className="p-3 space-y-1.5" style={{ borderTop: "1px solid #323754" }}>
         <Link
           href={`/dashboard/${role}/settings`}
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all"
@@ -147,7 +147,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
           <span>Instellingen</span>
         </Link>
 
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ background: "#1e2236", border: "1px solid #272d42" }}>
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ background: "#1e2236", border: "1px solid #323754" }}>
           <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0"
             style={{ background: "linear-gradient(135deg, rgba(0,184,145,0.2), rgba(99,102,241,0.2))", color: "#6475f5", border: "1px solid rgba(0,184,145,0.2)" }}>
             {userName.charAt(0).toUpperCase()}

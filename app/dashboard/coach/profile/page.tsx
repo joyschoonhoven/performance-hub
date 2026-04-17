@@ -100,7 +100,7 @@ export default function CoachProfilePage() {
   const elitePlayers = players.filter((p) => p.overall_rating >= 80).length;
   const topPlayer = [...players].sort((a, b) => b.overall_rating - a.overall_rating)[0];
 
-  const inputStyle = { background: "#111d33", border: "1px solid #1e3058" };
+  const inputStyle = { background: "#20243a", border: "1px solid #323754" };
   const inputClass = "w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all";
 
   return (

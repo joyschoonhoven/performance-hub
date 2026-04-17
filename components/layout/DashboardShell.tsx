@@ -56,7 +56,7 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
         {/* Mobile top bar */}
         <div
           className="lg:hidden flex items-center gap-3 px-4 py-3 sticky top-0 z-10"
-          style={{ background: "#0f1119", borderBottom: "1px solid #272d42" }}
+          style={{ background: "#0f1119", borderBottom: "1px solid #323754" }}
         >
           <button
             onClick={() => setSidebarOpen(true)}
@@ -71,7 +71,7 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
             <span className="font-bold text-white text-sm">Performance Hub</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl" style={{ background: "#1e2236", border: "1px solid #272d42" }}>
+            <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl" style={{ background: "#1e2236", border: "1px solid #323754" }}>
               <div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black"
                 style={{ background: "rgba(0,184,145,0.2)", color: "#6475f5" }}>
                 {userName.charAt(0).toUpperCase()}

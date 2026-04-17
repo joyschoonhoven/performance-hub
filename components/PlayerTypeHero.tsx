@@ -80,7 +80,7 @@ export function PlayerTypeHero({ archetype, sociotype, overallRating, position }
   return (
     <div className="relative overflow-hidden rounded-2xl border"
       style={{
-        background: `linear-gradient(135deg, ${archetype.color}10 0%, #162040 60%, #0d1424 100%)`,
+        background: `linear-gradient(135deg, ${archetype.color}10 0%, #262b42 60%, #1a1d2e 100%)`,
         borderColor: `${archetype.color}30`,
       }}>
 

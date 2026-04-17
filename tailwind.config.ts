@@ -45,11 +45,11 @@ const config: Config = {
         ring: "hsl(var(--ring))",
         // Hub — refined dark theme
         hub: {
-          bg: "#13151e",
-          surface: "#191c28",
-          card: "#1e2236",
-          border: "#272d42",
-          "border-light": "#333d58",
+          bg: "#1a1d2e",
+          surface: "#20243a",
+          card: "#262b42",
+          border: "#323754",
+          "border-light": "#3e4568",
           teal: "#6475f5",
           "teal-dim": "#4f5de8",
           indigo: "#a78bfa",
@@ -61,10 +61,10 @@ const config: Config = {
         },
         // Sidebar
         sidebar: {
-          bg: "#0f1119",
-          surface: "#141720",
-          card: "#1e2236",
-          border: "#272d42",
+          bg: "#15182a",
+          surface: "#1a1d2e",
+          card: "#262b42",
+          border: "#323754",
           text: "#e2e8f0",
           muted: "#7f8eaa",
         },

@@ -146,17 +146,17 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#0d1424" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#1a1d2e" }}>
         <Loader2 size={32} className="animate-spin text-hub-teal" />
       </div>
     );
   }
 
-  const inputStyle = { background: "#111d33", border: "1px solid #1e3058" };
+  const inputStyle = { background: "#20243a", border: "1px solid #323754" };
   const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all";
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: "#0d1424" }}>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: "#1a1d2e" }}>
       <div className="absolute inset-0 opacity-[0.025]" style={{
         backgroundImage: "linear-gradient(rgba(0,184,145,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,184,145,1) 1px, transparent 1px)",
         backgroundSize: "48px 48px",
@@ -167,7 +167,7 @@ export default function OnboardingPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 overflow-hidden"
-            style={{ background: "#162040", border: "1px solid #1e3058" }}>
+            style={{ background: "#262b42", border: "1px solid #323754" }}>
             <Image src="/logo.png" alt="Logo" width={52} height={52} className="object-contain w-full h-full" />
           </div>
           <h1 className="text-2xl font-black text-white">
@@ -181,7 +181,7 @@ export default function OnboardingPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="rounded-2xl p-6 space-y-5"
-          style={{ background: "#162040", border: "1px solid #1e3058" }}>
+          style={{ background: "#262b42", border: "1px solid #323754" }}>
 
           {/* ── PLAYER ── */}
           {role === "player" && (

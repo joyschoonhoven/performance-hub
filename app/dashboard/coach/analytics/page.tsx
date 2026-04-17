@@ -130,7 +130,7 @@ export default function AnalyticsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#1a2d47" vertical={false} />
                   <XAxis dataKey="range" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ backgroundColor: "#111d33", border: "1px solid #1a2d47", borderRadius: "12px", color: "#e2e8f0", fontSize: "12px" }} />
+                  <Tooltip contentStyle={{ backgroundColor: "#20243a", border: "1px solid #1a2d47", borderRadius: "12px", color: "#e2e8f0", fontSize: "12px" }} />
                   <Bar dataKey="count" radius={[6, 6, 0, 0]}>
                     {ratingBuckets.map((entry) => (
                       <Cell key={entry.range} fill={

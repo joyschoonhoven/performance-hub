@@ -91,7 +91,7 @@ export function PlayerRadarChart({ data, color = "#00b891", size = 280 }: Player
             key={li}
             d={toPath(pts)}
             fill={isOuter ? "rgba(0,184,145,0.03)" : "none"}
-            stroke={isOuter ? `${color}35` : "#1e3058"}
+            stroke={isOuter ? `${color}35` : "#323754"}
             strokeWidth={isOuter ? 1.5 : 1}
             strokeDasharray={li < gridPolys.length - 1 ? "4 4" : "0"}
           />
@@ -104,7 +104,7 @@ export function PlayerRadarChart({ data, color = "#00b891", size = 280 }: Player
           key={i}
           x1={cx} y1={cy}
           x2={pt.x} y2={pt.y}
-          stroke="#1e3058"
+          stroke="#323754"
           strokeWidth={1}
         />
       ))}
@@ -189,7 +189,7 @@ export function PlayerRadarChart({ data, color = "#00b891", size = 280 }: Player
       })}
 
       {/* ── Center dot ── */}
-      <circle cx={cx} cy={cy} r={3} fill="#1e3058" />
+      <circle cx={cx} cy={cy} r={3} fill="#323754" />
     </svg>
   );
 }

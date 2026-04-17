@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import type { PlayerWithDetails } from "@/lib/types";
 
-const inputStyle = { background: "#111d33", border: "1px solid #1e3058" };
+const inputStyle = { background: "#20243a", border: "1px solid #323754" };
 const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all";
 
 // ─── Score button grid (1–10) ─────────────────────────────────────────────────
@@ -33,7 +33,7 @@ function ScoreGrid({ value, onChange, color }: { value: number; onChange: (v: nu
             className="py-1.5 rounded-lg text-xs font-bold transition-all"
             style={active
               ? { background: color, color: "#fff" }
-              : { background: "#111d33", color: "#64748b", border: "1px solid #1e3058" }
+              : { background: "#20243a", color: "#64748b", border: "1px solid #323754" }
             }
           >
             {score}

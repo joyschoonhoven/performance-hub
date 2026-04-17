@@ -61,7 +61,7 @@ export function ProgressLineChart({ data, showCategories = false, height = 200 }
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: "#111d33",
+            backgroundColor: "#20243a",
             border: "1px solid #1a2d47",
             borderRadius: "12px",
             color: "#e2e8f0",
