@@ -49,7 +49,7 @@ export default function PlayersPage() {
       return 0;
     });
     return result;
-  }, [search, positionFilter, sortKey]);
+  }, [search, positionFilter, sortKey, allPlayers]);
 
   if (loading) return (
     <div className="flex items-center justify-center py-32">
