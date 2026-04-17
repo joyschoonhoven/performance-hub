@@ -11,6 +11,7 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { PlayerRadarChart } from "@/components/charts/RadarChart";
 import { ProgressLineChart } from "@/components/charts/ProgressLine";
 import type { Evaluation, PlayerWithDetails } from "@/lib/types";
+import Image from "next/image";
 import {
   ArrowLeft, Brain, Zap, Star, Trophy, TrendingUp, TrendingDown,
   Minus, Plus, Calendar, Target, Loader2, Sparkles, UserCircle,
@@ -117,40 +118,103 @@ export default function PlayerDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Back + header */}
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/coach/players" className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-hub-card transition-all border border-transparent hover:border-hub-border">
-          <ArrowLeft size={18} />
-        </Link>
-        <div className="flex-1">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-black text-slate-900">{player.first_name} {player.last_name}</h1>
-            {badge && (
-              <span className="hub-tag font-black" style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.color}40` }}>
-                {badge.label}
-              </span>
+      {/* Back button */}
+      <Link href="/dashboard/coach/players" className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition-colors">
+        <ArrowLeft size={16} /> Terug naar spelers
+      </Link>
+
+      {/* Hero banner */}
+      <div className="relative rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0f1422 0%, #1a1d2e 50%, #0f1422 100%)", minHeight: 200 }}>
+        <div className="absolute inset-0" style={{ background: `radial-gradient(circle at 75% 50%, ${rColor}18 0%, transparent 65%)` }} />
+        <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, ${rColor}, #6366f1)` }} />
+
+        <div className="relative flex items-center gap-6 p-6 sm:p-8">
+          {/* Avatar */}
+          <div className="relative flex-shrink-0">
+            <div className="w-28 h-28 rounded-2xl overflow-hidden flex items-center justify-center font-black text-3xl"
+              style={player.avatar_url ? {} : {
+                background: `linear-gradient(135deg, ${rColor}25, ${rColor}45)`,
+                border: `2px solid ${rColor}50`,
+                color: rColor,
+              }}>
+              {player.avatar_url
+                ? <Image src={player.avatar_url} alt={player.first_name} width={112} height={112} className="object-cover w-full h-full" />
+                : `${player.first_name[0]}${player.last_name[0]}`
+              }
+            </div>
+            {/* Jersey number */}
+            {player.jersey_number && (
+              <div className="absolute -bottom-2 -left-2 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shadow-lg"
+                style={{ background: "#1e2236", border: `1px solid ${rColor}50`, color: rColor }}>
+                #{player.jersey_number}
+              </div>
             )}
-            <span className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg ${
-              player.trend === "up" ? "bg-hub-teal/10 text-hub-teal" :
-              player.trend === "down" ? "bg-red-500/10 text-red-400" : "bg-hub-surface text-slate-600"
-            }`}>
-              {player.trend === "up" ? <TrendingUp size={11} /> : player.trend === "down" ? <TrendingDown size={11} /> : <Minus size={11} />}
-              {player.trend === "up" ? "Progressie" : player.trend === "down" ? "Terugval" : "Stabiel"}
-            </span>
           </div>
-          <div className="flex items-center gap-3 mt-1 text-xs text-slate-600">
-            <span>{POSITION_LABELS[player.position]}</span>
-            {player.jersey_number && <span>#{player.jersey_number}</span>}
-            {player.date_of_birth && <span>{getAge(player.date_of_birth)} jaar</span>}
-            {player.team_name && <span>{player.team_name}</span>}
-            {player.nationality && <span>{player.nationality}</span>}
+
+          {/* Player info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2 mb-1">
+              <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: rColor }}>
+                {POSITION_LABELS[player.position]}
+              </span>
+              {badge && (
+                <span className="hub-tag text-[10px] font-black" style={{ background: badge.bg, color: badge.color }}>
+                  {badge.label}
+                </span>
+              )}
+              <span className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-lg ${
+                player.trend === "up" ? "bg-emerald-500/15 text-emerald-400" :
+                player.trend === "down" ? "bg-red-500/15 text-red-400" : "bg-white/5 text-slate-400"
+              }`}>
+                {player.trend === "up" ? <TrendingUp size={10} /> : player.trend === "down" ? <TrendingDown size={10} /> : <Minus size={10} />}
+                {player.trend === "up" ? "Stijgend" : player.trend === "down" ? "Dalend" : "Stabiel"}
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+              {player.first_name} <span style={{ color: rColor }}>{player.last_name.toUpperCase()}</span>
+            </h1>
+            <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
+              {player.team_name && <span>{player.team_name}</span>}
+              {player.date_of_birth && <span>{getAge(player.date_of_birth)} jaar</span>}
+              {player.nationality && <span>{player.nationality}</span>}
+            </div>
+            {/* Mini stat pills */}
+            {player.recent_scores && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {Object.entries(player.recent_scores).map(([cat, score]) => (
+                  <span key={cat} className="text-xs px-2 py-0.5 rounded-lg font-semibold"
+                    style={{ background: `${score >= 8 ? "#00d4aa" : score >= 6 ? "#6366f1" : "#ef4444"}18`, color: score >= 8 ? "#00d4aa" : score >= 6 ? "#818cf8" : "#f87171" }}>
+                    {cat.slice(0,3).toUpperCase()} {score.toFixed(1)}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Big rating */}
+          <div className="hidden sm:block flex-shrink-0 text-right">
+            <div className="text-7xl font-black tabular-nums leading-none" style={{ color: rColor }}>{player.overall_rating}</div>
+            <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">Rating</div>
+            {identity?.ai_fit_score ? (
+              <div className="text-xs text-slate-500 mt-2">
+                AI Fit: <span className="font-bold" style={{ color: rColor }}>{identity.ai_fit_score}</span>
+              </div>
+            ) : null}
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-4xl font-black tabular-nums" style={{ color: rColor }}>
-            {player.overall_rating}
-          </div>
-          <div className="text-xs text-slate-600 text-right">Overall</div>
+
+        {/* Quick action */}
+        <div className="relative px-6 sm:px-8 pb-5 flex items-center gap-3">
+          <Link href={`/dashboard/coach/evaluations/new?player=${player.id}`}
+            className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all"
+            style={{ background: `${rColor}20`, color: rColor, border: `1px solid ${rColor}30` }}>
+            <Plus size={13} /> Evaluatie aanmaken
+          </Link>
+          <Link href={`/dashboard/coach/ai`}
+            className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all"
+            style={{ background: "rgba(99,102,241,0.12)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.25)" }}>
+            <Brain size={13} /> AI Analyse
+          </Link>
         </div>
       </div>
 

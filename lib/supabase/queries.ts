@@ -124,10 +124,15 @@ export async function getPlayerById(playerId: string): Promise<PlayerWithDetails
 
   if (!player) return null;
 
-  const [identityRes, evaluationsRes, challengesRes] = await Promise.all([
+  const profileAvatarRes = player.profile_id
+    ? supabase.from("profiles").select("avatar_url").eq("id", player.profile_id).maybeSingle()
+    : Promise.resolve({ data: null });
+
+  const [identityRes, evaluationsRes, challengesRes, profileRes] = await Promise.all([
     supabase.from("player_identities").select("*").eq("player_id", player.id).maybeSingle(),
     supabase.from("evaluations").select("*, evaluation_scores(*)").eq("player_id", player.id).order("evaluation_date", { ascending: false }),
     supabase.from("challenges").select("*").eq("player_id", player.id).order("created_at", { ascending: false }),
+    profileAvatarRes,
   ]);
 
   const evaluations: Evaluation[] = (evaluationsRes.data ?? []).map((ev: Record<string, unknown>) => ({
@@ -146,6 +151,7 @@ export async function getPlayerById(playerId: string): Promise<PlayerWithDetails
 
   return {
     ...(player as object),
+    avatar_url: (profileRes.data as { avatar_url?: string } | null)?.avatar_url ?? player.avatar_url,
     identity: identityRes.data ?? undefined,
     evaluations,
     challenges: (challengesRes.data ?? []) as Challenge[],

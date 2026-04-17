@@ -5,6 +5,7 @@ import Link from "next/link";
 import { POSITION_LABELS, BADGE_CONFIG } from "@/lib/types";
 import { getRatingColor } from "@/lib/utils";
 import { PlayerCard } from "@/components/PlayerCard";
+import Image from "next/image";
 import { Search, Plus, TrendingUp, TrendingDown, Minus, Loader2, UserPlus } from "lucide-react";
 import type { PositionType, PlayerWithDetails } from "@/lib/types";
 import { getAllPlayers } from "@/lib/supabase/queries";
@@ -70,18 +71,49 @@ export default function PlayersPage() {
     </div>
   );
 
+  const avgRating = allPlayers.length ? Math.round(allPlayers.reduce((a, p) => a + p.overall_rating, 0) / allPlayers.length) : 0;
+  const eliteCount = allPlayers.filter(p => p.overall_rating >= 80).length;
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-slate-900">Spelers</h1>
-          <p className="text-slate-600 text-sm mt-1">{allPlayers.length} spelers in jouw squad</p>
+      {/* Hero header */}
+      <div className="relative rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0f1422 0%, #1a1d2e 100%)", minHeight: 130 }}>
+        <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 20% 50%, rgba(0,184,145,0.1) 0%, transparent 60%)" }} />
+        <div className="absolute top-0 left-0 right-0 h-1" style={{ background: "linear-gradient(90deg, #00b891, #6366f1)" }} />
+        <div className="relative flex items-center justify-between gap-4 p-6 sm:p-8">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-1">Performance Hub</div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white">Squad Overzicht</h1>
+            <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+              <span>{allPlayers.length} spelers</span>
+              <span>Gem. {avgRating}</span>
+              <span>{eliteCount} elite (80+)</span>
+            </div>
+          </div>
+          {/* Avatar stack */}
+          <div className="hidden sm:flex items-center">
+            <div className="flex -space-x-3">
+              {allPlayers.slice(0, 5).map((p, i) => {
+                const rc = getRatingColor(p.overall_rating);
+                return (
+                  <div key={p.id} className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center text-xs font-black border-2 border-slate-900"
+                    style={p.avatar_url ? { zIndex: 5 - i } : { background: `linear-gradient(135deg, ${rc}30, ${rc}60)`, color: rc, zIndex: 5 - i }}>
+                    {p.avatar_url
+                      ? <Image src={p.avatar_url} alt={p.first_name} width={40} height={40} className="object-cover w-full h-full" />
+                      : `${p.first_name[0]}${p.last_name[0]}`
+                    }
+                  </div>
+                );
+              })}
+              {allPlayers.length > 5 && (
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold border-2 border-slate-900"
+                  style={{ background: "rgba(255,255,255,0.08)", color: "#94a3b8", zIndex: 0 }}>
+                  +{allPlayers.length - 5}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-        <Link href="/dashboard/coach/players/new" className="hub-btn-primary flex items-center gap-2">
-          <Plus size={16} />
-          Speler toevoegen
-        </Link>
       </div>
 
       {/* Filters */}
@@ -176,9 +208,12 @@ export default function PlayersPage() {
                     <td className="px-4 py-3 text-slate-600 font-mono text-xs">{i + 1}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
-                          style={{ background: `${rColor}20`, color: rColor }}>
-                          {player.first_name[0]}{player.last_name[0]}
+                        <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center text-xs font-bold flex-shrink-0"
+                          style={player.avatar_url ? {} : { background: `${rColor}20`, color: rColor }}>
+                          {player.avatar_url
+                            ? <Image src={player.avatar_url} alt={player.first_name} width={36} height={36} className="object-cover w-full h-full" />
+                            : `${player.first_name[0]}${player.last_name[0]}`
+                          }
                         </div>
                         <div>
                           <div className="font-semibold text-slate-900">{player.first_name} {player.last_name}</div>
