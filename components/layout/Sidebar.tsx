@@ -71,11 +71,11 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
   }[role];
 
   return (
-    <aside className="w-64 flex-shrink-0 flex flex-col h-screen sticky top-0" style={{ background: "linear-gradient(180deg, #0f1629 0%, #0d1424 100%)", borderRight: "1px solid #1e3058" }}>
+    <aside className="w-64 flex-shrink-0 flex flex-col h-screen sticky top-0" style={{ background: "linear-gradient(180deg, #141720 0%, #13151e 100%)", borderRight: "1px solid #272d42" }}>
       {/* Logo */}
-      <div className="p-5" style={{ borderBottom: "1px solid #1e3058" }}>
+      <div className="p-5" style={{ borderBottom: "1px solid #272d42" }}>
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ background: "#162040" }}>
+          <div className="w-11 h-11 rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ background: "#1e2236" }}>
             <Image
               src="/logo.png"
               alt="Schoonhoven Sports"
@@ -86,7 +86,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
           </div>
           <div>
             <div className="text-sm font-bold leading-tight" style={{ color: "#e2e8f0" }}>Performance Hub</div>
-            <div className="text-xs" style={{ color: "#7f93b0" }}>Schoonhoven Sports</div>
+            <div className="text-xs" style={{ color: "#7f8eaa" }}>Schoonhoven Sports</div>
           </div>
         </div>
       </div>
@@ -113,43 +113,43 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
               style={active ? {
                 background: "rgba(0, 184, 145, 0.12)",
                 border: "1px solid rgba(0, 184, 145, 0.2)",
-                color: "#00b891",
+                color: "#6475f5",
               } : {
                 border: "1px solid transparent",
-                color: "#7f93b0",
+                color: "#7f8eaa",
               }}
             >
-              <span style={{ color: active ? "#00b891" : undefined }}>
+              <span style={{ color: active ? "#6475f5" : undefined }}>
                 {item.icon}
               </span>
               <span className="flex-1">{item.label}</span>
               {item.badge && (
-                <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(0,184,145,0.15)", color: "#00b891" }}>
+                <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(0,184,145,0.15)", color: "#6475f5" }}>
                   {item.badge}
                 </span>
               )}
-              {active && <ChevronRight size={14} style={{ color: "#00b891" }} />}
+              {active && <ChevronRight size={14} style={{ color: "#6475f5" }} />}
             </Link>
           );
         })}
       </nav>
 
       {/* User section */}
-      <div className="p-3 space-y-1.5" style={{ borderTop: "1px solid #1e3058" }}>
+      <div className="p-3 space-y-1.5" style={{ borderTop: "1px solid #272d42" }}>
         <Link
           href={`/dashboard/${role}/settings`}
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all"
-          style={{ color: "#7f93b0" }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = "#e2e8f0"; e.currentTarget.style.background = "#162040"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = "#7f93b0"; e.currentTarget.style.background = "transparent"; }}
+          style={{ color: "#7f8eaa" }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = "#e2e8f0"; e.currentTarget.style.background = "#1e2236"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = "#7f8eaa"; e.currentTarget.style.background = "transparent"; }}
         >
           <Settings size={15} />
           <span>Instellingen</span>
         </Link>
 
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ background: "#162040", border: "1px solid #1e3058" }}>
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ background: "#1e2236", border: "1px solid #272d42" }}>
           <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, rgba(0,184,145,0.2), rgba(99,102,241,0.2))", color: "#00b891", border: "1px solid rgba(0,184,145,0.2)" }}>
+            style={{ background: "linear-gradient(135deg, rgba(0,184,145,0.2), rgba(99,102,241,0.2))", color: "#6475f5", border: "1px solid rgba(0,184,145,0.2)" }}>
             {userName.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
