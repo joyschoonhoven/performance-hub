@@ -6,6 +6,8 @@ import { BADGE_CONFIG, POSITION_LABELS } from "@/lib/types";
 import { getRatingColor, formatDate } from "@/lib/utils";
 import { PlayerCard } from "@/components/PlayerCard";
 import { ProgressLineChart } from "@/components/charts/ProgressLine";
+import Image from "next/image";
+import { createClient } from "@/lib/supabase/client";
 import { Users, TrendingUp, Plus, ArrowRight, Star, Zap, Loader2, UserPlus } from "lucide-react";
 import type { Evaluation, PlayerWithDetails } from "@/lib/types";
 import { getAllPlayers } from "@/lib/supabase/queries";
@@ -24,12 +26,23 @@ export default function CoachDashboardPage() {
   const [players, setPlayers] = useState<PlayerWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerWithDetails | null>(null);
+  const [coachName, setCoachName] = useState("");
+  const [coachAvatar, setCoachAvatar] = useState<string | null>(null);
 
   useEffect(() => {
     getAllPlayers().then((data) => {
       setPlayers(data);
       if (data.length) setSelectedPlayer(data[0]);
       setLoading(false);
+    });
+    // Load coach profile
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase.from("profiles").select("full_name, avatar_url").eq("id", user.id).maybeSingle().then(({ data }) => {
+        if (data?.full_name) setCoachName(data.full_name);
+        if (data?.avatar_url) setCoachAvatar(data.avatar_url);
+      });
     });
   }, []);
 
@@ -82,12 +95,35 @@ export default function CoachDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-slate-900">Coach Dashboard</h1>
-          <p className="text-slate-600 text-sm mt-1">Schoonhoven Sports Performance Hub</p>
+      {/* Hero banner */}
+      <div className="relative rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0f1422 0%, #1a1d2e 50%, #0f1422 100%)", minHeight: 160 }}>
+        <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 30% 50%, rgba(0,184,145,0.12) 0%, transparent 60%)" }} />
+        <div className="absolute top-0 left-0 right-0 h-1" style={{ background: "linear-gradient(90deg, #00b891, #6366f1)" }} />
+        <div className="relative flex items-center gap-5 p-6 sm:p-8">
+          {/* Avatar */}
+          <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center font-black text-xl"
+            style={coachAvatar ? {} : { background: "linear-gradient(135deg, rgba(0,184,145,0.2), rgba(99,102,241,0.2))", color: "#00b891", border: "2px solid rgba(0,184,145,0.3)" }}>
+            {coachAvatar
+              ? <Image src={coachAvatar} alt={coachName} width={64} height={64} className="object-cover w-full h-full" />
+              : coachName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "C"
+            }
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold uppercase tracking-widest mb-1 text-emerald-400">Performance Hub</div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+              {coachName ? `Hey, ${coachName.split(" ")[0]}` : "Coach Dashboard"}
+            </h1>
+            <p className="text-slate-400 text-sm mt-1">
+              {totalPlayers} spelers · {avgRating} gem. rating · {trendingUp} trending omhoog
+            </p>
+          </div>
+          <Link href="/dashboard/coach/evaluations/new" className="hidden sm:flex hub-btn-primary items-center gap-2 flex-shrink-0">
+            <Plus size={16} /> Nieuwe evaluatie
+          </Link>
         </div>
-        <Link href="/dashboard/coach/evaluations/new" className="hub-btn-primary flex items-center gap-2">
+      </div>
+      <div className="sm:hidden">
+        <Link href="/dashboard/coach/evaluations/new" className="hub-btn-primary flex items-center justify-center gap-2 w-full">
           <Plus size={16} /> Nieuwe evaluatie
         </Link>
       </div>

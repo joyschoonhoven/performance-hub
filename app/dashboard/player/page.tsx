@@ -7,6 +7,7 @@ import { getRatingColor, getScoreColor, formatDate } from "@/lib/utils";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PlayerRadarChart } from "@/components/charts/RadarChart";
 import { ProgressLineChart } from "@/components/charts/ProgressLine";
+import Image from "next/image";
 import { Trophy, CheckCircle2, Clock, Activity, Flame, Lightbulb, ShieldCheck, Loader2, UserPlus, Sparkles, ChevronRight, RefreshCw } from "lucide-react";
 import type { Evaluation, PlayerWithDetails } from "@/lib/types";
 import { getMyPlayerData } from "@/lib/supabase/queries";
@@ -148,11 +149,63 @@ export default function PlayerDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-black text-slate-900">
-          Hey, {player.first_name} 👋
-        </h1>
-        <p className="text-slate-600 text-sm mt-1">Jouw performance dashboard</p>
+      {/* Hero banner */}
+      <div className="relative rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0f1422 0%, #1a1d2e 50%, #0f1422 100%)", minHeight: 180 }}>
+        {/* Gradient overlay */}
+        <div className="absolute inset-0" style={{ background: `radial-gradient(circle at 70% 50%, ${rColor}18 0%, transparent 65%)` }} />
+        <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, ${rColor}, #6366f1)` }} />
+
+        <div className="relative flex items-center gap-6 p-6 sm:p-8">
+          {/* Avatar */}
+          <div className="flex-shrink-0 relative">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden flex items-center justify-center font-black text-3xl"
+              style={player.avatar_url ? {} : { background: `linear-gradient(135deg, ${rColor}30, #6366f130)`, border: `2px solid ${rColor}50`, color: rColor }}>
+              {player.avatar_url
+                ? <Image src={player.avatar_url} alt={player.first_name} width={112} height={112} className="object-cover w-full h-full" />
+                : `${player.first_name[0]}${player.last_name[0]}`
+              }
+            </div>
+            {/* Rating badge */}
+            <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black shadow-lg"
+              style={{ background: rColor, color: "#fff" }}>
+              {player.overall_rating}
+            </div>
+          </div>
+
+          {/* Info */}
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: rColor }}>
+              Performance Hub
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+              {player.first_name} <span style={{ color: rColor }}>{player.last_name.toUpperCase()}</span>
+            </h1>
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              <span className="text-xs px-2.5 py-1 rounded-lg font-semibold" style={{ background: `${rColor}20`, color: rColor }}>
+                {player.position}
+              </span>
+              {player.jersey_number && (
+                <span className="text-xs text-slate-400">#{player.jersey_number}</span>
+              )}
+              {player.team_name && (
+                <span className="text-xs text-slate-400">{player.team_name}</span>
+              )}
+            </div>
+            {primaryArch && (
+              <div className="mt-2">
+                <span className="text-xs px-2.5 py-1 rounded-lg font-semibold" style={{ background: `${primaryArch.color}20`, color: primaryArch.color, border: `1px solid ${primaryArch.color}30` }}>
+                  {primaryArch.icon} {primaryArch.label}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Big rating display on desktop */}
+          <div className="hidden sm:block flex-shrink-0 text-right">
+            <div className="text-7xl font-black tabular-nums leading-none" style={{ color: rColor }}>{player.overall_rating}</div>
+            <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">Rating</div>
+          </div>
+        </div>
       </div>
 
       {/* Top stats */}

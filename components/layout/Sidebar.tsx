@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/lib/types";
 import {
@@ -12,8 +13,6 @@ import {
   Trophy, BarChart3, Settings, LogOut, ChevronRight,
   Shield, Star, Target, UserCircle,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 
 interface NavItem {
   label: string;

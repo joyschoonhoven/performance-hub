@@ -16,10 +16,11 @@ export async function getMyPlayerData(): Promise<PlayerWithDetails | null> {
 
   if (!player) return null;
 
-  const [identityRes, evaluationsRes, challengesRes] = await Promise.all([
+  const [identityRes, evaluationsRes, challengesRes, profileRes] = await Promise.all([
     supabase.from("player_identities").select("*").eq("player_id", player.id).maybeSingle(),
     supabase.from("evaluations").select("*, evaluation_scores(*)").eq("player_id", player.id).order("evaluation_date", { ascending: false }),
     supabase.from("challenges").select("*").eq("player_id", player.id).order("created_at", { ascending: false }),
+    supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle(),
   ]);
 
   const evaluations: Evaluation[] = (evaluationsRes.data ?? []).map((ev: Record<string, unknown>) => ({
@@ -38,6 +39,7 @@ export async function getMyPlayerData(): Promise<PlayerWithDetails | null> {
 
   return {
     ...(player as object),
+    avatar_url: profileRes.data?.avatar_url ?? player.avatar_url,
     identity: identityRes.data ?? undefined,
     evaluations,
     challenges: (challengesRes.data ?? []) as Challenge[],
@@ -59,19 +61,27 @@ export async function getAllPlayers(): Promise<PlayerWithDetails[]> {
   if (!players?.length) return [];
 
   const playerIds = players.map((p) => p.id);
+  const profileIds = players.map((p) => p.profile_id).filter(Boolean) as string[];
 
-  const [identitiesRes, evaluationsRes, challengesRes] = await Promise.all([
+  const [identitiesRes, evaluationsRes, challengesRes, profilesRes] = await Promise.all([
     supabase.from("player_identities").select("*").in("player_id", playerIds),
     supabase.from("evaluations").select("*, evaluation_scores(*)").in("player_id", playerIds).order("evaluation_date", { ascending: false }),
     supabase.from("challenges").select("*").in("player_id", playerIds),
+    profileIds.length
+      ? supabase.from("profiles").select("id, avatar_url").in("id", profileIds)
+      : Promise.resolve({ data: [] }),
   ]);
 
   const identities = identitiesRes.data ?? [];
   const allEvaluations = evaluationsRes.data ?? [];
   const allChallenges = challengesRes.data ?? [];
+  const profiles = (profilesRes.data ?? []) as { id: string; avatar_url?: string }[];
 
   return players.map((player) => {
     const identity = identities.find((i) => i.player_id === player.id);
+    const profileAvatar = player.profile_id
+      ? profiles.find((pr) => pr.id === player.profile_id)?.avatar_url
+      : undefined;
     const evaluations: Evaluation[] = allEvaluations
       .filter((e) => e.player_id === player.id)
       .map((ev: Record<string, unknown>) => ({
@@ -92,6 +102,7 @@ export async function getAllPlayers(): Promise<PlayerWithDetails[]> {
 
     return {
       ...(player as object),
+      avatar_url: profileAvatar ?? player.avatar_url,
       identity,
       evaluations,
       challenges,

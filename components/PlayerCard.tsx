@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { getRatingColor, initials } from "@/lib/utils";
 import type { PlayerWithDetails } from "@/lib/types";
@@ -62,9 +63,12 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
         )}
       >
         {/* Avatar */}
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold flex-shrink-0"
-          style={{ background: `linear-gradient(135deg, ${ratingColor}18, ${ratingColor}35)`, border: `1px solid ${ratingColor}44`, color: ratingColor }}>
-          {initials(`${player.first_name} ${player.last_name}`)}
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden relative"
+          style={player.avatar_url ? {} : { background: `linear-gradient(135deg, ${ratingColor}18, ${ratingColor}35)`, border: `1px solid ${ratingColor}44`, color: ratingColor }}>
+          {player.avatar_url
+            ? <Image src={player.avatar_url} alt={`${player.first_name} ${player.last_name}`} fill className="object-cover" />
+            : initials(`${player.first_name} ${player.last_name}`)
+          }
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold text-slate-900 truncate">
@@ -101,9 +105,12 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
         <div className="flex items-start gap-4">
           {/* Rating + avatar */}
           <div className="relative flex-shrink-0">
-            <div className="w-14 h-14 rounded-xl flex items-center justify-center font-black text-xl"
-              style={{ background: `linear-gradient(135deg, ${ratingColor}22, ${ratingColor}44)`, border: `2px solid ${ratingColor}66` }}>
-              {initials(`${player.first_name} ${player.last_name}`)}
+            <div className="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center font-black text-xl"
+              style={player.avatar_url ? {} : { background: `linear-gradient(135deg, ${ratingColor}22, ${ratingColor}44)`, border: `2px solid ${ratingColor}66` }}>
+              {player.avatar_url
+                ? <Image src={player.avatar_url} alt={`${player.first_name} ${player.last_name}`} width={56} height={56} className="object-cover w-full h-full" />
+                : initials(`${player.first_name} ${player.last_name}`)
+              }
             </div>
             <div className="absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black"
               style={{ background: ratingColor, color: "#fff" }}>
@@ -209,13 +216,16 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
 
           {/* Avatar area */}
           <div className="relative">
-            <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-black"
-              style={{
+            <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black"
+              style={player.avatar_url ? {} : {
                 background: `linear-gradient(135deg, ${ratingColor}15, ${ratingColor}30)`,
                 border: `2px solid ${ratingColor}50`,
                 color: ratingColor,
               }}>
-              {initials(`${player.first_name} ${player.last_name}`)}
+              {player.avatar_url
+                ? <Image src={player.avatar_url} alt={`${player.first_name} ${player.last_name}`} width={80} height={80} className="object-cover w-full h-full" />
+                : initials(`${player.first_name} ${player.last_name}`)
+              }
             </div>
             {badge && (
               <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap hub-tag text-[10px] font-black"

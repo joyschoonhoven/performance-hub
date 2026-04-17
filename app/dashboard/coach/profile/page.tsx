@@ -12,6 +12,7 @@ import {
   Star, Edit3, ChevronRight, Target, Shield, Trophy,
   Save, X, Loader2, BookOpen,
 } from "lucide-react";
+import { AvatarUpload } from "@/components/AvatarUpload";
 
 interface CoachProfile {
   id: string;
@@ -31,6 +32,7 @@ export default function CoachProfilePage() {
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   // Editable fields
   const [editPhone, setEditPhone] = useState("");
@@ -57,6 +59,8 @@ export default function CoachProfilePage() {
         setEditLicense(prof.coaching_license ?? "");
         setEditBio(prof.bio ?? "");
         setEditLocation(prof.location ?? "");
+        const { data: profileData } = await supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle();
+        if (profileData?.avatar_url) setAvatarUrl(profileData.avatar_url);
       }
 
       const p = await getAllPlayers();
@@ -139,18 +143,13 @@ export default function CoachProfilePage() {
         <div className="flex flex-col sm:flex-row gap-6">
           {/* Avatar */}
           <div className="flex-shrink-0">
-            <div className="w-24 h-24 rounded-2xl flex items-center justify-center text-3xl font-black relative"
-              style={{
-                background: "linear-gradient(135deg, rgba(0,184,145,0.15), rgba(99,102,241,0.15))",
-                border: "2px solid rgba(0,184,145,0.3)",
-                color: "#00b891",
-              }}>
-              {initials}
-              <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-xl flex items-center justify-center"
-                style={{ background: "#00b891" }}>
-                <Shield size={14} color="white" />
-              </div>
-            </div>
+            <AvatarUpload
+              currentUrl={avatarUrl}
+              userId={profile.id}
+              name={profile.full_name}
+              onUpload={setAvatarUrl}
+              size={96}
+            />
           </div>
 
           {/* Info */}
