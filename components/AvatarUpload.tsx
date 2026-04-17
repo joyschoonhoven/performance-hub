@@ -15,6 +15,7 @@ interface AvatarUploadProps {
 
 export function AvatarUpload({ currentUrl, userId, name, onUpload, size = 80 }: AvatarUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
@@ -24,15 +25,21 @@ export function AvatarUpload({ currentUrl, userId, name, onUpload, size = 80 }: 
     if (!file) return;
 
     setUploading(true);
+    setError(null);
     const supabase = createClient();
     const ext = file.name.split(".").pop();
     const path = `${userId}/avatar.${ext}`;
 
-    const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
-    if (!error) {
-      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-      const url = `${data.publicUrl}?t=${Date.now()}`;
-      await supabase.from("profiles").update({ avatar_url: url }).eq("id", userId);
+    const { error: uploadError } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+    if (uploadError) {
+      setError("Upload mislukt. Controleer of de 'avatars' bucket bestaat in Supabase Storage.");
+      setUploading(false);
+      return;
+    }
+    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+    const url = `${data.publicUrl}?t=${Date.now()}`;
+    const { error: updateError } = await supabase.from("profiles").update({ avatar_url: url }).eq("id", userId);
+    if (!updateError) {
       onUpload(url);
     }
     setUploading(false);
@@ -73,6 +80,11 @@ export function AvatarUpload({ currentUrl, userId, name, onUpload, size = 80 }: 
         className="hidden"
         onChange={handleFile}
       />
+      {error && (
+        <div className="absolute top-full mt-1 left-0 right-0 text-[10px] text-red-500 text-center leading-tight" style={{ width: "max-content", minWidth: "100%" }}>
+          {error}
+        </div>
+      )}
     </div>
   );
 }
