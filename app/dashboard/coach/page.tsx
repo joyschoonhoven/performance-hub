@@ -95,56 +95,65 @@ export default function CoachDashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Hero banner */}
-      <div className="relative rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0f1422 0%, #1a1d2e 50%, #0f1422 100%)", minHeight: 160 }}>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 30% 50%, rgba(0,184,145,0.12) 0%, transparent 60%)" }} />
-        <div className="absolute top-0 left-0 right-0 h-1" style={{ background: "linear-gradient(90deg, #00b891, #6366f1)" }} />
-        <div className="relative flex items-center gap-5 p-6 sm:p-8">
-          {/* Avatar */}
-          <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center font-black text-xl"
-            style={coachAvatar ? {} : { background: "linear-gradient(135deg, rgba(0,184,145,0.2), rgba(99,102,241,0.2))", color: "#00b891", border: "2px solid rgba(0,184,145,0.3)" }}>
-            {coachAvatar
-              ? <Image src={coachAvatar} alt={coachName} width={64} height={64} className="object-cover w-full h-full" />
-              : coachName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "C"
-            }
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold uppercase tracking-widest mb-1 text-emerald-400">Performance Hub</div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
-              {coachName ? `Hey, ${coachName.split(" ")[0]}` : "Coach Dashboard"}
-            </h1>
-            <p className="text-slate-400 text-sm mt-1">
-              {totalPlayers} spelers · {avgRating} gem. rating · {trendingUp} trending omhoog
-            </p>
+      {/* Premium page header */}
+      <div className="hub-page-header p-6 sm:p-8">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            {/* Avatar */}
+            <div className="w-14 h-14 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center font-black text-lg"
+              style={coachAvatar ? {} : { background: "linear-gradient(135deg, #ede9fe, #ddd6fe)", color: "#4f46e5", border: "2px solid #e0e7ff" }}>
+              {coachAvatar
+                ? <Image src={coachAvatar} alt={coachName} width={56} height={56} className="object-cover w-full h-full" />
+                : coachName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "C"
+              }
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-0.5" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
+                {coachName ? `Hey, ${coachName.split(" ")[0]} 👋` : "Coach Dashboard"}
+              </h1>
+              <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                {[
+                  { label: `${totalPlayers} spelers`, color: "#4f46e5", bg: "#ede9fe" },
+                  { label: `${avgRating} gem. rating`, color: "#0891b2", bg: "#e0f2fe" },
+                  { label: `${trendingUp} trending ↑`, color: "#059669", bg: "#d1fae5" },
+                ].map(s => (
+                  <span key={s.label} className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: s.bg, color: s.color }}>
+                    {s.label}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
           <Link href="/dashboard/coach/evaluations/new" className="hidden sm:flex hub-btn-primary items-center gap-2 flex-shrink-0">
-            <Plus size={16} /> Nieuwe evaluatie
+            <Plus size={15} /> Nieuwe evaluatie
           </Link>
         </div>
       </div>
       <div className="sm:hidden">
         <Link href="/dashboard/coach/evaluations/new" className="hub-btn-primary flex items-center justify-center gap-2 w-full">
-          <Plus size={16} /> Nieuwe evaluatie
+          <Plus size={15} /> Nieuwe evaluatie
         </Link>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Totaal spelers", value: totalPlayers, icon: <Users size={20} />, color: "#00b891", sub: `${activePlayers} actief` },
-          { label: "Gem. rating", value: avgRating, icon: <Star size={20} />, color: "#d97706", sub: "alle spelers" },
-          { label: "Trending ↑", value: trendingUp, icon: <TrendingUp size={20} />, color: "#22c55e", sub: "in progressie" },
-          { label: "Elite spelers", value: elitePlayers, icon: <Zap size={20} />, color: "#a855f7", sub: "rating 80+" },
+          { label: "Spelers", value: totalPlayers, icon: <Users size={18} />, color: "#4f46e5", bg: "#ede9fe", sub: `${activePlayers} actief` },
+          { label: "Gem. rating", value: avgRating, icon: <Star size={18} />, color: "#d97706", bg: "#fef3c7", sub: "alle spelers" },
+          { label: "Progressie", value: trendingUp, icon: <TrendingUp size={18} />, color: "#059669", bg: "#d1fae5", sub: "trending omhoog" },
+          { label: "Elite (80+)", value: elitePlayers, icon: <Zap size={18} />, color: "#7c3aed", bg: "#f3e8ff", sub: "topscore" },
         ].map((stat) => (
-          <div key={stat.label} className="hub-card p-5">
-            <div className="flex items-start justify-between mb-3">
-              <div className="p-2 rounded-xl" style={{ background: `${stat.color}15`, color: stat.color }}>
+          <div key={stat.label} className="hub-card p-5 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: stat.color }} />
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 rounded-xl" style={{ background: stat.bg, color: stat.color }}>
                 {stat.icon}
               </div>
-              <span className="hub-label">{stat.label}</span>
             </div>
-            <div className="text-3xl font-black tabular-nums" style={{ color: stat.color }}>{stat.value}</div>
-            <div className="text-xs text-slate-600 mt-1">{stat.sub}</div>
+            <div className="text-4xl font-black tabular-nums leading-none mb-1" style={{ color: stat.color, fontFamily: "Outfit, sans-serif" }}>{stat.value}</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider" style={{ fontFamily: "Outfit, sans-serif" }}>{stat.label}</div>
+            <div className="text-xs text-slate-400 mt-0.5">{stat.sub}</div>
           </div>
         ))}
       </div>

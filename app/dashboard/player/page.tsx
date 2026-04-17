@@ -149,95 +149,75 @@ export default function PlayerDashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Hero banner */}
-      <div className="relative rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0f1422 0%, #1a1d2e 50%, #0f1422 100%)", minHeight: 180 }}>
-        {/* Gradient overlay */}
-        <div className="absolute inset-0" style={{ background: `radial-gradient(circle at 70% 50%, ${rColor}18 0%, transparent 65%)` }} />
-        <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, ${rColor}, #6366f1)` }} />
-
-        <div className="relative flex items-center gap-6 p-6 sm:p-8">
+      {/* Premium page header */}
+      <div className="hub-page-header p-6 sm:p-8">
+        <div className="flex items-center gap-5">
           {/* Avatar */}
-          <div className="flex-shrink-0 relative">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden flex items-center justify-center font-black text-3xl"
-              style={player.avatar_url ? {} : { background: `linear-gradient(135deg, ${rColor}30, #6366f130)`, border: `2px solid ${rColor}50`, color: rColor }}>
+          <div className="relative flex-shrink-0">
+            <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center font-black text-2xl border-2"
+              style={player.avatar_url
+                ? { borderColor: `${rColor}30` }
+                : { background: `linear-gradient(135deg, ${rColor}15, ${rColor}30)`, borderColor: `${rColor}30`, color: rColor }}>
               {player.avatar_url
-                ? <Image src={player.avatar_url} alt={player.first_name} width={112} height={112} className="object-cover w-full h-full" />
+                ? <Image src={player.avatar_url} alt={player.first_name} width={80} height={80} className="object-cover w-full h-full" />
                 : `${player.first_name[0]}${player.last_name[0]}`
               }
             </div>
-            {/* Rating badge */}
-            <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black shadow-lg"
-              style={{ background: rColor, color: "#fff" }}>
+            <div className="absolute -bottom-1.5 -right-1.5 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black text-white shadow-md"
+              style={{ background: rColor, fontFamily: "Outfit, sans-serif" }}>
               {player.overall_rating}
             </div>
           </div>
 
           {/* Info */}
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: rColor }}>
-              Performance Hub
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
-              {player.first_name} <span style={{ color: rColor }}>{player.last_name.toUpperCase()}</span>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#818cf8", fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
+              {player.first_name} <span style={{ color: rColor }}>{player.last_name}</span>
             </h1>
             <div className="flex flex-wrap items-center gap-2 mt-2">
-              <span className="text-xs px-2.5 py-1 rounded-lg font-semibold" style={{ background: `${rColor}20`, color: rColor }}>
+              <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background: `${rColor}12`, color: rColor, border: `1px solid ${rColor}25` }}>
                 {player.position}
               </span>
               {player.jersey_number && (
-                <span className="text-xs text-slate-400">#{player.jersey_number}</span>
+                <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-slate-100 text-slate-600">
+                  #{player.jersey_number}
+                </span>
               )}
               {player.team_name && (
-                <span className="text-xs text-slate-400">{player.team_name}</span>
+                <span className="text-xs text-slate-500">{player.team_name}</span>
               )}
-            </div>
-            {primaryArch && (
-              <div className="mt-2">
-                <span className="text-xs px-2.5 py-1 rounded-lg font-semibold" style={{ background: `${primaryArch.color}20`, color: primaryArch.color, border: `1px solid ${primaryArch.color}30` }}>
+              {primaryArch && (
+                <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background: `${primaryArch.color}12`, color: primaryArch.color }}>
                   {primaryArch.icon} {primaryArch.label}
                 </span>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Big rating display on desktop */}
+          {/* Big rating — desktop */}
           <div className="hidden sm:block flex-shrink-0 text-right">
-            <div className="text-7xl font-black tabular-nums leading-none" style={{ color: rColor }}>{player.overall_rating}</div>
-            <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">Rating</div>
+            <div className="font-black tabular-nums leading-none" style={{ color: rColor, fontSize: "5rem", fontFamily: "Outfit, sans-serif" }}>{player.overall_rating}</div>
+            <div className="text-xs text-slate-400 uppercase tracking-widest mt-1" style={{ fontFamily: "Outfit, sans-serif" }}>Overall</div>
           </div>
         </div>
       </div>
 
       {/* Top stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="hub-card p-5">
-          <div className="hub-label mb-3">Overall Rating</div>
-          <div className="text-4xl font-black tabular-nums" style={{ color: rColor }}>
-            {player.overall_rating}
+        {[
+          { label: "Rating", value: player.overall_rating, color: rColor, bg: `${rColor}10`, sub: "overall" },
+          { label: "Evaluaties", value: player.evaluations?.length ?? 0, color: "#4f46e5", bg: "#ede9fe", sub: player.evaluations?.[0] ? formatDate(player.evaluations[0].evaluation_date) : "nog geen" },
+          { label: "Challenges", value: openChallenges.length, color: "#d97706", bg: "#fef3c7", sub: `${completedChallenges.length} voltooid` },
+          { label: "Fit Score", value: identity?.ai_fit_score ?? "—", color: "#7c3aed", bg: "#f3e8ff", sub: "AI scouting" },
+        ].map((s) => (
+          <div key={s.label} className="hub-card p-5 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: s.color }} />
+            <div className="text-4xl font-black tabular-nums leading-none mb-1" style={{ color: s.color, fontFamily: "Outfit, sans-serif" }}>{s.value}</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-500" style={{ fontFamily: "Outfit, sans-serif" }}>{s.label}</div>
+            <div className="text-xs text-slate-400 mt-0.5">{s.sub}</div>
           </div>
-        </div>
-        <div className="hub-card p-5">
-          <div className="hub-label mb-3">Evaluaties</div>
-          <div className="text-4xl font-black text-slate-900">{player.evaluations?.length ?? 0}</div>
-          <div className="text-xs text-slate-600 mt-2">
-            {player.evaluations?.[0] ? `Laatste: ${formatDate(player.evaluations[0].evaluation_date)}` : "Nog geen evaluaties"}
-          </div>
-        </div>
-        <div className="hub-card p-5">
-          <div className="hub-label mb-3">Challenges</div>
-          <div className="text-4xl font-black text-slate-900">{openChallenges.length}</div>
-          <div className="flex items-center gap-1 text-xs text-hub-teal mt-2">
-            <CheckCircle2 size={11} />
-            {completedChallenges.length} voltooid
-          </div>
-        </div>
-        <div className="hub-card p-5">
-          <div className="hub-label mb-3">Fit Score</div>
-          <div className="text-4xl font-black tabular-nums" style={{ color: getRatingColor(identity?.ai_fit_score ?? 0) }}>
-            {identity?.ai_fit_score ?? "—"}
-          </div>
-          <div className="text-xs text-slate-600 mt-2">Scouting analyse</div>
-        </div>
+        ))}
       </div>
 
       {/* Player Type Hero */}

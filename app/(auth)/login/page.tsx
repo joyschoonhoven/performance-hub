@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,82 +21,69 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
-    if (authError) {
-      setError(authError.message);
-      setLoading(false);
-      return;
-    }
+    if (authError) { setError(authError.message); setLoading(false); return; }
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-      const role = profile?.role ?? "player";
-      router.push(`/dashboard/${role}`);
+      router.push(`/dashboard/${profile?.role ?? "player"}`);
       router.refresh();
     }
   }
 
-  async function demoLogin(role: "coach" | "player" | "admin") {
+  async function demoLogin(role: "coach" | "player") {
     setLoading(true);
     setError("");
-    const demos: Record<string, { email: string; password: string }> = {
-      coach: { email: "coach@demo.hub", password: "demo1234" },
-      player: { email: "player@demo.hub", password: "demo1234" },
-      admin: { email: "admin@demo.hub", password: "demo1234" },
-    };
-    const { email: dEmail, password: dPass } = demos[role];
-    const { error: authError } = await supabase.auth.signInWithPassword({ email: dEmail, password: dPass });
-    if (authError) {
-      setError("Demo account niet beschikbaar. Zie README voor setup.");
-      setLoading(false);
-      return;
-    }
+    const demos = { coach: { email: "coach@demo.hub", password: "demo1234" }, player: { email: "player@demo.hub", password: "demo1234" } };
+    const { error: authError } = await supabase.auth.signInWithPassword(demos[role]);
+    if (authError) { setError("Demo account niet beschikbaar."); setLoading(false); return; }
     router.push(`/dashboard/${role}`);
     router.refresh();
   }
 
   return (
-    <div className="space-y-6">
-      {/* Logo + Header */}
-      <div className="text-center space-y-4">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl overflow-hidden mb-2"
-          style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}>
-          <Image
-            src="/logo.png"
-            alt="Schoonhoven Sports"
-            width={64}
-            height={64}
-            className="object-contain w-full h-full"
-          />
-        </div>
-        <div>
-          <h1 className="text-2xl font-black text-white tracking-tight">
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="space-y-1 mb-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0"
+            style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>
+            <Image src="/logo.png" alt="Logo" width={40} height={40} className="object-contain w-full h-full" />
+          </div>
+          <span className="text-white/40 text-xs uppercase tracking-widest font-semibold" style={{ fontFamily: "Outfit, sans-serif" }}>
             Performance Hub
-          </h1>
-          <p className="text-slate-600 text-sm mt-1">Schoonhoven Sports Intelligence</p>
+          </span>
         </div>
+        <h1 className="text-3xl font-black text-white" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
+          Welkom terug
+        </h1>
+        <p className="text-sm" style={{ color: "#64748b" }}>Log in op jouw dashboard</p>
       </div>
 
-      {/* Form */}
-      <div className="rounded-2xl p-6 space-y-4" style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}>
+      {/* Form card */}
+      <div className="rounded-2xl p-6 space-y-4"
+        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(12px)" }}>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">
-              E-mail
+            <label className="block text-xs font-semibold mb-2 uppercase tracking-widest"
+              style={{ color: "#64748b", fontFamily: "Outfit, sans-serif" }}>
+              E-mailadres
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="coach@club.nl"
-              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none transition-all"
-              style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = "#00b891"; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = "#323754"; }}
+              placeholder="naam@club.nl"
+              className="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all"
+              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9", caretColor: "#818cf8" }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(129,140,248,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
             />
           </div>
+
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold mb-2 uppercase tracking-widest"
+              style={{ color: "#64748b", fontFamily: "Outfit, sans-serif" }}>
               Wachtwoord
             </label>
             <div className="relative">
@@ -106,71 +93,58 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full rounded-xl px-4 py-3 pr-11 text-sm text-white placeholder:text-slate-400 focus:outline-none transition-all"
-                style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = "#00b891"; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = "#323754"; }}
+                className="w-full rounded-xl px-4 py-3 pr-12 text-sm focus:outline-none transition-all"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9", caretColor: "#818cf8" }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(129,140,248,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
               />
-              <button
-                type="button"
-                onClick={() => setShowPass(!showPass)}
+              <button type="button" onClick={() => setShowPass(!showPass)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
-                style={{ color: "#4a6080" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#7f93b0"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#4a6080"; }}
-              >
+                style={{ color: "#475569" }}>
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
 
           {error && (
-            <div className="rounded-xl px-4 py-3 text-red-400 text-sm" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)" }}>
+            <div className="rounded-xl px-4 py-3 text-sm flex items-start gap-2"
+              style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#fca5a5" }}>
               {error}
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full font-semibold py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
-            style={{ background: "#00b891", color: "#fff" }}
-          >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : null}
-            Inloggen
+          <button type="submit" disabled={loading}
+            className="w-full font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+            style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)", color: "#fff", boxShadow: "0 4px 16px rgba(79,70,229,0.3)", fontFamily: "Outfit, sans-serif" }}>
+            {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Inloggen</span><ArrowRight size={15} /></>}
           </button>
         </form>
 
-        <div className="relative">
+        <div className="relative my-2">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t" style={{ borderColor: "#323754" }} />
+            <div className="w-full" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }} />
           </div>
           <div className="relative flex justify-center">
-            <span className="px-3 text-xs text-slate-600" style={{ background: "#ffffff" }}>of probeer demo</span>
+            <span className="px-3 text-xs" style={{ background: "transparent", color: "#334155" }}>of probeer een demo</span>
           </div>
         </div>
 
-        {/* Demo buttons */}
-        <div className="grid grid-cols-3 gap-2">
-          {(["coach", "player", "admin"] as const).map((role) => (
-            <button
-              key={role}
-              onClick={() => demoLogin(role)}
-              disabled={loading}
-              className="rounded-xl py-2.5 text-xs font-semibold text-slate-300 transition-all capitalize disabled:opacity-50"
-              style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#00b891"; (e.currentTarget as HTMLButtonElement).style.color = "#00b891"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#323754"; (e.currentTarget as HTMLButtonElement).style.color = "#94a3b8"; }}
-            >
-              {role === "coach" ? "Coach" : role === "player" ? "Speler" : "Admin"}
+        <div className="grid grid-cols-2 gap-2">
+          {(["coach", "player"] as const).map((role) => (
+            <button key={role} onClick={() => demoLogin(role)} disabled={loading}
+              className="rounded-xl py-2.5 text-xs font-semibold transition-all disabled:opacity-40 capitalize"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#94a3b8", fontFamily: "Outfit, sans-serif" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(129,140,248,0.1)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(129,140,248,0.3)"; (e.currentTarget as HTMLButtonElement).style.color = "#818cf8"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "#94a3b8"; }}>
+              {role === "coach" ? "👔 Coach" : "⚽ Speler"}
             </button>
           ))}
         </div>
       </div>
 
-      <p className="text-center text-xs text-slate-600">
+      <p className="text-center text-xs" style={{ color: "#475569" }}>
         Geen account?{" "}
-        <Link href="/register" className="text-hub-teal hover:underline font-medium">
+        <Link href="/register" className="font-semibold hover:underline" style={{ color: "#818cf8" }}>
           Aanmelden
         </Link>
       </p>
