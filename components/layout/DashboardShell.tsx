@@ -56,7 +56,7 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
         {/* Mobile top bar */}
         <div
           className="lg:hidden flex items-center gap-3 px-4 py-3 sticky top-0 z-10"
-          style={{ background: "#0f1119", borderBottom: "1px solid #323754" }}
+          style={{ background: "#ffffff", borderBottom: "1px solid #e2e8f0" }}
         >
           <button
             onClick={() => setSidebarOpen(true)}
@@ -88,6 +88,14 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
             >
               <LogOut size={18} />
             </button>
+          </div>
+        </div>
+        {/* Desktop branding bar */}
+        <div className="hidden lg:flex items-center justify-between px-8 py-3 border-b border-hub-border bg-white">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-600 uppercase tracking-widest">Performance Hub</span>
+            <span className="text-slate-300">·</span>
+            <span className="text-xs text-slate-400">Schoonhoven Sports</span>
           </div>
         </div>
         <div className="min-h-full p-4 lg:p-8">
