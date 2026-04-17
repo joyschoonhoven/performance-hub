@@ -7,6 +7,7 @@ import { ARCHETYPES, SOCIOTYPES } from "@/lib/types";
 import { getRatingColor } from "@/lib/utils";
 import { Star, Loader2 } from "lucide-react";
 import type { PlayerWithDetails } from "@/lib/types";
+import { ARCHETYPE_ICONS, SOCIOTYPE_ICONS } from "@/components/PlayerTypeHero";
 
 export default function PlayerCardPage() {
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
@@ -94,26 +95,38 @@ export default function PlayerCardPage() {
             <div className="hub-card p-5">
               <div className="hub-label mb-3">Player DNA</div>
               <div className="space-y-3">
-                {arch && (
-                  <div className="flex items-center gap-3 p-3 rounded-xl border"
-                    style={{ borderColor: `${arch.color}30`, background: `${arch.color}08` }}>
-                    <span className="text-2xl">{arch.icon}</span>
-                    <div>
-                      <div className="text-xs text-slate-500">Archetype</div>
-                      <div className="font-bold text-white text-sm">{arch.label}</div>
+                {arch && (() => {
+                  const AIcon = ARCHETYPE_ICONS[arch.id];
+                  return (
+                    <div className="flex items-center gap-3 p-3 rounded-xl border"
+                      style={{ borderColor: `${arch.color}30`, background: `${arch.color}08` }}>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ background: `${arch.color}15` }}>
+                        <AIcon size={18} style={{ color: arch.color }} strokeWidth={1.75} />
+                      </div>
+                      <div>
+                        <div className="text-xs text-slate-500">Archetype</div>
+                        <div className="font-bold text-white text-sm">{arch.label}</div>
+                      </div>
                     </div>
-                  </div>
-                )}
-                {socio && (
-                  <div className="flex items-center gap-3 p-3 rounded-xl border"
-                    style={{ borderColor: `${socio.color_hex}30`, background: `${socio.color_hex}08` }}>
-                    <span className="text-2xl">{socio.icon}</span>
-                    <div>
-                      <div className="text-xs text-slate-500">Sociotype</div>
-                      <div className="font-bold text-white text-sm">{socio.label}</div>
+                  );
+                })()}
+                {socio && (() => {
+                  const SIcon = SOCIOTYPE_ICONS[socio.id];
+                  return (
+                    <div className="flex items-center gap-3 p-3 rounded-xl border"
+                      style={{ borderColor: `${socio.color_hex}30`, background: `${socio.color_hex}08` }}>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ background: `${socio.color_hex}15` }}>
+                        <SIcon size={18} style={{ color: socio.color_hex }} strokeWidth={1.75} />
+                      </div>
+                      <div>
+                        <div className="text-xs text-slate-500">Sociotype</div>
+                        <div className="font-bold text-white text-sm">{socio.label}</div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </div>
           )}
