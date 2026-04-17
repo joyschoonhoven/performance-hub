@@ -1,21 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { MOCK_PLAYERS } from "@/lib/mock-data";
 import { ARCHETYPES, SOCIOTYPES } from "@/lib/types";
 import { analyzePlayerLocal } from "@/lib/ai-engine";
 import { getRatingColor } from "@/lib/utils";
+import { getAllPlayers } from "@/lib/supabase/queries";
 import { Sparkles, Brain, Loader2, ArrowRight, ChevronRight } from "lucide-react";
-import type { AIAnalysisOutput } from "@/lib/types";
+import type { AIAnalysisOutput, PlayerWithDetails } from "@/lib/types";
 
 export default function AIScoutingPage() {
+  const [players, setPlayers] = useState<PlayerWithDetails[]>([]);
   const [selectedId, setSelectedId] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AIAnalysisOutput | null>(null);
   const [useClaudeAPI, setUseClaudeAPI] = useState(false);
 
-  const selectedPlayer = MOCK_PLAYERS.find((p) => p.id === selectedId);
+  useEffect(() => {
+    getAllPlayers().then(setPlayers);
+  }, []);
+
+  const selectedPlayer = players.find((p) => p.id === selectedId);
 
   async function runAnalysis() {
     if (!selectedPlayer) return;
@@ -81,7 +86,7 @@ export default function AIScoutingPage() {
             className="w-full bg-hub-surface border border-hub-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-hub-teal transition-all"
           >
             <option value="">-- Kies een speler --</option>
-            {MOCK_PLAYERS.map((p) => (
+            {players.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.first_name} {p.last_name} — {p.position} ({p.evaluations?.length ?? 0} evaluaties)
               </option>
@@ -245,7 +250,7 @@ export default function AIScoutingPage() {
         <div className="hub-card p-5">
           <div className="hub-label mb-4">Alle Spelers Overzicht</div>
           <div className="space-y-2">
-            {MOCK_PLAYERS.map((p) => {
+            {players.map((p) => {
               const aiScore = p.identity?.ai_fit_score ?? 0;
               const archLabel = p.identity?.primary_archetype?.replace(/_/g, " ") ?? "—";
               return (
