@@ -158,10 +158,10 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: "#f1f5f9" }}>
       <div className="absolute inset-0 opacity-[0.025]" style={{
-        backgroundImage: "linear-gradient(rgba(0,184,145,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,184,145,1) 1px, transparent 1px)",
+        backgroundImage: "linear-gradient(rgba(79,169,230,1) 1px, transparent 1px), linear-gradient(90deg, rgba(79,169,230,1) 1px, transparent 1px)",
         backgroundSize: "48px 48px",
       }} />
-      <div className="absolute top-1/3 left-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none" style={{ background: "rgba(0,184,145,0.04)" }} />
+      <div className="absolute top-1/3 left-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none" style={{ background: "rgba(79,169,230,0.04)" }} />
 
       <div className="relative z-10 w-full max-w-lg px-4 py-12">
         {/* Header */}
@@ -323,7 +323,7 @@ export default function OnboardingPage() {
 
           <button type="submit" disabled={saving}
             className="w-full font-semibold py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
-            style={{ background: "#00b891", color: "#fff" }}>
+            style={{ background: "#4FA9E6", color: "#fff" }}>
             {saving ? <Loader2 size={16} className="animate-spin" /> : <ChevronRight size={16} />}
             Doorgaan naar dashboard
           </button>

@@ -28,7 +28,7 @@ function applyPerspective(cx: number, cy: number, p: { x: number; y: number }, t
   return { x: p.x, y: cy + (p.y - cy) * tilt };
 }
 
-export function PlayerRadarChart({ data, color = "#00b891", size = 280 }: PlayerRadarChartProps) {
+export function PlayerRadarChart({ data, color = "#4FA9E6", size = 280 }: PlayerRadarChartProps) {
   const cx = size / 2;
   const cy = size / 2 - 4;
   const maxR = (size / 2) * 0.68;

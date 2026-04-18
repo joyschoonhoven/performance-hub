@@ -60,7 +60,7 @@ function CategorySection({
   }, [category.subcategories, scores]);
 
   const scoreColor =
-    avg >= 8.5 ? "#d97706" : avg >= 7 ? "#00b891" : avg >= 5 ? "#6366f1" : "#ef4444";
+    avg >= 8.5 ? "#d97706" : avg >= 7 ? "#00b891" : avg >= 5 ? "#4FA9E6" : "#ef4444";
 
   return (
     <div className="hub-card overflow-hidden">
@@ -108,7 +108,7 @@ function CategorySection({
           {category.subcategories.map((sub) => {
             const val = scores[sub.id] ?? 7;
             const subColor =
-              val >= 8.5 ? "#d97706" : val >= 7 ? "#00b891" : val >= 5 ? "#6366f1" : "#ef4444";
+              val >= 8.5 ? "#d97706" : val >= 7 ? "#00b891" : val >= 5 ? "#4FA9E6" : "#ef4444";
             return (
               <div key={sub.id} className="px-5 py-4">
                 <div className="flex items-start justify-between mb-3 gap-3">

@@ -93,7 +93,7 @@ export default function PlayerCardPage() {
           <PlayerCard player={player} variant="full" />
           <Link href="/dashboard/player/settings"
             className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-semibold transition-all"
-            style={{ background: "rgba(99,102,241,0.08)", color: "#4FA9E6", border: "1px solid rgba(99,102,241,0.2)" }}>
+            style={{ background: "rgba(79,169,230,0.08)", color: "#4FA9E6", border: "1px solid rgba(79,169,230,0.2)" }}>
             <Settings size={12} /> Profiel bewerken
           </Link>
         </div>
@@ -103,7 +103,7 @@ export default function PlayerCardPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {[
               { label: "Overall", value: player.overall_rating, color: rColor },
-              { label: "Evaluaties", value: player.evaluations?.length ?? 0, color: "#6366f1" },
+              { label: "Evaluaties", value: player.evaluations?.length ?? 0, color: "#4FA9E6" },
               { label: "Fit Score", value: identity?.ai_fit_score ?? "—", color: "#00d4aa" },
             ].map((s) => (
               <div key={s.label} className="hub-card p-4 text-center">
@@ -119,7 +119,7 @@ export default function PlayerCardPage() {
               <div className="hub-label mb-4">Laatste Scores</div>
               <div className="space-y-3">
                 {Object.entries(player.recent_scores).map(([cat, score]) => {
-                  const sc = score >= 8 ? "#00d4aa" : score >= 6 ? "#6366f1" : "#ef4444";
+                  const sc = score >= 8 ? "#00d4aa" : score >= 6 ? "#4FA9E6" : "#ef4444";
                   return (
                     <div key={cat} className="flex items-center gap-3">
                       <div className="w-20 text-xs text-slate-600 font-medium capitalize">{cat}</div>
@@ -179,9 +179,9 @@ export default function PlayerCardPage() {
 
           {/* AI rapport */}
           {identity?.ai_summary && (
-            <div className="hub-card p-5" style={{ borderColor: "rgba(99,102,241,0.25)", background: "linear-gradient(135deg, rgba(99,102,241,0.04), rgba(0,184,145,0.04))" }}>
+            <div className="hub-card p-5" style={{ borderColor: "rgba(79,169,230,0.25)", background: "linear-gradient(135deg, rgba(79,169,230,0.04), rgba(79,169,230,0.04))" }}>
               <div className="flex items-center gap-2 mb-3">
-                <div className="p-1.5 rounded-lg" style={{ background: "rgba(99,102,241,0.15)" }}>
+                <div className="p-1.5 rounded-lg" style={{ background: "rgba(79,169,230,0.15)" }}>
                   <Sparkles size={14} style={{ color: "#4FA9E6" }} />
                 </div>
                 <div className="text-sm font-bold text-slate-900">AI Scouting Rapport</div>

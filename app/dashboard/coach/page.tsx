@@ -221,7 +221,7 @@ export default function CoachDashboardPage() {
                       {ev.scores?.map((s) => (
                         <span key={s.category} className="text-xs px-2 py-0.5 rounded-lg"
                           style={{
-                            background: `${s.score >= 8 ? "#00d4aa" : s.score >= 6 ? "#6366f1" : "#ef4444"}18`,
+                            background: `${s.score >= 8 ? "#00d4aa" : s.score >= 6 ? "#4FA9E6" : "#ef4444"}18`,
                             color: s.score >= 8 ? "#00d4aa" : s.score >= 6 ? "#4FA9E6" : "#f87171",
                           }}>
                           {s.category.slice(0, 3).toUpperCase()} {s.score.toFixed(1)}

@@ -99,7 +99,7 @@ export default function CoachChallengesPage() {
 
       {successMsg && (
         <div className="rounded-xl px-4 py-3 text-hub-teal text-sm flex items-center gap-2"
-          style={{ background: "rgba(0,184,145,0.1)", border: "1px solid rgba(0,184,145,0.2)" }}>
+          style={{ background: "rgba(0,184,145,0.1)", border: "1px solid rgba(79,169,230,0.2)" }}>
           <CheckCircle2 size={16} /> {successMsg}
         </div>
       )}
@@ -128,7 +128,7 @@ export default function CoachChallengesPage() {
         {(["overzicht", "templates"] as TabType[]).map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className="px-4 py-2 rounded-lg text-xs font-semibold transition-all capitalize"
-            style={tab === t ? { background: "#4f46e5", color: "#fff", boxShadow: "0 2px 8px rgba(79,70,229,0.25)" } : { color: "#64748b" }}>
+            style={tab === t ? { background: "#4FA9E6", color: "#fff", boxShadow: "0 2px 8px rgba(79,169,230,0.25)" } : { color: "#64748b" }}>
             {t === "overzicht" ? "Overzicht" : "Maandelijkse Challenges"}
           </button>
         ))}
@@ -249,7 +249,7 @@ export default function CoachChallengesPage() {
                       }}
                       disabled={!players.length}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all disabled:opacity-40"
-                      style={{ background: "rgba(79,169,230,0.12)", color: "#4FA9E6", border: "1px solid rgba(0,184,145,0.2)" }}
+                      style={{ background: "rgba(79,169,230,0.12)", color: "#4FA9E6", border: "1px solid rgba(79,169,230,0.2)" }}
                     >
                       Toewijzen aan speler
                     </button>

@@ -158,7 +158,7 @@ export default function CoachProfilePage() {
               <h2 className="text-2xl font-black text-slate-900">{profile.full_name}</h2>
               <span className="hub-tag text-xs" style={{ background: "rgba(79,169,230,0.1)", color: "#4FA9E6" }}>Coach</span>
               {profile.coaching_license && (
-                <span className="hub-tag text-xs" style={{ background: "rgba(99,102,241,0.1)", color: "#6366f1" }}>
+                <span className="hub-tag text-xs" style={{ background: "rgba(79,169,230,0.1)", color: "#4FA9E6" }}>
                   <Award size={10} /> {profile.coaching_license}
                 </span>
               )}
@@ -222,7 +222,7 @@ export default function CoachProfilePage() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {[
           { label: "Spelers", value: players.length, icon: <Users size={16} />, color: "#4FA9E6" },
-          { label: "Evaluaties", value: totalEvals, icon: <ClipboardList size={16} />, color: "#6366f1" },
+          { label: "Evaluaties", value: totalEvals, icon: <ClipboardList size={16} />, color: "#4FA9E6" },
           { label: "Challenges", value: totalChallenges, icon: <Target size={16} />, color: "#d97706" },
           { label: "Gem. rating", value: avgRating || "—", icon: <Star size={16} />, color: "#f59e0b" },
           { label: "Elite (80+)", value: elitePlayers, icon: <Trophy size={16} />, color: "#a855f7" },

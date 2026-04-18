@@ -183,43 +183,45 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
     );
   }
 
-  // Full FIFA-style card
+  // Full premium card — light mode
   return (
     <div className={cn(
       "relative rounded-3xl overflow-hidden border transition-all",
       onClick ? "cursor-pointer" : "",
-      selected ? "border-hub-teal/60 teal-glow" : "border-hub-border-light"
+      selected ? "border-hub-teal/60" : "border-hub-border"
     )}
       style={{
-        background: `linear-gradient(160deg, #0d1526 0%, #20243a 40%, #15182a 100%)`,
+        background: "#ffffff",
+        boxShadow: "0 4px 24px rgba(10,37,64,0.08), 0 1px 4px rgba(10,37,64,0.04)",
       }}
       onClick={onClick}
     >
-      {/* Decorative top accent line */}
+      {/* Colored top accent bar */}
       <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl"
         style={{ background: `linear-gradient(90deg, ${ratingColor}, #4FA9E6)` }} />
 
-      {/* Top section — rating + position */}
-      <div className="relative px-6 pt-6 pb-3">
+      {/* Header area with rating color wash */}
+      <div className="relative px-6 pt-7 pb-5"
+        style={{ background: `linear-gradient(160deg, ${ratingColor}08 0%, ${ratingColor}04 50%, #ffffff 100%)` }}>
         <div className="flex items-start justify-between">
           <div>
-            <div className="text-5xl font-black tabular-nums leading-none" style={{ color: ratingColor }}>
+            <div className="text-5xl font-black tabular-nums leading-none" style={{ color: ratingColor, fontFamily: "Outfit, sans-serif" }}>
               {player.overall_rating}
             </div>
-            <div className="text-sm font-bold text-slate-600 mt-1 uppercase tracking-widest">
+            <div className="text-xs font-bold text-slate-500 mt-1.5 uppercase tracking-widest" style={{ fontFamily: "Outfit, sans-serif" }}>
               {POSITION_LABELS[player.position]}
             </div>
             {player.jersey_number && (
-              <div className="text-xs text-slate-600 mt-0.5">#{player.jersey_number}</div>
+              <div className="text-xs text-slate-400 mt-0.5">#{player.jersey_number}</div>
             )}
           </div>
 
           {/* Avatar area */}
           <div className="relative">
             <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black"
-              style={player.avatar_url ? {} : {
+              style={player.avatar_url ? { border: `2px solid ${ratingColor}30` } : {
                 background: `linear-gradient(135deg, ${ratingColor}15, ${ratingColor}30)`,
-                border: `2px solid ${ratingColor}50`,
+                border: `2px solid ${ratingColor}40`,
                 color: ratingColor,
               }}>
               {player.avatar_url
@@ -229,7 +231,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
             </div>
             {badge && (
               <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap hub-tag text-[10px] font-black"
-                style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.color}44` }}>
+                style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.color}33` }}>
                 {badge.label}
               </div>
             )}
@@ -238,10 +240,10 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
 
         {/* Name */}
         <div className="mt-5">
-          <div className="text-xl font-black text-slate-900 tracking-tight leading-tight">
+          <div className="text-xl font-black text-slate-900 tracking-tight leading-tight" style={{ fontFamily: "Outfit, sans-serif" }}>
             {player.first_name}
           </div>
-          <div className="text-xl font-black tracking-tight leading-tight" style={{ color: ratingColor }}>
+          <div className="text-xl font-black tracking-tight leading-tight" style={{ color: ratingColor, fontFamily: "Outfit, sans-serif" }}>
             {player.last_name.toUpperCase()}
           </div>
         </div>
@@ -252,7 +254,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
             const AIcon = ARCHETYPE_ICONS[archetype.id];
             return (
               <span className="hub-tag text-xs font-semibold inline-flex items-center gap-1.5"
-                style={{ background: `${archetype.color}20`, color: archetype.color, border: `1px solid ${archetype.color}40` }}>
+                style={{ background: `${archetype.color}12`, color: archetype.color, border: `1px solid ${archetype.color}30` }}>
                 <AIcon size={11} strokeWidth={1.75} /> {archetype.label}
               </span>
             );
@@ -261,7 +263,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
             const SIcon = SOCIOTYPE_ICONS[sociotype.id];
             return (
               <span className="hub-tag text-xs font-semibold inline-flex items-center gap-1.5"
-                style={{ background: `${sociotype.color_hex}20`, color: sociotype.color_hex, border: `1px solid ${sociotype.color_hex}40` }}>
+                style={{ background: `${sociotype.color_hex}12`, color: sociotype.color_hex, border: `1px solid ${sociotype.color_hex}30` }}>
                 <SIcon size={11} strokeWidth={1.75} /> {sociotype.label}
               </span>
             );
@@ -270,11 +272,11 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
       </div>
 
       {/* Divider */}
-      <div className="mx-6 border-t border-hub-border" />
+      <div className="mx-6 h-px bg-hub-border" />
 
       {/* Stats grid */}
       {scores && (
-        <div className="px-6 py-4 grid grid-cols-5 gap-3">
+        <div className="px-6 py-4 grid grid-cols-5 gap-3 bg-hub-bg/40">
           <StatHex label="TEC" value={scores.techniek} />
           <StatHex label="FYS" value={scores.fysiek} />
           <StatHex label="TAC" value={scores.tactiek} />
@@ -284,12 +286,12 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
       )}
 
       {/* Divider */}
-      {identity && <div className="mx-6 border-t border-hub-border" />}
+      {identity && <div className="mx-6 h-px bg-hub-border" />}
 
       {/* Core values */}
       {identity && (
         <div className="px-6 py-4 space-y-2.5">
-          <div className="hub-label mb-3">Kernwaarden</div>
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Kernwaarden</div>
           <CoreValueBar label="Noodzaak" value={identity.core_noodzaak} color="#ef4444" />
           <CoreValueBar label="Creativiteit" value={identity.core_creativiteit} color="#a855f7" />
           <CoreValueBar label="Vertrouwen" value={identity.core_vertrouwen} color="#00d4aa" />
@@ -299,25 +301,25 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
       {/* Fit score */}
       {identity && identity.ai_fit_score > 0 && (
         <>
-          <div className="mx-6 border-t border-hub-border" />
+          <div className="mx-6 h-px bg-hub-border" />
           <div className="px-6 py-4 flex items-center justify-between">
             <div>
-              <div className="hub-label">AI Fit Score</div>
-              <div className="text-xs text-slate-600 mt-0.5">Scouting analyse</div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">AI Fit Score</div>
+              <div className="text-xs text-slate-500 mt-0.5">Scouting analyse</div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="text-2xl font-black tabular-nums" style={{ color: getRatingColor(identity.ai_fit_score) }}>
+            <div className="flex items-baseline gap-1">
+              <div className="text-2xl font-black tabular-nums" style={{ color: getRatingColor(identity.ai_fit_score), fontFamily: "Outfit, sans-serif" }}>
                 {identity.ai_fit_score}
               </div>
-              <div className="text-xs text-slate-600">/100</div>
+              <div className="text-xs text-slate-400">/100</div>
             </div>
           </div>
         </>
       )}
 
-      {/* Team */}
-      <div className="px-6 pb-5">
-        <div className="text-center text-xs text-slate-600 font-medium uppercase tracking-widest">
+      {/* Team footer */}
+      <div className="px-6 py-3 border-t border-hub-border/60" style={{ background: `${ratingColor}05` }}>
+        <div className="text-center text-xs font-semibold text-slate-400 uppercase tracking-widest">
           {player.team_name ?? player.club ?? "Schoonhoven FC"}
         </div>
       </div>

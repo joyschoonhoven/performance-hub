@@ -136,7 +136,7 @@ export default function AnalyticsPage() {
                       <Cell key={entry.range} fill={
                         entry.range === "90+" ? "#f59e0b" :
                         entry.range === "80-89" ? "#00d4aa" :
-                        entry.range === "70-79" ? "#6366f1" : "#64748b"
+                        entry.range === "70-79" ? "#4FA9E6" : "#64748b"
                       } />
                     ))}
                   </Bar>

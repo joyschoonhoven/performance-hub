@@ -34,8 +34,8 @@ function EmptyState({ userName }: { userName?: string }) {
       </div>
       <div className="hub-card p-12 text-center max-w-md mx-auto">
         <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-          style={{ background: "rgba(0,184,145,0.1)", border: "1px solid rgba(0,184,145,0.2)" }}>
-          <UserPlus size={28} style={{ color: "#00b891" }} />
+          style={{ background: "rgba(79,169,230,0.08)", border: "1px solid rgba(79,169,230,0.2)" }}>
+          <UserPlus size={28} style={{ color: "#4FA9E6" }} />
         </div>
         <h2 className="text-lg font-bold text-slate-900 mb-2">Profiel nog niet compleet</h2>
         <p className="text-slate-600 text-sm mb-6">Vul je spelersprofiel in zodat je coach je kan evalueren en challenges kan aanmaken.</p>
@@ -207,7 +207,7 @@ export default function PlayerDashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Rating", value: player.overall_rating, color: rColor, bg: `${rColor}10`, sub: "overall" },
-          { label: "Evaluaties", value: player.evaluations?.length ?? 0, color: "#4f46e5", bg: "#E8F4FC", sub: player.evaluations?.[0] ? formatDate(player.evaluations[0].evaluation_date) : "nog geen" },
+          { label: "Evaluaties", value: player.evaluations?.length ?? 0, color: "#4FA9E6", bg: "#E8F4FC", sub: player.evaluations?.[0] ? formatDate(player.evaluations[0].evaluation_date) : "nog geen" },
           { label: "Challenges", value: openChallenges.length, color: "#d97706", bg: "#fef3c7", sub: `${completedChallenges.length} voltooid` },
           { label: "Fit Score", value: identity?.ai_fit_score ?? "—", color: "#0A2540", bg: "#E8F4FC", sub: "AI scouting" },
         ].map((s) => (
@@ -231,15 +231,15 @@ export default function PlayerDashboardPage() {
       )}
 
       {/* AI Ontwikkelplan */}
-      <div className="hub-card p-5" style={{ border: "1px solid rgba(79,70,229,0.15)", background: "linear-gradient(135deg, #fafaff 0%, #f5f3ff 100%)" }}>
+      <div className="hub-card p-5" style={{ border: "1px solid rgba(79,169,230,0.18)", background: "linear-gradient(135deg, #f0f7fd 0%, #ffffff 100%)" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg" style={{ background: "#E8F4FC" }}>
-              <Sparkles size={14} style={{ color: "#4f46e5" }} />
+              <Sparkles size={14} style={{ color: "#4FA9E6" }} />
             </div>
             <span className="text-sm font-bold text-slate-900">AI Ontwikkelplan</span>
             {devPlanSource === "claude" && (
-              <span className="hub-tag text-[9px]" style={{ background: "#E8F4FC", color: "#4f46e5" }}>Claude AI</span>
+              <span className="hub-tag text-[9px]" style={{ background: "#E8F4FC", color: "#4FA9E6" }}>Claude AI</span>
             )}
           </div>
           {devPlan && (
@@ -264,7 +264,7 @@ export default function PlayerDashboardPage() {
             {devPlan.map((point, i) => (
               <li key={i} className="flex items-start gap-2.5">
                 <div className="mt-0.5 w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-[10px] font-black"
-                  style={{ background: "#E8F4FC", color: "#4f46e5" }}>
+                  style={{ background: "#E8F4FC", color: "#4FA9E6" }}>
                   {i + 1}
                 </div>
                 <span className="text-sm text-slate-700 leading-relaxed">{point}</span>
@@ -282,7 +282,7 @@ export default function PlayerDashboardPage() {
               <button
                 onClick={() => player && generateDevPlan(player)}
                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all flex-shrink-0 ml-3"
-                style={{ background: "#E8F4FC", color: "#4f46e5", border: "1px solid rgba(79,70,229,0.2)" }}
+                style={{ background: "#E8F4FC", color: "#4FA9E6", border: "1px solid rgba(79,169,230,0.2)" }}
               >
                 <Sparkles size={11} /> Genereer
                 <ChevronRight size={11} />

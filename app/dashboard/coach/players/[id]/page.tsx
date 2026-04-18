@@ -173,7 +173,7 @@ export default function PlayerDetailPage() {
             {player.recent_scores && (
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {Object.entries(player.recent_scores).map(([cat, score]) => {
-                  const sc = score >= 8 ? "#059669" : score >= 6 ? "#4f46e5" : "#ef4444";
+                  const sc = score >= 8 ? "#059669" : score >= 6 ? "#4FA9E6" : "#ef4444";
                   const bg = score >= 8 ? "#d1fae5" : score >= 6 ? "#E8F4FC" : "#fee2e2";
                   return (
                     <span key={cat} className="text-xs px-2 py-0.5 rounded-lg font-semibold" style={{ background: bg, color: sc }}>
@@ -193,9 +193,9 @@ export default function PlayerDetailPage() {
               </Link>
               <Link href={`/dashboard/coach/ai`}
                 className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all"
-                style={{ background: "rgba(99,102,241,0.08)", color: "#4f46e5", border: "1px solid rgba(99,102,241,0.2)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(99,102,241,0.14)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(99,102,241,0.08)"; }}>
+                style={{ background: "rgba(79,169,230,0.08)", color: "#4FA9E6", border: "1px solid rgba(79,169,230,0.2)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(79,169,230,0.14)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(79,169,230,0.08)"; }}>
                 <Brain size={13} /> AI Analyse
               </Link>
             </div>
@@ -472,8 +472,8 @@ export default function PlayerDetailPage() {
             {consensus.totalAssessments > 0 && (
               <div className="hub-card p-5 border-hub-teal/20">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="p-1.5 rounded-lg" style={{ background: "rgba(0,184,145,0.12)" }}>
-                    <Brain size={14} style={{ color: "#00b891" }} />
+                  <div className="p-1.5 rounded-lg" style={{ background: "rgba(79,169,230,0.1)" }}>
+                    <Brain size={14} style={{ color: "#4FA9E6" }} />
                   </div>
                   <span className="text-sm font-bold text-slate-900">Consensus Spelertype</span>
                   <span className="text-xs text-slate-600">— op basis van {consensus.totalAssessments} beoordelingen</span>

@@ -33,7 +33,7 @@ export default function AdminPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Totaal spelers", value: MOCK_PLAYERS.length, icon: <Users size={20} />, color: "#00d4aa" },
-          { label: "Coaches", value: DEMO_USERS.filter((u) => u.role === "coach").length, icon: <Shield size={20} />, color: "#6366f1" },
+          { label: "Coaches", value: DEMO_USERS.filter((u) => u.role === "coach").length, icon: <Shield size={20} />, color: "#4FA9E6" },
           { label: "Evaluaties", value: totalEvals, icon: <ClipboardList size={20} />, color: "#f59e0b" },
           { label: "Gem. rating", value: avgRating, icon: <TrendingUp size={20} />, color: "#22c55e" },
         ].map((s) => (
@@ -127,7 +127,7 @@ export default function AdminPage() {
             { label: "AI Engine", desc: "Claude API integratie", status: "Actief", color: "#00d4aa" },
             { label: "Supabase Auth", desc: "Database & RLS", status: "Configuratie nodig", color: "#f59e0b" },
             { label: "Email Notificaties", desc: "Evaluatie alerts", status: "Inactief", color: "#475569" },
-            { label: "Export (PDF)", desc: "Player card exports", status: "Beta", color: "#6366f1" },
+            { label: "Export (PDF)", desc: "Player card exports", status: "Beta", color: "#4FA9E6" },
           ].map((s) => (
             <div key={s.label} className="flex items-center gap-3 p-4 rounded-xl bg-hub-surface border border-hub-border">
               <div className="flex-1">

@@ -77,7 +77,7 @@ export default function EvaluationsPage() {
                     {ev.scores && ev.scores.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-2">
                         {ev.scores.map((s) => {
-                          const sc = s.score >= 8 ? "#00d4aa" : s.score >= 6 ? "#6366f1" : "#ef4444";
+                          const sc = s.score >= 8 ? "#00d4aa" : s.score >= 6 ? "#4FA9E6" : "#ef4444";
                           return (
                             <span key={s.category} className="hub-tag text-[10px]"
                               style={{ background: `${sc}18`, color: sc }}>
