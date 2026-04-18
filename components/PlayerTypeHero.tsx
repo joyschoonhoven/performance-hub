@@ -80,10 +80,14 @@ export function PlayerTypeHero({ archetype, sociotype, overallRating, position }
   return (
     <div className="relative overflow-hidden rounded-2xl border"
       style={{
-        background: `linear-gradient(135deg, ${archetype.color}10 0%, #262b42 60%, #1a1d2e 100%)`,
-        borderColor: `${archetype.color}30`,
+        background: `linear-gradient(135deg, #ffffff 0%, ${archetype.color}06 100%)`,
+        borderColor: `${archetype.color}25`,
+        boxShadow: `0 1px 3px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.04)`,
       }}>
 
+      {/* Top accent bar */}
+      <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl"
+        style={{ background: `linear-gradient(90deg, ${archetype.color}, ${ratingColor})` }} />
       {/* Subtle background glow */}
       <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-5 pointer-events-none"
         style={{ background: archetype.color, filter: "blur(60px)", transform: "translate(30%, -30%)" }} />
@@ -103,7 +107,7 @@ export function PlayerTypeHero({ archetype, sociotype, overallRating, position }
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-widest mb-1"
-                style={{ color: `${archetype.color}99` }}>
+                style={{ color: archetype.color }}>
                 {position} — Spelerstype
               </div>
               <h2 className="text-2xl font-black text-slate-900 leading-tight">{archetype.label}</h2>
@@ -131,7 +135,7 @@ export function PlayerTypeHero({ archetype, sociotype, overallRating, position }
             {archetype.traits.map((trait) => (
               <span key={trait}
                 className="text-[11px] font-semibold px-2.5 py-1 rounded-lg"
-                style={{ background: `${archetype.color}12`, color: `${archetype.color}cc`, border: `1px solid ${archetype.color}20` }}>
+                style={{ background: `${archetype.color}10`, color: archetype.color, border: `1px solid ${archetype.color}20` }}>
                 {trait}
               </span>
             ))}
@@ -139,7 +143,7 @@ export function PlayerTypeHero({ archetype, sociotype, overallRating, position }
             {/* Sociotype pill */}
             {sociotype && SocioIcon && (
               <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg ml-1"
-                style={{ background: `${sociotype.color_hex}10`, color: `${sociotype.color_hex}cc`, border: `1px solid ${sociotype.color_hex}20` }}>
+                style={{ background: `${sociotype.color_hex}10`, color: sociotype.color_hex, border: `1px solid ${sociotype.color_hex}20` }}>
                 <SocioIcon size={11} strokeWidth={2} />
                 {sociotype.label}
               </span>

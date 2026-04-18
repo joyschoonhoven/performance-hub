@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 import type { UserRole } from "@/lib/types";
 import {
   LayoutDashboard, Users, ClipboardList, Brain,
-  Trophy, BarChart3, Settings, LogOut, ChevronRight,
-  Shield, Star, Target, UserCircle,
+  Trophy, BarChart3, Settings, LogOut,
+  Shield, Star, Target, UserCircle, Sparkles,
 } from "lucide-react";
 
 interface NavItem {
@@ -23,26 +23,26 @@ interface NavItem {
 
 function getNavItems(role: UserRole): NavItem[] {
   if (role === "coach") return [
-    { label: "Dashboard", href: "/dashboard/coach", icon: <LayoutDashboard size={18} /> },
-    { label: "Mijn Profiel", href: "/dashboard/coach/profile", icon: <UserCircle size={18} /> },
-    { label: "Spelers", href: "/dashboard/coach/players", icon: <Users size={18} /> },
-    { label: "Evaluaties", href: "/dashboard/coach/evaluations", icon: <ClipboardList size={18} /> },
-    { label: "AI Scouting", href: "/dashboard/coach/ai", icon: <Brain size={18} />, badge: "AI" },
-    { label: "Analytics", href: "/dashboard/coach/analytics", icon: <BarChart3 size={18} /> },
-    { label: "Challenges", href: "/dashboard/coach/challenges", icon: <Trophy size={18} /> },
+    { label: "Dashboard", href: "/dashboard/coach", icon: <LayoutDashboard size={16} /> },
+    { label: "Mijn Profiel", href: "/dashboard/coach/profile", icon: <UserCircle size={16} /> },
+    { label: "Spelers", href: "/dashboard/coach/players", icon: <Users size={16} /> },
+    { label: "Evaluaties", href: "/dashboard/coach/evaluations", icon: <ClipboardList size={16} /> },
+    { label: "AI Scouting", href: "/dashboard/coach/ai", icon: <Brain size={16} />, badge: "AI" },
+    { label: "Analytics", href: "/dashboard/coach/analytics", icon: <BarChart3 size={16} /> },
+    { label: "Challenges", href: "/dashboard/coach/challenges", icon: <Trophy size={16} /> },
   ];
   if (role === "player") return [
-    { label: "Mijn Dashboard", href: "/dashboard/player", icon: <LayoutDashboard size={18} /> },
-    { label: "Player Card", href: "/dashboard/player/card", icon: <Star size={18} /> },
-    { label: "Evaluaties", href: "/dashboard/player/evaluations", icon: <ClipboardList size={18} /> },
-    { label: "Challenges", href: "/dashboard/player/challenges", icon: <Trophy size={18} /> },
-    { label: "Progressie", href: "/dashboard/player/analytics", icon: <BarChart3 size={18} /> },
+    { label: "Dashboard", href: "/dashboard/player", icon: <LayoutDashboard size={16} /> },
+    { label: "Player Card", href: "/dashboard/player/card", icon: <Star size={16} /> },
+    { label: "Evaluaties", href: "/dashboard/player/evaluations", icon: <ClipboardList size={16} /> },
+    { label: "Challenges", href: "/dashboard/player/challenges", icon: <Trophy size={16} /> },
+    { label: "Progressie", href: "/dashboard/player/analytics", icon: <BarChart3 size={16} /> },
   ];
   return [
-    { label: "Admin Panel", href: "/dashboard/admin", icon: <Shield size={18} /> },
-    { label: "Gebruikers", href: "/dashboard/admin/users", icon: <Users size={18} /> },
-    { label: "Koppelingen", href: "/dashboard/admin/assignments", icon: <Target size={18} /> },
-    { label: "Analytics", href: "/dashboard/admin/analytics", icon: <BarChart3 size={18} /> },
+    { label: "Admin Panel", href: "/dashboard/admin", icon: <Shield size={16} /> },
+    { label: "Gebruikers", href: "/dashboard/admin/users", icon: <Users size={16} /> },
+    { label: "Koppelingen", href: "/dashboard/admin/assignments", icon: <Target size={16} /> },
+    { label: "Analytics", href: "/dashboard/admin/analytics", icon: <BarChart3 size={16} /> },
   ];
 }
 
@@ -77,111 +77,127 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
   }
 
   const roleConfig = {
-    coach: { label: "Coach", color: "text-emerald-400", bg: "bg-emerald-500/10", icon: "👨‍💼" },
-    player: { label: "Speler", color: "text-indigo-400", bg: "bg-indigo-500/10", icon: "⚽" },
-    admin: { label: "Admin", color: "text-amber-400", bg: "bg-amber-500/10", icon: "🛡️" },
+    coach: { label: "Coach", color: "#34d399", bg: "rgba(52,211,153,0.12)" },
+    player: { label: "Speler", color: "#818cf8", bg: "rgba(129,140,248,0.12)" },
+    admin: { label: "Admin", color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
   }[role];
 
+  const initials = userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+
   return (
-    <aside className="w-64 flex-shrink-0 flex flex-col h-screen sticky top-0" style={{ background: "linear-gradient(180deg, #141720 0%, #1a1d2e 100%)", borderRight: "1px solid #323754" }}>
+    <aside className="w-64 flex-shrink-0 flex flex-col h-screen sticky top-0" style={{
+      background: "linear-gradient(180deg, #0d1117 0%, #161b27 100%)",
+      borderRight: "1px solid rgba(255,255,255,0.06)",
+    }}>
       {/* Logo */}
-      <div className="p-5" style={{ borderBottom: "1px solid #323754" }}>
+      <div className="px-5 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ background: "#1e2236" }}>
-            <Image
-              src="/logo.png"
-              alt="Schoonhoven Sports"
-              width={40}
-              height={40}
-              className="object-contain w-full h-full"
-            />
+          <div className="w-10 h-10 rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center"
+            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <Image src="/logo.png" alt="Logo" width={36} height={36} className="object-contain w-full h-full" />
           </div>
           <div>
-            <div className="text-sm font-bold leading-tight" style={{ color: "#f1f5f9" }}>Performance Hub</div>
-            <div className="text-xs" style={{ color: "#8896b0" }}>Schoonhoven Sports</div>
+            <div className="text-sm font-bold leading-tight text-white" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</div>
+            <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.3)" }}>Schoonhoven Sports</div>
           </div>
         </div>
       </div>
 
+      {/* Nav section label */}
+      <div className="px-5 pt-5 pb-2">
+        <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.2)", fontFamily: "Outfit, sans-serif" }}>
+          Menu
+        </span>
+      </div>
+
       {/* Nav */}
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto pb-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href ||
             (item.href !== `/dashboard/${role}` && item.href !== `/dashboard/${role}/profile` && pathname.startsWith(item.href));
-          const isExactActive = pathname === item.href;
-          const active = isActive || isExactActive;
+          const active = isActive || pathname === item.href;
 
           return (
             <Link
               key={item.href}
               href={item.href}
               onClick={onNavigate}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group",
-                active
-                  ? "text-white"
-                  : "hover:text-white"
-              )}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative"
               style={active ? {
-                background: "rgba(0, 184, 145, 0.12)",
-                border: "1px solid rgba(0, 184, 145, 0.2)",
-                color: "#6475f5",
+                background: "linear-gradient(135deg, rgba(79,70,229,0.2), rgba(124,58,237,0.15))",
+                border: "1px solid rgba(129,140,248,0.2)",
+                color: "#a5b4fc",
+                fontFamily: "Outfit, sans-serif",
               } : {
                 border: "1px solid transparent",
-                color: "#8896b0",
+                color: "rgba(255,255,255,0.38)",
+                fontFamily: "Outfit, sans-serif",
+              }}
+              onMouseEnter={(e) => {
+                if (!active) {
+                  e.currentTarget.style.color = "rgba(255,255,255,0.75)";
+                  e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!active) {
+                  e.currentTarget.style.color = "rgba(255,255,255,0.38)";
+                  e.currentTarget.style.background = "transparent";
+                }
               }}
             >
-              <span style={{ color: active ? "#6475f5" : undefined }}>
-                {item.icon}
-              </span>
+              {active && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full"
+                  style={{ background: "linear-gradient(180deg, #6366f1, #8b5cf6)" }} />
+              )}
+              <span style={{ color: active ? "#a5b4fc" : undefined }}>{item.icon}</span>
               <span className="flex-1">{item.label}</span>
               {item.badge && (
-                <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(0,184,145,0.15)", color: "#6475f5" }}>
-                  {item.badge}
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-0.5"
+                  style={{ background: "rgba(129,140,248,0.15)", color: "#a5b4fc" }}>
+                  <Sparkles size={9} /> {item.badge}
                 </span>
               )}
-              {active && <ChevronRight size={14} style={{ color: "#6475f5" }} />}
             </Link>
           );
         })}
       </nav>
 
-      {/* User section */}
-      <div className="p-3 space-y-1.5" style={{ borderTop: "1px solid #323754" }}>
+      {/* Bottom */}
+      <div className="px-3 pb-4 space-y-1" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "12px" }}>
         <Link
           href={`/dashboard/${role}/settings`}
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all"
-          style={{ color: "#8896b0" }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = "#f1f5f9"; e.currentTarget.style.background = "#252b42"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = "#8896b0"; e.currentTarget.style.background = "transparent"; }}
+          style={{ color: "rgba(255,255,255,0.3)", fontFamily: "Outfit, sans-serif" }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.7)"; e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.3)"; e.currentTarget.style.background = "transparent"; }}
         >
           <Settings size={15} />
           <span>Instellingen</span>
         </Link>
 
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ background: "#1e2236", border: "1px solid #323754" }}>
-          <div className="w-8 h-8 rounded-lg flex-shrink-0 overflow-hidden flex items-center justify-center text-sm font-bold"
-            style={avatarUrl ? {} : { background: "linear-gradient(135deg, #4f46e5, #7c3aed)", color: "#fff" }}>
-            {avatarUrl ? (
-              <Image src={avatarUrl} alt={userName} width={32} height={32} className="object-cover w-full h-full" />
-            ) : (
-              userName.charAt(0).toUpperCase()
-            )}
+        {/* User card */}
+        <div className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl"
+          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+          <div className="w-8 h-8 rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center text-xs font-bold text-white"
+            style={avatarUrl ? {} : { background: "linear-gradient(135deg, #4f46e5, #7c3aed)" }}>
+            {avatarUrl
+              ? <Image src={avatarUrl} alt={userName} width={32} height={32} className="object-cover w-full h-full" />
+              : initials
+            }
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold truncate" style={{ color: "#f1f5f9" }}>{userName}</div>
-            <div className={cn("text-xs px-1.5 py-0.5 rounded-md inline-block mt-0.5", roleConfig.bg, roleConfig.color)}>
-              {roleConfig.icon} {roleConfig.label}
-            </div>
+            <div className="text-xs font-semibold truncate text-white" style={{ fontFamily: "Outfit, sans-serif" }}>{userName}</div>
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md inline-block mt-0.5"
+              style={{ background: roleConfig.bg, color: roleConfig.color, fontFamily: "Outfit, sans-serif" }}>
+              {roleConfig.label}
+            </span>
           </div>
-          <button
-            onClick={handleLogout}
-            className="p-1 rounded transition-colors"
-            title="Uitloggen"
-            style={{ color: "#4a6080" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#ef4444"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#4a6080"; }}
-          >
+          <button onClick={handleLogout} title="Uitloggen"
+            className="p-1.5 rounded-lg transition-colors flex-shrink-0"
+            style={{ color: "rgba(255,255,255,0.25)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f87171"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.1)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.25)"; (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}>
             <LogOut size={14} />
           </button>
         </div>

@@ -104,8 +104,8 @@ export default function CoachProfilePage() {
   const elitePlayers = players.filter((p) => p.overall_rating >= 80).length;
   const topPlayer = [...players].sort((a, b) => b.overall_rating - a.overall_rating)[0];
 
-  const inputStyle = { background: "#20243a", border: "1px solid #323754" };
-  const inputClass = "w-full rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all";
+  const inputStyle = { background: "#ffffff", border: "1px solid #e2e8f0" };
+  const inputClass = "w-full rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 transition-all";
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -206,7 +206,7 @@ export default function CoachProfilePage() {
               rows={4} placeholder="Beschrijf je achtergrond, aanpak en coaching filosofie..."
               className={`${inputClass} resize-none w-full`} style={inputStyle} />
           ) : profile.bio ? (
-            <p className="text-slate-300 text-sm leading-relaxed">{profile.bio}</p>
+            <p className="text-slate-700 text-sm leading-relaxed">{profile.bio}</p>
           ) : (
             <p className="text-slate-600 text-sm italic">
               Nog geen bio ingevuld.{" "}

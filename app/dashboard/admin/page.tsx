@@ -77,7 +77,7 @@ export default function AdminPage() {
                     {u.role}
                   </span>
                 </div>
-                <button className="text-slate-600 hover:text-slate-300 transition-colors">
+                <button className="text-slate-400 hover:text-slate-700 transition-colors">
                   <Settings size={14} />
                 </button>
               </div>

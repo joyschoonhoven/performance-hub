@@ -127,10 +127,10 @@ export default function AnalyticsPage() {
               <div className="hub-label mb-4">Rating Verdeling</div>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={ratingBuckets} margin={{ left: -20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1a2d47" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                   <XAxis dataKey="range" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ backgroundColor: "#20243a", border: "1px solid #1a2d47", borderRadius: "12px", color: "#1e293b", fontSize: "12px" }} />
+                  <Tooltip contentStyle={{ backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", color: "#0f172a", fontSize: "12px", boxShadow: "0 4px 12px rgba(15,23,42,0.1)" }} />
                   <Bar dataKey="count" radius={[6, 6, 0, 0]}>
                     {ratingBuckets.map((entry) => (
                       <Cell key={entry.range} fill={

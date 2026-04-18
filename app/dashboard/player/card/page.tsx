@@ -45,30 +45,44 @@ export default function PlayerCardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Hero banner */}
-      <div className="relative rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0f1422 0%, #1a1d2e 50%, #0f1422 100%)", minHeight: 160 }}>
-        <div className="absolute inset-0" style={{ background: `radial-gradient(circle at 80% 50%, ${rColor}18 0%, transparent 65%)` }} />
-        <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, ${rColor}, #6366f1, #a855f7)` }} />
-        <div className="relative flex items-center gap-5 p-6 sm:p-8">
-          <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center font-black text-xl"
-            style={player.avatar_url ? {} : { background: `linear-gradient(135deg, ${rColor}25, ${rColor}50)`, color: rColor, border: `2px solid ${rColor}40` }}>
-            {player.avatar_url
-              ? <Image src={player.avatar_url} alt={player.first_name} width={64} height={64} className="object-cover w-full h-full" />
-              : `${player.first_name[0]}${player.last_name[0]}`
-            }
+      {/* Premium page header */}
+      <div className="hub-page-header p-6 sm:p-8">
+        <div className="flex items-center gap-5">
+          <div className="relative flex-shrink-0">
+            <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center font-black text-2xl border-2"
+              style={player.avatar_url
+                ? { borderColor: `${rColor}30` }
+                : { background: `linear-gradient(135deg, ${rColor}15, ${rColor}30)`, borderColor: `${rColor}25`, color: rColor }}>
+              {player.avatar_url
+                ? <Image src={player.avatar_url} alt={player.first_name} width={80} height={80} className="object-cover w-full h-full" />
+                : `${player.first_name[0]}${player.last_name[0]}`
+              }
+            </div>
+            <div className="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-md"
+              style={{ background: rColor }}>
+              {player.overall_rating}
+            </div>
           </div>
-          <div className="flex-1">
-            <div className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: rColor }}>Mijn Player Card</div>
-            <h1 className="text-2xl font-black text-white">{player.first_name} <span style={{ color: rColor }}>{player.last_name.toUpperCase()}</span></h1>
-            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-400">
-              <span>{POSITION_LABELS[player.position]}</span>
-              {player.jersey_number && <span>#{player.jersey_number}</span>}
-              {player.team_name && <span>{player.team_name}</span>}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-0.5" style={{ fontFamily: "Outfit, sans-serif" }}>Mijn Player Card</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
+              {player.first_name} <span style={{ color: rColor }}>{player.last_name.toUpperCase()}</span>
+            </h1>
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: `${rColor}10`, color: rColor }}>
+                {POSITION_LABELS[player.position]}
+              </span>
+              {player.jersey_number && (
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
+                  #{player.jersey_number}
+                </span>
+              )}
+              {player.team_name && <span className="text-xs text-slate-500">{player.team_name}</span>}
             </div>
           </div>
           <div className="hidden sm:block text-right flex-shrink-0">
-            <div className="text-6xl font-black tabular-nums leading-none" style={{ color: rColor }}>{player.overall_rating}</div>
-            <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">Rating</div>
+            <div className="font-black tabular-nums leading-none" style={{ color: rColor, fontSize: "4.5rem", fontFamily: "Outfit, sans-serif" }}>{player.overall_rating}</div>
+            <div className="text-xs text-slate-400 uppercase tracking-widest mt-1" style={{ fontFamily: "Outfit, sans-serif" }}>Rating</div>
           </div>
         </div>
       </div>

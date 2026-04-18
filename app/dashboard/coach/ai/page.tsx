@@ -157,7 +157,7 @@ export default function AIScoutingPage() {
                     Fit Score: {result.fit_score}/100
                   </span>
                 </div>
-                <p className="text-slate-300 text-sm leading-relaxed">{result.summary}</p>
+                <p className="text-slate-700 text-sm leading-relaxed">{result.summary}</p>
                 {result.reasoning && (
                   <p className="text-xs text-slate-600 mt-2 italic">{result.reasoning}</p>
                 )}

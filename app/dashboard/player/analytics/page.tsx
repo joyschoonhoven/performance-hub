@@ -113,7 +113,7 @@ export default function PlayerAnalyticsPage() {
                 return (
                   <div key={cat}>
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-sm text-slate-300 font-medium">{label}</span>
+                      <span className="text-sm text-slate-700 font-medium">{label}</span>
                       <span className="text-sm font-black tabular-nums" style={{ color: sc }}>{score.toFixed(1)}</span>
                     </div>
                     <div className="h-2.5 bg-hub-border rounded-full overflow-hidden">

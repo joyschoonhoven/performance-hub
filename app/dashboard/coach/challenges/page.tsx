@@ -124,11 +124,11 @@ export default function CoachChallengesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 rounded-xl w-fit" style={{ background: "#20243a", border: "1px solid #323754" }}>
+      <div className="flex gap-1 p-1 rounded-xl w-fit bg-slate-100 border border-slate-200">
         {(["overzicht", "templates"] as TabType[]).map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className="px-4 py-2 rounded-lg text-xs font-semibold transition-all capitalize"
-            style={tab === t ? { background: "#00b891", color: "#fff" } : { color: "#475569" }}>
+            style={tab === t ? { background: "#4f46e5", color: "#fff", boxShadow: "0 2px 8px rgba(79,70,229,0.25)" } : { color: "#64748b" }}>
             {t === "overzicht" ? "Overzicht" : "Maandelijkse Challenges"}
           </button>
         ))}
@@ -272,8 +272,8 @@ export default function CoachChallengesPage() {
       {assignModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setAssignModal(null)} />
-          <div className="relative rounded-2xl p-6 w-full max-w-md space-y-4"
-            style={{ background: "#262b42", border: "1px solid #323754" }}>
+          <div className="relative rounded-2xl p-6 w-full max-w-md space-y-4 bg-white"
+            style={{ border: "1px solid #e2e8f0", boxShadow: "0 20px 60px rgba(15,23,42,0.2)" }}>
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-slate-900">Challenge toewijzen</h3>
               <button onClick={() => setAssignModal(null)} className="text-slate-600 hover:text-slate-900 transition-colors">
@@ -281,7 +281,7 @@ export default function CoachChallengesPage() {
               </button>
             </div>
 
-            <div className="p-3 rounded-xl" style={{ background: "#20243a", border: "1px solid #323754" }}>
+            <div className="p-3 rounded-xl" style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}>
               <div className="text-xs text-slate-600 mb-1">{assignModal.template.month_label}</div>
               <div className="font-semibold text-slate-900 text-sm">{assignModal.template.title}</div>
             </div>
@@ -294,7 +294,7 @@ export default function CoachChallengesPage() {
                 value={selectedPlayerId}
                 onChange={(e) => setSelectedPlayerId(e.target.value)}
                 className="w-full rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none"
-                style={{ background: "#20243a", border: "1px solid #323754" }}
+                style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
               >
                 {players.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -313,7 +313,7 @@ export default function CoachChallengesPage() {
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
                 className="w-full rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none"
-                style={{ background: "#20243a", border: "1px solid #323754", colorScheme: "dark" }}
+                style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
               />
               <p className="text-xs text-slate-600 mt-1">
                 Standaard: {assignModal.template.duration_weeks} weken vanaf vandaag

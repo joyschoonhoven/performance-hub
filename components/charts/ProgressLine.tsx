@@ -46,7 +46,7 @@ export function ProgressLineChart({ data, showCategories = false, height = 200 }
   return (
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={formatted} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#1a2d47" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
         <XAxis
           dataKey="date"
           tick={{ fill: "#64748b", fontSize: 11 }}
@@ -61,11 +61,12 @@ export function ProgressLineChart({ data, showCategories = false, height = 200 }
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: "#20243a",
-            border: "1px solid #1a2d47",
+            backgroundColor: "#ffffff",
+            border: "1px solid #e2e8f0",
             borderRadius: "12px",
-            color: "#1e293b",
+            color: "#0f172a",
             fontSize: "12px",
+            boxShadow: "0 4px 12px rgba(15,23,42,0.1)",
           }}
           formatter={(value: number, name: string) => [value.toFixed(1), name]}
         />

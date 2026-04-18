@@ -76,28 +76,34 @@ export default function PlayersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Hero header */}
-      <div className="relative rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0f1422 0%, #1a1d2e 100%)", minHeight: 130 }}>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 20% 50%, rgba(0,184,145,0.1) 0%, transparent 60%)" }} />
-        <div className="absolute top-0 left-0 right-0 h-1" style={{ background: "linear-gradient(90deg, #00b891, #6366f1)" }} />
-        <div className="relative flex items-center justify-between gap-4 p-6 sm:p-8">
+      {/* Premium page header */}
+      <div className="hub-page-header p-6 sm:p-8">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-1">Performance Hub</div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white">Squad Overzicht</h1>
-            <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
-              <span>{allPlayers.length} spelers</span>
-              <span>Gem. {avgRating}</span>
-              <span>{eliteCount} elite (80+)</span>
+            <p className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-1" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
+              Squad Overzicht
+            </h1>
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              {[
+                { label: `${allPlayers.length} spelers`, color: "#4f46e5", bg: "#ede9fe" },
+                { label: `Gem. ${avgRating}`, color: "#0891b2", bg: "#e0f2fe" },
+                { label: `${eliteCount} elite (80+)`, color: "#059669", bg: "#d1fae5" },
+              ].map(s => (
+                <span key={s.label} className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: s.bg, color: s.color }}>
+                  {s.label}
+                </span>
+              ))}
             </div>
           </div>
           {/* Avatar stack */}
           <div className="hidden sm:flex items-center">
-            <div className="flex -space-x-3">
+            <div className="flex -space-x-2.5">
               {allPlayers.slice(0, 5).map((p, i) => {
                 const rc = getRatingColor(p.overall_rating);
                 return (
-                  <div key={p.id} className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center text-xs font-black border-2 border-slate-900"
-                    style={p.avatar_url ? { zIndex: 5 - i } : { background: `linear-gradient(135deg, ${rc}30, ${rc}60)`, color: rc, zIndex: 5 - i }}>
+                  <div key={p.id} className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center text-xs font-black border-2 border-white shadow-sm"
+                    style={p.avatar_url ? { zIndex: 5 - i } : { background: `linear-gradient(135deg, ${rc}20, ${rc}40)`, color: rc, zIndex: 5 - i, border: "2px solid white" }}>
                     {p.avatar_url
                       ? <Image src={p.avatar_url} alt={p.first_name} width={40} height={40} className="object-cover w-full h-full" />
                       : `${p.first_name[0]}${p.last_name[0]}`
@@ -106,8 +112,8 @@ export default function PlayersPage() {
                 );
               })}
               {allPlayers.length > 5 && (
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold border-2 border-slate-900"
-                  style={{ background: "rgba(255,255,255,0.08)", color: "#94a3b8", zIndex: 0 }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold border-2 border-white shadow-sm"
+                  style={{ background: "#f1f5f9", color: "#64748b", zIndex: 0 }}>
                   +{allPlayers.length - 5}
                 </div>
               )}
@@ -152,7 +158,7 @@ export default function PlayersPage() {
         <select
           value={sortKey}
           onChange={(e) => setSortKey(e.target.value as SortKey)}
-          className="bg-hub-surface border border-hub-border rounded-xl px-3 py-2.5 text-xs text-slate-300 focus:outline-none focus:border-hub-teal transition-all"
+          className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-indigo-400 transition-all"
         >
           <option value="rating">Sorteer: Rating</option>
           <option value="name">Sorteer: Naam</option>

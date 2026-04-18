@@ -231,22 +231,22 @@ export default function PlayerDashboardPage() {
       )}
 
       {/* AI Ontwikkelplan */}
-      <div className="hub-card p-5" style={{ border: "1px solid rgba(99,102,241,0.25)", background: "linear-gradient(135deg, rgba(99,102,241,0.04), rgba(0,184,145,0.04))" }}>
+      <div className="hub-card p-5" style={{ border: "1px solid rgba(79,70,229,0.15)", background: "linear-gradient(135deg, #fafaff 0%, #f5f3ff 100%)" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg" style={{ background: "rgba(99,102,241,0.15)" }}>
-              <Sparkles size={14} style={{ color: "#818cf8" }} />
+            <div className="p-1.5 rounded-lg" style={{ background: "#ede9fe" }}>
+              <Sparkles size={14} style={{ color: "#4f46e5" }} />
             </div>
             <span className="text-sm font-bold text-slate-900">AI Ontwikkelplan</span>
             {devPlanSource === "claude" && (
-              <span className="hub-tag text-[9px]" style={{ background: "rgba(99,102,241,0.12)", color: "#818cf8" }}>Claude AI</span>
+              <span className="hub-tag text-[9px]" style={{ background: "#ede9fe", color: "#4f46e5" }}>Claude AI</span>
             )}
           </div>
           {devPlan && (
             <button
               onClick={() => player && generateDevPlan(player)}
               disabled={devPlanLoading}
-              className="text-slate-600 hover:text-slate-300 transition-colors"
+              className="text-slate-400 hover:text-slate-600 transition-colors"
               title="Vernieuwen"
             >
               <RefreshCw size={13} className={devPlanLoading ? "animate-spin" : ""} />
@@ -255,8 +255,8 @@ export default function PlayerDashboardPage() {
         </div>
 
         {devPlanLoading ? (
-          <div className="flex items-center gap-2 text-slate-600 text-sm py-2">
-            <Loader2 size={14} className="animate-spin" />
+          <div className="flex items-center gap-2 text-slate-500 text-sm py-2">
+            <Loader2 size={14} className="animate-spin text-indigo-500" />
             Plan wordt gegenereerd...
           </div>
         ) : devPlan ? (
@@ -264,10 +264,10 @@ export default function PlayerDashboardPage() {
             {devPlan.map((point, i) => (
               <li key={i} className="flex items-start gap-2.5">
                 <div className="mt-0.5 w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-[10px] font-black"
-                  style={{ background: "rgba(99,102,241,0.15)", color: "#818cf8" }}>
+                  style={{ background: "#ede9fe", color: "#4f46e5" }}>
                   {i + 1}
                 </div>
-                <span className="text-sm text-slate-300 leading-relaxed">{point}</span>
+                <span className="text-sm text-slate-700 leading-relaxed">{point}</span>
               </li>
             ))}
           </ul>
@@ -282,7 +282,7 @@ export default function PlayerDashboardPage() {
               <button
                 onClick={() => player && generateDevPlan(player)}
                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all flex-shrink-0 ml-3"
-                style={{ background: "rgba(99,102,241,0.15)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.2)" }}
+                style={{ background: "#ede9fe", color: "#4f46e5", border: "1px solid rgba(79,70,229,0.2)" }}
               >
                 <Sparkles size={11} /> Genereer
                 <ChevronRight size={11} />
@@ -371,7 +371,7 @@ export default function PlayerDashboardPage() {
                 <Activity size={14} className="text-hub-teal" />
                 <div className="text-xs font-semibold text-hub-teal uppercase tracking-wider">Scouting Analyse</div>
               </div>
-              <p className="text-sm text-slate-300 leading-relaxed">{identity.ai_summary}</p>
+              <p className="text-sm text-slate-700 leading-relaxed">{identity.ai_summary}</p>
             </div>
           )}
         </div>
