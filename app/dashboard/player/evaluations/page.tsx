@@ -39,7 +39,7 @@ export default function PlayerEvaluationsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
-          <ClipboardList size={24} className="text-indigo-400" />
+          <ClipboardList size={24} className="text-hub-teal" />
           Mijn Evaluaties
         </h1>
         <p className="text-slate-600 text-sm mt-1">{evaluations.length} evaluaties van jouw coach</p>

@@ -69,8 +69,8 @@ export default function CoachDashboardPage() {
         </div>
         <div className="hub-card p-12 text-center max-w-md mx-auto">
           <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-            style={{ background: "rgba(0,184,145,0.1)", border: "1px solid rgba(0,184,145,0.2)" }}>
-            <UserPlus size={28} style={{ color: "#00b891" }} />
+            style={{ background: "rgba(79,169,230,0.08)", border: "1px solid rgba(79,169,230,0.18)" }}>
+            <UserPlus size={28} style={{ color: "#4FA9E6" }} />
           </div>
           <h2 className="text-lg font-bold text-slate-900 mb-2">Nog geen spelers</h2>
           <p className="text-slate-600 text-sm mb-6">
@@ -101,21 +101,21 @@ export default function CoachDashboardPage() {
           <div className="flex items-center gap-4">
             {/* Avatar */}
             <div className="w-14 h-14 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center font-black text-lg"
-              style={coachAvatar ? {} : { background: "linear-gradient(135deg, #ede9fe, #ddd6fe)", color: "#4f46e5", border: "2px solid #e0e7ff" }}>
+              style={coachAvatar ? {} : { background: "linear-gradient(135deg, #E8F4FC, #BAD9F5)", color: "#0A2540", border: "2px solid rgba(79,169,230,0.25)" }}>
               {coachAvatar
                 ? <Image src={coachAvatar} alt={coachName} width={56} height={56} className="object-cover w-full h-full" />
                 : coachName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "C"
               }
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-0.5" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-hub-teal mb-0.5" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
                 {coachName ? `Hey, ${coachName.split(" ")[0]} 👋` : "Coach Dashboard"}
               </h1>
               <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                 {[
-                  { label: `${totalPlayers} spelers`, color: "#4f46e5", bg: "#ede9fe" },
-                  { label: `${avgRating} gem. rating`, color: "#0891b2", bg: "#e0f2fe" },
+                  { label: `${totalPlayers} spelers`, color: "#4FA9E6", bg: "#E8F4FC" },
+                  { label: `${avgRating} gem. rating`, color: "#0A2540", bg: "#E8F4FC" },
                   { label: `${trendingUp} trending ↑`, color: "#059669", bg: "#d1fae5" },
                 ].map(s => (
                   <span key={s.label} className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: s.bg, color: s.color }}>
@@ -139,10 +139,10 @@ export default function CoachDashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Spelers", value: totalPlayers, icon: <Users size={18} />, color: "#4f46e5", bg: "#ede9fe", sub: `${activePlayers} actief` },
+          { label: "Spelers", value: totalPlayers, icon: <Users size={18} />, color: "#4FA9E6", bg: "#E8F4FC", sub: `${activePlayers} actief` },
           { label: "Gem. rating", value: avgRating, icon: <Star size={18} />, color: "#d97706", bg: "#fef3c7", sub: "alle spelers" },
           { label: "Progressie", value: trendingUp, icon: <TrendingUp size={18} />, color: "#059669", bg: "#d1fae5", sub: "trending omhoog" },
-          { label: "Elite (80+)", value: elitePlayers, icon: <Zap size={18} />, color: "#7c3aed", bg: "#f3e8ff", sub: "topscore" },
+          { label: "Elite (80+)", value: elitePlayers, icon: <Zap size={18} />, color: "#0A2540", bg: "#E8F4FC", sub: "topscore" },
         ].map((stat) => (
           <div key={stat.label} className="hub-card p-5 relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: stat.color }} />
@@ -222,7 +222,7 @@ export default function CoachDashboardPage() {
                         <span key={s.category} className="text-xs px-2 py-0.5 rounded-lg"
                           style={{
                             background: `${s.score >= 8 ? "#00d4aa" : s.score >= 6 ? "#6366f1" : "#ef4444"}18`,
-                            color: s.score >= 8 ? "#00d4aa" : s.score >= 6 ? "#818cf8" : "#f87171",
+                            color: s.score >= 8 ? "#00d4aa" : s.score >= 6 ? "#4FA9E6" : "#f87171",
                           }}>
                           {s.category.slice(0, 3).toUpperCase()} {s.score.toFixed(1)}
                         </span>

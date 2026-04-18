@@ -33,7 +33,7 @@ function CoreValueBar({ label, value, color }: { label: string; value: number; c
 }
 
 function StatHex({ label, value }: { label: string; value: number }) {
-  const color = value >= 8 ? "#00d4aa" : value >= 6.5 ? "#6366f1" : value >= 5 ? "#f59e0b" : "#ef4444";
+  const color = value >= 8 ? "#00d4aa" : value >= 6.5 ? "#4FA9E6" : value >= 5 ? "#f59e0b" : "#ef4444";
   return (
     <div className="flex flex-col items-center gap-0.5">
       <span className="text-xs font-bold tabular-nums" style={{ color }}>{value.toFixed(1)}</span>
@@ -197,7 +197,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
     >
       {/* Decorative top accent line */}
       <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl"
-        style={{ background: `linear-gradient(90deg, ${ratingColor}, #6366f1)` }} />
+        style={{ background: `linear-gradient(90deg, ${ratingColor}, #4FA9E6)` }} />
 
       {/* Top section — rating + position */}
       <div className="relative px-6 pt-6 pb-3">

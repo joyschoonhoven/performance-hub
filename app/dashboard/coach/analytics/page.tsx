@@ -47,7 +47,7 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
-          <BarChart3 size={24} className="text-indigo-400" />
+          <BarChart3 size={24} className="text-hub-teal" />
           Analytics
         </h1>
       </div>
@@ -91,7 +91,7 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
-          <BarChart3 size={24} className="text-indigo-400" />
+          <BarChart3 size={24} className="text-hub-teal" />
           Analytics
         </h1>
         <p className="text-slate-600 text-sm mt-1">Team performance inzichten</p>
@@ -151,7 +151,7 @@ export default function AnalyticsPage() {
                   <div key={pd.position} className="flex items-center gap-3">
                     <div className="w-10 text-xs font-semibold text-slate-600">{pd.position}</div>
                     <div className="flex-1 h-6 bg-hub-border rounded-lg overflow-hidden">
-                      <div className="h-full rounded-lg bg-indigo-500/60 flex items-center px-2"
+                      <div className="h-full rounded-lg bg-hub-teal/60 flex items-center px-2"
                         style={{ width: `${(pd.count / players.length) * 100}%` }}>
                         <span className="text-[10px] font-bold text-slate-900">{pd.count}</span>
                       </div>

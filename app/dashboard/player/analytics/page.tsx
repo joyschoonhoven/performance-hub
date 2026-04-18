@@ -52,7 +52,7 @@ export default function PlayerAnalyticsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
-          <BarChart3 size={24} className="text-indigo-400" />
+          <BarChart3 size={24} className="text-hub-teal" />
           Mijn Progressie
         </h1>
         <p className="text-slate-600 text-sm mt-1">Jouw ontwikkeling over tijd</p>

@@ -143,7 +143,7 @@ export default function AIScoutingPage() {
         <div className="space-y-4">
           {/* Summary banner */}
           <div className="hub-card p-6 border-hub-teal/30 relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-hub-teal to-indigo-500" />
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-hub-teal to-hub-indigo" />
             <div className="flex items-start gap-4">
               <div className="p-2 rounded-xl bg-hub-teal/15 flex-shrink-0">
                 <Sparkles size={20} className="text-hub-teal" />

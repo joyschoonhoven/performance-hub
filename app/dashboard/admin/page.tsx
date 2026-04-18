@@ -72,7 +72,7 @@ export default function AdminPage() {
                   <span className={`hub-tag text-[10px] ${
                     u.role === "coach" ? "bg-hub-teal/10 text-hub-teal" :
                     u.role === "admin" ? "bg-amber-500/10 text-amber-400" :
-                    "bg-indigo-500/10 text-indigo-400"
+                    "bg-hub-teal/10 text-hub-teal"
                   }`}>
                     {u.role}
                   </span>

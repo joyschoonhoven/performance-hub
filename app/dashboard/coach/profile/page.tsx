@@ -105,7 +105,7 @@ export default function CoachProfilePage() {
   const topPlayer = [...players].sort((a, b) => b.overall_rating - a.overall_rating)[0];
 
   const inputStyle = { background: "#ffffff", border: "1px solid #e2e8f0" };
-  const inputClass = "w-full rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 transition-all";
+  const inputClass = "w-full rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-hub-teal focus:ring-2 focus:ring-hub-teal/10 transition-all";
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -156,7 +156,7 @@ export default function CoachProfilePage() {
           <div className="flex-1">
             <div className="flex flex-wrap items-start gap-3 mb-2">
               <h2 className="text-2xl font-black text-slate-900">{profile.full_name}</h2>
-              <span className="hub-tag text-xs" style={{ background: "rgba(0,184,145,0.1)", color: "#00b891" }}>Coach</span>
+              <span className="hub-tag text-xs" style={{ background: "rgba(79,169,230,0.1)", color: "#4FA9E6" }}>Coach</span>
               {profile.coaching_license && (
                 <span className="hub-tag text-xs" style={{ background: "rgba(99,102,241,0.1)", color: "#6366f1" }}>
                   <Award size={10} /> {profile.coaching_license}
@@ -221,7 +221,7 @@ export default function CoachProfilePage() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {[
-          { label: "Spelers", value: players.length, icon: <Users size={16} />, color: "#00b891" },
+          { label: "Spelers", value: players.length, icon: <Users size={16} />, color: "#4FA9E6" },
           { label: "Evaluaties", value: totalEvals, icon: <ClipboardList size={16} />, color: "#6366f1" },
           { label: "Challenges", value: totalChallenges, icon: <Target size={16} />, color: "#d97706" },
           { label: "Gem. rating", value: avgRating || "—", icon: <Star size={16} />, color: "#f59e0b" },

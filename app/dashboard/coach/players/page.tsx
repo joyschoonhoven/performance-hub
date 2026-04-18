@@ -80,14 +80,14 @@ export default function PlayersPage() {
       <div className="hub-page-header p-6 sm:p-8">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-1" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-hub-teal mb-1" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
               Squad Overzicht
             </h1>
             <div className="flex items-center gap-2 mt-2 flex-wrap">
               {[
-                { label: `${allPlayers.length} spelers`, color: "#4f46e5", bg: "#ede9fe" },
-                { label: `Gem. ${avgRating}`, color: "#0891b2", bg: "#e0f2fe" },
+                { label: `${allPlayers.length} spelers`, color: "#4FA9E6", bg: "#E8F4FC" },
+                { label: `Gem. ${avgRating}`, color: "#0A2540", bg: "#E8F4FC" },
                 { label: `${eliteCount} elite (80+)`, color: "#059669", bg: "#d1fae5" },
               ].map(s => (
                 <span key={s.label} className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: s.bg, color: s.color }}>
@@ -158,7 +158,7 @@ export default function PlayersPage() {
         <select
           value={sortKey}
           onChange={(e) => setSortKey(e.target.value as SortKey)}
-          className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-indigo-400 transition-all"
+          className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-hub-teal transition-all"
         >
           <option value="rating">Sorteer: Rating</option>
           <option value="name">Sorteer: Naam</option>

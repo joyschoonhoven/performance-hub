@@ -17,7 +17,7 @@ import {
 import type { PlayerWithDetails } from "@/lib/types";
 
 const inputStyle = { background: "#ffffff", border: "1px solid #e2e8f0" };
-const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 transition-all";
+const inputClass = "w-full rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-hub-teal focus:ring-2 focus:ring-hub-teal/10 transition-all";
 
 // ─── Score button grid (1–10) ─────────────────────────────────────────────────
 function ScoreGrid({ value, onChange, color }: { value: number; onChange: (v: number) => void; color: string }) {
@@ -277,7 +277,7 @@ function NewEvaluationPageInner() {
       <div className="max-w-lg mx-auto text-center py-16 space-y-6">
         <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto"
           style={{ background: "rgba(0,184,145,0.12)", border: "1px solid rgba(0,184,145,0.2)" }}>
-          <CheckCircle2 size={40} style={{ color: "#00b891" }} />
+          <CheckCircle2 size={40} style={{ color: "#4FA9E6" }} />
         </div>
         <div>
           <h2 className="text-2xl font-black text-slate-900">Rapport opgeslagen!</h2>
@@ -573,7 +573,7 @@ function NewEvaluationPageInner() {
                 className="h-full rounded-full transition-all duration-500"
                 style={{
                   width: `${((fifaRating - 40) / 59) * 100}%`,
-                  background: `linear-gradient(90deg, #6366f1, #00b891)`,
+                  background: `linear-gradient(90deg, #4FA9E6, #0A2540)`,
                 }}
               />
             </div>

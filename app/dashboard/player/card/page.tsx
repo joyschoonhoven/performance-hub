@@ -64,7 +64,7 @@ export default function PlayerCardPage() {
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-0.5" style={{ fontFamily: "Outfit, sans-serif" }}>Mijn Player Card</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-hub-teal mb-0.5" style={{ fontFamily: "Outfit, sans-serif" }}>Mijn Player Card</p>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
               {player.first_name} <span style={{ color: rColor }}>{player.last_name.toUpperCase()}</span>
             </h1>
@@ -93,7 +93,7 @@ export default function PlayerCardPage() {
           <PlayerCard player={player} variant="full" />
           <Link href="/dashboard/player/settings"
             className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-semibold transition-all"
-            style={{ background: "rgba(99,102,241,0.08)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.2)" }}>
+            style={{ background: "rgba(99,102,241,0.08)", color: "#4FA9E6", border: "1px solid rgba(99,102,241,0.2)" }}>
             <Settings size={12} /> Profiel bewerken
           </Link>
         </div>
@@ -182,7 +182,7 @@ export default function PlayerCardPage() {
             <div className="hub-card p-5" style={{ borderColor: "rgba(99,102,241,0.25)", background: "linear-gradient(135deg, rgba(99,102,241,0.04), rgba(0,184,145,0.04))" }}>
               <div className="flex items-center gap-2 mb-3">
                 <div className="p-1.5 rounded-lg" style={{ background: "rgba(99,102,241,0.15)" }}>
-                  <Sparkles size={14} style={{ color: "#818cf8" }} />
+                  <Sparkles size={14} style={{ color: "#4FA9E6" }} />
                 </div>
                 <div className="text-sm font-bold text-slate-900">AI Scouting Rapport</div>
                 {identity.ai_fit_score && (

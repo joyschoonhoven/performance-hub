@@ -55,37 +55,39 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
       <main className="flex-1 overflow-y-auto min-w-0">
         {/* Mobile top bar */}
         <div className="lg:hidden sticky top-0 z-10 bg-white"
-          style={{ borderBottom: "1px solid #e2e8f0", boxShadow: "0 1px 8px rgba(15,23,42,0.06)" }}>
+          style={{ borderBottom: "1px solid #E4E7EB", boxShadow: "0 1px 8px rgba(10,37,64,0.06)" }}>
           <div className="flex items-center gap-3 px-4 py-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 rounded-xl transition-colors hover:bg-slate-100"
-              style={{ color: "#475569" }}
+              className="p-2 rounded-xl transition-colors"
+              style={{ color: "#6B7280" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#F4F5F7"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
             >
               <Menu size={20} />
             </button>
             <div className="flex-1 flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)" }}>
+                style={{ background: "#0A2540" }}>
                 <span className="text-white text-[10px] font-black">PH</span>
               </div>
-              <span className="font-bold text-slate-900 text-sm" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</span>
+              <span className="font-bold text-sm" style={{ color: "#111111", fontFamily: "Outfit, sans-serif" }}>Performance Hub</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl"
-                style={{ background: "rgba(79,70,229,0.07)", border: "1px solid rgba(79,70,229,0.12)" }}>
+                style={{ background: "rgba(79,169,230,0.08)", border: "1px solid rgba(79,169,230,0.18)" }}>
                 <div className="w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-black text-white"
-                  style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)" }}>
+                  style={{ background: "#0A2540" }}>
                   {userName.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-xs font-semibold text-indigo-600">{roleLabel}</span>
+                <span className="text-xs font-semibold" style={{ color: "#2B8AC7" }}>{roleLabel}</span>
               </div>
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-xl transition-colors hover:bg-red-50"
-                style={{ color: "#94a3b8" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#ef4444"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#94a3b8"; }}
+                className="p-2 rounded-xl transition-colors"
+                style={{ color: "#9CA3AF" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#ef4444"; (e.currentTarget as HTMLButtonElement).style.background = "#FEF2F2"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#9CA3AF"; (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                 title="Uitloggen"
               >
                 <LogOut size={16} />
@@ -95,25 +97,25 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
         </div>
         {/* Desktop top bar */}
         <div className="hidden lg:flex items-center justify-between px-8 py-3 bg-white"
-          style={{ borderBottom: "1px solid #e8ecf4", boxShadow: "0 1px 4px rgba(15,23,42,0.04)" }}>
+          style={{ borderBottom: "1px solid #E4E7EB", boxShadow: "0 1px 4px rgba(10,37,64,0.04)" }}>
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)" }}>
+              style={{ background: "#0A2540" }}>
               <span className="text-white text-[10px] font-black">PH</span>
             </div>
-            <span className="text-sm font-bold text-slate-800" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</span>
-            <span className="text-slate-300 text-xs mx-1">·</span>
-            <span className="text-xs text-slate-400" style={{ fontFamily: "Outfit, sans-serif" }}>Schoonhoven Sports</span>
+            <span className="text-sm font-bold" style={{ color: "#111111", fontFamily: "Outfit, sans-serif" }}>Performance Hub</span>
+            <span className="text-xs mx-1" style={{ color: "#D1D5DB" }}>·</span>
+            <span className="text-xs" style={{ color: "#9CA3AF", fontFamily: "Outfit, sans-serif" }}>Schoonhoven Sports</span>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl"
-            style={{ background: "rgba(79,70,229,0.06)", border: "1px solid rgba(79,70,229,0.1)" }}>
+            style={{ background: "rgba(79,169,230,0.07)", border: "1px solid rgba(79,169,230,0.15)" }}>
             <div className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black text-white"
-              style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)" }}>
+              style={{ background: "#0A2540" }}>
               {userName.charAt(0).toUpperCase()}
             </div>
-            <span className="text-xs font-semibold text-indigo-600" style={{ fontFamily: "Outfit, sans-serif" }}>{userName.split(" ")[0] || roleLabel}</span>
+            <span className="text-xs font-semibold" style={{ color: "#2B8AC7", fontFamily: "Outfit, sans-serif" }}>{userName.split(" ")[0] || roleLabel}</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold"
-              style={{ background: "rgba(79,70,229,0.12)", color: "#4f46e5" }}>{roleLabel}</span>
+              style={{ background: "rgba(79,169,230,0.12)", color: "#4FA9E6" }}>{roleLabel}</span>
           </div>
         </div>
         <div className="min-h-full p-4 lg:p-8">

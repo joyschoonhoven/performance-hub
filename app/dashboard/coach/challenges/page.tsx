@@ -164,7 +164,7 @@ export default function CoachChallengesPage() {
                 <div key={ch.id} className="hub-card p-5">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold flex-shrink-0"
-                      style={{ background: "rgba(0,184,145,0.15)", color: "#00b891" }}>
+                      style={{ background: "rgba(79,169,230,0.12)", color: "#4FA9E6" }}>
                       {ch.player.first_name[0]}{ch.player.last_name[0]}
                     </div>
                     <div className="flex-1">
@@ -249,7 +249,7 @@ export default function CoachChallengesPage() {
                       }}
                       disabled={!players.length}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all disabled:opacity-40"
-                      style={{ background: "rgba(0,184,145,0.15)", color: "#00b891", border: "1px solid rgba(0,184,145,0.2)" }}
+                      style={{ background: "rgba(79,169,230,0.12)", color: "#4FA9E6", border: "1px solid rgba(0,184,145,0.2)" }}
                     >
                       Toewijzen aan speler
                     </button>
@@ -329,7 +329,7 @@ export default function CoachChallengesPage() {
                 onClick={handleAssign}
                 disabled={saving || !selectedPlayerId}
                 className="flex-1 font-semibold py-3 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
-                style={{ background: "#00b891", color: "#fff" }}
+                style={{ background: "#4FA9E6", color: "#fff" }}
               >
                 {saving ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
                 Toewijzen

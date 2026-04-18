@@ -77,8 +77,8 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
   }
 
   const roleConfig = {
-    coach: { label: "Coach", color: "#34d399", bg: "rgba(52,211,153,0.12)" },
-    player: { label: "Speler", color: "#818cf8", bg: "rgba(129,140,248,0.12)" },
+    coach: { label: "Coach", color: "#4FA9E6", bg: "rgba(79,169,230,0.15)" },
+    player: { label: "Speler", color: "#93C5FD", bg: "rgba(147,197,253,0.12)" },
     admin: { label: "Admin", color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
   }[role];
 
@@ -86,7 +86,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
 
   return (
     <aside className="w-64 flex-shrink-0 flex flex-col h-screen sticky top-0" style={{
-      background: "linear-gradient(180deg, #0d1117 0%, #161b27 100%)",
+      background: "linear-gradient(180deg, #0A2540 0%, #0D2D4D 100%)",
       borderRight: "1px solid rgba(255,255,255,0.06)",
     }}>
       {/* Logo */}
@@ -124,37 +124,37 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
               onClick={onNavigate}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative"
               style={active ? {
-                background: "linear-gradient(135deg, rgba(79,70,229,0.2), rgba(124,58,237,0.15))",
-                border: "1px solid rgba(129,140,248,0.2)",
-                color: "#a5b4fc",
+                background: "rgba(79,169,230,0.14)",
+                border: "1px solid rgba(79,169,230,0.22)",
+                color: "#4FA9E6",
                 fontFamily: "Outfit, sans-serif",
               } : {
                 border: "1px solid transparent",
-                color: "rgba(255,255,255,0.38)",
+                color: "rgba(255,255,255,0.42)",
                 fontFamily: "Outfit, sans-serif",
               }}
               onMouseEnter={(e) => {
                 if (!active) {
-                  e.currentTarget.style.color = "rgba(255,255,255,0.75)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.8)";
                   e.currentTarget.style.background = "rgba(255,255,255,0.05)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!active) {
-                  e.currentTarget.style.color = "rgba(255,255,255,0.38)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.42)";
                   e.currentTarget.style.background = "transparent";
                 }
               }}
             >
               {active && (
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full"
-                  style={{ background: "linear-gradient(180deg, #6366f1, #8b5cf6)" }} />
+                  style={{ background: "#4FA9E6" }} />
               )}
-              <span style={{ color: active ? "#a5b4fc" : undefined }}>{item.icon}</span>
+              <span style={{ color: active ? "#4FA9E6" : undefined }}>{item.icon}</span>
               <span className="flex-1">{item.label}</span>
               {item.badge && (
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-0.5"
-                  style={{ background: "rgba(129,140,248,0.15)", color: "#a5b4fc" }}>
+                  style={{ background: "rgba(79,169,230,0.15)", color: "#4FA9E6" }}>
                   <Sparkles size={9} /> {item.badge}
                 </span>
               )}
@@ -180,7 +180,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
         <div className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl"
           style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
           <div className="w-8 h-8 rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center text-xs font-bold text-white"
-            style={avatarUrl ? {} : { background: "linear-gradient(135deg, #4f46e5, #7c3aed)" }}>
+            style={avatarUrl ? {} : { background: "linear-gradient(135deg, #4FA9E6, #0A2540)" }}>
             {avatarUrl
               ? <Image src={avatarUrl} alt={userName} width={32} height={32} className="object-cover w-full h-full" />
               : initials

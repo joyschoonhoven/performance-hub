@@ -171,7 +171,7 @@ export default function PlayerDashboardPage() {
 
           {/* Info */}
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#818cf8", fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#4FA9E6", fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
               {player.first_name} <span style={{ color: rColor }}>{player.last_name}</span>
             </h1>
@@ -207,9 +207,9 @@ export default function PlayerDashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Rating", value: player.overall_rating, color: rColor, bg: `${rColor}10`, sub: "overall" },
-          { label: "Evaluaties", value: player.evaluations?.length ?? 0, color: "#4f46e5", bg: "#ede9fe", sub: player.evaluations?.[0] ? formatDate(player.evaluations[0].evaluation_date) : "nog geen" },
+          { label: "Evaluaties", value: player.evaluations?.length ?? 0, color: "#4f46e5", bg: "#E8F4FC", sub: player.evaluations?.[0] ? formatDate(player.evaluations[0].evaluation_date) : "nog geen" },
           { label: "Challenges", value: openChallenges.length, color: "#d97706", bg: "#fef3c7", sub: `${completedChallenges.length} voltooid` },
-          { label: "Fit Score", value: identity?.ai_fit_score ?? "—", color: "#7c3aed", bg: "#f3e8ff", sub: "AI scouting" },
+          { label: "Fit Score", value: identity?.ai_fit_score ?? "—", color: "#0A2540", bg: "#E8F4FC", sub: "AI scouting" },
         ].map((s) => (
           <div key={s.label} className="hub-card p-5 relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: s.color }} />
@@ -234,12 +234,12 @@ export default function PlayerDashboardPage() {
       <div className="hub-card p-5" style={{ border: "1px solid rgba(79,70,229,0.15)", background: "linear-gradient(135deg, #fafaff 0%, #f5f3ff 100%)" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg" style={{ background: "#ede9fe" }}>
+            <div className="p-1.5 rounded-lg" style={{ background: "#E8F4FC" }}>
               <Sparkles size={14} style={{ color: "#4f46e5" }} />
             </div>
             <span className="text-sm font-bold text-slate-900">AI Ontwikkelplan</span>
             {devPlanSource === "claude" && (
-              <span className="hub-tag text-[9px]" style={{ background: "#ede9fe", color: "#4f46e5" }}>Claude AI</span>
+              <span className="hub-tag text-[9px]" style={{ background: "#E8F4FC", color: "#4f46e5" }}>Claude AI</span>
             )}
           </div>
           {devPlan && (
@@ -256,7 +256,7 @@ export default function PlayerDashboardPage() {
 
         {devPlanLoading ? (
           <div className="flex items-center gap-2 text-slate-500 text-sm py-2">
-            <Loader2 size={14} className="animate-spin text-indigo-500" />
+            <Loader2 size={14} className="animate-spin text-hub-teal" />
             Plan wordt gegenereerd...
           </div>
         ) : devPlan ? (
@@ -264,7 +264,7 @@ export default function PlayerDashboardPage() {
             {devPlan.map((point, i) => (
               <li key={i} className="flex items-start gap-2.5">
                 <div className="mt-0.5 w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-[10px] font-black"
-                  style={{ background: "#ede9fe", color: "#4f46e5" }}>
+                  style={{ background: "#E8F4FC", color: "#4f46e5" }}>
                   {i + 1}
                 </div>
                 <span className="text-sm text-slate-700 leading-relaxed">{point}</span>
@@ -282,7 +282,7 @@ export default function PlayerDashboardPage() {
               <button
                 onClick={() => player && generateDevPlan(player)}
                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all flex-shrink-0 ml-3"
-                style={{ background: "#ede9fe", color: "#4f46e5", border: "1px solid rgba(79,70,229,0.2)" }}
+                style={{ background: "#E8F4FC", color: "#4f46e5", border: "1px solid rgba(79,70,229,0.2)" }}
               >
                 <Sparkles size={11} /> Genereer
                 <ChevronRight size={11} />

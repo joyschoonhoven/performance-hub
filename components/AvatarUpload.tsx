@@ -49,7 +49,7 @@ export function AvatarUpload({ currentUrl, userId, name, onUpload, size = 80 }: 
     <div className="relative inline-block" style={{ width: size, height: size }}>
       <div
         className="w-full h-full rounded-2xl overflow-hidden flex items-center justify-center font-black text-white cursor-pointer"
-        style={{ background: currentUrl ? "transparent" : "linear-gradient(135deg, #4f46e5, #7c3aed)", fontSize: size * 0.3 }}
+        style={{ background: currentUrl ? "transparent" : "linear-gradient(135deg, #4FA9E6, #0A2540)", fontSize: size * 0.3 }}
         onClick={() => inputRef.current?.click()}
       >
         {currentUrl ? (
@@ -64,7 +64,7 @@ export function AvatarUpload({ currentUrl, userId, name, onUpload, size = 80 }: 
         onClick={() => inputRef.current?.click()}
         disabled={uploading}
         className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center transition-all"
-        style={{ background: "#4f46e5", border: "2px solid #ffffff" }}
+        style={{ background: "#4FA9E6", border: "2px solid #ffffff" }}
       >
         {uploading ? (
           <Loader2 size={12} className="animate-spin text-white" />

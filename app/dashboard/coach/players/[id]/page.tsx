@@ -147,7 +147,7 @@ export default function PlayerDetailPage() {
 
           {/* Player info */}
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-0.5" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-hub-teal mb-0.5" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
               {player.first_name} <span style={{ color: rColor }}>{player.last_name.toUpperCase()}</span>
             </h1>
@@ -174,7 +174,7 @@ export default function PlayerDetailPage() {
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {Object.entries(player.recent_scores).map(([cat, score]) => {
                   const sc = score >= 8 ? "#059669" : score >= 6 ? "#4f46e5" : "#ef4444";
-                  const bg = score >= 8 ? "#d1fae5" : score >= 6 ? "#ede9fe" : "#fee2e2";
+                  const bg = score >= 8 ? "#d1fae5" : score >= 6 ? "#E8F4FC" : "#fee2e2";
                   return (
                     <span key={cat} className="text-xs px-2 py-0.5 rounded-lg font-semibold" style={{ background: bg, color: sc }}>
                       {cat.slice(0,3).toUpperCase()} {score.toFixed(1)}
