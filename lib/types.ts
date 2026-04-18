@@ -73,7 +73,7 @@ export const ARCHETYPES: Record<ArchetypeType, ArchetypeMeta> = {
   ball_playing_cb: {
     id: "ball_playing_cb", label: "Ball-Playing CB", position: ["CB"],
     description: "Speelt mee in opbouw, lange passes",
-    icon: "🎯", color: "#00d4aa",
+    icon: "🎯", color: "#10B981",
     traits: ["Passing", "Rustig onder druk", "Lijnbreker"],
   },
   defensive_blocker: {
@@ -117,7 +117,7 @@ export const ARCHETYPES: Record<ArchetypeType, ArchetypeMeta> = {
   deep_lying_playmaker: {
     id: "deep_lying_playmaker", label: "Deep Lying Playmaker", position: ["CDM"],
     description: "Regisseert vanuit de diepte, verdeelt het spel",
-    icon: "🧠", color: "#00d4aa",
+    icon: "🧠", color: "#10B981",
     traits: ["Visie", "Passing", "Positiespel"],
   },
   box_to_box: {
@@ -161,7 +161,7 @@ export const ARCHETYPES: Record<ArchetypeType, ArchetypeMeta> = {
   creative_hub: {
     id: "creative_hub", label: "Creative Hub", position: ["CAM"],
     description: "Centraal verbindingspunt, maakt ruimte voor anderen",
-    icon: "🎨", color: "#00d4aa",
+    icon: "🎨", color: "#10B981",
     traits: ["Dribbelen", "Combinaties", "Visie"],
   },
   // Winger
@@ -199,7 +199,7 @@ export const ARCHETYPES: Record<ArchetypeType, ArchetypeMeta> = {
   complete_forward: {
     id: "complete_forward", label: "Complete Forward", position: ["ST"],
     description: "Totaalspits — scoort, assisteert, koppelt druk",
-    icon: "💎", color: "#00d4aa",
+    icon: "💎", color: "#10B981",
     traits: ["Alles", "Leadership", "Impact"],
   },
 };
@@ -412,7 +412,7 @@ export const POSITION_COLORS: Record<PositionType, string> = {
 export const BADGE_CONFIG: Record<BadgeType, { label: string; color: string; bg: string }> = {
   elite: { label: "ELITE", color: "#f59e0b", bg: "rgba(245,158,11,0.15)" },
   talent: { label: "TALENT", color: "#6366f1", bg: "rgba(99,102,241,0.15)" },
-  prospect: { label: "PROSPECT", color: "#00d4aa", bg: "rgba(0,212,170,0.15)" },
+  prospect: { label: "PROSPECT", color: "#10B981", bg: "rgba(16,185,129,0.15)" },
   rising_star: { label: "RISING STAR", color: "#ec4899", bg: "rgba(236,72,153,0.15)" },
   veteran: { label: "VETERAN", color: "#94a3b8", bg: "rgba(148,163,184,0.15)" },
 };

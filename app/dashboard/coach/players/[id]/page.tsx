@@ -420,7 +420,7 @@ export default function PlayerDetailPage() {
                     {[
                       { key: "noodzaak", label: "Noodzaak", value: identity.core_noodzaak ?? 0, color: "#ef4444", desc: "Fysiek vermogen & werkethiek" },
                       { key: "creativiteit", label: "Creativiteit", value: identity.core_creativiteit ?? 0, color: "#a855f7", desc: "Techniek & tactisch inzicht" },
-                      { key: "vertrouwen", label: "Vertrouwen", value: identity.core_vertrouwen ?? 0, color: "#00d4aa", desc: "Mentale kracht & consistentie" },
+                      { key: "vertrouwen", label: "Vertrouwen", value: identity.core_vertrouwen ?? 0, color: "#10B981", desc: "Mentale kracht & consistentie" },
                     ].map((kv) => (
                       <div key={kv.key} className="p-4 rounded-xl border border-hub-border bg-hub-surface space-y-3">
                         <div className="flex items-center gap-2">
@@ -594,7 +594,7 @@ export default function PlayerDetailPage() {
               const statusConfig = {
                 open: { color: "#475569", label: "Open" },
                 in_progress: { color: "#f59e0b", label: "Bezig" },
-                completed: { color: "#00d4aa", label: "Voltooid" },
+                completed: { color: "#10B981", label: "Voltooid" },
                 expired: { color: "#ef4444", label: "Verlopen" },
               }[ch.status];
 

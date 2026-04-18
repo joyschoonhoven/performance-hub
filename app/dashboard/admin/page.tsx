@@ -32,7 +32,7 @@ export default function AdminPage() {
       {/* Platform stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Totaal spelers", value: MOCK_PLAYERS.length, icon: <Users size={20} />, color: "#00d4aa" },
+          { label: "Totaal spelers", value: MOCK_PLAYERS.length, icon: <Users size={20} />, color: "#10B981" },
           { label: "Coaches", value: DEMO_USERS.filter((u) => u.role === "coach").length, icon: <Shield size={20} />, color: "#4FA9E6" },
           { label: "Evaluaties", value: totalEvals, icon: <ClipboardList size={20} />, color: "#f59e0b" },
           { label: "Gem. rating", value: avgRating, icon: <TrendingUp size={20} />, color: "#22c55e" },
@@ -124,7 +124,7 @@ export default function AdminPage() {
         <div className="hub-label mb-4">Platform Instellingen</div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            { label: "AI Engine", desc: "Claude API integratie", status: "Actief", color: "#00d4aa" },
+            { label: "AI Engine", desc: "Claude API integratie", status: "Actief", color: "#10B981" },
             { label: "Supabase Auth", desc: "Database & RLS", status: "Configuratie nodig", color: "#f59e0b" },
             { label: "Email Notificaties", desc: "Evaluatie alerts", status: "Inactief", color: "#475569" },
             { label: "Export (PDF)", desc: "Player card exports", status: "Beta", color: "#4FA9E6" },

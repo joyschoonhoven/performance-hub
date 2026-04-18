@@ -223,7 +223,7 @@ export default function AIScoutingPage() {
                 {[
                   { key: "noodzaak", label: "Noodzaak", value: result.core_values.noodzaak, color: "#ef4444", icon: "💪" },
                   { key: "creativiteit", label: "Creativiteit", value: result.core_values.creativiteit, color: "#a855f7", icon: "🎨" },
-                  { key: "vertrouwen", label: "Vertrouwen", value: result.core_values.vertrouwen, color: "#00d4aa", icon: "🔥" },
+                  { key: "vertrouwen", label: "Vertrouwen", value: result.core_values.vertrouwen, color: "#10B981", icon: "🔥" },
                 ].map((kv) => (
                   <div key={kv.key} className="p-4 rounded-xl bg-hub-surface border border-hub-border text-center">
                     <div className="text-2xl mb-2">{kv.icon}</div>

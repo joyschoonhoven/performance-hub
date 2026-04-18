@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ARCHETYPES, SOCIOTYPES, CATEGORY_LABELS, CATEGORY_ICONS } from "@/lib/types";
+import { ARCHETYPES, SOCIOTYPES, CATEGORY_LABELS, CATEGORY_ICONS, POSITION_LABELS } from "@/lib/types";
 import { getRatingColor, getScoreColor, formatDate } from "@/lib/utils";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PlayerRadarChart } from "@/components/charts/RadarChart";
@@ -149,56 +149,53 @@ export default function PlayerDashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Premium page header */}
-      <div className="hub-page-header p-6 sm:p-8">
-        <div className="flex items-center gap-5">
-          {/* Avatar */}
-          <div className="relative flex-shrink-0">
-            <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center font-black text-2xl border-2"
-              style={player.avatar_url
-                ? { borderColor: `${rColor}30` }
-                : { background: `linear-gradient(135deg, ${rColor}15, ${rColor}30)`, borderColor: `${rColor}30`, color: rColor }}>
-              {player.avatar_url
-                ? <Image src={player.avatar_url} alt={player.first_name} width={80} height={80} className="object-cover w-full h-full" />
-                : `${player.first_name[0]}${player.last_name[0]}`
-              }
+      {/* PSV-style hero header */}
+      <div className="relative rounded-3xl overflow-hidden"
+        style={{ background: "linear-gradient(135deg, #0A2540 0%, #0D2D4D 60%, #0A2540 100%)", minHeight: 180 }}>
+        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${rColor}10 0%, transparent 60%)` }} />
+        <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, ${rColor}, #4FA9E6)` }} />
+        <div className="relative z-10 p-6 sm:p-8">
+          <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap">
+            <div className="relative flex-shrink-0">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center font-black text-2xl border-2"
+                style={player.avatar_url
+                  ? { borderColor: `${rColor}50` }
+                  : { background: `linear-gradient(135deg, ${rColor}20, ${rColor}40)`, borderColor: `${rColor}40`, color: rColor }}>
+                {player.avatar_url
+                  ? <Image src={player.avatar_url} alt={player.first_name} width={80} height={80} className="object-cover w-full h-full" />
+                  : `${player.first_name[0]}${player.last_name[0]}`
+                }
+              </div>
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-xs font-black text-white shadow"
+                style={{ background: rColor, fontFamily: "Outfit, sans-serif", whiteSpace: "nowrap" }}>
+                {player.overall_rating}
+              </div>
             </div>
-            <div className="absolute -bottom-1.5 -right-1.5 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black text-white shadow-md"
-              style={{ background: rColor, fontFamily: "Outfit, sans-serif" }}>
-              {player.overall_rating}
-            </div>
-          </div>
-
-          {/* Info */}
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#4FA9E6", fontFamily: "Outfit, sans-serif" }}>Performance Hub</p>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
-              {player.first_name} <span style={{ color: rColor }}>{player.last_name}</span>
-            </h1>
-            <div className="flex flex-wrap items-center gap-2 mt-2">
-              <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background: `${rColor}12`, color: rColor, border: `1px solid ${rColor}25` }}>
-                {player.position}
-              </span>
-              {player.jersey_number && (
-                <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-slate-100 text-slate-600">
-                  #{player.jersey_number}
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#4FA9E6" }}>Performance Hub</p>
+              <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
+                Hey, <span style={{ color: rColor }}>{player.first_name}</span> 👋
+              </h1>
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: `${rColor}25`, color: rColor, border: `1px solid ${rColor}40` }}>
+                  {POSITION_LABELS[player.position]}
                 </span>
-              )}
-              {player.team_name && (
-                <span className="text-xs text-slate-500">{player.team_name}</span>
-              )}
-              {primaryArch && (
-                <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background: `${primaryArch.color}12`, color: primaryArch.color }}>
-                  {primaryArch.icon} {primaryArch.label}
-                </span>
-              )}
+                {player.jersey_number && (
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/10 text-white/80">
+                    #{player.jersey_number}
+                  </span>
+                )}
+                {primaryArch && (
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: `${primaryArch.color}25`, color: primaryArch.color }}>
+                    {primaryArch.label}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-
-          {/* Big rating — desktop */}
-          <div className="hidden sm:block flex-shrink-0 text-right">
-            <div className="font-black tabular-nums leading-none" style={{ color: rColor, fontSize: "5rem", fontFamily: "Outfit, sans-serif" }}>{player.overall_rating}</div>
-            <div className="text-xs text-slate-400 uppercase tracking-widest mt-1" style={{ fontFamily: "Outfit, sans-serif" }}>Overall</div>
+            <div className="hidden sm:flex flex-col items-end flex-shrink-0">
+              <div className="font-black tabular-nums leading-none" style={{ color: rColor, fontSize: "5rem", fontFamily: "Outfit, sans-serif" }}>{player.overall_rating}</div>
+              <div className="text-[10px] text-white/40 uppercase tracking-widest mt-1">Overall</div>
+            </div>
           </div>
         </div>
       </div>
@@ -355,7 +352,7 @@ export default function PlayerDashboardPage() {
               {[
                 { label: "Noodzaak", value: identity.core_noodzaak, color: "#ef4444", Icon: Flame },
                 { label: "Creativiteit", value: identity.core_creativiteit, color: "#a855f7", Icon: Lightbulb },
-                { label: "Vertrouwen", value: identity.core_vertrouwen, color: "#00d4aa", Icon: ShieldCheck },
+                { label: "Vertrouwen", value: identity.core_vertrouwen, color: "#10B981", Icon: ShieldCheck },
               ].map((kv) => (
                 <div key={kv.label} className="text-center p-3 rounded-xl bg-hub-surface border border-hub-border">
                   <kv.Icon size={18} className="mx-auto mb-1.5" style={{ color: kv.color }} />

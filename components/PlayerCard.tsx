@@ -33,7 +33,7 @@ function CoreValueBar({ label, value, color }: { label: string; value: number; c
 }
 
 function StatHex({ label, value }: { label: string; value: number }) {
-  const color = value >= 8 ? "#00d4aa" : value >= 6.5 ? "#4FA9E6" : value >= 5 ? "#f59e0b" : "#ef4444";
+  const color = value >= 8 ? "#10B981" : value >= 6.5 ? "#4FA9E6" : value >= 5 ? "#f59e0b" : "#ef4444";
   return (
     <div className="flex flex-col items-center gap-0.5">
       <span className="text-xs font-bold tabular-nums" style={{ color }}>{value.toFixed(1)}</span>
@@ -294,7 +294,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Kernwaarden</div>
           <CoreValueBar label="Noodzaak" value={identity.core_noodzaak} color="#ef4444" />
           <CoreValueBar label="Creativiteit" value={identity.core_creativiteit} color="#a855f7" />
-          <CoreValueBar label="Vertrouwen" value={identity.core_vertrouwen} color="#00d4aa" />
+          <CoreValueBar label="Vertrouwen" value={identity.core_vertrouwen} color="#10B981" />
         </div>
       )}
 
