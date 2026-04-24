@@ -32,8 +32,13 @@ export function PlayerRadarChart({
   secondaryColor = "#10b981",
   size = 280,
 }: PlayerRadarChartProps) {
-  const cx = size / 2;
-  const cy = size / 2;
+  // ── Add padding so labels never clip the SVG boundary ──────────────
+  const pad = 44;
+  const cx = size / 2 + pad;
+  const cy = size / 2 + pad;
+  const svgW = size + pad * 2;
+  const svgH = size + pad * 2;
+
   const maxR = (size / 2) * 0.65;
   const n = data.length;
   const levels = [0.2, 0.4, 0.6, 0.8, 1.0];
@@ -56,28 +61,31 @@ export function PlayerRadarChart({
     });
 
     const axisPoints = angles.map((a) => polarToXY(cx, cy, maxR, a));
-    const labelR = maxR * 1.28;
+    const labelR = maxR * 1.30;
     const labelPoints = angles.map((a) => polarToXY(cx, cy, labelR, a));
 
     return { gridPolys, dataPoints, secondaryPoints, axisPoints, labelPoints };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, secondaryData, cx, cy, maxR, n]);
 
   const uid = color.replace(/[^a-z0-9]/gi, "r");
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: "visible" }}>
+    <svg
+      width={svgW}
+      height={svgH}
+      viewBox={`0 0 ${svgW} ${svgH}`}
+      style={{ overflow: "visible", maxWidth: "100%" }}
+    >
       <defs>
-        {/* Primary fill gradient */}
         <linearGradient id={`rg-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor={color} stopOpacity="0.45" />
           <stop offset="100%" stopColor={color} stopOpacity="0.08" />
         </linearGradient>
-        {/* Secondary fill gradient */}
         <linearGradient id={`rg2-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor={secondaryColor} stopOpacity="0.35" />
           <stop offset="100%" stopColor={secondaryColor} stopOpacity="0.06" />
         </linearGradient>
-        {/* Glow filter */}
         <filter id={`rglow-${uid}`} x="-40%" y="-40%" width="180%" height="180%">
           <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
           <feMerge>
@@ -85,7 +93,6 @@ export function PlayerRadarChart({
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        {/* Soft drop shadow */}
         <filter id={`rdrop-${uid}`}>
           <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor={color} floodOpacity="0.2" />
         </filter>
@@ -192,15 +199,10 @@ export function PlayerRadarChart({
 
         return (
           <g key={`dp-${i}`}>
-            {/* Outer glow ring */}
             <circle cx={p.x} cy={p.y} r={9} fill={color} fillOpacity={0.12} />
-            {/* Main dot */}
             <circle cx={p.x} cy={p.y} r={5} fill={color}
               filter={`url(#rdrop-${uid})`} />
-            {/* Inner white */}
             <circle cx={p.x} cy={p.y} r={2} fill="white" fillOpacity={0.9} />
-
-            {/* Value pill */}
             <g transform={`translate(${p.x + Math.cos(rad) * offset}, ${p.y + Math.sin(rad) * offset})`}>
               <rect x={-12} y={-8} width={24} height={16} rx={8}
                 fill={color} fillOpacity={0.92} />
@@ -214,28 +216,29 @@ export function PlayerRadarChart({
         );
       })}
 
-      {/* ── Axis labels with pill backgrounds ── */}
+      {/* ── Axis labels — pill always centered on p.x ── */}
       {labelPoints.map((p, i) => {
-        const angle = (i / n) * 360;
-        let anchor: "middle" | "start" | "end" = "middle";
-        if (angle > 20 && angle < 160) anchor = "start";
-        else if (angle > 200 && angle < 340) anchor = "end";
-
         const label = data[i].subject;
-        const labelW = label.length * 6 + 12;
+        // Generous width estimate for bold 10px SVG text
+        const labelW = Math.max(label.length * 7.2 + 16, 40);
+        const pillX = p.x - labelW / 2;
+        const pillH = 20;
+        const pillY = p.y - pillH / 2;
 
         return (
           <g key={`lbl-${i}`}>
+            {/* Pill background */}
             <rect
-              x={anchor === "start" ? p.x - 2 : anchor === "end" ? p.x - labelW + 2 : p.x - labelW / 2}
-              y={p.y - 9}
+              x={pillX}
+              y={pillY}
               width={labelW}
-              height={18}
-              rx={9}
+              height={pillH}
+              rx={10}
               fill="white"
               stroke="#E4E7EB"
               strokeWidth={1}
             />
+            {/* Label text — always centered on p.x */}
             <text
               x={p.x}
               y={p.y}
@@ -244,7 +247,7 @@ export function PlayerRadarChart({
               fontSize={10}
               fontWeight={700}
               fill="#374151"
-              letterSpacing="0.03em"
+              letterSpacing="0.02em"
               style={{ fontFamily: "Outfit, sans-serif" }}
             >
               {label}

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, AlertCircle } from "lucide-react";
 import Image from "next/image";
 
 interface AvatarUploadProps {
@@ -13,57 +12,79 @@ interface AvatarUploadProps {
   size?: number;
 }
 
-export function AvatarUpload({ currentUrl, userId, name, onUpload, size = 80 }: AvatarUploadProps) {
+export function AvatarUpload({ currentUrl, userId: _userId, name, onUpload, size = 80 }: AvatarUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+  const displayUrl = preview ?? currentUrl;
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Immediate local preview
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+
     setUploading(true);
     setError(null);
-    const supabase = createClient();
-    const ext = file.name.split(".").pop();
-    const path = `${userId}/avatar.${ext}`;
 
-    const { error: uploadError } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
-    if (uploadError) {
-      setError("Upload mislukt. Controleer of de 'avatars' bucket bestaat in Supabase Storage.");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload-avatar", {
+        method: "POST",
+        body: formData,
+      });
+
+      const json = await res.json() as { url?: string; error?: string };
+
+      if (!res.ok || !json.url) {
+        setError(json.error ?? "Upload mislukt");
+        setPreview(null);
+      } else {
+        // Replace local preview with the persisted Supabase URL
+        URL.revokeObjectURL(objectUrl);
+        setPreview(null);
+        onUpload(json.url);
+      }
+    } catch {
+      setError("Verbindingsfout, probeer opnieuw");
+      setPreview(null);
+    } finally {
       setUploading(false);
-      return;
+      // Reset input so the same file can be re-selected
+      if (inputRef.current) inputRef.current.value = "";
     }
-    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-    const url = `${data.publicUrl}?t=${Date.now()}`;
-    const { error: updateError } = await supabase.from("profiles").update({ avatar_url: url }).eq("id", userId);
-    if (!updateError) {
-      onUpload(url);
-    }
-    setUploading(false);
   }
 
   return (
     <div className="relative inline-block" style={{ width: size, height: size }}>
       <div
         className="w-full h-full rounded-2xl overflow-hidden flex items-center justify-center font-black text-white cursor-pointer"
-        style={{ background: currentUrl ? "transparent" : "linear-gradient(135deg, #4FA9E6, #0A2540)", fontSize: size * 0.3 }}
-        onClick={() => inputRef.current?.click()}
+        style={{
+          background: displayUrl ? "transparent" : "linear-gradient(135deg, #4FA9E6, #0A2540)",
+          fontSize: size * 0.3,
+        }}
+        onClick={() => !uploading && inputRef.current?.click()}
       >
-        {currentUrl ? (
-          <Image src={currentUrl} alt={name} fill className="object-cover" />
+        {displayUrl ? (
+          <Image src={displayUrl} alt={name} fill className="object-cover" unoptimized={displayUrl.startsWith("blob:")} />
         ) : (
           initials
         )}
       </div>
 
-      {/* Camera overlay */}
+      {/* Camera overlay button */}
       <button
-        onClick={() => inputRef.current?.click()}
+        onClick={() => !uploading && inputRef.current?.click()}
         disabled={uploading}
-        className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center transition-all"
+        aria-label="Foto uploaden"
+        className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center transition-all shadow-md"
         style={{ background: "#4FA9E6", border: "2px solid #ffffff" }}
       >
         {uploading ? (
@@ -76,12 +97,18 @@ export function AvatarUpload({ currentUrl, userId, name, onUpload, size = 80 }: 
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
         className="hidden"
         onChange={handleFile}
       />
+
+      {/* Error message */}
       {error && (
-        <div className="absolute top-full mt-1 left-0 right-0 text-[10px] text-red-500 text-center leading-tight" style={{ width: "max-content", minWidth: "100%" }}>
+        <div
+          className="absolute top-full mt-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 text-[11px] text-red-500 bg-red-50 border border-red-200 rounded-lg px-2.5 py-1.5 z-20"
+          style={{ width: "max-content", maxWidth: 220 }}
+        >
+          <AlertCircle size={11} className="flex-shrink-0" />
           {error}
         </div>
       )}
