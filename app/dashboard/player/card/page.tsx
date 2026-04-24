@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getMyPlayerData, getAllPlayers } from "@/lib/supabase/queries";
@@ -21,48 +21,26 @@ function parseSubScores(n?: string): Record<string, number> | null {
 }
 function toFifa(v: number) { return Math.round(v * 10); }
 
-/* ─── FIFA card ─────────────────────────────────────────────────
-   Authentieke FUT-kaart: volledig bleeding spelersfoto met
-   gradient overlay onderaan voor naam + stats.
+/* ─── FIFA FUT Card ─────────────────────────────────────────────
+   Real FIFA Ultimate Team card shape — simple rounded rect only.
 ──────────────────────────────────────────────────────────────── */
-const CW = 222;   // kaartbreedte
-const CH = 312;   // kaarthoogte  (steviger verhouding, meer FUT-like)
-const CR = 12;    // outer corner radius
-const BD = 5;     // border dikte
+const CW = 210;   // card width
+const CH = 296;   // card height
+const CR = 11;    // outer corner radius
+const BD = 4;     // border thickness
 
-const IW = CW - BD * 2;   // 212
-const IH = CH - BD * 2;   // 302
+const IW = CW - BD * 2;   // 202
+const IH = CH - BD * 2;   // 288
 const IR = CR - BD;        // 7
 
 function cardPath(w: number, h: number, r: number) {
   return `M ${r},0 L ${w - r},0 Q ${w},0 ${w},${r} L ${w},${h - r} Q ${w},${h} ${w - r},${h} L ${r},${h} Q 0,${h} 0,${h - r} L 0,${r} Q 0,0 ${r},0 Z`;
 }
 
-/* FUT kaart heeft ook een subtiel "knik" bovenaan — we voegen
-   twee kleine diagonale inkepingen toe aan de boven-hoeken,
-   net als bij de echte FIFA FUT-template */
-function futCardPath(w: number, h: number, r: number) {
-  const cut = 12; // diagonale inkeping grootte
-  return (
-    `M ${r + cut},0 ` +
-    `L ${w - r - cut},0 ` +
-    `Q ${w - cut},0 ${w - r},${cut / 2} ` +
-    `Q ${w},${cut} ${w},${r + cut} ` +
-    `L ${w},${h - r} ` +
-    `Q ${w},${h} ${w - r},${h} ` +
-    `L ${r},${h} ` +
-    `Q 0,${h} 0,${h - r} ` +
-    `L 0,${r + cut} ` +
-    `Q 0,${cut} ${r},${cut / 2} ` +
-    `Q ${cut},0 ${r + cut},0 ` +
-    `Z`
-  );
-}
+const OUTER_PATH = cardPath(CW, CH, CR);
+const INNER_PATH = cardPath(IW, IH, IR);
 
-const OUTER_PATH = futCardPath(CW, CH, CR);
-const INNER_PATH = futCardPath(IW, IH, IR);
-
-/* ── FIFA tier kleuren per rating-bereik ──────────────────────── */
+/* ── FIFA tier colours per rating range ──────────────────────── */
 function getFutTier(rating: number) {
   if (rating >= 90) return {
     label: "Icon", dark: "#0A0A0A", mid: "#C0A000",
@@ -76,19 +54,15 @@ function getFutTier(rating: number) {
     label: "Speciaal", dark: "#4A1800", mid: "#C05010",
     bg1: "#F97316", bg2: "#7C2D00", ring: "#FDB575", accent: "#FFD4A8",
   };
-  if (rating >= 75) return {
+  if (rating >= 65) return {
     label: "Goud", dark: "#4A3000", mid: "#B8860B",
     bg1: "#F5C842", bg2: "#8A6000", ring: "#FFD700", accent: "#FFF0A0",
   };
-  if (rating >= 70) return {
-    label: "Goud", dark: "#3A2800", mid: "#8B6914",
-    bg1: "#D4AF37", bg2: "#7A5500", ring: "#E6C45A", accent: "#F5D878",
-  };
-  if (rating >= 65) return {
+  if (rating >= 50) return {
     label: "Zilver", dark: "#303030", mid: "#909090",
     bg1: "#D8D8D8", bg2: "#707070", ring: "#F0F0F0", accent: "#FFFFFF",
   };
-  if (rating >= 50) return {
+  if (rating >= 0) return {
     label: "Brons", dark: "#5C2E00", mid: "#A05820",
     bg1: "#CD7F32", bg2: "#8B4513", ring: "#E8A060", accent: "#F0C080",
   };
@@ -101,6 +75,7 @@ function getFutTier(rating: number) {
 function FifaCard({
   player, rColor, avatarOverride,
 }: { player: PlayerWithDetails; rColor: string; avatarOverride?: string | null }) {
+  const uid = useId().replace(/:/g, "");
   const s = player.recent_scores;
   const rating = player.overall_rating;
   const tier = getFutTier(rating);
@@ -115,121 +90,202 @@ function FifaCard({
   ] : [];
 
   const av = avatarOverride ?? player.avatar_url;
-  const uid = `fc${rating}`;
+
+  /* metallic gradient stops per tier */
+  let metalStops: { offset: string; color: string }[];
+  if (rating >= 65) {
+    // gold (covers Goud, Speciaal, TOTW, Icon)
+    metalStops = [
+      { offset: "0%",   color: "#FFE580" },
+      { offset: "30%",  color: "#B8860B" },
+      { offset: "50%",  color: "#7A5500" },
+      { offset: "70%",  color: "#C89830" },
+      { offset: "100%", color: "#FFE580" },
+    ];
+  } else if (rating >= 50) {
+    // silver
+    metalStops = [
+      { offset: "0%",   color: "#F4F4F4" },
+      { offset: "40%",  color: "#A0A0A0" },
+      { offset: "55%",  color: "#707070" },
+      { offset: "75%",  color: "#C0C0C0" },
+      { offset: "100%", color: "#F4F4F4" },
+    ];
+  } else if (rating >= 0) {
+    // bronze
+    metalStops = [
+      { offset: "0%",   color: "#F0A870" },
+      { offset: "40%",  color: "#8B4513" },
+      { offset: "55%",  color: "#5C2E00" },
+      { offset: "75%",  color: "#A05820" },
+      { offset: "100%", color: "#F0A060" },
+    ];
+  } else {
+    // basis
+    metalStops = [
+      { offset: "0%",   color: "#B0C0D0" },
+      { offset: "40%",  color: "#4A5560" },
+      { offset: "55%",  color: "#2E3840" },
+      { offset: "75%",  color: "#6A7A8A" },
+      { offset: "100%", color: "#B0C0D0" },
+    ];
+  }
 
   return (
     <div className="relative mx-auto select-none"
       style={{ width: CW, height: CH, flexShrink: 0 }}>
 
-      {/* ═══ LAAG 1 — Achtergrond + kaart vorm ═══ */}
-      <svg className="absolute inset-0 pointer-events-none" width={CW} height={CH}
+      {/* ═══ LAYER 1 — Background + card shape (with drop-shadow) ═══ */}
+      <svg
+        className="absolute inset-0 pointer-events-none"
+        width={CW} height={CH}
         viewBox={`0 0 ${CW} ${CH}`}
-        style={{ zIndex: 1, filter: `drop-shadow(0 16px 48px ${tier.mid}90) drop-shadow(0 4px 16px rgba(0,0,0,0.8))` }}>
+        style={{
+          zIndex: 1,
+          filter: `drop-shadow(0 16px 48px ${tier.mid}90) drop-shadow(0 4px 16px rgba(0,0,0,0.8))`,
+        }}>
         <defs>
-          <clipPath id={`clip-outer-${uid}`}><path d={OUTER_PATH} /></clipPath>
-          <clipPath id={`clip-inner-${uid}`}><path d={INNER_PATH} /></clipPath>
-          <linearGradient id={`bg-${uid}`} x1="0" y1="0" x2="0.3" y2="1">
+          {/* Metallic border gradient */}
+          <linearGradient id={`metalGrad-${uid}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            {metalStops.map((s) => (
+              <stop key={s.offset} offset={s.offset} stopColor={s.color} />
+            ))}
+          </linearGradient>
+          {/* Card background gradient */}
+          <linearGradient id={`cardbg-${uid}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%"   stopColor={tier.bg1} />
             <stop offset="45%"  stopColor={tier.bg2} />
-            <stop offset="100%" stopColor="#020812" />
+            <stop offset="100%" stopColor="#010508" />
           </linearGradient>
+          {/* Shimmer */}
           <linearGradient id={`shimmer-${uid}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%"  stopColor="rgba(255,255,255,0)" />
-            <stop offset="40%" stopColor="rgba(255,255,255,0.22)" />
-            <stop offset="60%" stopColor="rgba(255,255,255,0.06)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+            <stop offset="0%"   stopColor="transparent" />
+            <stop offset="18%"  stopColor="rgba(255,255,255,0.18)" />
+            <stop offset="60%"  stopColor="rgba(255,255,255,0.06)" />
+            <stop offset="100%" stopColor="transparent" />
           </linearGradient>
-          {/* Gradient overlay onderaan voor stats */}
-          <linearGradient id={`bot-${uid}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stopColor="rgba(0,0,0,0)" />
-            <stop offset="35%" stopColor="rgba(0,0,0,0.82)" />
-            <stop offset="100%" stopColor="rgba(0,0,0,0.97)" />
-          </linearGradient>
+          <clipPath id={`clip-inner-${uid}`}>
+            <path d={INNER_PATH} />
+          </clipPath>
         </defs>
 
-        {/* Outer border kleur (visible rim) */}
-        <path d={OUTER_PATH} fill={tier.dark} />
-        {/* Kaart achtergrond (inner) */}
+        {/* Metallic border — the OUTER_PATH fill IS the border */}
+        <path d={OUTER_PATH} fill={`url(#metalGrad-${uid})`} />
+
+        {/* Inner card contents */}
         <g transform={`translate(${BD},${BD})`} clipPath={`url(#clip-inner-${uid})`}>
-          <path d={INNER_PATH} fill={`url(#bg-${uid})`} />
-          {/* Shimmer */}
+          <path d={INNER_PATH} fill={`url(#cardbg-${uid})`} />
           <path d={INNER_PATH} fill={`url(#shimmer-${uid})`} />
-          {/* Diagonale texture */}
-          <g opacity="0.06">
-            <line x1="160" y1="-20" x2="-10" y2="260" stroke="white" strokeWidth="45" />
-            <line x1="210" y1="-20" x2="40" y2="260" stroke="white" strokeWidth="25" />
+          {/* Diagonal texture lines */}
+          <g opacity="0.05">
+            <line x1="150" y1="-20" x2="-10" y2="250" stroke="white" strokeWidth="40" />
+            <line x1="200" y1="-20" x2="40"  y2="250" stroke="white" strokeWidth="22" />
           </g>
         </g>
       </svg>
 
-      {/* ═══ LAAG 2 — Volledige spelersfoto (full-bleed) ═══ */}
-      <div className="absolute"
-        style={{ zIndex: 2, left: BD, top: BD, width: IW, height: IH, overflow: "hidden",
-          borderRadius: `${IR}px` }}>
+      {/* ═══ LAYER 2 — Full-bleed player photo ═══ */}
+      <div
+        className="absolute"
+        style={{
+          zIndex: 2,
+          left: BD, top: BD,
+          width: IW, height: IH,
+          borderRadius: `${IR}px`,
+          overflow: "hidden",
+        }}>
         {av ? (
-          <Image src={av} alt={player.first_name} fill
-            className="object-cover object-top" style={{ transform: "scale(1.05)" }} />
+          <Image src={av} alt={player.first_name} fill className="object-cover object-top" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center font-black"
-            style={{ fontSize: 64, background: `linear-gradient(180deg,${tier.bg1}30,${tier.bg2}60)`,
-              color: `${tier.ring}80` }}>
+          <div
+            className="w-full h-full flex items-center justify-center font-black"
+            style={{
+              fontSize: 64,
+              background: `linear-gradient(180deg,${tier.bg1}30,${tier.bg2}60)`,
+              color: `${tier.ring}80`,
+            }}>
             {player.first_name[0]}{player.last_name[0]}
           </div>
         )}
 
-        {/* Bottom gradient overlay — stats achtergrond */}
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: `linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.88) 72%, rgba(0,0,0,0.97) 100%)` }} />
-
-        {/* Top-left gradient voor rating leesbaarheid */}
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: `radial-gradient(circle at 0% 0%, rgba(0,0,0,0.60) 0%, transparent 55%)` }} />
+        {/* Bottom gradient overlay for stats readability */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, transparent 45%, rgba(0,0,0,0.92) 72%, rgba(0,0,0,0.98) 100%)" }}
+        />
+        {/* Top-left radial for rating readability */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(circle at 0% 0%, rgba(0,0,0,0.55) 0%, transparent 52%)" }}
+        />
       </div>
 
-      {/* ═══ LAAG 3 — Tekst: rating + positie + naam + stats ═══ */}
+      {/* ═══ LAYER 3 — Text overlays ═══ */}
 
-      {/* Rating + positie + vlag — linksboven */}
-      <div className="absolute" style={{ zIndex: 3, top: BD + 8, left: BD + 9 }}>
-        <div className="font-black leading-none"
-          style={{ fontFamily: "Outfit, sans-serif", fontSize: 42, color: "white",
-            textShadow: "0 0 24px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,1)" }}>
+      {/* Rating + position + flag — top left */}
+      <div className="absolute" style={{ zIndex: 3, top: BD + 7, left: BD + 8 }}>
+        <div
+          className="font-black leading-none"
+          style={{
+            fontFamily: "Outfit, sans-serif",
+            fontSize: 40,
+            color: "white",
+            textShadow: "0 0 24px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,1), 0 0 60px rgba(0,0,0,0.8)",
+          }}>
           {rating}
         </div>
-        <div className="font-black uppercase tracking-widest"
-          style={{ fontSize: 11, color: tier.ring, textShadow: "0 1px 8px rgba(0,0,0,1)", marginTop: 0 }}>
+        <div
+          className="font-black uppercase tracking-widest"
+          style={{ fontSize: 10, color: tier.ring, textShadow: "0 1px 8px rgba(0,0,0,1)", marginTop: 1 }}>
           {player.position}
         </div>
-        <div style={{ fontSize: 18, lineHeight: 1, marginTop: 3,
-          filter: "drop-shadow(0 1px 6px rgba(0,0,0,1))" }}>🇳🇱</div>
+        <div style={{ fontSize: 17, lineHeight: 1, marginTop: 3, filter: "drop-shadow(0 1px 6px rgba(0,0,0,1))" }}>
+          🇳🇱
+        </div>
       </div>
 
-      {/* Naam + dunne lijn */}
-      <div className="absolute text-center" style={{
-        zIndex: 3,
-        left: BD, right: BD,
-        bottom: BD + (fifaStats.length > 0 ? 50 : 8),
-      }}>
-        <div className="font-black text-white uppercase"
-          style={{ fontFamily: "Outfit, sans-serif", fontSize: 15, letterSpacing: "0.07em",
-            textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>
+      {/* Name — centered, above stats */}
+      <div
+        className="absolute text-center"
+        style={{ zIndex: 3, left: BD, right: BD, bottom: BD + 52 }}>
+        <div
+          className="font-black text-white uppercase"
+          style={{
+            fontFamily: "Outfit, sans-serif",
+            fontSize: 14,
+            letterSpacing: "0.07em",
+            textShadow: "0 1px 6px rgba(0,0,0,0.9)",
+          }}>
           {player.last_name.toUpperCase()}
         </div>
-        <div className="mx-4 mt-1 mb-0"
-          style={{ height: 1, background: `linear-gradient(to right, transparent, ${tier.ring}70, transparent)` }} />
       </div>
 
-      {/* FIFA stats — onderaan */}
+      {/* Divider above stats */}
+      <div
+        className="absolute"
+        style={{
+          zIndex: 3,
+          left: BD + 3, right: BD + 3,
+          bottom: BD + 48,
+          height: 1,
+          background: `linear-gradient(to right, transparent, ${tier.ring}65, transparent)`,
+        }}
+      />
+
+      {/* FIFA stats — bottom */}
       {fifaStats.length > 0 && (
-        <div className="absolute" style={{ zIndex: 3, left: BD + 6, right: BD + 6, bottom: BD + 8 }}>
-          <div className="grid grid-cols-3 gap-x-1" style={{ gap: "2px 4px" }}>
+        <div className="absolute" style={{ zIndex: 3, left: BD + 6, right: BD + 6, bottom: BD + 7 }}>
+          <div className="grid grid-cols-3" style={{ gap: "2px 3px" }}>
             {fifaStats.map((st) => (
               <div key={st.l} className="flex items-center gap-1">
-                <span className="font-black tabular-nums"
+                <span
+                  className="font-black tabular-nums"
                   style={{ color: tier.ring, fontFamily: "Outfit, sans-serif", fontSize: 13, lineHeight: 1.2 }}>
                   {st.v}
                 </span>
-                <span className="font-bold uppercase tracking-wide"
-                  style={{ color: "rgba(255,255,255,0.45)", fontSize: 9 }}>
+                <span
+                  className="font-bold uppercase"
+                  style={{ color: "rgba(255,255,255,0.40)", fontSize: 9, letterSpacing: "0.04em" }}>
                   {st.l}
                 </span>
               </div>
@@ -238,20 +294,29 @@ function FifaCard({
         </div>
       )}
 
-      {/* ═══ LAAG 4 — Rand strepen bovenop alles ═══ */}
-      <svg className="absolute inset-0 pointer-events-none" width={CW} height={CH}
-        viewBox={`0 0 ${CW} ${CH}`} style={{ zIndex: 4 }}>
-        {/* Outer rand */}
-        <path d={OUTER_PATH} fill="none"
-          stroke={tier.dark} strokeWidth="1.5" strokeOpacity="0.9" />
-        {/* Inner accent lijn */}
-        <path d={INNER_PATH} fill="none"
-          stroke={tier.accent} strokeWidth="1.5" strokeOpacity="0.55"
-          transform={`translate(${BD},${BD})`} />
-        {/* Tweede subtiele lijn */}
-        <path d={futCardPath(IW - 4, IH - 4, IR - 2)} fill="none"
-          stroke={tier.ring} strokeWidth="0.75" strokeOpacity="0.28"
-          transform={`translate(${BD + 2},${BD + 2})`} />
+      {/* ═══ LAYER 4 — Border strokes on top ═══ */}
+      <svg
+        className="absolute inset-0 pointer-events-none"
+        width={CW} height={CH}
+        viewBox={`0 0 ${CW} ${CH}`}
+        style={{ zIndex: 4 }}>
+        {/* Outer crisp edge on metallic border */}
+        <path
+          d={OUTER_PATH}
+          fill="none"
+          stroke={tier.dark}
+          strokeWidth="1.5"
+          strokeOpacity="0.7"
+        />
+        {/* Inner accent line */}
+        <path
+          d={INNER_PATH}
+          fill="none"
+          stroke={tier.accent}
+          strokeWidth="1"
+          strokeOpacity="0.4"
+          transform={`translate(${BD},${BD})`}
+        />
       </svg>
     </div>
   );
@@ -403,154 +468,263 @@ export default function PlayerCardPage() {
     <div className="-mx-4 sm:-mx-6 lg:-mx-8">
 
       {/* ══════════════════════════════════════════════════════════
-          PES / KONAMI HERO SECTIE
+          eFootball / PES MARTINEZ HERO
       ══════════════════════════════════════════════════════════ */}
-      <div className="relative"
+      <div
+        className="relative"
         style={{
-          background: "linear-gradient(135deg, #050c1a 0%, #0A2540 55%, #071829 100%)",
-          minHeight: 400,
+          background: "linear-gradient(135deg, #020509 0%, #081422 50%, #030c15 100%)",
+          minHeight: 560,
+          position: "relative",
           overflow: "clip",
         }}>
 
-        {/* ── Performance Hub logo watermark (groot, vervaagd) ── */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+        {/* ── Logo watermark — centered, very faint ── */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
           style={{ zIndex: 0 }}>
           <Image
             src="/logo.svg"
             alt=""
             width={480}
             height={480}
+            unoptimized
             className="object-contain"
-            style={{ opacity: 0.045, filter: "blur(1px)" }}
+            style={{ opacity: 0.04 }}
           />
         </div>
 
-        {/* ── Club watermark (subtiel, rechts) ── */}
-        {club?.logoUrl && (
-          <div className="absolute right-0 top-0 bottom-0 w-72 flex items-center justify-end pr-6
-            pointer-events-none select-none"
-            style={{ opacity: 0.03, zIndex: 1 }}>
-            <Image src={club.logoUrl} alt="" width={260} height={260} className="object-contain" />
-          </div>
+        {/* ── Glow blob — top-left (rColor) ── */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: -80, left: -80,
+            width: 420, height: 420,
+            borderRadius: "50%",
+            opacity: 0.13,
+            filter: "blur(70px)",
+            background: rColor,
+            zIndex: 0,
+          }}
+        />
+
+        {/* ── Glow blob — bottom-right (#4FA9E6) ── */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            bottom: -60, right: -60,
+            width: 300, height: 300,
+            borderRadius: "50%",
+            opacity: 0.08,
+            filter: "blur(55px)",
+            background: "#4FA9E6",
+            zIndex: 0,
+          }}
+        />
+
+        {/* ── Player photo — absolute right side ── */}
+        {avatarUrl && (
+          <>
+            {/* Photo fills right 52% */}
+            <div
+              className="absolute pointer-events-none"
+              style={{ zIndex: 1, right: 0, top: 0, bottom: 0, width: "52%" }}>
+              <Image
+                src={avatarUrl}
+                alt={player.first_name}
+                fill
+                className="object-cover object-top"
+              />
+            </div>
+            {/* Left-side gradient mask over the photo */}
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                zIndex: 2,
+                right: 0, top: 0, bottom: 0,
+                width: "52%",
+              }}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0, top: 0, bottom: 0,
+                  width: "55%",
+                  background: "linear-gradient(to right, #020509 0%, transparent 100%)",
+                }}
+              />
+            </div>
+          </>
         )}
 
-        {/* ── Kleur glow (links-boven) ── */}
-        <div className="absolute pointer-events-none"
-          style={{
-            top: -80, left: -80, width: 420, height: 420,
-            borderRadius: "50%", opacity: 0.12, filter: "blur(60px)",
-            background: rColor, zIndex: 1,
-          }} />
+        {/* ── Content area ── */}
+        <div
+          className="relative px-6 sm:px-8 lg:px-10 pt-8 pb-0"
+          style={{ zIndex: 10 }}>
 
-        {/* ── Kleur glow (rechts-onder) ── */}
-        <div className="absolute pointer-events-none"
-          style={{
-            bottom: -60, right: -60, width: 300, height: 300,
-            borderRadius: "50%", opacity: 0.07, filter: "blur(50px)",
-            background: "#4FA9E6", zIndex: 1,
-          }} />
+          {/* Grid: [left info 200px] [center content] */}
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 items-start">
 
-        <div className="relative px-4 sm:px-6 lg:px-8 pt-6 pb-0" style={{ zIndex: 2 }}>
-
-          {/* ── Grid: [info links] [naam + radar midden] [foto rechts] ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-[160px_1fr_auto] gap-6 lg:gap-8 items-start">
-
-            {/* ── LINKS: Rating + info tabel (verborgen op mobiel) ── */}
-            <div className="hidden lg:block flex-shrink-0">
-              {/* Grote rating */}
-              <div className="font-black tabular-nums leading-none"
-                style={{ color: rColor, fontSize: "5rem", fontFamily: "Outfit, sans-serif",
-                  textShadow: `0 0 40px ${rColor}60` }}>
+            {/* ── LEFT column (hidden on mobile) ── */}
+            <div className="hidden lg:flex flex-col">
+              {/* Big rating number */}
+              <div
+                className="font-black tabular-nums leading-none"
+                style={{
+                  color: rColor,
+                  fontSize: "5.5rem",
+                  fontFamily: "Outfit, sans-serif",
+                  textShadow: `0 0 60px ${rColor}50`,
+                }}>
                 {player.overall_rating}
               </div>
               {rLabel && (
-                <div className="text-[11px] font-bold uppercase tracking-widest mb-5"
-                  style={{ color: rColor }}>{rLabel}</div>
+                <div
+                  className="uppercase tracking-widest"
+                  style={{ fontSize: 11, color: rColor, fontWeight: 700, marginBottom: "1rem" }}>
+                  {rLabel}
+                </div>
               )}
 
-              {/* Info tabel */}
-              <div className="space-y-2.5">
+              {/* Thin divider */}
+              <div style={{ height: 1, background: `${rColor}20`, marginTop: "0.75rem", marginBottom: "0.75rem" }} />
+
+              {/* Info table */}
+              <div className="space-y-2">
                 {[
                   { label: "Positie",       value: POSITION_LABELS[player.position] },
                   { label: "Nationaliteit", value: (p.nationality as string) ?? "Nederland" },
                   { label: "Leeftijd",      value: age ? `${age} jaar` : "—" },
-                  {
-                    label: "Profiel",
-                    value: [heightCm && `${heightCm}cm`, weightKg && `${weightKg}kg`]
-                      .filter(Boolean).join(" / ") || "—",
-                  },
-                  { label: "Club", value: player.team_name ?? club?.name ?? "—" },
+                  { label: "Lengte",        value: heightCm ? `${heightCm} cm` : "—" },
+                  { label: "Gewicht",       value: weightKg ? `${weightKg} kg` : "—" },
+                  { label: "Club",          value: player.team_name ?? club?.name ?? "—" },
                 ].map((row) => (
                   <div key={row.label} className="flex items-start gap-2">
-                    <span className="text-[10px] text-white/25 w-20 flex-shrink-0 font-medium uppercase tracking-wider pt-0.5">
+                    <span
+                      className="uppercase tracking-widest flex-shrink-0"
+                      style={{ fontSize: 9, color: "rgba(255,255,255,0.20)", width: 80, fontWeight: 600, paddingTop: 1 }}>
                       {row.label}
                     </span>
-                    <span className="text-[11px] text-white/80 font-semibold">{row.value}</span>
+                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.75)", fontWeight: 600 }}>
+                      {row.value}
+                    </span>
                   </div>
                 ))}
               </div>
 
-              {/* Jersey nummer */}
+              {/* Jersey number */}
               {player.jersey_number && (
-                <div className="mt-5 font-black tabular-nums"
-                  style={{ color: "rgba(255,255,255,0.08)", fontSize: "3.5rem",
-                    fontFamily: "Outfit, sans-serif", lineHeight: 1 }}>
+                <div
+                  className="mt-auto font-black tabular-nums"
+                  style={{
+                    color: "rgba(255,255,255,0.05)",
+                    fontSize: "4rem",
+                    fontFamily: "Outfit, sans-serif",
+                    marginTop: "2rem",
+                    lineHeight: 1,
+                  }}>
                   #{player.jersey_number}
                 </div>
               )}
             </div>
 
-            {/* ── MIDDEN: naam + knoppen + radar ── */}
+            {/* ── CENTER column ── */}
             <div className="min-w-0">
               {/* Breadcrumb */}
-              <div className="text-[10px] font-bold tracking-[0.2em] uppercase mb-2"
-                style={{ color: "#4FA9E6" }}>
+              <div
+                className="font-bold uppercase mb-2"
+                style={{ fontSize: 10, letterSpacing: "0.2em", color: "#4FA9E6" }}>
                 Performance Hub · Spelersprofiel
               </div>
 
-              {/* Mobiel: rating inline */}
+              {/* Mobile: inline rating */}
               <div className="flex items-center gap-3 mb-2 lg:hidden">
-                <span className="font-black tabular-nums leading-none"
+                <span
+                  className="font-black tabular-nums leading-none"
                   style={{ color: rColor, fontSize: "2.5rem", fontFamily: "Outfit, sans-serif" }}>
                   {player.overall_rating}
                 </span>
                 {rLabel && (
-                  <span className="text-[10px] font-bold uppercase tracking-widest"
-                    style={{ color: rColor }}>{rLabel}</span>
+                  <span
+                    className="font-bold uppercase tracking-widest"
+                    style={{ fontSize: 10, color: rColor }}>
+                    {rLabel}
+                  </span>
                 )}
                 <span className="text-[10px] text-white/40 ml-auto font-bold">{player.position}</span>
               </div>
 
-              {/* Grote naam */}
-              <h1 className="font-black text-white uppercase leading-[0.88]"
-                style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em",
-                  fontSize: "clamp(2rem, 9vw, 4rem)", marginBottom: "0.2em" }}>
+              {/* Mobile: avatar at top right (in-flow, not absolute) */}
+              {avatarUrl && (
+                <div className="lg:hidden flex justify-end mb-3">
+                  <div
+                    className="relative overflow-hidden rounded-2xl"
+                    style={{ width: 90, height: 180, flexShrink: 0 }}>
+                    <Image
+                      src={avatarUrl}
+                      alt={player.first_name}
+                      fill
+                      className="object-cover object-top"
+                    />
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: "linear-gradient(to bottom, transparent 50%, #020509 100%)" }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* h1 — first name */}
+              <h1
+                className="font-black text-white uppercase"
+                style={{
+                  fontFamily: "Outfit, sans-serif",
+                  fontSize: "clamp(2.5rem, 10vw, 5rem)",
+                  letterSpacing: "-0.02em",
+                  lineHeight: 0.88,
+                  marginBottom: 0,
+                }}>
                 {player.first_name.toUpperCase()}
               </h1>
-              <h2 className="font-black text-white uppercase leading-[0.88] mb-3"
-                style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em",
-                  fontSize: "clamp(1.4rem, 6vw, 2.6rem)", color: "rgba(255,255,255,0.65)" }}>
+
+              {/* h2 — last name */}
+              <h2
+                className="font-black uppercase mb-3"
+                style={{
+                  fontFamily: "Outfit, sans-serif",
+                  fontSize: "clamp(1.6rem, 7vw, 3rem)",
+                  color: "rgba(255,255,255,0.5)",
+                  letterSpacing: "-0.02em",
+                  lineHeight: 0.88,
+                }}>
                 {player.last_name.toUpperCase()}
               </h2>
 
-              {/* Club + nummer */}
-              <div className="text-xs sm:text-sm font-semibold mb-4" style={{ color: "#4FA9E6" }}>
+              {/* Club / team line */}
+              <div className="text-sm font-semibold mb-4" style={{ color: "#4FA9E6" }}>
                 {player.team_name ?? club?.name ?? "Performance Hub"}
                 {player.jersey_number ? ` · #${player.jersey_number}` : ""}
               </div>
 
-              {/* Knoppen */}
-              <div className="flex gap-2 mb-5 flex-wrap">
-                <Link href="/dashboard/player/settings"
+              {/* Action buttons */}
+              <div className="flex flex-wrap gap-2 mb-5">
+                <Link
+                  href="/dashboard/player/settings"
                   className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all"
-                  style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.55)",
-                    border: "1px solid rgba(255,255,255,0.10)" }}>
+                  style={{
+                    background: "rgba(255,255,255,0.07)",
+                    color: "rgba(255,255,255,0.55)",
+                    border: "1px solid rgba(255,255,255,0.10)",
+                  }}>
                   <Bookmark size={11} /> Bewerken
                 </Link>
-                <button onClick={() => setTab("vergelijking")}
+                <button
+                  onClick={() => setTab("vergelijking")}
                   className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all"
-                  style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.55)",
-                    border: "1px solid rgba(255,255,255,0.10)" }}>
+                  style={{
+                    background: "rgba(255,255,255,0.07)",
+                    color: "rgba(255,255,255,0.55)",
+                    border: "1px solid rgba(255,255,255,0.10)",
+                  }}>
                   <GitCompare size={11} /> Vergelijken
                 </button>
               </div>
@@ -558,7 +732,7 @@ export default function PlayerCardPage() {
               {/* Radar chart */}
               {radarData.length > 0 ? (
                 <div className="opacity-85 -mx-3">
-                  <PlayerRadarChart data={radarData} color={rColor} size={210} />
+                  <PlayerRadarChart data={radarData} color={rColor} size={220} />
                 </div>
               ) : (
                 <div className="h-40 flex items-center justify-center text-white/20 text-sm">
@@ -566,78 +740,9 @@ export default function PlayerCardPage() {
                 </div>
               )}
             </div>
-
-            {/* ── RECHTS: Grote spelersfoto (PES-stijl cutout) ── */}
-            <div className="hidden lg:flex flex-shrink-0 items-end self-stretch pb-0"
-              style={{ marginBottom: -1 }}>
-              <div className="relative group">
-                {/* Foto container — halflange PES-stijl */}
-                <div
-                  className="relative overflow-hidden"
-                  style={{
-                    width: 220,
-                    height: 300,
-                    borderRadius: "20px 20px 0 0",
-                    border: avatarUrl ? `1px solid ${rColor}25` : `1px solid ${rColor}15`,
-                    background: avatarUrl ? "transparent"
-                      : `linear-gradient(180deg, ${rColor}12 0%, ${rColor}28 100%)`,
-                  }}>
-                  {avatarUrl ? (
-                    <Image
-                      src={avatarUrl}
-                      alt={player.first_name}
-                      fill
-                      className="object-cover object-top"
-                      style={{ transform: "scale(1.04)" }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center font-black"
-                      style={{ fontSize: 80, color: `${rColor}60` }}>
-                      {player.first_name[0]}{player.last_name[0]}
-                    </div>
-                  )}
-                  {/* Gradient onderkant */}
-                  <div className="absolute bottom-0 left-0 right-0 pointer-events-none"
-                    style={{
-                      height: 80,
-                      background: "linear-gradient(to bottom, transparent, rgba(5,12,26,0.95))",
-                    }} />
-                  {/* Glow */}
-                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 pointer-events-none"
-                    style={{ width: 160, height: 24, borderRadius: "50%",
-                      background: rColor, opacity: 0.35, filter: "blur(16px)" }} />
-                </div>
-
-                {/* Upload/AI knoppen — hover overlay */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity
-                    flex flex-col items-center justify-end gap-2 pb-5"
-                  style={{ background: "rgba(0,0,0,0.45)", borderRadius: "20px 20px 0 0" }}>
-                  <AvatarUpload
-                    currentUrl={avatarUrl}
-                    userId={(p.profile_id as string) ?? ""}
-                    name={`${player.first_name} ${player.last_name}`}
-                    onUpload={(url) => setAvatarUrl(url)}
-                    size={48}
-                  />
-                  {avatarUrl && (
-                    <button
-                      onClick={handleGenerateAI}
-                      disabled={generatingAI}
-                      className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all"
-                      style={{ background: "rgba(79,169,230,0.85)", color: "white" }}>
-                      {generatingAI
-                        ? <Loader2 size={11} className="animate-spin" />
-                        : <Wand2 size={11} />}
-                      {generatingAI ? "Bezig..." : "AI voetbalfoto"}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* ── Hero meta-stats balk ── */}
+          {/* ── Hero meta-stats bar ── */}
           {(() => {
             const evalCount = player.evaluations?.length ?? 0;
             const bestScore = player.evaluations?.reduce((best, ev) =>
@@ -655,15 +760,24 @@ export default function PlayerCardPage() {
 
             if (metaStats.length === 0) return null;
             return (
-              <div className="flex gap-1.5 sm:gap-2 mt-5 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8
-                overflow-x-auto pb-0 scrollbar-none">
+              <div
+                className="flex gap-1.5 sm:gap-2 mt-5 -mx-6 sm:-mx-8 lg:-mx-10 px-6 sm:px-8 lg:px-10
+                  overflow-x-auto pb-0 scrollbar-none">
                 {metaStats.map((st) => (
-                  <div key={st.l}
+                  <div
+                    key={st.l}
                     className="flex-1 flex flex-col items-center justify-center px-2 py-2.5 rounded-t-xl"
-                    style={{ background: "rgba(255,255,255,0.045)",
-                      border: "1px solid rgba(255,255,255,0.07)", borderBottom: "none", minWidth: 55 }}>
-                    <div className="text-lg sm:text-xl font-black tabular-nums leading-none text-white"
-                      style={{ fontFamily: "Outfit, sans-serif" }}>{st.v}</div>
+                    style={{
+                      background: "rgba(255,255,255,0.045)",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                      borderBottom: "none",
+                      minWidth: 55,
+                    }}>
+                    <div
+                      className="text-lg sm:text-xl font-black tabular-nums leading-none text-white"
+                      style={{ fontFamily: "Outfit, sans-serif" }}>
+                      {st.v}
+                    </div>
                     <div className="text-[9px] text-white/30 mt-1 uppercase tracking-wider font-medium">
                       {st.l}
                     </div>
@@ -674,17 +788,22 @@ export default function PlayerCardPage() {
           })()}
 
           {/* ── Tabs ── */}
-          <div className="flex -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 mt-0 overflow-x-auto"
+          <div
+            className="flex -mx-6 sm:-mx-8 lg:-mx-10 px-6 sm:px-8 lg:px-10 mt-0 overflow-x-auto"
             style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
             {tabs.map((t) => (
-              <button key={t.id} onClick={() => setTab(t.id)}
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
                 className="relative flex items-center gap-1.5 px-4 py-3 text-xs font-semibold
                   whitespace-nowrap transition-all flex-shrink-0"
                 style={tab === t.id ? { color: rColor } : { color: "rgba(255,255,255,0.3)" }}>
                 {t.icon}{t.label}
                 {tab === t.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-t"
-                    style={{ background: rColor }} />
+                  <span
+                    className="absolute bottom-0 left-0 right-0 h-[2px] rounded-t"
+                    style={{ background: rColor }}
+                  />
                 )}
               </button>
             ))}
@@ -695,14 +814,13 @@ export default function PlayerCardPage() {
       {/* ══════════════════════════════════════════════════════════
           TAB CONTENT
       ══════════════════════════════════════════════════════════ */}
-      <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-10"
-        style={{ background: "#0e1a2b" }}>
+      <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-10" style={{ background: "#0e1a2b" }}>
 
         {/* ── PROFIEL TAB ── */}
         {tab === "profiel" && (
           <div className="space-y-8">
 
-            {/* FIFA kaart + Attribute Details */}
+            {/* FIFA card + Attribute Details */}
             <div>
               <div className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-4">
                 Attribute Details
@@ -710,18 +828,22 @@ export default function PlayerCardPage() {
               <div className="overflow-x-auto -mx-4 sm:mx-0">
                 <div className="flex gap-6 px-4 sm:px-0 pb-2 min-w-max sm:min-w-0 sm:flex-wrap lg:flex-nowrap">
 
-                  {/* FIFA kaart + upload */}
+                  {/* FIFA card + upload */}
                   <div className="flex flex-col items-center gap-3 flex-shrink-0">
                     <FifaCard player={player} rColor={rColor} avatarOverride={avatarUrl} />
                     {rLabel && (
-                      <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
-                        style={{ color: rColor, background: `${rColor}15`,
-                          border: `1px solid ${rColor}25` }}>
+                      <span
+                        className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
+                        style={{
+                          color: rColor,
+                          background: `${rColor}15`,
+                          border: `1px solid ${rColor}25`,
+                        }}>
                         {rLabel}
                       </span>
                     )}
 
-                    {/* Upload + AI knoppen onder kaart */}
+                    {/* Upload + AI buttons under card */}
                     <div className="flex items-center gap-2">
                       <AvatarUpload
                         currentUrl={avatarUrl}
@@ -735,7 +857,7 @@ export default function PlayerCardPage() {
                       </span>
                     </div>
 
-                    {/* AI genereer knop */}
+                    {/* AI generate button */}
                     {avatarUrl && (
                       <button
                         onClick={handleGenerateAI}
@@ -743,7 +865,8 @@ export default function PlayerCardPage() {
                         className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all"
                         style={{
                           background: generatingAI ? "rgba(79,169,230,0.15)" : "rgba(79,169,230,0.2)",
-                          color: "#4FA9E6", border: "1px solid rgba(79,169,230,0.3)",
+                          color: "#4FA9E6",
+                          border: "1px solid rgba(79,169,230,0.3)",
                         }}>
                         {generatingAI
                           ? <Loader2 size={11} className="animate-spin" />
@@ -755,15 +878,19 @@ export default function PlayerCardPage() {
                       <div className="text-[10px] text-red-400 text-center max-w-[200px]">{aiError}</div>
                     )}
 
-                    <Link href="/dashboard/player/settings"
+                    <Link
+                      href="/dashboard/player/settings"
                       className="text-[11px] font-semibold px-4 py-1.5 rounded-lg"
-                      style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)",
-                        border: "1px solid rgba(255,255,255,0.1)" }}>
+                      style={{
+                        background: "rgba(255,255,255,0.06)",
+                        color: "rgba(255,255,255,0.4)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                      }}>
                       <Settings size={11} className="inline mr-1" />Bewerken
                     </Link>
                   </div>
 
-                  {/* Attribute kolommen */}
+                  {/* Attribute columns */}
                   {scores.map((s) => (
                     <AttributeColumn
                       key={s.category}
@@ -784,7 +911,8 @@ export default function PlayerCardPage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {arch && (
-                    <div className="p-4 rounded-xl border"
+                    <div
+                      className="p-4 rounded-xl border"
                       style={{ background: `${arch.color}08`, borderColor: `${arch.color}20` }}>
                       <div className="flex items-start gap-3">
                         <span className="text-3xl">{arch.icon}</span>
@@ -794,8 +922,12 @@ export default function PlayerCardPage() {
                           <div className="text-xs text-white/50 mt-1">{arch.description}</div>
                           <div className="flex flex-wrap gap-1 mt-2">
                             {arch.traits.map((t) => (
-                              <span key={t} className="text-[10px] px-2 py-0.5 rounded-full"
-                                style={{ background: `${arch.color}15`, color: arch.color }}>{t}</span>
+                              <span
+                                key={t}
+                                className="text-[10px] px-2 py-0.5 rounded-full"
+                                style={{ background: `${arch.color}15`, color: arch.color }}>
+                                {t}
+                              </span>
                             ))}
                           </div>
                         </div>
@@ -805,10 +937,12 @@ export default function PlayerCardPage() {
                   {socio && (() => {
                     const SIcon = SOCIOTYPE_ICONS[socio.id];
                     return (
-                      <div className="p-4 rounded-xl border"
+                      <div
+                        className="p-4 rounded-xl border"
                         style={{ background: `${socio.color_hex}08`, borderColor: `${socio.color_hex}20` }}>
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                             style={{ background: `${socio.color_hex}15` }}>
                             <SIcon size={20} style={{ color: socio.color_hex }} />
                           </div>
@@ -823,13 +957,15 @@ export default function PlayerCardPage() {
                   })()}
                 </div>
                 {identity?.ai_summary && (
-                  <div className="mt-4 p-4 rounded-xl border"
+                  <div
+                    className="mt-4 p-4 rounded-xl border"
                     style={{ borderColor: "rgba(79,169,230,0.2)", background: "rgba(79,169,230,0.05)" }}>
                     <div className="flex items-center gap-2 mb-2">
                       <Sparkles size={13} style={{ color: "#4FA9E6" }} />
                       <span className="text-xs font-bold" style={{ color: "#4FA9E6" }}>AI Scouting Rapport</span>
                       {identity.ai_fit_score && (
-                        <span className="ml-auto text-xs font-black px-2 py-0.5 rounded"
+                        <span
+                          className="ml-auto text-xs font-black px-2 py-0.5 rounded"
                           style={{ color: rColor, background: `${rColor}15` }}>
                           Fit {identity.ai_fit_score}/100
                         </span>
@@ -855,9 +991,12 @@ export default function PlayerCardPage() {
               (player.evaluations ?? []).map((ev, i) => {
                 const rC = getRatingColor(((ev.overall_score ?? 7) - 1) / 9 * 59 + 40);
                 return (
-                  <div key={ev.id} className="rounded-2xl border overflow-hidden"
+                  <div
+                    key={ev.id}
+                    className="rounded-2xl border overflow-hidden"
                     style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
-                    <div className="flex items-center justify-between px-5 py-3 border-b"
+                    <div
+                      className="flex items-center justify-between px-5 py-3 border-b"
                       style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                       <div>
                         <div className="text-sm font-semibold text-white">{formatDate(ev.evaluation_date)}</div>
@@ -865,7 +1004,8 @@ export default function PlayerCardPage() {
                           <div className="text-xs text-white/30 mt-0.5">{ev.coach_name}</div>
                         )}
                       </div>
-                      <div className="text-2xl font-black tabular-nums"
+                      <div
+                        className="text-2xl font-black tabular-nums"
                         style={{ color: rC, fontFamily: "Outfit, sans-serif" }}>
                         {ev.overall_score?.toFixed(1)}<span className="text-sm font-normal text-white/30">/10</span>
                       </div>
@@ -913,7 +1053,8 @@ export default function PlayerCardPage() {
 
         {/* ── VERGELIJKING TAB ── */}
         {tab === "vergelijking" && (
-          <div className="rounded-2xl border overflow-hidden p-5"
+          <div
+            className="rounded-2xl border overflow-hidden p-5"
             style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
             <div className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-4">
               Jij vs. het team
@@ -935,14 +1076,18 @@ export default function PlayerCardPage() {
 
         {/* ── MEDISCH TAB ── */}
         {tab === "medisch" && (
-          <div className="rounded-2xl border p-5"
+          <div
+            className="rounded-2xl border p-5"
             style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
             <div className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-4">
               Medisch Profiel
             </div>
             <p className="text-xs text-white/30 mb-5">
-              <Link href="/dashboard/player/settings"
-                className="hover:text-white/60 transition-colors underline">Bewerken →</Link>
+              <Link
+                href="/dashboard/player/settings"
+                className="hover:text-white/60 transition-colors underline">
+                Bewerken →
+              </Link>
             </p>
             <InjuryBodyMap injuries={injuries} dominantFoot={dominantFoot} readonly={true} />
           </div>
