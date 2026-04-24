@@ -21,156 +21,161 @@ function parseSubScores(n?: string): Record<string, number> | null {
 }
 function toFifa(v: number) { return Math.round(v * 10); }
 
-/* ─── FIFA card — echte FUT kaart vorm ──────────────────────────── */
-const CARD_W = 220;
-const CARD_H = 320;
+/* ─── FIFA card — echte FUT stijl ───────────────────────────────── */
+const CW = 220;  // card width
+const CH = 330;  // card height
+const CR = 14;   // corner radius
 
-// Karakteristieke FUT kaartvorm: afgeronde hoeken + lichte boog bovenaan
-const CARD_PATH =
-  `M 18,0 L ${CARD_W - 18},0 ` +
-  `Q ${CARD_W},0 ${CARD_W},18 ` +
-  `L ${CARD_W},${CARD_H - 22} ` +
-  `Q ${CARD_W},${CARD_H} ${CARD_W - 18},${CARD_H} ` +
-  `L 18,${CARD_H} ` +
-  `Q 0,${CARD_H} 0,${CARD_H - 22} ` +
-  `L 0,18 ` +
-  `Q 0,0 18,0 Z`;
+// Outer card path (full card shape)
+function cardPath(w: number, h: number, r: number) {
+  return `M ${r},0 L ${w - r},0 Q ${w},0 ${w},${r} L ${w},${h - r} Q ${w},${h} ${w - r},${h} L ${r},${h} Q 0,${h} 0,${h - r} L 0,${r} Q 0,0 ${r},0 Z`;
+}
 
 function FifaCard({ player, rColor, avatarOverride }: { player: PlayerWithDetails; rColor: string; avatarOverride?: string | null }) {
   const s = player.recent_scores;
-
-  // FUT goud-metallic kleurenpalet afhankelijk van rating
   const rating = player.overall_rating;
+
+  // Tier kleuren op basis van rating
   const isElite = rating >= 85;
   const isGood  = rating >= 75;
-  const goldTop    = isElite ? "#F8D060" : isGood ? "#D4AF37" : "#9BA4B5";
-  const goldMid    = isElite ? "#C8932A" : isGood ? "#A07B20" : "#6B7280";
-  const goldDark   = isElite ? "#7B4F10" : isGood ? "#5C3D10" : "#374151";
-  const shimmer    = isElite ? "rgba(255,245,180,0.22)" : isGood ? "rgba(255,235,150,0.15)" : "rgba(200,200,220,0.12)";
+  const tier = isElite
+    ? { border: "#F0C040", mid: "#B8860B", dark: "#6B4800", bg1: "#F5D060", bg2: "#9A6C00", ring: "#FFE066" }
+    : isGood
+    ? { border: "#C8A84B", mid: "#8B6914", dark: "#4A3500", bg1: "#D4AF37", bg2: "#7A5500", ring: "#E6C45A" }
+    : { border: "#8A9BB0", mid: "#5A6B7A", dark: "#2A3540", bg1: "#9BA4B5", bg2: "#4A5560", ring: "#B0BCC8" };
 
-  const cardGrad = `linear-gradient(160deg, ${goldTop} 0%, ${goldMid} 40%, ${goldDark} 75%, #050c1a 100%)`;
-
-  const stats = s ? [
-    { v: toFifa(s.techniek), l: "TEC" },
-    { v: toFifa(s.fysiek),   l: "FYS" },
-    { v: toFifa(s.tactiek),  l: "TAC" },
-    { v: toFifa(s.mentaal),  l: "MEN" },
-    { v: toFifa(s.teamplay), l: "TEA" },
-    { v: rating,             l: "OVR" },
+  // FIFA-stijl afgeleide stats (6 stuks, anders dan de categoriescores)
+  const fifaStats = s ? [
+    { v: toFifa(s.fysiek),                                          l: "PAC" },
+    { v: toFifa(s.techniek),                                        l: "SHO" },
+    { v: Math.round((toFifa(s.teamplay) * 0.6 + toFifa(s.techniek) * 0.4)), l: "PAS" },
+    { v: Math.round((toFifa(s.techniek) * 0.55 + toFifa(s.fysiek) * 0.45)), l: "DRI" },
+    { v: Math.round((toFifa(s.tactiek) * 0.65 + toFifa(s.mentaal) * 0.35)), l: "DEF" },
+    { v: Math.round((toFifa(s.fysiek) * 0.6 + toFifa(s.mentaal) * 0.4)),   l: "PHY" },
   ] : [];
 
   const av = avatarOverride ?? player.avatar_url;
+  const OUTER = cardPath(CW, CH, CR);
+  // Inner decoratieve frame — 5px inset
+  const iw = CW - 10; const ih = CH - 10; const ir = CR - 2;
+  const INNER = cardPath(iw, ih, ir);
+  // Tweede frame — 8px inset
+  const iw2 = CW - 16; const ih2 = CH - 16; const ir2 = Math.max(CR - 4, 4);
+  const INNER2 = cardPath(iw2, ih2, ir2);
+
+  const imgH = Math.round(CH * 0.585); // avatar vult ~58% van de kaartstoogte
 
   return (
-    <div className="relative mx-auto select-none drop-shadow-2xl"
-      style={{ width: CARD_W, height: CARD_H, flexShrink: 0 }}>
+    <div className="relative mx-auto select-none"
+      style={{ width: CW, height: CH, flexShrink: 0 }}>
 
-      {/* SVG als basis — kaart clip + achtergrond + decoratie */}
-      <svg
-        className="absolute inset-0"
-        width={CARD_W}
-        height={CARD_H}
-        viewBox={`0 0 ${CARD_W} ${CARD_H}`}
-        style={{ overflow: "visible", filter: `drop-shadow(0 8px 32px ${goldMid}55)` }}
-      >
+      {/* ── SVG laag 1: kaart vorm, achtergrond, border ── */}
+      <svg className="absolute inset-0 pointer-events-none" width={CW} height={CH}
+        viewBox={`0 0 ${CW} ${CH}`}
+        style={{ filter: `drop-shadow(0 10px 40px ${tier.mid}70) drop-shadow(0 2px 8px rgba(0,0,0,0.6))` }}>
         <defs>
-          <clipPath id={`card-clip-${rating}`}>
-            <path d={CARD_PATH} />
+          <clipPath id={`fc-clip-${rating}`}><path d={OUTER} /></clipPath>
+          <clipPath id={`fc-img-${rating}`}>
+            {/* Clip avatar tot bovenste gedeelte van kaart */}
+            <rect x="0" y="0" width={CW} height={imgH} />
           </clipPath>
-          <linearGradient id={`card-bg-${rating}`} x1="0" y1="0" x2="0.4" y2="1">
-            <stop offset="0%" stopColor={goldTop} />
-            <stop offset="40%" stopColor={goldMid} />
-            <stop offset="75%" stopColor={goldDark} />
-            <stop offset="100%" stopColor="#050c1a" />
+          <linearGradient id={`fc-bg-${rating}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor={tier.bg1} />
+            <stop offset="55%"  stopColor={tier.bg2} />
+            <stop offset="100%" stopColor="#060c18" />
           </linearGradient>
-          <linearGradient id={`shimmer-${rating}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="rgba(255,255,255,0)" />
-            <stop offset="45%" stopColor={shimmer} />
-            <stop offset="55%" stopColor={shimmer} />
+          <linearGradient id={`fc-sh-${rating}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stopColor="rgba(255,255,255,0)" />
+            <stop offset="40%"  stopColor="rgba(255,255,255,0.18)" />
+            <stop offset="60%"  stopColor="rgba(255,255,255,0.10)" />
             <stop offset="100%" stopColor="rgba(255,255,255,0)" />
           </linearGradient>
         </defs>
 
-        {/* Kaart achtergrond */}
-        <path d={CARD_PATH} fill={`url(#card-bg-${rating})`} />
-
-        {/* Diagonale shimmer */}
-        <path d={CARD_PATH} fill={`url(#shimmer-${rating})`} />
-
-        {/* Binnenste frame (2px inset) */}
-        <path
-          d={CARD_PATH}
-          fill="none"
-          stroke={goldTop}
-          strokeWidth="1.5"
-          strokeOpacity="0.45"
-          transform="scale(0.962) translate(4.3, 6.1)"
-        />
-
-        {/* Subtiele diagonale lijnen */}
-        <g clipPath={`url(#card-clip-${rating})`} opacity="0.08">
-          <line x1="170" y1="-10" x2="30" y2="220" stroke="white" strokeWidth="28" />
-          <line x1="210" y1="-10" x2="70" y2="220" stroke="white" strokeWidth="16" />
+        {/* Achtergrond fill */}
+        <path d={OUTER} fill={`url(#fc-bg-${rating})`} />
+        {/* Shimmer */}
+        <path d={OUTER} fill={`url(#fc-sh-${rating})`} />
+        {/* Diagonale textuur */}
+        <g clipPath={`url(#fc-clip-${rating})`} opacity="0.06">
+          <line x1="180" y1="-20" x2="20" y2="260" stroke="white" strokeWidth="36" />
+          <line x1="220" y1="-20" x2="60" y2="260" stroke="white" strokeWidth="20" />
         </g>
 
-        {/* Donkere overlay onderin voor stats */}
-        <path
-          d={`M 0,${CARD_H * 0.6} L ${CARD_W},${CARD_H * 0.6} L ${CARD_W},${CARD_H - 22} Q ${CARD_W},${CARD_H} ${CARD_W - 18},${CARD_H} L 18,${CARD_H} Q 0,${CARD_H} 0,${CARD_H - 22} Z`}
-          fill="rgba(0,0,0,0.65)"
-        />
+        {/* Donkere bodem voor stats */}
+        <rect x="0" y={imgH} width={CW} height={CH - imgH} fill="rgba(0,0,0,0.72)" />
+
+        {/* ── Randen: echte FIFA kaart stijl ── */}
+        {/* Buitenste rand (4px, donker goud) */}
+        <path d={OUTER} fill="none" stroke={tier.dark} strokeWidth="4" />
+        {/* Eerste decoratieve kader (binnenste, 1.5px, licht goud) */}
+        <path d={INNER}  fill="none" stroke={tier.ring} strokeWidth="1.5" strokeOpacity="0.7"
+          transform={`translate(5, 5)`} />
+        {/* Tweede kader (iets smaller, subtielere tint) */}
+        <path d={INNER2} fill="none" stroke={tier.border} strokeWidth="1" strokeOpacity="0.35"
+          transform={`translate(8, 8)`} />
       </svg>
 
-      {/* ── Inhoud bovenop de SVG ── */}
-      {/* Rating + positie (links boven) */}
-      <div className="absolute top-3 left-4 z-10">
-        <div className="font-black text-white leading-none"
-          style={{ fontFamily: "Outfit, sans-serif", fontSize: 42, textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
+      {/* ── Avatar — vult de bovenste ~58% van de kaart ── */}
+      <div className="absolute inset-x-0 top-0 z-10 overflow-hidden"
+        style={{ height: imgH, borderRadius: `${CR}px ${CR}px 0 0` }}>
+        {av ? (
+          <Image src={av} alt={player.first_name} fill
+            className="object-cover object-top" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center font-black text-6xl"
+            style={{ background: `linear-gradient(180deg, ${tier.bg1}30 0%, ${tier.bg2}50 100%)`, color: `${tier.ring}80` }}>
+            {player.first_name[0]}{player.last_name[0]}
+          </div>
+        )}
+        {/* Gradient fade onderaan de avatar naar de donkere bodem */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.7))" }} />
+      </div>
+
+      {/* ── Overlay info op de avatar (rating/positie/vlag) ── */}
+      <div className="absolute top-2.5 left-3 z-20">
+        <div className="font-black text-white leading-none drop-shadow"
+          style={{ fontFamily: "Outfit, sans-serif", fontSize: 40, textShadow: "0 0 12px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.9)" }}>
           {rating}
         </div>
-        <div className="font-black text-white/90 uppercase tracking-widest mt-0.5 text-[11px]">
+        <div className="font-black uppercase tracking-widest text-[11px]"
+          style={{ color: tier.ring, textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>
           {player.position}
         </div>
-        <div className="text-[17px] mt-0.5">🇳🇱</div>
+        <div className="text-[18px] leading-none mt-0.5" style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.8))" }}>🇳🇱</div>
       </div>
 
-      {/* Avatar — groot, vult bovenste gedeelte */}
-      <div className="absolute z-10" style={{ left: 30, right: 30, top: 44, height: 158 }}>
-        <div className="w-full h-full overflow-hidden flex items-center justify-center font-black text-5xl"
-          style={av
-            ? { borderRadius: 12 }
-            : { borderRadius: 12, background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.6)" }}>
-          {av
-            ? <Image src={av} alt={player.first_name} fill className="object-cover object-top" />
-            : `${player.first_name[0]}${player.last_name[0]}`}
+      {/* ── Onderin: naam + FIFA stats ── */}
+      <div className="absolute left-0 right-0 z-20 px-4"
+        style={{ top: imgH + 6 }}>
+        {/* Naam */}
+        <div className="text-center font-black text-white uppercase leading-none mb-1.5"
+          style={{ fontFamily: "Outfit, sans-serif", fontSize: 14, letterSpacing: "0.05em",
+                   textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
+          {player.last_name.toUpperCase()}
         </div>
+        {/* Dunne scheidingslijn */}
+        <div className="mb-2" style={{ height: 1, background: `linear-gradient(to right, transparent, ${tier.ring}60, transparent)` }} />
+
+        {/* FIFA-stijl 6 stats in 2×3 grid */}
+        {fifaStats.length > 0 && (
+          <div className="grid grid-cols-2 gap-x-3" style={{ rowGap: 3 }}>
+            {[fifaStats.slice(0, 3), fifaStats.slice(3)].map((col, ci) => (
+              <div key={ci} className="space-y-0.5">
+                {col.map((st) => (
+                  <div key={st.l} className="flex items-center gap-1.5">
+                    <span className="font-black tabular-nums"
+                      style={{ color: tier.ring, fontFamily: "Outfit, sans-serif", fontSize: 13 }}>{st.v}</span>
+                    <span className="font-bold uppercase tracking-wider text-white/50"
+                      style={{ fontSize: 9 }}>{st.l}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Naam */}
-      <div className="absolute z-10 left-0 right-0 text-center font-black text-white uppercase tracking-tight"
-        style={{ top: CARD_H * 0.615, fontFamily: "Outfit, sans-serif", fontSize: 16, textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
-        {player.last_name.toUpperCase()}
-      </div>
-
-      {/* Scheidingslijn */}
-      <div className="absolute z-10 left-6 right-6" style={{ top: CARD_H * 0.655, height: 1, background: `${goldTop}50` }} />
-
-      {/* Stats grid */}
-      {stats.length > 0 && (
-        <div className="absolute z-10 left-5 right-5 grid grid-cols-2 gap-x-2"
-          style={{ top: CARD_H * 0.67, rowGap: 4 }}>
-          {[stats.slice(0, 3), stats.slice(3)].map((col, ci) => (
-            <div key={ci} className="space-y-0.5">
-              {col.map((st) => (
-                <div key={st.l} className="flex items-center gap-1.5">
-                  <span className="font-black text-[13px] tabular-nums leading-none"
-                    style={{ color: goldTop, fontFamily: "Outfit, sans-serif" }}>{st.v}</span>
-                  <span className="text-white/55 text-[9px] tracking-widest uppercase leading-none">{st.l}</span>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -425,29 +430,43 @@ export default function PlayerCardPage() {
             </div>
           </div>
 
-          {/* ── Stat boxes onderin de hero (zoals PES) ── */}
-          {scores.length > 0 && (
-            <div className="flex gap-1.5 sm:gap-2 mt-5 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 overflow-x-auto pb-0 scrollbar-none">
-              {scores.map((s) => {
-                const schema = EVALUATION_SCHEMA.find((c) => c.id === s.category);
-                const sc = getScoreColor(s.score);
-                const label = CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS];
-                return (
-                  <div key={s.category}
+          {/* ── Hero meta-stats (andere cijfers dan FIFA kaart en attribuut kolommen) ── */}
+          {(() => {
+            const evalCount = player.evaluations?.length ?? 0;
+            const bestScore = player.evaluations?.reduce((best, ev) =>
+              (ev.overall_score ?? 0) > best ? (ev.overall_score ?? 0) : best, 0
+            ) ?? 0;
+            const currentScore = player.evaluations?.[0]?.overall_score ?? null;
+
+            const metaStats = [
+              { v: player.overall_rating.toString(), l: "OVR" },
+              { v: evalCount.toString(), l: "EVALS" },
+              ...(currentScore ? [{ v: currentScore.toFixed(1), l: "HUIDIG" }] : []),
+              ...(bestScore > 0 ? [{ v: bestScore.toFixed(1), l: "PIEK" }] : []),
+              ...(age ? [{ v: age.toString(), l: "LEEFT" }] : []),
+              ...(heightCm ? [{ v: `${heightCm}`, l: "CM" }] : []),
+            ].slice(0, 6); // max 6 boxes
+
+            if (metaStats.length === 0) return null;
+
+            return (
+              <div className="flex gap-1.5 sm:gap-2 mt-5 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 overflow-x-auto pb-0 scrollbar-none">
+                {metaStats.map((st) => (
+                  <div key={st.l}
                     className="flex-1 flex flex-col items-center justify-center px-2 py-2.5 rounded-t-xl"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderBottom: "none", minWidth: 60 }}>
-                    <div className="text-xl sm:text-2xl font-black tabular-nums leading-none"
-                      style={{ color: sc, fontFamily: "Outfit, sans-serif" }}>
-                      {toFifa(s.score)}
+                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderBottom: "none", minWidth: 55 }}>
+                    <div className="text-lg sm:text-xl font-black tabular-nums leading-none text-white"
+                      style={{ fontFamily: "Outfit, sans-serif" }}>
+                      {st.v}
                     </div>
-                    <div className="text-[9px] sm:text-[10px] text-white/40 mt-1 uppercase tracking-wide font-medium text-center leading-tight">
-                      {schema?.icon} {label}
+                    <div className="text-[9px] text-white/35 mt-1 uppercase tracking-wider font-medium">
+                      {st.l}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
+                ))}
+              </div>
+            );
+          })()}
 
           {/* ── Tabs, vloeiend onderaan de hero ── */}
           <div className="flex -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 mt-0 overflow-x-auto"

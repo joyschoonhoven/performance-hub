@@ -190,28 +190,14 @@ export function PlayerRadarChart({
         filter={`url(#rglow-${uid})`}
       />
 
-      {/* ── Data points with value bubbles ── */}
+      {/* ── Data points ── */}
       {dataPoints.map((p, i) => {
-        const angle = (i / n) * 360 - 90;
-        const rad = angle * (Math.PI / 180);
-        const offset = 15;
-        const val = data[i].value;
-
         return (
           <g key={`dp-${i}`}>
             <circle cx={p.x} cy={p.y} r={9} fill={color} fillOpacity={0.12} />
             <circle cx={p.x} cy={p.y} r={5} fill={color}
               filter={`url(#rdrop-${uid})`} />
             <circle cx={p.x} cy={p.y} r={2} fill="white" fillOpacity={0.9} />
-            <g transform={`translate(${p.x + Math.cos(rad) * offset}, ${p.y + Math.sin(rad) * offset})`}>
-              <rect x={-12} y={-8} width={24} height={16} rx={8}
-                fill={color} fillOpacity={0.92} />
-              <text x={0} y={0}
-                textAnchor="middle" dominantBaseline="middle"
-                fontSize={9} fontWeight={800} fill="white">
-                {val.toFixed(1)}
-              </text>
-            </g>
           </g>
         );
       })}

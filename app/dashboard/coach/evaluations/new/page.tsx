@@ -269,6 +269,39 @@ function NewEvaluationPageInner() {
     // Update player overall rating
     await supabase.from("players").update({ overall_rating: fifaRating }).eq("id", selectedPlayerId);
 
+    // Email notification to player
+    if (selectedPlayer?.profile_id) {
+      const { data: playerProfile } = await supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", selectedPlayer.profile_id)
+        .maybeSingle();
+
+      if (playerProfile?.email) {
+        const scoreList = EVALUATION_SCHEMA.map((cat) => ({
+          category: cat.label,
+          score: parseFloat((categoryAverages[cat.id] ?? 7).toFixed(1)),
+        }));
+
+        fetch("/api/notify-evaluation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            playerId: selectedPlayerId,
+            coachName,
+            playerName: `${selectedPlayer.first_name} ${selectedPlayer.last_name}`,
+            playerEmail: playerProfile.email,
+            overallScore: parseFloat(overallAvg.toFixed(1)),
+            scores: scoreList,
+            notes: notes || null,
+            strengths: sterkstePunten || null,
+            improvementPoints: verbeterpunten || null,
+            evaluationDate,
+          }),
+        }).catch(() => {}); // fire and forget
+      }
+    }
+
     setSaved(true);
     setLoading(false);
   }
