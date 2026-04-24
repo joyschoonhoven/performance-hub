@@ -377,122 +377,218 @@ function getIntelligenceLabel(score: number): { label: string; color: string } {
   return { label: "Beginner IQ", color: "#F87171" }
 }
 
+/* ─── Football (soccer ball) SVG at (0,0), radius R ──────────── */
+function FootballIcon({ r, rotation }: { r: number; rotation: number }) {
+  // Classic pentagon/hexagon ball pattern
+  const pts = (n: number, rad: number, offset = 0) =>
+    Array.from({ length: n }, (_, i) => {
+      const a = ((i / n) * Math.PI * 2) + offset - Math.PI / 2
+      return `${(Math.cos(a) * rad).toFixed(2)},${(Math.sin(a) * rad).toFixed(2)}`
+    }).join(" ")
+
+  return (
+    <g transform={`rotate(${rotation})`}>
+      {/* Shadow */}
+      <ellipse cx={0} cy={r * 0.5} rx={r * 0.85} ry={r * 0.22} fill="rgba(0,0,0,0.25)" />
+      {/* Ball base */}
+      <circle r={r} fill="white" stroke="#D0D0D0" strokeWidth={0.5} />
+      {/* Black center pentagon */}
+      <polygon points={pts(5, r * 0.42)} fill="#111" opacity={0.92} />
+      {/* 5 outer edge pentagons */}
+      {[0, 72, 144, 216, 288].map((deg) => {
+        const rad = (deg * Math.PI) / 180
+        const ex = Math.cos(rad - Math.PI / 2) * r * 0.72
+        const ey = Math.sin(rad - Math.PI / 2) * r * 0.72
+        return (
+          <polygon
+            key={deg}
+            points={pts(5, r * 0.26, (deg * Math.PI) / 180)}
+            transform={`translate(${ex.toFixed(2)},${ey.toFixed(2)})`}
+            fill="#111"
+            opacity={0.88}
+          />
+        )
+      })}
+      {/* Shine */}
+      <circle cx={-r * 0.28} cy={-r * 0.3} r={r * 0.2} fill="rgba(255,255,255,0.55)" />
+    </g>
+  )
+}
+
 function PitchSVG({
   players,
   ball,
+  tick,
 }: {
   players: PlayerPos[]
   ball: BallPos
+  tick: number
 }) {
-  return (
-    <div style={{ perspective: "1000px", perspectiveOrigin: "50% 5%", marginBottom: "8px" }}>
-      <div
-        style={{
-          transform: "rotateX(48deg)",
-          transformOrigin: "50% 100%",
-          filter: "drop-shadow(0 30px 60px rgba(0,0,0,0.8))",
-        }}
-      >
-        <svg viewBox="0 0 700 480" width="100%" style={{ display: "block" }}>
-          {/* Field base */}
-          <rect x={20} y={10} width={660} height={460} rx={3} fill="#1B5E2A" />
+  const W = 700, H = 480
+  const FX = 20, FY = 10, FW = 660, FH = 460  // field rect
+  const lineColor = "rgba(255,255,255,0.65)"
+  const lineW = 1.8
 
-          {/* Grass stripes */}
-          {Array.from({ length: 11 }).map((_, i) => (
+  // Ball animation: gentle idle float + rotation
+  const ballIdleX = Math.cos(tick * 0.06) * 1.8
+  const ballIdleY = Math.sin(tick * 0.09) * 1.2
+  const ballRotation = (tick * 2.5) % 360
+
+  const bcxBase = ball.x * FW + FX
+  const bcyBase = ball.y * FH + FY
+
+  return (
+    <div style={{ perspective: "1100px", perspectiveOrigin: "50% 8%", marginBottom: "4px" }}>
+      <div style={{
+        transform: "rotateX(46deg)",
+        transformOrigin: "50% 100%",
+        filter: "drop-shadow(0 40px 80px rgba(0,0,0,0.9)) drop-shadow(0 10px 20px rgba(0,0,0,0.6))",
+      }}>
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: "block", borderRadius: "4px" }}>
+          <defs>
+            {/* Grass gradient — darker at edges */}
+            <radialGradient id="grassGrad" cx="50%" cy="50%" r="70%">
+              <stop offset="0%"  stopColor="#1e7a30" />
+              <stop offset="100%" stopColor="#145220" />
+            </radialGradient>
+            {/* Goal net texture */}
+            <pattern id="netPat" width="6" height="6" patternUnits="userSpaceOnUse">
+              <path d="M 0 0 L 6 6 M 6 0 L 0 6" stroke="rgba(255,255,255,0.25)" strokeWidth="0.6" fill="none"/>
+            </pattern>
+          </defs>
+
+          {/* ── Grass base ── */}
+          <rect x={FX} y={FY} width={FW} height={FH} fill="url(#grassGrad)" />
+
+          {/* ── Grass stripes (alternating light/dark bands) ── */}
+          {Array.from({ length: 12 }).map((_, i) => (
             <rect
               key={i}
-              x={20}
-              y={10 + i * 42}
-              width={660}
-              height={42}
-              fill={i % 2 === 0 ? "rgba(0,0,0,0.07)" : "rgba(255,255,255,0.03)"}
+              x={FX} y={FY + i * (FH / 12)} width={FW} height={FH / 12}
+              fill={i % 2 === 0 ? "rgba(0,0,0,0.10)" : "rgba(255,255,255,0.04)"}
             />
           ))}
 
-          {/* Field border */}
-          <rect x={20} y={10} width={660} height={460} fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth={2} />
+          {/* ── Field outer border ── */}
+          <rect x={FX} y={FY} width={FW} height={FH} fill="none"
+            stroke={lineColor} strokeWidth={lineW} />
 
-          {/* Center line */}
-          <line x1={20} y1={230} x2={680} y2={230} stroke="rgba(255,255,255,0.6)" strokeWidth={1.5} />
+          {/* ── Halfway line ── */}
+          <line x1={FX} y1={FY + FH / 2} x2={FX + FW} y2={FY + FH / 2}
+            stroke={lineColor} strokeWidth={lineW} />
 
-          {/* Center circle */}
-          <circle cx={350} cy={230} r={52} fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth={1.5} />
+          {/* ── Center circle + dot ── */}
+          <circle cx={FX + FW / 2} cy={FY + FH / 2} r={58}
+            fill="rgba(255,255,255,0.03)" stroke={lineColor} strokeWidth={lineW} />
+          <circle cx={FX + FW / 2} cy={FY + FH / 2} r={4} fill={lineColor} />
 
-          {/* Center dot */}
-          <circle cx={350} cy={230} r={3.5} fill="rgba(255,255,255,0.8)" />
+          {/* ── Corner arcs (quarter circles, r=18 at each corner) ── */}
+          {[
+            { x: FX,      y: FY,       d: `M ${FX+18} ${FY} A 18 18 0 0 0 ${FX} ${FY+18}` },
+            { x: FX+FW,   y: FY,       d: `M ${FX+FW-18} ${FY} A 18 18 0 0 1 ${FX+FW} ${FY+18}` },
+            { x: FX,      y: FY+FH,    d: `M ${FX} ${FY+FH-18} A 18 18 0 0 0 ${FX+18} ${FY+FH}` },
+            { x: FX+FW,   y: FY+FH,    d: `M ${FX+FW} ${FY+FH-18} A 18 18 0 0 1 ${FX+FW-18} ${FY+FH}` },
+          ].map((c, i) => (
+            <path key={i} d={c.d} fill="none" stroke={lineColor} strokeWidth={lineW} />
+          ))}
 
-          {/* Top penalty area */}
-          <rect x={178} y={10} width={344} height={98} fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth={1.5} />
+          {/* ── TOP: Penalty area ── */}
+          <rect x={FX + 158} y={FY} width={FW - 316} height={110}
+            fill="rgba(255,255,255,0.03)" stroke={lineColor} strokeWidth={lineW} />
+          {/* TOP: 6-yard box */}
+          <rect x={FX + 235} y={FY} width={FW - 470} height={48}
+            fill="rgba(255,255,255,0.02)" stroke={lineColor} strokeWidth={1.2} />
+          {/* TOP: Penalty spot */}
+          <circle cx={FX + FW / 2} cy={FY + 82} r={4} fill={lineColor} />
+          {/* TOP: Penalty arc (outside pen area, centered on spot) */}
+          <path d={`M ${FX+302} ${FY+110} A 58 58 0 0 1 ${FX+358} ${FY+110}`}
+            fill="none" stroke={lineColor} strokeWidth={lineW} />
+          {/* TOP: Goal (with net) */}
+          <rect x={FX + FW/2 - 50} y={FY - 18} width={100} height={18}
+            fill="url(#netPat)" stroke={lineColor} strokeWidth={1.5} />
 
-          {/* Bottom penalty area */}
-          <rect x={178} y={372} width={344} height={98} fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth={1.5} />
+          {/* ── BOTTOM: Penalty area ── */}
+          <rect x={FX + 158} y={FY + FH - 110} width={FW - 316} height={110}
+            fill="rgba(255,255,255,0.03)" stroke={lineColor} strokeWidth={lineW} />
+          {/* BOTTOM: 6-yard box */}
+          <rect x={FX + 235} y={FY + FH - 48} width={FW - 470} height={48}
+            fill="rgba(255,255,255,0.02)" stroke={lineColor} strokeWidth={1.2} />
+          {/* BOTTOM: Penalty spot */}
+          <circle cx={FX + FW / 2} cy={FY + FH - 82} r={4} fill={lineColor} />
+          {/* BOTTOM: Penalty arc */}
+          <path d={`M ${FX+302} ${FY+FH-110} A 58 58 0 0 0 ${FX+358} ${FY+FH-110}`}
+            fill="none" stroke={lineColor} strokeWidth={lineW} />
+          {/* BOTTOM: Goal (with net) */}
+          <rect x={FX + FW/2 - 50} y={FY + FH} width={100} height={18}
+            fill="url(#netPat)" stroke={lineColor} strokeWidth={1.5} />
 
-          {/* Top 6-yard box */}
-          <rect x={255} y={10} width={190} height={42} fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth={1} />
+          {/* ── Team direction arrows (subtle) ── */}
+          <text x={FX + 8} y={FY + FH/2 - 12} fill="rgba(100,160,255,0.35)"
+            fontSize={9} fontWeight="bold" textAnchor="start">▼ BLAUW</text>
+          <text x={FX + 8} y={FY + FH/2 + 20} fill="rgba(255,100,100,0.35)"
+            fontSize={9} fontWeight="bold" textAnchor="start">▲ ROOD</text>
 
-          {/* Bottom 6-yard box */}
-          <rect x={255} y={428} width={190} height={42} fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth={1} />
-
-          {/* Top goal */}
-          <rect x={308} y={0} width={84} height={14} fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.5)" strokeWidth={1.5} />
-
-          {/* Bottom goal */}
-          <rect x={308} y={466} width={84} height={14} fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.5)" strokeWidth={1.5} />
-
-          {/* Top penalty spot */}
-          <circle cx={350} cy={80} r={3} fill="rgba(255,255,255,0.7)" />
-
-          {/* Bottom penalty spot */}
-          <circle cx={350} cy={400} r={3} fill="rgba(255,255,255,0.7)" />
-
-          {/* Top arc */}
-          <path d="M 178 108 A 55 55 0 0 0 522 108" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth={1.5} />
-
-          {/* Bottom arc */}
-          <path d="M 178 372 A 55 55 0 0 1 522 372" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth={1.5} />
-
-          {/* Players */}
+          {/* ── Players ── */}
           {players.map((player) => {
-            const cx = player.x * 660 + 20
-            const cy = player.y * 460 + 10
+            const cx = player.x * FW + FX
+            const cy = player.y * FH + FY
+            const isBlue = player.team === "blue"
+            const fill = isBlue ? "#1a56db" : "#c81e1e"
+            const shadowColor = isBlue ? "rgba(26,86,219,0.6)" : "rgba(200,30,30,0.6)"
+
             return (
-              <g key={player.id} transform={`translate(${cx},${cy})`} style={{ transition: "transform 0.8s ease" }}>
+              <g key={player.id}
+                transform={`translate(${cx},${cy})`}
+                style={{ transition: "transform 0.75s cubic-bezier(0.4,0,0.2,1)" }}>
+
+                {/* Player shadow */}
+                <ellipse cx={0} cy={13} rx={11} ry={4}
+                  fill={shadowColor} opacity={0.5} />
+
+                {/* Highlight ring (pulsing) — only for key players */}
                 {player.highlighted && (
-                  <circle cx={0} cy={0} r={19} fill="none" stroke="#FBBF24" strokeWidth={2.5} opacity={0.8} />
+                  <>
+                    <circle cx={0} cy={0} r={22}
+                      fill="none" stroke="#FBBF24" strokeWidth={2}
+                      opacity={0.5 + Math.sin(tick * 0.18) * 0.4} />
+                    <circle cx={0} cy={0} r={27}
+                      fill="none" stroke="#FBBF24" strokeWidth={1}
+                      opacity={0.2 + Math.sin(tick * 0.18 + 1) * 0.18} />
+                  </>
                 )}
-                <circle
-                  cx={0}
-                  cy={0}
-                  r={14}
-                  fill={player.team === "blue" ? "#1D4ED8" : "#B91C1C"}
+
+                {/* Player circle */}
+                <circle cx={0} cy={0} r={15}
+                  fill={fill}
                   stroke="white"
-                  strokeWidth={1.5}
+                  strokeWidth={2}
+                  style={{ filter: player.highlighted ? `drop-shadow(0 0 6px ${shadowColor})` : undefined }}
                 />
-                <text
-                  x={0}
-                  y={0}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fill="white"
-                  fontSize={10}
-                  fontWeight="bold"
-                >
+
+                {/* Kit shine */}
+                <ellipse cx={-4} cy={-5} rx={5} ry={4}
+                  fill="rgba(255,255,255,0.18)" />
+
+                {/* Number */}
+                <text x={0} y={1}
+                  textAnchor="middle" dominantBaseline="middle"
+                  fill="white" fontSize={10} fontWeight="800"
+                  style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.5px" }}>
                   {player.number}
                 </text>
               </g>
             )
           })}
 
-          {/* Ball */}
-          {(() => {
-            const bcx = ball.x * 660 + 20
-            const bcy = ball.y * 460 + 10
-            return (
-              <g transform={`translate(${bcx},${bcy})`} style={{ transition: "transform 0.8s ease" }}>
-                <circle cx={0} cy={0} r={7} fill="white" stroke="#DDD" strokeWidth={1} />
-              </g>
-            )
-          })()}
+          {/* ── Ball (animated) ── */}
+          {/* Base position layer (CSS transition moves this) */}
+          <g transform={`translate(${bcxBase},${bcyBase})`}
+            style={{ transition: "transform 0.75s cubic-bezier(0.4,0,0.2,1)" }}>
+            {/* Idle float layer (continuous animation via tick) */}
+            <g transform={`translate(${ballIdleX.toFixed(2)},${ballIdleY.toFixed(2)})`}>
+              <FootballIcon r={9} rotation={ballRotation} />
+            </g>
+          </g>
         </svg>
       </div>
     </div>
@@ -507,6 +603,13 @@ export default function TacticalGamePage() {
   const [currentPlayers, setCurrentPlayers] = useState<PlayerPos[]>([...defaultPlayers])
   const [currentBall, setCurrentBall] = useState<BallPos>({ x: 0.5, y: 0.5 })
   const [dots, setDots] = useState(0)
+  const [tick, setTick] = useState(0)
+
+  // Continuous animation tick (20fps) — drives ball rotation, idle float, highlight pulse
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 50)
+    return () => clearInterval(id)
+  }, [])
 
   const scenario = scenarios[currentIndex]
   const totalScore = scores.reduce((a, b) => a + b, 0)
@@ -654,7 +757,7 @@ export default function TacticalGamePage() {
 
           {/* Pitch preview */}
           <div style={{ maxWidth: "600px", margin: "0 auto 40px", opacity: 0.7 }}>
-            <PitchSVG players={defaultPlayers} ball={{ x: 0.5, y: 0.5 }} />
+            <PitchSVG players={defaultPlayers} ball={{ x: 0.5, y: 0.5 }} tick={tick} />
           </div>
 
           {/* Info cards */}
@@ -994,7 +1097,7 @@ export default function TacticalGamePage() {
 
       {/* Pitch */}
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <PitchSVG players={currentPlayers} ball={currentBall} />
+        <PitchSVG players={currentPlayers} ball={currentBall} tick={tick} />
 
         {/* Scenario description */}
         <div
