@@ -39,17 +39,94 @@ const OUTER_PATH = cardPath(CW, CH, CR);
 const INNER_PATH = cardPath(IW, IH, IR);          // 6px inset, r=8
 const ACCENT_PATH = cardPath(IW - 4, IH - 4, IR - 2); // 8px inset, r=6
 
+// ── FIFA tier kleuren per rating-bereik ──────────────────────────
+function getFutTier(rating: number) {
+  if (rating >= 90) return {
+    // ICON / TOTY — zwart met goud (ultra premium)
+    label: "Icon",
+    dark:   "#0A0A0A",
+    mid:    "#C0A000",
+    bg1:    "#FFD700",
+    bg2:    "#1C1C1C",
+    ring:   "#FFE855",
+    accent: "#FFFFFF",
+  };
+  if (rating >= 85) return {
+    // TOTW — paars/donkerblauw (speciale editie)
+    label: "TOTW",
+    dark:   "#1A0D45",
+    mid:    "#5A35B0",
+    bg1:    "#8B5CF6",
+    bg2:    "#2D1A6E",
+    ring:   "#C4B5FD",
+    accent: "#E0D4FF",
+  };
+  if (rating >= 80) return {
+    // Speciale goud — TOTS/rood-goud accent
+    label: "Speciaal",
+    dark:   "#4A1800",
+    mid:    "#C05010",
+    bg1:    "#F97316",
+    bg2:    "#7C2D00",
+    ring:   "#FDB575",
+    accent: "#FFD4A8",
+  };
+  if (rating >= 75) return {
+    // Goud rare — rijker, donkerder goud
+    label: "Goud",
+    dark:   "#4A3000",
+    mid:    "#B8860B",
+    bg1:    "#F5C842",
+    bg2:    "#8A6000",
+    ring:   "#FFD700",
+    accent: "#FFF0A0",
+  };
+  if (rating >= 70) return {
+    // Goud normaal
+    label: "Goud",
+    dark:   "#3A2800",
+    mid:    "#8B6914",
+    bg1:    "#D4AF37",
+    bg2:    "#7A5500",
+    ring:   "#E6C45A",
+    accent: "#F5D878",
+  };
+  if (rating >= 65) return {
+    // Zilver rare
+    label: "Zilver",
+    dark:   "#303030",
+    mid:    "#909090",
+    bg1:    "#D8D8D8",
+    bg2:    "#707070",
+    ring:   "#F0F0F0",
+    accent: "#FFFFFF",
+  };
+  if (rating >= 50) return {
+    // Brons
+    label: "Brons",
+    dark:   "#5C2E00",
+    mid:    "#A05820",
+    bg1:    "#CD7F32",
+    bg2:    "#8B4513",
+    ring:   "#E8A060",
+    accent: "#F0C080",
+  };
+  // Grijs — nog geen rating
+  return {
+    label: "Basis",
+    dark:   "#1E2830",
+    mid:    "#5A6B7A",
+    bg1:    "#9BA4B5",
+    bg2:    "#4A5560",
+    ring:   "#B0BCC8",
+    accent: "#D0D8E4",
+  };
+}
+
 function FifaCard({ player, rColor, avatarOverride }: { player: PlayerWithDetails; rColor: string; avatarOverride?: string | null }) {
   const s = player.recent_scores;
   const rating = player.overall_rating;
-
-  const isElite = rating >= 85;
-  const isGood  = rating >= 75;
-  const tier = isElite
-    ? { dark: "#5C3800", mid: "#B8860B", bg1: "#F5D060", bg2: "#9A6C00", ring: "#FFE066", accent: "#FFF0A0" }
-    : isGood
-    ? { dark: "#3A2800", mid: "#8B6914", bg1: "#D4AF37", bg2: "#7A5500", ring: "#E6C45A", accent: "#F5D878" }
-    : { dark: "#1E2830", mid: "#5A6B7A", bg1: "#9BA4B5", bg2: "#4A5560", ring: "#B0BCC8", accent: "#D0D8E4" };
+  const tier = getFutTier(rating);
 
   const fifaStats = s ? [
     { v: toFifa(s.fysiek),                                                    l: "PAC" },
