@@ -6,84 +6,143 @@ import Link from "next/link";
 import { getMyPlayerData, getAllPlayers } from "@/lib/supabase/queries";
 import { ARCHETYPES, SOCIOTYPES, POSITION_LABELS, CATEGORY_LABELS, EVALUATION_SCHEMA } from "@/lib/types";
 import { getRatingColor, getRatingLabel, getAge, formatDate, getScoreColor } from "@/lib/utils";
-import {
-  Star, Loader2, Settings, Sparkles, Trophy, TrendingUp, TrendingDown,
-  Minus, Calendar, Ruler, Weight, Footprints, Activity, BarChart3,
-  ShieldAlert, ChevronDown, ChevronUp, MapPin,
-} from "lucide-react";
+import { Loader2, Settings, Sparkles, Activity, BarChart3, ShieldAlert, Bookmark, GitCompare } from "lucide-react";
 import type { PlayerWithDetails } from "@/lib/types";
-import { ARCHETYPE_ICONS, SOCIOTYPE_ICONS } from "@/components/PlayerTypeHero";
+import { SOCIOTYPE_ICONS } from "@/components/PlayerTypeHero";
 import { PlayerRadarChart } from "@/components/charts/RadarChart";
 import { PlayerComparisonChart } from "@/components/charts/PlayerComparisonChart";
 import { InjuryBodyMap, type BodyRegion, type DominantFoot } from "@/components/InjuryBodyMap";
 import { DUTCH_CLUBS } from "@/lib/dutch-clubs";
 
-/* ─── helpers ──────────────────────────────────────────────────── */
-function parseSubScores(subNotes?: string): Record<string, number> | null {
-  if (!subNotes) return null;
-  try { return JSON.parse(subNotes); } catch { return null; }
+/* ─── helpers ─────────────────────────────────────────────────── */
+function parseSubScores(n?: string): Record<string, number> | null {
+  if (!n) return null; try { return JSON.parse(n); } catch { return null; }
 }
+function toFifa(v: number) { return Math.round(v * 10); }
 
-function ClubBadge({ clubId, size = 48 }: { clubId: string; size?: number }) {
-  const club = DUTCH_CLUBS.find((c) => c.id === clubId);
-  const [err, setErr] = useState(false);
-  if (!club) return null;
-  if (!club.logoUrl || err) {
-    return (
-      <div className="flex-shrink-0 flex items-center justify-center rounded-xl font-black"
-        style={{ width: size, height: size, background: `${club.primaryColor}20`, color: club.primaryColor, border: `2px solid ${club.primaryColor}30`, fontSize: size < 40 ? 9 : 11 }}>
-        {club.code}
-      </div>
-    );
-  }
-  return (
-    <Image src={club.logoUrl} alt={club.name} width={size} height={size}
-      className="object-contain flex-shrink-0"
-      style={{ width: size, height: size }}
-      onError={() => setErr(true)} />
-  );
-}
+/* ─── FIFA card ────────────────────────────────────────────────── */
+function FifaCard({ player, rColor }: { player: PlayerWithDetails; rColor: string }) {
+  const s = player.recent_scores;
+  const cardGrad = `linear-gradient(150deg, ${rColor} 0%, ${rColor}99 35%, #0A2540 100%)`;
+  const stats = s ? [
+    { v: toFifa(s.techniek), l: "TEC" },
+    { v: toFifa(s.fysiek),   l: "FYS" },
+    { v: toFifa(s.tactiek),  l: "TAC" },
+    { v: toFifa(s.mentaal),  l: "MEN" },
+    { v: toFifa(s.teamplay), l: "TEA" },
+    { v: player.overall_rating, l: "OVR" },
+  ] : [];
 
-/* ─── attribute bar (voor de profiel-sectie) ────────────────────── */
-function AttributeBar({ label, icon, score, color }: { label: string; icon: string; score: number; color: string }) {
-  const pct = (score / 10) * 100;
-  const display = Math.round(score * 10); // 0–100
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-base w-6 flex-shrink-0">{icon}</span>
-      <span className="text-xs font-semibold text-white/60 w-20 flex-shrink-0 uppercase tracking-wide">{label}</span>
-      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
-        <div className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${color}80, ${color})` }} />
+    <div className="relative mx-auto select-none" style={{ width: 220, height: 310, flexShrink: 0 }}>
+      <div className="absolute inset-0 rounded-[20px] overflow-hidden shadow-2xl"
+        style={{ background: cardGrad }}>
+
+        {/* Diagonal decorative lines */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 220 310" preserveAspectRatio="none">
+          <line x1="160" y1="-10" x2="40" y2="200" stroke="rgba(255,255,255,0.12)" strokeWidth="22" />
+          <line x1="200" y1="-10" x2="80" y2="200" stroke="rgba(255,255,255,0.07)" strokeWidth="14" />
+          <line x1="220" y1="30" x2="130" y2="190" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+        </svg>
+
+        {/* Top: rating + position */}
+        <div className="absolute top-3 left-4 z-10">
+          <div className="text-4xl font-black text-white leading-none drop-shadow-lg"
+            style={{ fontFamily: "Outfit, sans-serif" }}>{player.overall_rating}</div>
+          <div className="text-[11px] font-black text-white/80 uppercase tracking-widest mt-0.5">{player.position}</div>
+        </div>
+
+        {/* Flag */}
+        <div className="absolute top-4 right-4 z-10">
+          <span className="text-2xl">🇳🇱</span>
+        </div>
+
+        {/* Avatar — center top portion */}
+        <div className="absolute inset-x-0 top-10 flex justify-center z-10">
+          <div className="w-24 h-24 rounded-2xl overflow-hidden flex items-center justify-center font-black text-3xl shadow-xl"
+            style={player.avatar_url
+              ? { border: "2px solid rgba(255,255,255,0.3)" }
+              : { background: "rgba(255,255,255,0.15)", color: "white", border: "2px solid rgba(255,255,255,0.25)" }}>
+            {player.avatar_url
+              ? <Image src={player.avatar_url} alt={player.first_name} width={96} height={96} className="object-cover w-full h-full" />
+              : `${player.first_name[0]}${player.last_name[0]}`}
+          </div>
+        </div>
+
+        {/* Bottom panel */}
+        <div className="absolute bottom-0 left-0 right-0 rounded-b-[20px] pt-3 pb-4 px-4"
+          style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(8px)" }}>
+          <div className="text-center font-black text-white text-base uppercase tracking-tight mb-1.5"
+            style={{ fontFamily: "Outfit, sans-serif" }}>
+            {player.last_name.toUpperCase()}
+          </div>
+          <div className="w-full h-px mb-2.5" style={{ background: `${rColor}60` }} />
+          {stats.length > 0 && (
+            <div className="grid grid-cols-2 gap-x-4 text-[12px] font-black">
+              {[stats.slice(0, 3), stats.slice(3)].map((col, ci) => (
+                <div key={ci} className="space-y-1">
+                  {col.map((st) => (
+                    <div key={st.l} className="flex items-center gap-2">
+                      <span style={{ color: rColor, fontFamily: "Outfit, sans-serif" }}>{st.v}</span>
+                      <span className="text-white/50 text-[10px] tracking-wider">{st.l}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-      <span className="text-sm font-black tabular-nums w-8 text-right flex-shrink-0"
-        style={{ color, fontFamily: "Outfit, sans-serif" }}>{display}</span>
     </div>
   );
 }
 
-/* ─── expandable sub-criteria (voor evaluatiegeschiedenis) ─────── */
-function SubCriteriaRow({ categoryId, subNotes, fallback }: { categoryId: string; subNotes?: string; fallback: number }) {
-  const schema = EVALUATION_SCHEMA.find((c) => c.id === categoryId);
-  const sub = parseSubScores(subNotes);
-  const hasReal = !!sub && Object.keys(sub).length > 0;
-  if (!schema) return null;
+/* ─── semicircle score gauge ───────────────────────────────────── */
+function SemiGauge({ score, color }: { score: number; color: string }) {
+  const r = 26;
+  const circ = Math.PI * r;
+  const fill = circ * (score / 100);
   return (
-    <div className="mt-2 space-y-1.5 pl-2 border-l-2" style={{ borderColor: `${schema.color}40` }}>
-      {schema.subcategories.map((s) => {
-        const val = hasReal ? (sub![s.id] ?? fallback) : fallback;
-        const sc = getScoreColor(val);
-        return (
-          <div key={s.id} className="flex items-center gap-2">
-            <span className="text-[10px] text-slate-500 w-32 flex-shrink-0 truncate">{s.label}</span>
-            <div className="flex-1 h-1 bg-hub-border rounded-full overflow-hidden">
-              <div className="h-full rounded-full" style={{ width: `${val * 10}%`, backgroundColor: hasReal ? sc : `${sc}50` }} />
+    <svg width="64" height="42" viewBox="0 0 64 42">
+      <path d="M 6 38 A 26 26 0 0 1 58 38" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="5" strokeLinecap="round" />
+      <path d="M 6 38 A 26 26 0 0 1 58 38" fill="none" stroke={color} strokeWidth="5" strokeLinecap="round"
+        strokeDasharray={`${fill} ${circ}`} />
+      <text x="32" y="37" textAnchor="middle" fill="white" fontSize="14" fontWeight="900" fontFamily="Outfit, sans-serif">{score}</text>
+    </svg>
+  );
+}
+
+/* ─── attribute column (Haaland-style) ────────────────────────── */
+function AttributeColumn({ categoryId, score, subNotes }: { categoryId: string; score: number; subNotes?: string }) {
+  const schema = EVALUATION_SCHEMA.find((c) => c.id === categoryId)!;
+  const sub = parseSubScores(subNotes);
+  const sc = getScoreColor(score);
+  const display = toFifa(score);
+  return (
+    <div className="flex flex-col items-center min-w-[120px]">
+      {/* Category label */}
+      <div className="text-[11px] font-bold text-white/50 uppercase tracking-wider mb-1">{schema.label}</div>
+      {/* Semicircle */}
+      <SemiGauge score={display} color={sc} />
+      {/* Sub-attributes */}
+      <div className="mt-2 w-full space-y-1.5">
+        {schema.subcategories.map((s) => {
+          const val = sub?.[s.id];
+          const hasVal = val !== undefined;
+          const barColor = hasVal ? getScoreColor(val) : sc;
+          const barPct = hasVal ? val * 10 : score * 10;
+          return (
+            <div key={s.id} className="flex items-center gap-1.5">
+              <span className="text-[10px] text-white/40 w-24 truncate flex-shrink-0">{s.label}</span>
+              <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", minWidth: 30 }}>
+                <div className="h-full rounded-full" style={{ width: `${barPct}%`, backgroundColor: hasVal ? barColor : `${barColor}60` }} />
+              </div>
+              <span className="text-[10px] font-bold w-5 text-right tabular-nums flex-shrink-0"
+                style={{ color: hasVal ? barColor : `${barColor}60` }}>{hasVal ? val : "—"}</span>
             </div>
-            <span className="text-[10px] font-bold w-5 text-right tabular-nums flex-shrink-0"
-              style={{ color: hasReal ? sc : `${sc}80` }}>{hasReal ? val : "—"}</span>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -94,7 +153,6 @@ export default function PlayerCardPage() {
   const [allPlayers, setAllPlayers] = useState<PlayerWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"profiel" | "evaluaties" | "vergelijking" | "medisch">("profiel");
-  const [expandedCat, setExpandedCat] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([getMyPlayerData(), getAllPlayers()]).then(([p, all]) => {
@@ -109,215 +167,186 @@ export default function PlayerCardPage() {
   );
 
   if (!player) return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-black text-slate-900">Mijn Profiel</h1>
-      <div className="hub-card p-12 text-center">
-        <Star size={40} className="text-slate-300 mx-auto mb-3" />
-        <div className="text-slate-600 mb-4">Vul eerst je spelersprofiel in.</div>
-        <Link href="/dashboard/player/settings" className="hub-btn-primary inline-flex items-center gap-2">
-          <Settings size={14} /> Profiel invullen
-        </Link>
-      </div>
+    <div className="p-8 text-center space-y-4">
+      <div className="text-slate-600">Vul je profiel in om je spelerskaart te zien.</div>
+      <Link href="/dashboard/player/settings" className="hub-btn-primary inline-flex items-center gap-2">
+        <Settings size={14} /> Profiel invullen
+      </Link>
     </div>
   );
 
   const identity = player.identity;
-  const arch = identity?.primary_archetype ? ARCHETYPES[identity.primary_archetype] : null;
-  const socio = identity?.primary_sociotype ? SOCIOTYPES[identity.primary_sociotype] : null;
+  const arch  = identity?.primary_archetype  ? ARCHETYPES[identity.primary_archetype]  : null;
+  const socio = identity?.primary_sociotype  ? SOCIOTYPES[identity.primary_sociotype]  : null;
   const rColor = getRatingColor(player.overall_rating);
   const rLabel = getRatingLabel(player.overall_rating);
-  const club = DUTCH_CLUBS.find((c) => c.id === (player as unknown as Record<string, unknown>).club as string);
-
+  const club = DUTCH_CLUBS.find((c) => c.id === (player as unknown as Record<string,unknown>).club as string);
   const p = player as unknown as Record<string, unknown>;
   const age = p.date_of_birth ? getAge(p.date_of_birth as string) : null;
   const heightCm = p.height_cm as number | undefined;
   const weightKg = p.weight_kg as number | undefined;
-  const dominantFoot = ((p.dominant_foot as DominantFoot) ?? "right") as DominantFoot;
-  const injuries = ((p.injury_locations as BodyRegion[]) ?? []) as BodyRegion[];
-
+  const dominantFoot = (p.dominant_foot as DominantFoot) ?? "right";
+  const injuries = (p.injury_locations as BodyRegion[]) ?? [];
   const latestEval = player.evaluations?.[0];
   const scores = latestEval?.scores ?? [];
-
   const radarData = scores.map((s) => ({
     subject: CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS] ?? s.category,
-    value: s.score,
-    fullMark: 10,
+    value: s.score, fullMark: 10,
   }));
 
-  const trend = player.trend ?? "stable";
-
   const tabs = [
-    { id: "profiel" as const, label: "Profiel", icon: <Star size={13} /> },
-    { id: "evaluaties" as const, label: "Evaluaties", icon: <Activity size={13} /> },
-    { id: "vergelijking" as const, label: "Vergelijking", icon: <BarChart3 size={13} /> },
-    { id: "medisch" as const, label: "Medisch", icon: <ShieldAlert size={13} /> },
+    { id: "profiel"     as const, label: "Profiel",     icon: <Activity size={13} /> },
+    { id: "evaluaties"  as const, label: "Evaluaties",  icon: <Sparkles size={13} /> },
+    { id: "vergelijking"as const, label: "Vergelijking",icon: <BarChart3 size={13} /> },
+    { id: "medisch"     as const, label: "Medisch",     icon: <ShieldAlert size={13} /> },
   ];
 
   return (
-    <div className="space-y-0 -mx-4 sm:-mx-6 lg:-mx-8">
+    <div className="-mx-4 sm:-mx-6 lg:-mx-8">
 
-      {/* ══════════════════════════════════════════════════════════════
-          HERO — volledig donker, premium
-      ══════════════════════════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════════════════════
+          PES / KONAMI HERO SECTIE
+      ══════════════════════════════════════════════════════════ */}
       <div className="relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #060d1a 0%, #0A2540 50%, #0b1f38 100%)" }}>
+        style={{ background: "linear-gradient(135deg, #050c1a 0%, #0A2540 55%, #071829 100%)", minHeight: 380 }}>
 
-        {/* Glow achter de speler */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-[0.15] blur-3xl pointer-events-none"
-          style={{ background: rColor }} />
-        <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10 blur-3xl pointer-events-none"
-          style={{ background: "#4FA9E6" }} />
-
-        {/* Club watermark */}
+        {/* Club watermark rechts */}
         {club?.logoUrl && (
-          <div className="absolute right-4 top-4 opacity-[0.05] pointer-events-none select-none">
-            <Image src={club.logoUrl} alt="" width={160} height={160} className="object-contain" style={{ width: 160, height: 160 }} />
+          <div className="absolute right-0 top-0 bottom-0 w-80 flex items-center justify-end pr-8 pointer-events-none select-none opacity-[0.04]">
+            <Image src={club.logoUrl} alt="" width={280} height={280} className="object-contain" style={{ width: 280, height: 280 }} />
           </div>
         )}
 
-        {/* Bovenste accentlijn */}
-        <div className="h-[3px] w-full"
-          style={{ background: `linear-gradient(90deg, transparent 0%, ${rColor} 30%, #4FA9E6 70%, transparent 100%)` }} />
+        {/* Kleur glow */}
+        <div className="absolute top-0 left-0 w-96 h-96 rounded-full opacity-10 blur-3xl pointer-events-none -translate-x-1/2 -translate-y-1/2"
+          style={{ background: rColor }} />
 
-        <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-0">
+        <div className="relative z-10 px-4 sm:px-6 lg:px-8 pt-6 pb-0">
 
-          {/* Topbalk: label + edit */}
-          <div className="flex items-center justify-between mb-5">
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: "#4FA9E6" }}>
-              Performance Hub · Spelersprofiel
-            </span>
-            <Link href="/dashboard/player/settings"
-              className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all"
-              style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}>
-              <Settings size={11} /> Bewerken
-            </Link>
-          </div>
+          {/* ── Bovenste rij: [rating+info] [naam+radar] [avatar] ── */}
+          <div className="flex items-start gap-6 lg:gap-10">
 
-          {/* Hoofd info rij */}
-          <div className="flex items-start gap-5 sm:gap-7">
-
-            {/* Avatar */}
-            <div className="relative flex-shrink-0">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden flex items-center justify-center font-black text-2xl sm:text-3xl shadow-2xl"
-                style={player.avatar_url
-                  ? { border: `2px solid ${rColor}50` }
-                  : { background: `linear-gradient(135deg, ${rColor}20, ${rColor}45)`, border: `2px solid ${rColor}40`, color: rColor }}>
-                {player.avatar_url
-                  ? <Image src={player.avatar_url} alt={player.first_name} width={96} height={96} className="object-cover w-full h-full" />
-                  : `${player.first_name[0]}${player.last_name[0]}`}
+            {/* Links: rating + info tabel */}
+            <div className="flex-shrink-0 hidden sm:block" style={{ minWidth: 130 }}>
+              <div className="font-black tabular-nums leading-none mb-0.5"
+                style={{ color: "rgba(255,255,255,0.25)", fontSize: "4rem", fontFamily: "Outfit, sans-serif" }}>
+                {player.overall_rating}
               </div>
-              {/* Positie badge */}
-              <div className="absolute -bottom-2 -right-2 text-[10px] font-black px-2 py-0.5 rounded-full text-white shadow-lg"
-                style={{ background: rColor }}>
-                {player.position}
+              {rLabel && (
+                <div className="text-[11px] font-bold uppercase tracking-widest mb-4"
+                  style={{ color: rColor }}>{rLabel}</div>
+              )}
+              {/* Info tabel */}
+              <div className="space-y-2 mt-4">
+                {[
+                  { label: "Nationaliteit", value: (player as unknown as Record<string,unknown>).nationality as string ?? "Nederland" },
+                  { label: "Leeftijd",      value: age ? `${age} jaar` : "—" },
+                  { label: "Profiel",       value: [heightCm && `${heightCm}cm`, weightKg && `${weightKg}kg`].filter(Boolean).join(" / ") || "—" },
+                  { label: "Positie",       value: POSITION_LABELS[player.position] },
+                ].map((row) => (
+                  <div key={row.label} className="flex items-start gap-3">
+                    <span className="text-[11px] text-white/30 w-24 flex-shrink-0 font-medium">{row.label}</span>
+                    <span className="text-[11px] text-white/80 font-semibold flex-1">{row.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Naam + metadata */}
+            {/* Midden: naam + buttons + radar */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-4xl font-black text-white leading-tight"
-                style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.03em" }}>
-                {player.first_name}{" "}
-                <span style={{ color: rColor }}>{player.last_name.toUpperCase()}</span>
+              {/* Breadcrumb */}
+              <div className="text-[10px] font-bold tracking-[0.2em] uppercase mb-2" style={{ color: "#4FA9E6" }}>
+                Performance Hub · Spelersprofiel
+              </div>
+              {/* Grote naam */}
+              <h1 className="font-black text-white uppercase leading-[0.9] mb-1"
+                style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em", fontSize: "clamp(2rem, 6vw, 3.5rem)" }}>
+                {player.last_name.toUpperCase()}
               </h1>
-
-              {/* Tags */}
-              <div className="flex flex-wrap items-center gap-2 mt-2.5">
-                <span className="flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full border"
-                  style={{ background: `${rColor}18`, color: rColor, borderColor: `${rColor}35` }}>
-                  {POSITION_LABELS[player.position]}
-                </span>
-                {player.jersey_number && (
-                  <span className="text-xs font-bold px-3 py-1 rounded-full"
-                    style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)", border: "1px solid rgba(255,255,255,0.12)" }}>
-                    #{player.jersey_number}
-                  </span>
-                )}
-                {rLabel && (
-                  <span className="text-xs font-bold px-3 py-1 rounded-full"
-                    style={{ background: `${rColor}18`, color: rColor, border: `1px solid ${rColor}30` }}>
-                    {rLabel}
-                  </span>
-                )}
-                {trend !== "stable" && (
-                  <span className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
-                    trend === "up" ? "text-emerald-400 bg-emerald-400/10" : "text-red-400 bg-red-400/10"
-                  }`}>
-                    {trend === "up" ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                    {trend === "up" ? "Stijgend" : "Dalend"}
-                  </span>
-                )}
+              <div className="text-sm font-semibold mb-4" style={{ color: "#4FA9E6" }}>
+                {player.team_name ?? club?.name ?? "Performance Hub"}
+                {player.jersey_number ? ` (${player.jersey_number})` : ""}
               </div>
 
-              {/* Fysiek + club info */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2.5">
-                {age && <span className="flex items-center gap-1 text-xs text-white/40"><Calendar size={10} />{age} jaar</span>}
-                {heightCm && <span className="flex items-center gap-1 text-xs text-white/40"><Ruler size={10} />{heightCm} cm</span>}
-                {weightKg && <span className="flex items-center gap-1 text-xs text-white/40"><Weight size={10} />{weightKg} kg</span>}
-                <span className="flex items-center gap-1 text-xs text-white/40">
-                  <Footprints size={10} />{dominantFoot === "left" ? "Links" : "Rechts"}
-                </span>
-                {player.team_name && (
-                  <span className="flex items-center gap-1 text-xs text-white/40">
-                    <MapPin size={10} />{player.team_name}
-                  </span>
-                )}
+              {/* Actie buttons */}
+              <div className="flex gap-2 mb-5">
+                <Link href="/dashboard/player/settings"
+                  className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg transition-all"
+                  style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                  <Bookmark size={12} /> Profiel bewerken
+                </Link>
+                <button
+                  onClick={() => setTab("vergelijking")}
+                  className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg transition-all"
+                  style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                  <GitCompare size={12} /> Vergelijken
+                </button>
               </div>
+
+              {/* Radar chart */}
+              {radarData.length > 0 ? (
+                <div className="opacity-80 -ml-4">
+                  <PlayerRadarChart data={radarData} color={rColor} size={220} />
+                </div>
+              ) : (
+                <div className="h-48 flex items-center justify-center text-white/20 text-sm">
+                  Nog geen evaluatiedata
+                </div>
+              )}
             </div>
 
-            {/* Grote rating + club logo */}
-            <div className="hidden sm:flex flex-col items-end gap-2 flex-shrink-0">
-              {club && <ClubBadge clubId={club.id} size={40} />}
-              <div className="text-right">
-                <div className="font-black tabular-nums leading-none"
-                  style={{ color: rColor, fontSize: "4.5rem", fontFamily: "Outfit, sans-serif", textShadow: `0 0 50px ${rColor}50` }}>
-                  {player.overall_rating}
+            {/* Rechts: grote avatar (PES-stijl speler afbeelding) */}
+            <div className="hidden lg:flex flex-shrink-0 items-end self-stretch" style={{ marginBottom: -1 }}>
+              <div className="relative">
+                <div className="w-52 h-64 rounded-t-3xl overflow-hidden flex items-center justify-center font-black text-7xl"
+                  style={player.avatar_url
+                    ? { border: `2px solid ${rColor}30` }
+                    : { background: `linear-gradient(180deg, ${rColor}15 0%, ${rColor}30 100%)`, color: `${rColor}90`, border: `2px solid ${rColor}20` }}>
+                  {player.avatar_url
+                    ? <Image src={player.avatar_url} alt={player.first_name} width={208} height={256} className="object-cover w-full h-full object-top" />
+                    : `${player.first_name[0]}${player.last_name[0]}`}
                 </div>
-                <div className="text-[10px] text-white/25 uppercase tracking-widest -mt-1">Overall</div>
+                {/* Subtiele glow onder de speler */}
+                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-40 h-8 blur-xl opacity-40 rounded-full"
+                  style={{ background: rColor }} />
               </div>
             </div>
           </div>
 
-          {/* ── ATTRIBUTE BARS (vanuit evaluatiedata) ── */}
+          {/* ── Stat boxes onderin de hero (zoals PES) ── */}
           {scores.length > 0 && (
-            <div className="mt-6 pt-5 border-t grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5"
-              style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+            <div className="flex gap-2 sm:gap-3 mt-6 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 overflow-x-auto pb-0">
               {scores.map((s) => {
                 const schema = EVALUATION_SCHEMA.find((c) => c.id === s.category);
+                const sc = getScoreColor(s.score);
                 return (
-                  <AttributeBar
-                    key={s.category}
-                    label={CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS]}
-                    icon={schema?.icon ?? "⚽"}
-                    score={s.score}
-                    color={getScoreColor(s.score)}
-                  />
+                  <div key={s.category}
+                    className="flex-shrink-0 flex flex-col items-center justify-center px-4 py-3 rounded-t-xl"
+                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderBottom: "none", minWidth: 90 }}>
+                    <div className="text-3xl font-black tabular-nums leading-none"
+                      style={{ color: sc, fontFamily: "Outfit, sans-serif" }}>
+                      {toFifa(s.score)}
+                    </div>
+                    <div className="text-[10px] text-white/40 mt-1 uppercase tracking-wider font-medium">
+                      {schema?.icon} {CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS]}
+                    </div>
+                  </div>
                 );
               })}
             </div>
           )}
 
-          {/* Evaluatiedatum */}
-          {latestEval && (
-            <div className="mt-3 pb-1 text-[10px] text-white/20 text-right">
-              Gebaseerd op evaluatie van {formatDate(latestEval.evaluation_date)}
-              {latestEval.coach_name ? ` · ${latestEval.coach_name}` : ""}
-            </div>
-          )}
-
-          {/* ── TABS (onderin de hero, vloeiend aansluitend) ── */}
-          <div className="flex gap-0 mt-5 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 overflow-x-auto"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+          {/* ── Tabs, vloeiend onderaan de hero ── */}
+          <div className="flex -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 mt-0 overflow-x-auto"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
             {tabs.map((t) => (
               <button key={t.id} onClick={() => setTab(t.id)}
-                className="flex items-center gap-1.5 px-4 py-3 text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 relative"
-                style={tab === t.id
-                  ? { color: rColor }
-                  : { color: "rgba(255,255,255,0.35)" }
-                }>
+                className="relative flex items-center gap-1.5 px-4 py-3 text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0"
+                style={tab === t.id ? { color: rColor } : { color: "rgba(255,255,255,0.3)" }}>
                 {t.icon}{t.label}
                 {tab === t.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-t-full" style={{ background: rColor }} />
+                  <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-t"
+                    style={{ background: rColor }} />
                 )}
               </button>
             ))}
@@ -325,68 +354,74 @@ export default function PlayerCardPage() {
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════
-          TAB CONTENT (lichte achtergrond)
-      ══════════════════════════════════════════════════════════════ */}
-      <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-8 space-y-5">
+      {/* ══════════════════════════════════════════════════════════
+          TAB CONTENT
+      ══════════════════════════════════════════════════════════ */}
+      <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-10"
+        style={{ background: "#0e1a2b" }}>
 
         {/* ── PROFIEL TAB ── */}
         {tab === "profiel" && (
-          <div className="space-y-5">
+          <div className="space-y-8">
 
-            {/* Stats grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                { label: "Overall", value: player.overall_rating, color: rColor, icon: <Star size={15} /> },
-                { label: "Evaluaties", value: player.evaluations?.length ?? 0, color: "#4FA9E6", icon: <TrendingUp size={15} /> },
-                { label: "Challenges", value: player.challenges?.filter(c => c.status !== "expired").length ?? 0, color: "#F59E0B", icon: <Trophy size={15} /> },
-                { label: "AI Fit Score", value: identity?.ai_fit_score ?? "—", color: "#8B5CF6", icon: <Sparkles size={15} /> },
-              ].map((s) => (
-                <div key={s.label} className="hub-card p-4 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: s.color }} />
-                  <div className="p-1.5 rounded-lg w-fit mb-2" style={{ background: `${s.color}12` }}>
-                    <span style={{ color: s.color }}>{s.icon}</span>
-                  </div>
-                  <div className="text-3xl font-black tabular-nums" style={{ color: s.color, fontFamily: "Outfit, sans-serif" }}>{s.value}</div>
-                  <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5">{s.label}</div>
+            {/* ── FIFA kaart + Attribute Details (Haaland-stijl) ── */}
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-4">
+                Attribute Details
+              </div>
+              <div className="flex flex-col lg:flex-row gap-8 items-start">
+
+                {/* FIFA kaart */}
+                <div className="flex flex-col items-center gap-3 flex-shrink-0">
+                  <FifaCard player={player} rColor={rColor} />
+                  {rLabel && (
+                    <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
+                      style={{ color: rColor, background: `${rColor}15`, border: `1px solid ${rColor}25` }}>
+                      {rLabel}
+                    </span>
+                  )}
+                  <Link href="/dashboard/player/settings"
+                    className="text-[11px] font-semibold px-4 py-1.5 rounded-lg"
+                    style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                    <Settings size={11} className="inline mr-1" />Bewerken
+                  </Link>
                 </div>
-              ))}
+
+                {/* Attribute kolommen — Haaland stijl */}
+                <div className="flex-1 overflow-x-auto">
+                  <div className="flex gap-6 min-w-max pb-2">
+                    {scores.map((s) => (
+                      <AttributeColumn
+                        key={s.category}
+                        categoryId={s.category}
+                        score={s.score}
+                        subNotes={(s as unknown as Record<string,unknown>).sub_notes as string | undefined}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Radar + DNA zij aan zij */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              {/* Radar */}
-              {radarData.length > 0 && (
-                <div className="hub-card p-5">
-                  <div className="hub-label mb-4">Performance Radar</div>
-                  <div className="flex justify-center">
-                    <PlayerRadarChart data={radarData} color={rColor} size={260} />
-                  </div>
-                </div>
-              )}
-
-              {/* DNA */}
-              {(arch || socio) && (
-                <div className="hub-card p-5 space-y-3">
-                  <div className="hub-label">Player DNA</div>
+            {/* DNA */}
+            {(arch || socio || identity?.ai_summary) && (
+              <div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-4">Player DNA</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {arch && (() => {
-                    const AIcon = ARCHETYPE_ICONS[arch.id];
                     return (
-                      <div className="p-4 rounded-xl border transition-all"
-                        style={{ background: `${arch.color}06`, borderColor: `${arch.color}25` }}>
+                      <div className="p-4 rounded-xl border"
+                        style={{ background: `${arch.color}08`, borderColor: `${arch.color}20` }}>
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                            style={{ background: `${arch.color}15` }}>
-                            <AIcon size={20} style={{ color: arch.color }} strokeWidth={1.75} />
-                          </div>
+                          <span className="text-3xl">{arch.icon}</span>
                           <div>
-                            <div className="text-[10px] text-slate-400 uppercase tracking-wider">Archetype</div>
-                            <div className="font-bold text-slate-900 text-sm mt-0.5">{arch.label}</div>
-                            <div className="text-xs text-slate-500 mt-1 leading-snug">{arch.description}</div>
-                            <div className="flex flex-wrap gap-1 mt-1.5">
+                            <div className="text-[10px] text-white/30 uppercase tracking-wider">Archetype</div>
+                            <div className="font-bold text-white text-sm mt-0.5">{arch.label}</div>
+                            <div className="text-xs text-white/50 mt-1">{arch.description}</div>
+                            <div className="flex flex-wrap gap-1 mt-2">
                               {arch.traits.map((t) => (
                                 <span key={t} className="text-[10px] px-2 py-0.5 rounded-full"
-                                  style={{ background: `${arch.color}12`, color: arch.color }}>{t}</span>
+                                  style={{ background: `${arch.color}15`, color: arch.color }}>{t}</span>
                               ))}
                             </div>
                           </div>
@@ -397,160 +432,109 @@ export default function PlayerCardPage() {
                   {socio && (() => {
                     const SIcon = SOCIOTYPE_ICONS[socio.id];
                     return (
-                      <div className="p-4 rounded-xl border transition-all"
-                        style={{ background: `${socio.color_hex}06`, borderColor: `${socio.color_hex}25` }}>
+                      <div className="p-4 rounded-xl border"
+                        style={{ background: `${socio.color_hex}08`, borderColor: `${socio.color_hex}20` }}>
                         <div className="flex items-start gap-3">
                           <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                             style={{ background: `${socio.color_hex}15` }}>
-                            <SIcon size={20} style={{ color: socio.color_hex }} strokeWidth={1.75} />
+                            <SIcon size={20} style={{ color: socio.color_hex }} />
                           </div>
                           <div>
-                            <div className="text-[10px] text-slate-400 uppercase tracking-wider">Persoonlijkheid</div>
-                            <div className="font-bold text-slate-900 text-sm mt-0.5">{socio.label}</div>
-                            <div className="text-xs text-slate-500 mt-1 leading-snug">{socio.description}</div>
+                            <div className="text-[10px] text-white/30 uppercase tracking-wider">Persoonlijkheid</div>
+                            <div className="font-bold text-white text-sm mt-0.5">{socio.label}</div>
+                            <div className="text-xs text-white/50 mt-1">{socio.description}</div>
                           </div>
                         </div>
                       </div>
                     );
                   })()}
                 </div>
-              )}
-            </div>
-
-            {/* AI Scouting rapport */}
-            {identity?.ai_summary && (
-              <div className="hub-card p-5"
-                style={{ background: "linear-gradient(135deg, #f0f7fd 0%, #ffffff 100%)", borderColor: "rgba(79,169,230,0.2)" }}>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="p-1.5 rounded-lg" style={{ background: "rgba(79,169,230,0.12)" }}>
-                    <Sparkles size={14} style={{ color: "#4FA9E6" }} />
+                {identity?.ai_summary && (
+                  <div className="mt-4 p-4 rounded-xl border" style={{ borderColor: "rgba(79,169,230,0.2)", background: "rgba(79,169,230,0.05)" }}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Sparkles size={13} style={{ color: "#4FA9E6" }} />
+                      <span className="text-xs font-bold" style={{ color: "#4FA9E6" }}>AI Scouting Rapport</span>
+                      {identity.ai_fit_score && (
+                        <span className="ml-auto text-xs font-black px-2 py-0.5 rounded"
+                          style={{ color: rColor, background: `${rColor}15` }}>Fit {identity.ai_fit_score}/100</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-white/60 leading-relaxed">{identity.ai_summary}</p>
                   </div>
-                  <span className="text-sm font-bold text-slate-900">AI Scouting Rapport</span>
-                  {identity.ai_fit_score && (
-                    <span className="ml-auto text-xs font-black px-2.5 py-1 rounded-lg"
-                      style={{ background: `${rColor}12`, color: rColor }}>
-                      Fit {identity.ai_fit_score}/100
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-slate-600 leading-relaxed">{identity.ai_summary}</p>
+                )}
               </div>
             )}
-
-            {/* Spelersprofiel stats */}
-            <div className="hub-card p-5">
-              <div className="hub-label mb-4">Spelersprofiel</div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {[
-                  { label: "Positie", value: POSITION_LABELS[player.position] },
-                  { label: "Rugnummer", value: player.jersey_number ? `#${player.jersey_number}` : "—" },
-                  { label: "Leeftijd", value: age ? `${age} jaar` : "—" },
-                  { label: "Lengte", value: heightCm ? `${heightCm} cm` : "—" },
-                  { label: "Gewicht", value: weightKg ? `${weightKg} kg` : "—" },
-                  { label: "Voorkeursvoet", value: dominantFoot === "left" ? "Links" : dominantFoot === "right" ? "Rechts" : "Beide" },
-                ].map((item) => (
-                  <div key={item.label} className="p-3 rounded-xl bg-hub-surface border border-hub-border">
-                    <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{item.label}</div>
-                    <div className="text-sm font-bold text-slate-900 mt-0.5">{item.value}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         )}
 
         {/* ── EVALUATIES TAB ── */}
         {tab === "evaluaties" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="font-bold text-slate-900">Mijn Evaluaties</h2>
-                <p className="text-xs text-slate-500 mt-0.5">{player.evaluations?.length ?? 0} beoordelingen van je coach</p>
-              </div>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-4">
+              Evaluatiehistorie — {player.evaluations?.length ?? 0} beoordelingen
             </div>
-
             {(player.evaluations ?? []).length === 0 ? (
-              <div className="hub-card p-12 text-center">
-                <Activity size={36} className="text-slate-300 mx-auto mb-3" />
-                <div className="text-slate-500 text-sm">Nog geen evaluaties</div>
-              </div>
+              <div className="text-center py-16 text-white/30 text-sm">Nog geen evaluaties</div>
             ) : (
-              <div className="space-y-4">
-                {(player.evaluations ?? []).map((ev, i) => {
-                  const rC = getRatingColor(((ev.overall_score ?? 7) - 1) / 9 * 59 + 40);
-                  return (
-                    <div key={ev.id} className={`hub-card p-5 ${i === 0 ? "border-hub-teal/25" : ""}`}>
-                      {i === 0 && <div className="hub-tag text-[10px] bg-hub-teal/10 text-hub-teal mb-3">Meest Recent</div>}
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <div className="text-sm font-semibold text-slate-900">{formatDate(ev.evaluation_date)}</div>
-                          {ev.coach_name && <div className="text-xs text-slate-400 mt-0.5">{ev.coach_name}</div>}
-                        </div>
-                        <div className="text-2xl font-black tabular-nums" style={{ color: rC, fontFamily: "Outfit, sans-serif" }}>
-                          {ev.overall_score?.toFixed(1)}<span className="text-sm font-normal text-slate-400">/10</span>
+              (player.evaluations ?? []).map((ev, i) => {
+                const rC = getRatingColor(((ev.overall_score ?? 7) - 1) / 9 * 59 + 40);
+                return (
+                  <div key={ev.id} className="rounded-2xl border overflow-hidden"
+                    style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
+                    <div className="flex items-center justify-between px-5 py-3 border-b"
+                      style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                      <div>
+                        <div className="text-sm font-semibold text-white">{formatDate(ev.evaluation_date)}</div>
+                        {ev.coach_name && <div className="text-xs text-white/30 mt-0.5">{ev.coach_name}</div>}
+                      </div>
+                      <div className="text-2xl font-black tabular-nums" style={{ color: rC, fontFamily: "Outfit, sans-serif" }}>
+                        {ev.overall_score?.toFixed(1)}<span className="text-sm font-normal text-white/30">/10</span>
+                      </div>
+                    </div>
+                    {i === 0 && ev.scores && ev.scores.length > 0 && (
+                      <div className="overflow-x-auto">
+                        <div className="flex gap-5 p-5 min-w-max">
+                          {ev.scores.map((s) => (
+                            <AttributeColumn
+                              key={s.category}
+                              categoryId={s.category}
+                              score={s.score}
+                              subNotes={(s as unknown as Record<string,unknown>).sub_notes as string | undefined}
+                            />
+                          ))}
                         </div>
                       </div>
-
-                      {/* Categoriescores — uitklapbaar */}
-                      {ev.scores && ev.scores.length > 0 && (
-                        <div className="space-y-2">
-                          {ev.scores.map((s) => {
-                            const sc = getScoreColor(s.score);
-                            const schema = EVALUATION_SCHEMA.find((c) => c.id === s.category);
-                            const catKey = `${ev.id}-${s.category}`;
-                            const isOpen = expandedCat === catKey;
-                            const sNotes = (s as unknown as Record<string, unknown>).sub_notes as string | undefined;
-                            return (
-                              <div key={s.category} className="rounded-xl border transition-all overflow-hidden"
-                                style={{ borderColor: isOpen ? `${sc}35` : "#e2e8f0", background: isOpen ? `${sc}04` : "#f8fafc" }}>
-                                <button
-                                  className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-black/[0.015] transition-colors"
-                                  onClick={() => setExpandedCat(isOpen ? null : catKey)}>
-                                  <span className="text-base flex-shrink-0">{schema?.icon ?? "⚽"}</span>
-                                  <span className="flex-1 text-sm font-semibold text-slate-700">
-                                    {CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS]}
-                                  </span>
-                                  <span className="text-sm font-black tabular-nums px-2.5 py-0.5 rounded-full"
-                                    style={{ background: `${sc}12`, color: sc }}>{s.score.toFixed(1)}</span>
-                                  <div className="hidden sm:block w-20 h-1.5 bg-hub-border rounded-full overflow-hidden flex-shrink-0">
-                                    <div className="h-full rounded-full" style={{ width: `${s.score * 10}%`, backgroundColor: sc }} />
-                                  </div>
-                                  <span className="text-slate-300 flex-shrink-0">
-                                    {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                                  </span>
-                                </button>
-                                {isOpen && (
-                                  <div className="px-4 pb-4">
-                                    {!parseSubScores(sNotes) && (
-                                      <p className="text-[10px] text-slate-400 italic mb-2">Gemiddelde — subcriteria beschikbaar in nieuwe evaluaties</p>
-                                    )}
-                                    <SubCriteriaRow categoryId={s.category} subNotes={sNotes} fallback={s.score} />
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {ev.notes && (
-                        <div className="mt-3 p-3 rounded-xl bg-hub-surface border border-hub-border text-xs text-slate-500 italic">
-                          &ldquo;{ev.notes}&rdquo;
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                    )}
+                    {i > 0 && ev.scores && (
+                      <div className="flex gap-3 px-5 py-3 flex-wrap">
+                        {ev.scores.map((s) => {
+                          const sc = getScoreColor(s.score);
+                          const schema = EVALUATION_SCHEMA.find((c) => c.id === s.category);
+                          return (
+                            <div key={s.category} className="flex items-center gap-1.5 text-xs font-bold">
+                              <span>{schema?.icon}</span>
+                              <span className="text-white/40">{CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS]}</span>
+                              <span style={{ color: sc }}>{toFifa(s.score)}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {ev.notes && (
+                      <div className="px-5 pb-4 text-xs text-white/30 italic">&ldquo;{ev.notes}&rdquo;</div>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
         )}
 
         {/* ── VERGELIJKING TAB ── */}
         {tab === "vergelijking" && (
-          <div className="hub-card p-5">
-            <div className="hub-label mb-1">Jij vs. het team</div>
-            <p className="text-xs text-slate-500 mb-5">Jouw naam is gemarkeerd, anderen zijn anoniem.</p>
+          <div className="rounded-2xl border overflow-hidden p-5"
+            style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-4">Jij vs. het team</div>
             {allPlayers.length > 1 ? (
               <PlayerComparisonChart
                 players={allPlayers}
@@ -559,20 +543,18 @@ export default function PlayerCardPage() {
                 defaultQuality="techniek"
               />
             ) : (
-              <div className="text-center py-12 text-slate-400 text-sm">
-                Vergelijking beschikbaar zodra er meerdere spelers zijn.
-              </div>
+              <div className="text-center py-16 text-white/30 text-sm">Vergelijking beschikbaar zodra er meerdere spelers zijn.</div>
             )}
           </div>
         )}
 
         {/* ── MEDISCH TAB ── */}
         {tab === "medisch" && (
-          <div className="hub-card p-5 space-y-4">
-            <div className="hub-label">Medisch Profiel</div>
-            <p className="text-xs text-slate-500">
-              Blessures en voorkeursvoet.{" "}
-              <Link href="/dashboard/player/settings" className="text-hub-teal hover:underline">Bewerken →</Link>
+          <div className="rounded-2xl border p-5"
+            style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-4">Medisch Profiel</div>
+            <p className="text-xs text-white/30 mb-5">
+              <Link href="/dashboard/player/settings" className="hover:text-white/60 transition-colors underline">Bewerken →</Link>
             </p>
             <InjuryBodyMap injuries={injuries} dominantFoot={dominantFoot} readonly={true} />
           </div>
