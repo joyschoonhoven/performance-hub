@@ -14,8 +14,38 @@ import type { Evaluation, PlayerWithDetails } from "@/lib/types";
 import Image from "next/image";
 import {
   ArrowLeft, Brain, Zap, Star, Trophy, TrendingUp, TrendingDown,
-  Minus, Plus, Calendar, Target, Loader2, Sparkles, UserCircle,
+  Minus, Plus, Calendar, Target, Loader2, Sparkles, UserCircle, ChevronDown, ChevronUp,
 } from "lucide-react";
+import { EVALUATION_SCHEMA } from "@/lib/types";
+
+function parseSubScores(subNotes?: string): Record<string, number> | null {
+  if (!subNotes) return null;
+  try { return JSON.parse(subNotes); } catch { return null; }
+}
+
+function SubCriteriaBreakdown({ categoryId, subNotes }: { categoryId: string; subNotes?: string }) {
+  const schema = EVALUATION_SCHEMA.find((c) => c.id === categoryId);
+  const subScores = parseSubScores(subNotes);
+  if (!schema || !subScores) return null;
+  return (
+    <div className="mt-2 pt-2 border-t border-hub-border space-y-1.5">
+      {schema.subcategories.map((sub) => {
+        const val = subScores[sub.id];
+        if (val === undefined) return null;
+        const sc = val >= 8.5 ? "#f59e0b" : val >= 7 ? "#10B981" : val >= 5 ? "#4FA9E6" : "#ef4444";
+        return (
+          <div key={sub.id} className="flex items-center gap-2">
+            <div className="w-32 text-[10px] text-slate-500 truncate flex-shrink-0">{sub.label}</div>
+            <div className="flex-1 h-1.5 bg-hub-border rounded-full overflow-hidden">
+              <div className="h-full rounded-full" style={{ width: `${val * 10}%`, backgroundColor: sc }} />
+            </div>
+            <div className="text-[11px] font-bold w-5 text-right tabular-nums flex-shrink-0" style={{ color: sc }}>{val}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function buildProgressData(evaluations: Evaluation[]) {
   return [...evaluations]
@@ -56,6 +86,11 @@ export default function PlayerDetailPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"overview" | "dna" | "evaluations" | "challenges">("overview");
   const [updatingProgress, setUpdatingProgress] = useState<string | null>(null);
+  const [expandedScores, setExpandedScores] = useState<Set<string>>(new Set());
+
+  function toggleScore(key: string) {
+    setExpandedScores((prev) => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n; });
+  }
 
   useEffect(() => {
     if (id) {
@@ -527,14 +562,27 @@ export default function PlayerDetailPage() {
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
                         {ev.scores.map((s) => {
                           const sc = getScoreColor(s.score);
+                          const key = `${ev.id}-${s.category}`;
+                          const isExp = expandedScores.has(key);
+                          const hasSub = !!parseSubScores((s as { sub_notes?: string }).sub_notes);
                           return (
-                            <div key={s.category} className="p-2.5 rounded-xl border border-hub-border bg-hub-surface">
-                              <div className="text-[10px] font-bold text-slate-600 mb-1">{CATEGORY_ICONS[s.category as keyof typeof CATEGORY_ICONS]}</div>
-                              <div className="hub-label text-[10px]">{CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS]}</div>
+                            <div key={s.category}
+                              className={`rounded-xl border transition-all ${hasSub ? "cursor-pointer hover:border-opacity-60" : ""}`}
+                              style={{ borderColor: isExp ? `${sc}40` : "#e2e8f0", background: isExp ? `${sc}06` : "#f8fafc", padding: "10px" }}
+                              onClick={() => hasSub && toggleScore(key)}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="text-[10px] font-bold text-slate-600">{CATEGORY_ICONS[s.category as keyof typeof CATEGORY_ICONS]}</div>
+                                {hasSub && <span style={{ color: sc }}>{isExp ? <ChevronUp size={10} /> : <ChevronDown size={10} />}</span>}
+                              </div>
+                              <div className="hub-label text-[10px] mt-0.5">{CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS]}</div>
                               <div className="text-sm font-black tabular-nums mt-1" style={{ color: sc }}>{s.score.toFixed(1)}</div>
                               <div className="h-1 bg-hub-border rounded-full mt-1.5 overflow-hidden">
                                 <div className="h-full rounded-full" style={{ width: `${s.score * 10}%`, backgroundColor: sc }} />
                               </div>
+                              {isExp && hasSub && (
+                                <SubCriteriaBreakdown categoryId={s.category} subNotes={(s as { sub_notes?: string }).sub_notes} />
+                              )}
                             </div>
                           );
                         })}

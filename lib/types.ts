@@ -333,7 +333,7 @@ export interface EvaluationScore {
   evaluation_id: string;
   category: EvaluationCategory;
   score: number;
-  sub_notes?: string;
+  sub_notes?: string; // JSON: Record<subId, score>
 }
 
 export interface Challenge {

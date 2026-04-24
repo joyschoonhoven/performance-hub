@@ -256,11 +256,12 @@ function NewEvaluationPageInner() {
       return;
     }
 
-    // Insert category scores
+    // Insert category scores (with sub-scores as JSON in sub_notes)
     const scoreInserts = EVALUATION_SCHEMA.map((cat) => ({
       evaluation_id: evalData.id,
       category: cat.id,
       score: parseFloat((categoryAverages[cat.id] ?? 7).toFixed(2)),
+      sub_notes: JSON.stringify(subScores[cat.id] ?? {}),
     }));
 
     await supabase.from("evaluation_scores").insert(scoreInserts);

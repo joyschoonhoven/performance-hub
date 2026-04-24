@@ -147,71 +147,129 @@ export default function PlayerDashboardPage() {
   const openChallenges = player.challenges?.filter((c) => c.status === "open" || c.status === "in_progress") ?? [];
   const completedChallenges = player.challenges?.filter((c) => c.status === "completed") ?? [];
 
+  // Build FIFA-card attribute pairs from latest evaluation
+  const catAttrs = latestEval?.scores?.map((s) => ({
+    label: s.category.slice(0, 3).toUpperCase(),
+    full: CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS],
+    score: s.score,
+    color: getScoreColor(s.score),
+  })) ?? [];
+
   return (
-    <div className="space-y-8">
-      {/* PSV-style hero header */}
+    <div className="space-y-6">
+      {/* ═══ MARTINEZ-STYLE HERO CARD ══════════════════════════════════════ */}
       <div className="relative rounded-3xl overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #0A2540 0%, #0D2D4D 60%, #0A2540 100%)", minHeight: 180 }}>
-        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${rColor}10 0%, transparent 60%)` }} />
-        <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, ${rColor}, #4FA9E6)` }} />
+        style={{ background: "linear-gradient(150deg, #060e1c 0%, #0A2540 45%, #0d3060 100%)" }}>
+
+        {/* Decorative glow blob */}
+        <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-20 blur-3xl pointer-events-none"
+          style={{ background: rColor }} />
+        {/* Top accent stripe */}
+        <div className="absolute top-0 left-0 right-0 h-[3px]"
+          style={{ background: `linear-gradient(90deg, transparent, ${rColor}, #4FA9E6, transparent)` }} />
+
         <div className="relative z-10 p-6 sm:p-8">
-          <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap">
+          {/* Main row: avatar | info | big rating */}
+          <div className="flex items-start gap-5">
+
+            {/* Avatar */}
             <div className="relative flex-shrink-0">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center font-black text-2xl border-2"
+              <div className="w-24 h-24 rounded-2xl overflow-hidden flex items-center justify-center font-black text-3xl shadow-2xl"
                 style={player.avatar_url
-                  ? { borderColor: `${rColor}50` }
-                  : { background: `linear-gradient(135deg, ${rColor}20, ${rColor}40)`, borderColor: `${rColor}40`, color: rColor }}>
+                  ? { border: `2px solid ${rColor}60` }
+                  : { background: `linear-gradient(135deg, ${rColor}25, ${rColor}50)`, border: `2px solid ${rColor}50`, color: rColor }}>
                 {player.avatar_url
-                  ? <Image src={player.avatar_url} alt={player.first_name} width={80} height={80} className="object-cover w-full h-full" />
-                  : `${player.first_name[0]}${player.last_name[0]}`
-                }
+                  ? <Image src={player.avatar_url} alt={player.first_name} width={96} height={96} className="object-cover w-full h-full" />
+                  : `${player.first_name[0]}${player.last_name[0]}`}
               </div>
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-xs font-black text-white shadow"
-                style={{ background: rColor, fontFamily: "Outfit, sans-serif", whiteSpace: "nowrap" }}>
-                {player.overall_rating}
+              {/* Position badge */}
+              <div className="absolute -bottom-2 -right-2 text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg text-white"
+                style={{ background: rColor }}>
+                {player.position}
               </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#4FA9E6" }}>Performance Hub</p>
+
+            {/* Name + tags */}
+            <div className="flex-1 min-w-0 pt-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: "#4FA9E6" }}>
+                Performance Hub
+              </p>
               <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
-                Hey, <span style={{ color: rColor }}>{player.first_name}</span> 👋
+                {player.first_name} <span style={{ color: rColor }}>{player.last_name.toUpperCase()}</span>
               </h1>
               <div className="flex flex-wrap items-center gap-2 mt-2">
-                <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: `${rColor}25`, color: rColor, border: `1px solid ${rColor}40` }}>
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full border"
+                  style={{ background: `${rColor}20`, color: rColor, borderColor: `${rColor}40` }}>
                   {POSITION_LABELS[player.position]}
                 </span>
                 {player.jersey_number && (
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/10 text-white/80">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/10 text-white/70 border border-white/10">
                     #{player.jersey_number}
                   </span>
                 )}
                 {primaryArch && (
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: `${primaryArch.color}25`, color: primaryArch.color }}>
-                    {primaryArch.label}
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                    style={{ background: `${primaryArch.color}25`, color: primaryArch.color }}>
+                    {primaryArch.icon} {primaryArch.label}
                   </span>
+                )}
+                {player.team_name && (
+                  <span className="text-xs text-white/50">{player.team_name}</span>
                 )}
               </div>
             </div>
-            <div className="hidden sm:flex flex-col items-end flex-shrink-0">
-              <div className="font-black tabular-nums leading-none" style={{ color: rColor, fontSize: "5rem", fontFamily: "Outfit, sans-serif" }}>{player.overall_rating}</div>
-              <div className="text-[10px] text-white/40 uppercase tracking-widest mt-1">Overall</div>
+
+            {/* Big rating — desktop */}
+            <div className="hidden sm:flex flex-col items-center flex-shrink-0 pt-1">
+              <div className="font-black tabular-nums leading-none"
+                style={{ color: rColor, fontSize: "5.5rem", fontFamily: "Outfit, sans-serif", textShadow: `0 0 40px ${rColor}40` }}>
+                {player.overall_rating}
+              </div>
+              <div className="text-[10px] text-white/30 uppercase tracking-widest -mt-1">Rating</div>
             </div>
           </div>
+
+          {/* ─── FIFA CARD ATTRIBUTES ────────────────────────────────── */}
+          {catAttrs.length > 0 && (
+            <div className="mt-5 pt-4 border-t border-white/10">
+              <div className="grid grid-cols-5 gap-2">
+                {catAttrs.map((attr) => (
+                  <div key={attr.label} className="text-center">
+                    {/* Score bar */}
+                    <div className="relative h-1.5 bg-white/10 rounded-full overflow-hidden mb-1.5">
+                      <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-700"
+                        style={{ width: `${attr.score * 10}%`, background: `linear-gradient(90deg, ${attr.color}80, ${attr.color})` }} />
+                    </div>
+                    <div className="text-xl font-black tabular-nums leading-none"
+                      style={{ color: attr.color, fontFamily: "Outfit, sans-serif" }}>
+                      {Math.round(attr.score * 10)}
+                    </div>
+                    <div className="text-[9px] font-bold tracking-wider mt-0.5 text-white/50 uppercase">
+                      {attr.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-2 text-[10px] text-white/25 text-right">
+                {latestEval ? `Laatste evaluatie: ${formatDate(latestEval.evaluation_date)}` : ""}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Top stats */}
+      {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Rating", value: player.overall_rating, color: rColor, bg: `${rColor}10`, sub: "overall" },
-          { label: "Evaluaties", value: player.evaluations?.length ?? 0, color: "#4FA9E6", bg: "#E8F4FC", sub: player.evaluations?.[0] ? formatDate(player.evaluations[0].evaluation_date) : "nog geen" },
-          { label: "Challenges", value: openChallenges.length, color: "#d97706", bg: "#fef3c7", sub: `${completedChallenges.length} voltooid` },
-          { label: "Fit Score", value: identity?.ai_fit_score ?? "—", color: "#0A2540", bg: "#E8F4FC", sub: "AI scouting" },
+          { label: "Rating", value: player.overall_rating, color: rColor, sub: "overall" },
+          { label: "Evaluaties", value: player.evaluations?.length ?? 0, color: "#4FA9E6", sub: player.evaluations?.[0] ? formatDate(player.evaluations[0].evaluation_date) : "nog geen" },
+          { label: "Challenges", value: openChallenges.length, color: "#d97706", sub: `${completedChallenges.length} voltooid` },
+          { label: "Fit Score", value: identity?.ai_fit_score ?? "—", color: "#8B5CF6", sub: "AI scouting" },
         ].map((s) => (
           <div key={s.label} className="hub-card p-5 relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: s.color }} />
             <div className="text-4xl font-black tabular-nums leading-none mb-1" style={{ color: s.color, fontFamily: "Outfit, sans-serif" }}>{s.value}</div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-500" style={{ fontFamily: "Outfit, sans-serif" }}>{s.label}</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">{s.label}</div>
             <div className="text-xs text-slate-400 mt-0.5">{s.sub}</div>
           </div>
         ))}

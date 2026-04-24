@@ -25,7 +25,7 @@ export async function getMyPlayerData(): Promise<PlayerWithDetails | null> {
 
   const evaluations: Evaluation[] = (evaluationsRes.data ?? []).map((ev: Record<string, unknown>) => ({
     ...(ev as object),
-    scores: ((ev.evaluation_scores as unknown[]) ?? []).map((s: unknown) => s as { id: string; evaluation_id: string; category: string; score: number }),
+    scores: ((ev.evaluation_scores as unknown[]) ?? []).map((s: unknown) => { const sc = s as Record<string, unknown>; return { id: sc.id, evaluation_id: sc.evaluation_id, category: sc.category, score: sc.score, sub_notes: sc.sub_notes }; }),
   })) as Evaluation[];
 
   const latest = evaluations[0];
@@ -86,7 +86,7 @@ export async function getAllPlayers(): Promise<PlayerWithDetails[]> {
       .filter((e) => e.player_id === player.id)
       .map((ev: Record<string, unknown>) => ({
         ...(ev as object),
-        scores: ((ev.evaluation_scores as unknown[]) ?? []),
+        scores: ((ev.evaluation_scores as unknown[]) ?? []).map((s: unknown) => { const sc = s as Record<string, unknown>; return { id: sc.id, evaluation_id: sc.evaluation_id, category: sc.category, score: sc.score, sub_notes: sc.sub_notes }; }),
       })) as Evaluation[];
 
     const challenges = allChallenges.filter((c) => c.player_id === player.id) as Challenge[];
@@ -137,7 +137,7 @@ export async function getPlayerById(playerId: string): Promise<PlayerWithDetails
 
   const evaluations: Evaluation[] = (evaluationsRes.data ?? []).map((ev: Record<string, unknown>) => ({
     ...(ev as object),
-    scores: ((ev.evaluation_scores as unknown[]) ?? []).map((s: unknown) => s as { id: string; evaluation_id: string; category: string; score: number }),
+    scores: ((ev.evaluation_scores as unknown[]) ?? []).map((s: unknown) => { const sc = s as Record<string, unknown>; return { id: sc.id, evaluation_id: sc.evaluation_id, category: sc.category, score: sc.score, sub_notes: sc.sub_notes }; }),
   })) as Evaluation[];
 
   const latest = evaluations[0];
