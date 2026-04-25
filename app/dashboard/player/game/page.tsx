@@ -24,6 +24,7 @@ interface Scenario {
   options: Option[]
 }
 type GamePhase = "intro" | "watching" | "question" | "feedback" | "results"
+type GameMode = "classic" | "infinite"
 
 const defaultPlayers: PlayerPos[] = [
   { id: 1,  team: "blue", x: 0.5,  y: 0.97, number: 1  },
@@ -355,6 +356,310 @@ const scenarios: Scenario[] = [
       { text: "Hoge cross op hoofd spits", score: 1, explanation: "Minder effectief — een lage voorzet is kansrijker." },
     ],
   },
+  {
+    id: 9,
+    phase: "Verdediging",
+    title: "Gecoördineerd Pressing",
+    description: "De tegenstander probeert vanuit de opbouw door jullie pressing heen te spelen. Jouw team staat georganiseerd en wacht op het pressing-signaal van de voorste linie.",
+    players: [
+      { id: 1,  team: "blue", x: 0.5,  y: 0.97, number: 1  },
+      { id: 2,  team: "blue", x: 0.78, y: 0.62, number: 2  },
+      { id: 3,  team: "blue", x: 0.42, y: 0.68, number: 3  },
+      { id: 4,  team: "blue", x: 0.58, y: 0.68, number: 4  },
+      { id: 5,  team: "blue", x: 0.22, y: 0.62, number: 5  },
+      { id: 6,  team: "blue", x: 0.75, y: 0.48, number: 6,  highlighted: true },
+      { id: 7,  team: "blue", x: 0.42, y: 0.45, number: 7,  highlighted: true },
+      { id: 8,  team: "blue", x: 0.58, y: 0.45, number: 8,  highlighted: true },
+      { id: 9,  team: "blue", x: 0.25, y: 0.48, number: 9,  highlighted: true },
+      { id: 10, team: "blue", x: 0.42, y: 0.32, number: 10 },
+      { id: 11, team: "blue", x: 0.58, y: 0.32, number: 11 },
+      { id: 12, team: "red",  x: 0.5,  y: 0.03, number: 1  },
+      { id: 13, team: "red",  x: 0.78, y: 0.18, number: 2  },
+      { id: 14, team: "red",  x: 0.38, y: 0.12, number: 3,  highlighted: true },
+      { id: 15, team: "red",  x: 0.62, y: 0.18, number: 4  },
+      { id: 16, team: "red",  x: 0.22, y: 0.18, number: 5  },
+      { id: 17, team: "red",  x: 0.5,  y: 0.32, number: 6  },
+      { id: 18, team: "red",  x: 0.15, y: 0.42, number: 7  },
+      { id: 19, team: "red",  x: 0.85, y: 0.42, number: 8  },
+      { id: 20, team: "red",  x: 0.5,  y: 0.42, number: 9  },
+      { id: 21, team: "red",  x: 0.42, y: 0.55, number: 10 },
+      { id: 22, team: "red",  x: 0.62, y: 0.55, number: 11 },
+    ],
+    ball: { x: 0.38, y: 0.12 },
+    question: "Rode CB3 heeft de bal en staat vaststaand. Wanneer zet jij als blauwe middenvelder de pressing in?",
+    options: [
+      { text: "Meteen zodra CB3 de bal ontvangt", score: 1, explanation: "Te vroeg — je geeft je positie prijs voordat de bal vast ligt." },
+      { text: "Wacht tot CB3 de bal ontvangt en vaststaand staat — dan snel indrukken", score: 3, explanation: "Correct! Dit is het pressing-signaal. CB3 staat vast en heeft beperkte opties." },
+      { text: "Pas drukken als de tegenstander de middenlijn oversteekt", score: 0, explanation: "Veel te laat — de pressing heeft dan geen effect meer." },
+      { text: "Drukken zodra de keeper de bal weggooit", score: 1, explanation: "Iets te vroeg — je kunt je positie niet vasthouden over die afstand." },
+    ],
+  },
+  {
+    id: 10,
+    phase: "Aanval",
+    title: "Overschakelen van Flank",
+    description: "Jullie hebben balbezit op links maar de tegenstander is samengetrokken op de linkerflank. De rechterflank staat compleet vrij.",
+    players: [
+      { id: 1,  team: "blue", x: 0.5,  y: 0.97, number: 1  },
+      { id: 2,  team: "blue", x: 0.82, y: 0.68, number: 2,  highlighted: true },
+      { id: 3,  team: "blue", x: 0.4,  y: 0.82, number: 3  },
+      { id: 4,  team: "blue", x: 0.6,  y: 0.82, number: 4  },
+      { id: 5,  team: "blue", x: 0.15, y: 0.58, number: 5  },
+      { id: 6,  team: "blue", x: 0.5,  y: 0.65, number: 6  },
+      { id: 7,  team: "blue", x: 0.22, y: 0.42, number: 7  },
+      { id: 8,  team: "blue", x: 0.38, y: 0.5,  number: 8,  highlighted: true },
+      { id: 9,  team: "blue", x: 0.08, y: 0.32, number: 9  },
+      { id: 10, team: "blue", x: 0.5,  y: 0.42, number: 10 },
+      { id: 11, team: "blue", x: 0.88, y: 0.28, number: 11, highlighted: true },
+      { id: 12, team: "red",  x: 0.5,  y: 0.03, number: 1  },
+      { id: 13, team: "red",  x: 0.18, y: 0.22, number: 2  },
+      { id: 14, team: "red",  x: 0.4,  y: 0.18, number: 3  },
+      { id: 15, team: "red",  x: 0.55, y: 0.18, number: 4  },
+      { id: 16, team: "red",  x: 0.12, y: 0.35, number: 5  },
+      { id: 17, team: "red",  x: 0.32, y: 0.35, number: 6  },
+      { id: 18, team: "red",  x: 0.12, y: 0.52, number: 7  },
+      { id: 19, team: "red",  x: 0.62, y: 0.42, number: 8  },
+      { id: 20, team: "red",  x: 0.28, y: 0.45, number: 9  },
+      { id: 21, team: "red",  x: 0.32, y: 0.52, number: 10 },
+      { id: 22, team: "red",  x: 0.65, y: 0.55, number: 11 },
+    ],
+    ball: { x: 0.38, y: 0.5 },
+    question: "Jij bent CM8 (blauw) met de bal. De tegenstander is samengetrokken links. RB2 en RW11 staan vrij rechts. Wat doe je?",
+    options: [
+      { text: "Doorspelen langs de linkerflank waar de druk staat", score: 0, explanation: "Je speelt in de druk — dit biedt geen ruimte meer." },
+      { text: "Diagonale bal naar RW11 of RB2 om van flank te wisselen", score: 3, explanation: "Uitstekend! Door te wisselen van flank benut je de open ruimte rechts." },
+      { text: "Terugspelen naar de centrale verdediger voor herstart", score: 1, explanation: "Veilig, maar je benut de open rechterflank niet." },
+      { text: "Zelf dribbelen door het midden", score: 1, explanation: "Moeilijk — de tegenstander staat compact in het midden." },
+    ],
+  },
+  {
+    id: 11,
+    phase: "Opbouw",
+    title: "Doeltrap Verdeling",
+    description: "Keeper (blauw 1) neemt een doeltrap. De tegenstander loopt hoog druk met drie aanvallers. De centrale middenvelders hebben zich vrijgespeeld.",
+    players: [
+      { id: 1,  team: "blue", x: 0.5,  y: 0.97, number: 1,  highlighted: true },
+      { id: 2,  team: "blue", x: 0.75, y: 0.82, number: 2  },
+      { id: 3,  team: "blue", x: 0.38, y: 0.88, number: 3  },
+      { id: 4,  team: "blue", x: 0.62, y: 0.88, number: 4  },
+      { id: 5,  team: "blue", x: 0.25, y: 0.82, number: 5  },
+      { id: 6,  team: "blue", x: 0.5,  y: 0.72, number: 6,  highlighted: true },
+      { id: 7,  team: "blue", x: 0.32, y: 0.58, number: 7  },
+      { id: 8,  team: "blue", x: 0.65, y: 0.58, number: 8,  highlighted: true },
+      { id: 9,  team: "blue", x: 0.12, y: 0.35, number: 9  },
+      { id: 10, team: "blue", x: 0.5,  y: 0.42, number: 10 },
+      { id: 11, team: "blue", x: 0.85, y: 0.42, number: 11 },
+      { id: 12, team: "red",  x: 0.5,  y: 0.03, number: 1  },
+      { id: 13, team: "red",  x: 0.78, y: 0.22, number: 2  },
+      { id: 14, team: "red",  x: 0.42, y: 0.15, number: 3  },
+      { id: 15, team: "red",  x: 0.58, y: 0.15, number: 4  },
+      { id: 16, team: "red",  x: 0.22, y: 0.22, number: 5  },
+      { id: 17, team: "red",  x: 0.5,  y: 0.35, number: 6  },
+      { id: 18, team: "red",  x: 0.18, y: 0.55, number: 7,  highlighted: true },
+      { id: 19, team: "red",  x: 0.82, y: 0.55, number: 8  },
+      { id: 20, team: "red",  x: 0.45, y: 0.78, number: 9,  highlighted: true },
+      { id: 21, team: "red",  x: 0.55, y: 0.78, number: 10, highlighted: true },
+      { id: 22, team: "red",  x: 0.62, y: 0.45, number: 11 },
+    ],
+    ball: { x: 0.5, y: 0.97 },
+    question: "Keeper (blauw 1) neemt een doeltrap. Rode aanvallers drukken hoog. CDM6 staat vrij op 30 meter. Wat is de beste keuze?",
+    options: [
+      { text: "Lange bal op de spits gooien", score: 1, explanation: "Riskant — verlies van balbezit is groot, maar kan de druk verlichten." },
+      { text: "Korte bal naar de CB die onder druk staat", score: 0, explanation: "Gevaarlijk! CB staat onder directe druk — grote kans op balverlies vlak voor doel." },
+      { text: "Speel CDM6 in die vrijstaat op 30 meter via het midden", score: 3, explanation: "Perfect! CDM6 staat vrij en kan het spel openen vanuit een drukvrije zone." },
+      { text: "Bal lang langs de zijlijn — speel RB2 in", score: 2, explanation: "Acceptabel, maar CDM6 biedt een betere opbouwpositie vanuit het midden." },
+    ],
+  },
+  {
+    id: 12,
+    phase: "Aanval",
+    title: "Late Run in de Zestien",
+    description: "CAM10 heeft de bal op de rand van de zestien. CM8 maakt een late, ongemarkeerde run de zestien in vanuit diep.",
+    players: [
+      { id: 1,  team: "blue", x: 0.5,  y: 0.97, number: 1  },
+      { id: 2,  team: "blue", x: 0.78, y: 0.72, number: 2  },
+      { id: 3,  team: "blue", x: 0.42, y: 0.82, number: 3  },
+      { id: 4,  team: "blue", x: 0.58, y: 0.82, number: 4  },
+      { id: 5,  team: "blue", x: 0.22, y: 0.72, number: 5  },
+      { id: 6,  team: "blue", x: 0.5,  y: 0.62, number: 6  },
+      { id: 7,  team: "blue", x: 0.18, y: 0.45, number: 7  },
+      { id: 8,  team: "blue", x: 0.55, y: 0.22, number: 8,  highlighted: true },
+      { id: 9,  team: "blue", x: 0.18, y: 0.18, number: 9  },
+      { id: 10, team: "blue", x: 0.5,  y: 0.35, number: 10, highlighted: true },
+      { id: 11, team: "blue", x: 0.82, y: 0.25, number: 11 },
+      { id: 12, team: "red",  x: 0.5,  y: 0.03, number: 1,  highlighted: true },
+      { id: 13, team: "red",  x: 0.8,  y: 0.18, number: 2  },
+      { id: 14, team: "red",  x: 0.42, y: 0.14, number: 3,  highlighted: true },
+      { id: 15, team: "red",  x: 0.58, y: 0.14, number: 4  },
+      { id: 16, team: "red",  x: 0.2,  y: 0.18, number: 5  },
+      { id: 17, team: "red",  x: 0.5,  y: 0.28, number: 6,  highlighted: true },
+      { id: 18, team: "red",  x: 0.18, y: 0.45, number: 7  },
+      { id: 19, team: "red",  x: 0.75, y: 0.38, number: 8  },
+      { id: 20, team: "red",  x: 0.5,  y: 0.58, number: 9  },
+      { id: 21, team: "red",  x: 0.42, y: 0.52, number: 10 },
+      { id: 22, team: "red",  x: 0.65, y: 0.52, number: 11 },
+    ],
+    ball: { x: 0.5, y: 0.35 },
+    question: "Jij bent CAM10 (blauw) met de bal. CM8 maakt een late ongemarkeerde run de zestien in. Rode DM6 staat op jou. Wat doe je?",
+    options: [
+      { text: "Zelf schieten op de keeper", score: 1, explanation: "Mogelijk, maar CM8 staat ongemarkeerd in een betere positie." },
+      { text: "Wachten tot een betere kans zich voordoet", score: 0, explanation: "De late run van CM8 is tijdelijk — wacht je te lang dan is hij gedekt." },
+      { text: "Pass spelen op CM8 die de zestien inloopt", score: 3, explanation: "Briljant! Timing is alles — CM8 is ongemarkeerd en loopt perfect de zestien in." },
+      { text: "Terugspelen naar CDM6 voor herstart", score: 0, explanation: "Je verliest de kans volledig — CM8 loopt voor niets." },
+    ],
+  },
+  {
+    id: 13,
+    phase: "Verdediging",
+    title: "Voorzet Verdedigen",
+    description: "Rode rechtervleugel (RM11) staat op het punt een voorzet te geven. Drie rode aanvallers positioneren zich in de zestien.",
+    players: [
+      { id: 1,  team: "blue", x: 0.5,  y: 0.95, number: 1,  highlighted: true },
+      { id: 2,  team: "blue", x: 0.72, y: 0.75, number: 2,  highlighted: true },
+      { id: 3,  team: "blue", x: 0.42, y: 0.84, number: 3,  highlighted: true },
+      { id: 4,  team: "blue", x: 0.58, y: 0.84, number: 4,  highlighted: true },
+      { id: 5,  team: "blue", x: 0.28, y: 0.75, number: 5  },
+      { id: 6,  team: "blue", x: 0.42, y: 0.72, number: 6  },
+      { id: 7,  team: "blue", x: 0.22, y: 0.58, number: 7  },
+      { id: 8,  team: "blue", x: 0.62, y: 0.72, number: 8  },
+      { id: 9,  team: "blue", x: 0.15, y: 0.45, number: 9  },
+      { id: 10, team: "blue", x: 0.5,  y: 0.58, number: 10 },
+      { id: 11, team: "blue", x: 0.85, y: 0.55, number: 11 },
+      { id: 12, team: "red",  x: 0.5,  y: 0.03, number: 1  },
+      { id: 13, team: "red",  x: 0.8,  y: 0.22, number: 2  },
+      { id: 14, team: "red",  x: 0.42, y: 0.18, number: 3  },
+      { id: 15, team: "red",  x: 0.58, y: 0.18, number: 4  },
+      { id: 16, team: "red",  x: 0.2,  y: 0.22, number: 5  },
+      { id: 17, team: "red",  x: 0.5,  y: 0.35, number: 6  },
+      { id: 18, team: "red",  x: 0.15, y: 0.45, number: 7  },
+      { id: 19, team: "red",  x: 0.88, y: 0.55, number: 11, highlighted: true },
+      { id: 20, team: "red",  x: 0.42, y: 0.72, number: 8,  highlighted: true },
+      { id: 21, team: "red",  x: 0.5,  y: 0.78, number: 9,  highlighted: true },
+      { id: 22, team: "red",  x: 0.35, y: 0.82, number: 10, highlighted: true },
+    ],
+    ball: { x: 0.88, y: 0.55 },
+    question: "Rode RM11 staat op het punt een voorzet te geven. Jij bent CB4. Drie aanvallers staan klaar. Wat is jouw prioriteit?",
+    options: [
+      { text: "Uitlopen om de voorzet te onderscheppen", score: 1, explanation: "Riskant — als je de bal mist sta je compleet bloot." },
+      { text: "Man-op-man de gevaarlijkste aanvaller dekken bij de eerste paal", score: 2, explanation: "Goed, maar vergeet de ruimte op de tweede paal niet." },
+      { text: "Positie houden op de 5-meterslijn en de ruimte dekken", score: 3, explanation: "Excellent! Ruimtedekking op de 5-meterslijn geeft je de beste positie voor elke voorzet." },
+      { text: "Naar de baldrager lopen om de voorzet te blokkeren", score: 1, explanation: "Dat is de taak van RB2 — jij moet in de zestien blijven." },
+    ],
+  },
+  {
+    id: 14,
+    phase: "Standaard situatie",
+    title: "Vrije Trap Verdedigen",
+    description: "De tegenstander heeft een gevaarlijke vrije trap op 22 meter van het doel. Jij bent captain en organiseert de verdediging.",
+    players: [
+      { id: 1,  team: "blue", x: 0.5,  y: 0.97, number: 1,  highlighted: true },
+      { id: 2,  team: "blue", x: 0.72, y: 0.82, number: 2  },
+      { id: 3,  team: "blue", x: 0.42, y: 0.88, number: 3,  highlighted: true },
+      { id: 4,  team: "blue", x: 0.52, y: 0.88, number: 4,  highlighted: true },
+      { id: 5,  team: "blue", x: 0.32, y: 0.82, number: 5  },
+      { id: 6,  team: "blue", x: 0.62, y: 0.88, number: 6,  highlighted: true },
+      { id: 7,  team: "blue", x: 0.28, y: 0.75, number: 7  },
+      { id: 8,  team: "blue", x: 0.68, y: 0.75, number: 8  },
+      { id: 9,  team: "blue", x: 0.35, y: 0.72, number: 9  },
+      { id: 10, team: "blue", x: 0.5,  y: 0.72, number: 10 },
+      { id: 11, team: "blue", x: 0.72, y: 0.72, number: 11 },
+      { id: 12, team: "red",  x: 0.5,  y: 0.03, number: 1  },
+      { id: 13, team: "red",  x: 0.78, y: 0.22, number: 2  },
+      { id: 14, team: "red",  x: 0.42, y: 0.18, number: 3  },
+      { id: 15, team: "red",  x: 0.58, y: 0.18, number: 4  },
+      { id: 16, team: "red",  x: 0.22, y: 0.22, number: 5  },
+      { id: 17, team: "red",  x: 0.5,  y: 0.35, number: 6  },
+      { id: 18, team: "red",  x: 0.15, y: 0.48, number: 7  },
+      { id: 19, team: "red",  x: 0.85, y: 0.48, number: 8  },
+      { id: 20, team: "red",  x: 0.52, y: 0.68, number: 9,  highlighted: true },
+      { id: 21, team: "red",  x: 0.38, y: 0.78, number: 10, highlighted: true },
+      { id: 22, team: "red",  x: 0.65, y: 0.78, number: 11, highlighted: true },
+    ],
+    ball: { x: 0.52, y: 0.68 },
+    question: "Vrije trap op 22 meter. Hoe organiseer jij de muur en verdediging in de zestien?",
+    options: [
+      { text: "Volle muur van 5 man, rest man-op-man", score: 2, explanation: "Goed maar de lange hoek is kwetsbaar als de muur te groot is." },
+      { text: "3-mans muur + zonedekking in de zestien — keeper dekt lange hoek", score: 3, explanation: "Professioneel! De keeper dekt de lange hoek, muur de korte, zone covert de loopacties." },
+      { text: "Iedereen in de muur — 7-mans muur", score: 0, explanation: "Dan sta je volledig ongedekt voor de rebound en loopacties." },
+      { text: "Geen muur — iedereen man-op-man in de zestien", score: 1, explanation: "Risicovol bij een directe schietkans — je hebt geen muurbescherming." },
+    ],
+  },
+  {
+    id: 15,
+    phase: "Aanval",
+    title: "Spelen onder Druk",
+    description: "Jij (blauw 10) ontvangt de bal met je rug naar het doel. Een rode speler drukt direct op je in. Meerdere ploeggenoten staan vrij.",
+    players: [
+      { id: 1,  team: "blue", x: 0.5,  y: 0.97, number: 1  },
+      { id: 2,  team: "blue", x: 0.78, y: 0.72, number: 2  },
+      { id: 3,  team: "blue", x: 0.42, y: 0.82, number: 3  },
+      { id: 4,  team: "blue", x: 0.58, y: 0.82, number: 4  },
+      { id: 5,  team: "blue", x: 0.22, y: 0.72, number: 5  },
+      { id: 6,  team: "blue", x: 0.5,  y: 0.65, number: 6,  highlighted: true },
+      { id: 7,  team: "blue", x: 0.25, y: 0.45, number: 7  },
+      { id: 8,  team: "blue", x: 0.62, y: 0.48, number: 8,  highlighted: true },
+      { id: 9,  team: "blue", x: 0.22, y: 0.28, number: 9,  highlighted: true },
+      { id: 10, team: "blue", x: 0.5,  y: 0.52, number: 10, highlighted: true },
+      { id: 11, team: "blue", x: 0.82, y: 0.32, number: 11 },
+      { id: 12, team: "red",  x: 0.5,  y: 0.03, number: 1  },
+      { id: 13, team: "red",  x: 0.78, y: 0.22, number: 2  },
+      { id: 14, team: "red",  x: 0.42, y: 0.18, number: 3  },
+      { id: 15, team: "red",  x: 0.58, y: 0.18, number: 4  },
+      { id: 16, team: "red",  x: 0.22, y: 0.22, number: 5  },
+      { id: 17, team: "red",  x: 0.5,  y: 0.32, number: 6  },
+      { id: 18, team: "red",  x: 0.18, y: 0.45, number: 7  },
+      { id: 19, team: "red",  x: 0.62, y: 0.42, number: 8  },
+      { id: 20, team: "red",  x: 0.55, y: 0.48, number: 9,  highlighted: true },
+      { id: 21, team: "red",  x: 0.42, y: 0.58, number: 10 },
+      { id: 22, team: "red",  x: 0.65, y: 0.58, number: 11 },
+    ],
+    ball: { x: 0.5, y: 0.52 },
+    question: "Jij bent CAM10 en ontvangt de bal met je rug naar het doel. Rode speler 9 drukt direct op je in. Wat is de slimste actie?",
+    options: [
+      { text: "Direct draaien en dribble langs de verdediger", score: 1, explanation: "Riskant — als je de bal verliest ben je in een gevaarlijke positie." },
+      { text: "Bal afschermen en wachten", score: 0, explanation: "Passief spelen — je team kan zich niet vrijspelen." },
+      { text: "Korte lay-off naar CDM6 en daarna vrijlopen", score: 3, explanation: "Excellent! Door terug te leggen en direct te bewegen creëer je ruimte en behoud je balbezit." },
+      { text: "Lange dieptebal sturen op LW9", score: 2, explanation: "Kan werken als LW9 klaarstaat, maar de lay-off is veiliger en bouwt beter op." },
+    ],
+  },
+  {
+    id: 16,
+    phase: "Verdediging",
+    title: "Buitenspelval",
+    description: "Rode DM6 staat op het punt een dieptebal te spelen op ST9 die een diepteloop maakt. Jouw verdedigingslinie staat op 35 meter.",
+    players: [
+      { id: 1,  team: "blue", x: 0.5,  y: 0.97, number: 1  },
+      { id: 2,  team: "blue", x: 0.75, y: 0.62, number: 2,  highlighted: true },
+      { id: 3,  team: "blue", x: 0.42, y: 0.65, number: 3,  highlighted: true },
+      { id: 4,  team: "blue", x: 0.58, y: 0.65, number: 4,  highlighted: true },
+      { id: 5,  team: "blue", x: 0.25, y: 0.62, number: 5,  highlighted: true },
+      { id: 6,  team: "blue", x: 0.5,  y: 0.52, number: 6  },
+      { id: 7,  team: "blue", x: 0.32, y: 0.42, number: 7  },
+      { id: 8,  team: "blue", x: 0.65, y: 0.42, number: 8  },
+      { id: 9,  team: "blue", x: 0.18, y: 0.25, number: 9  },
+      { id: 10, team: "blue", x: 0.5,  y: 0.32, number: 10 },
+      { id: 11, team: "blue", x: 0.82, y: 0.25, number: 11 },
+      { id: 12, team: "red",  x: 0.5,  y: 0.03, number: 1  },
+      { id: 13, team: "red",  x: 0.78, y: 0.22, number: 2  },
+      { id: 14, team: "red",  x: 0.42, y: 0.18, number: 3  },
+      { id: 15, team: "red",  x: 0.58, y: 0.18, number: 4  },
+      { id: 16, team: "red",  x: 0.22, y: 0.22, number: 5  },
+      { id: 17, team: "red",  x: 0.5,  y: 0.38, number: 6,  highlighted: true },
+      { id: 18, team: "red",  x: 0.18, y: 0.45, number: 7  },
+      { id: 19, team: "red",  x: 0.82, y: 0.45, number: 8  },
+      { id: 20, team: "red",  x: 0.5,  y: 0.55, number: 9,  highlighted: true },
+      { id: 21, team: "red",  x: 0.38, y: 0.52, number: 10 },
+      { id: 22, team: "red",  x: 0.65, y: 0.52, number: 11 },
+    ],
+    ball: { x: 0.5, y: 0.38 },
+    question: "Rode DM6 staat op het punt een dieptebal te spelen op ST9. Jij bent CB3. Wat doe je?",
+    options: [
+      { text: "Iedereen laten zakken richting doel", score: 1, explanation: "Geeft de spits ruimte voor de verdediging — risicovol." },
+      { text: "Buitenspelval: coördineer de linie om samen op te tikken voor de bal gespeeld wordt", score: 3, explanation: "Perfect! Als je optikt voor de bal gespeeld wordt, zet je de spits buitenspel. Coördinatie is key." },
+      { text: "Solo uitlopen op de spits en de linie negeren", score: 0, explanation: "Gevaarlijk! Solo uitlopen zonder de linie te coördineren is de slechtste optie." },
+      { text: "De linie vasthouden — niet optrekken, niet zakken", score: 2, explanation: "Veilig maar je benut de buitenspelval niet — de spits kan toch doorrennen." },
+    ],
+  },
 ]
 
 function getPhaseColor(phase: string): string {
@@ -369,12 +674,22 @@ function getPhaseColor(phase: string): string {
 }
 
 function getIntelligenceLabel(score: number): { label: string; color: string } {
-  if (score >= 22) return { label: "Tactisch Genie", color: "#FBBF24" }
-  if (score >= 18) return { label: "Elite IQ", color: "#4FA9E6" }
-  if (score >= 14) return { label: "Hoog Voetbal IQ", color: "#34D399" }
-  if (score >= 10) return { label: "Gemiddeld IQ", color: "#93C5FD" }
-  if (score >= 6)  return { label: "Ontwikkelend IQ", color: "#FB923C" }
+  // Score out of 48 (16 scenarios × 3 pts each)
+  if (score >= 44) return { label: "Tactisch Genie", color: "#FBBF24" }
+  if (score >= 36) return { label: "Elite IQ", color: "#4FA9E6" }
+  if (score >= 28) return { label: "Hoog Voetbal IQ", color: "#34D399" }
+  if (score >= 20) return { label: "Gemiddeld IQ", color: "#93C5FD" }
+  if (score >= 12) return { label: "Ontwikkelend IQ", color: "#FB923C" }
   return { label: "Beginner IQ", color: "#F87171" }
+}
+
+function shuffleArray(arr: number[]): number[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
 }
 
 /* ─── Football (soccer ball) SVG at (0,0), radius R ──────────── */
@@ -528,64 +843,103 @@ function PitchSVG({
           <text x={FX + 8} y={FY + FH/2 + 20} fill="rgba(255,100,100,0.35)"
             fontSize={9} fontWeight="bold" textAnchor="start">▲ ROOD</text>
 
+          {/* ── Pass lines between highlighted teammates ── */}
+          {(() => {
+            const hl = players.filter(p => p.highlighted && p.team === "blue")
+            if (hl.length < 2) return null
+            return hl.slice(0, -1).map((a, i) => {
+              const b = hl[i + 1]
+              const ax = a.x * FW + FX, ay = a.y * FH + FY
+              const bx = b.x * FW + FX, by = b.y * FH + FY
+              const progress = (Math.sin(tick * 0.07) + 1) / 2  // 0..1 oscillating
+              const dashOffset = -tick * 2
+              return (
+                <line key={`pass-${a.id}-${b.id}`}
+                  x1={ax} y1={ay} x2={bx} y2={by}
+                  stroke="rgba(255,220,50,0.35)" strokeWidth={1.5}
+                  strokeDasharray="8 5"
+                  strokeDashoffset={dashOffset}
+                  opacity={0.4 + progress * 0.4}
+                />
+              )
+            })
+          })()}
+
           {/* ── Players ── */}
           {players.map((player) => {
-            const cx = player.x * FW + FX
-            const cy = player.y * FH + FY
+            const baseX = player.x * FW + FX
+            const baseY = player.y * FH + FY
             const isBlue = player.team === "blue"
             const fill = isBlue ? "#1a56db" : "#c81e1e"
             const shadowColor = isBlue ? "rgba(26,86,219,0.6)" : "rgba(200,30,30,0.6)"
 
+            // Each player has a unique phase so they never all move together
+            const phase = player.id * 2.39   // golden-ratio spread of phases
+            const phaseY = player.id * 1.61
+
+            // Highlighted key players move much more (they're making runs)
+            const amp = player.highlighted ? 13 : 2.5
+            const speed = player.highlighted ? 0.09 : 0.035
+            const driftX = Math.sin(tick * speed + phase) * amp
+            const driftY = Math.cos(tick * speed * 0.8 + phaseY) * (amp * 0.65)
+
             return (
+              // Outer g: CSS-transitioned scenario position
               <g key={player.id}
-                transform={`translate(${cx},${cy})`}
+                transform={`translate(${baseX},${baseY})`}
                 style={{ transition: "transform 0.75s cubic-bezier(0.4,0,0.2,1)" }}>
 
-                {/* Player shadow */}
-                <ellipse cx={0} cy={13} rx={11} ry={4}
-                  fill={shadowColor} opacity={0.5} />
+                {/* Inner g: continuous drift — no CSS transition here */}
+                <g transform={`translate(${driftX.toFixed(2)},${driftY.toFixed(2)})`}>
 
-                {/* Highlight ring (pulsing) — only for key players */}
-                {player.highlighted && (
-                  <>
-                    <circle cx={0} cy={0} r={22}
-                      fill="none" stroke="#FBBF24" strokeWidth={2}
-                      opacity={0.5 + Math.sin(tick * 0.18) * 0.4} />
-                    <circle cx={0} cy={0} r={27}
-                      fill="none" stroke="#FBBF24" strokeWidth={1}
-                      opacity={0.2 + Math.sin(tick * 0.18 + 1) * 0.18} />
-                  </>
-                )}
+                  {/* Shadow (stays at feet level) */}
+                  <ellipse cx={0} cy={14} rx={10} ry={3.5}
+                    fill={shadowColor} opacity={0.45} />
 
-                {/* Player circle */}
-                <circle cx={0} cy={0} r={15}
-                  fill={fill}
-                  stroke="white"
-                  strokeWidth={2}
-                  style={{ filter: player.highlighted ? `drop-shadow(0 0 6px ${shadowColor})` : undefined }}
-                />
+                  {/* Highlight ring — pulsing glow for key players */}
+                  {player.highlighted && (
+                    <>
+                      <circle cx={0} cy={0} r={21}
+                        fill="none" stroke="#FBBF24" strokeWidth={2.5}
+                        opacity={0.45 + Math.sin(tick * 0.2) * 0.38} />
+                      <circle cx={0} cy={0} r={28}
+                        fill="none" stroke="#FBBF24" strokeWidth={1}
+                        opacity={0.15 + Math.sin(tick * 0.15 + 1.5) * 0.12} />
+                    </>
+                  )}
 
-                {/* Kit shine */}
-                <ellipse cx={-4} cy={-5} rx={5} ry={4}
-                  fill="rgba(255,255,255,0.18)" />
+                  {/* Player body */}
+                  <circle cx={0} cy={0} r={15} fill={fill} stroke="white" strokeWidth={2}
+                    style={{ filter: player.highlighted ? `drop-shadow(0 0 7px ${shadowColor})` : undefined }}
+                  />
 
-                {/* Number */}
-                <text x={0} y={1}
-                  textAnchor="middle" dominantBaseline="middle"
-                  fill="white" fontSize={10} fontWeight="800"
-                  style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.5px" }}>
-                  {player.number}
-                </text>
+                  {/* Kit shine */}
+                  <ellipse cx={-4} cy={-5} rx={5} ry={4} fill="rgba(255,255,255,0.2)" />
+
+                  {/* Number */}
+                  <text x={0} y={1} textAnchor="middle" dominantBaseline="middle"
+                    fill="white" fontSize={10} fontWeight="800"
+                    style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.5px" }}>
+                    {player.number}
+                  </text>
+
+                  {/* Arrow tip for highlighted players showing run direction */}
+                  {player.highlighted && (
+                    <polygon
+                      points={`${(driftX > 0 ? 18 : -18).toFixed(1)},0 ${(driftX > 0 ? 12 : -12).toFixed(1)},-5 ${(driftX > 0 ? 12 : -12).toFixed(1)},5`}
+                      fill="#FBBF24" opacity={0.55 + Math.sin(tick * 0.2) * 0.3}
+                    />
+                  )}
+                </g>
               </g>
             )
           })}
 
           {/* ── Ball (animated) ── */}
-          {/* Base position layer (CSS transition moves this) */}
           <g transform={`translate(${bcxBase},${bcyBase})`}
             style={{ transition: "transform 0.75s cubic-bezier(0.4,0,0.2,1)" }}>
-            {/* Idle float layer (continuous animation via tick) */}
-            <g transform={`translate(${ballIdleX.toFixed(2)},${ballIdleY.toFixed(2)})`}>
+            {/* Continuous float + bigger arc movement */}
+            <g transform={`translate(${(Math.sin(tick * 0.07) * 6).toFixed(2)},${(Math.cos(tick * 0.055) * 4).toFixed(2)})`}>
               <FootballIcon r={9} rotation={ballRotation} />
             </g>
           </g>
@@ -597,11 +951,14 @@ function PitchSVG({
 
 export default function TacticalGamePage() {
   const [gamePhase, setGamePhase] = useState<GamePhase>("intro")
+  const [gameMode, setGameMode] = useState<GameMode>("classic")
   const [currentIndex, setCurrentIndex] = useState(0)
   const [scores, setScores] = useState<number[]>([])
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [currentPlayers, setCurrentPlayers] = useState<PlayerPos[]>([...defaultPlayers])
   const [currentBall, setCurrentBall] = useState<BallPos>({ x: 0.5, y: 0.5 })
+  const [shuffledQueue, setShuffledQueue] = useState<number[]>([])
+  const [questionNum, setQuestionNum] = useState(1)
   const [dots, setDots] = useState(0)
   const [tick, setTick] = useState(0)
 
@@ -632,20 +989,52 @@ export default function TacticalGamePage() {
     return () => clearTimeout(timer)
   }, [gamePhase, currentIndex])
 
+  // Save IQ score to localStorage when results are shown
+  useEffect(() => {
+    if (gamePhase !== "results") return
+    const total = scores.reduce((a, b) => a + b, 0)
+    const maxPossible = gameMode === "classic" ? 48 : scores.length * 3
+    // Normalize to /24 scale for the player card display
+    const normalized24 = maxPossible > 0 ? Math.round((total / maxPossible) * 24) : 0
+    const { label, color } = getIntelligenceLabel(Math.round((total / maxPossible) * 48))
+    try {
+      localStorage.setItem("tacticalIQ", JSON.stringify({
+        score: normalized24,
+        label,
+        color,
+        date: new Date().toISOString(),
+      }))
+    } catch { /* ignore */ }
+  }, [gamePhase, scores, gameMode])
+
   // feedback → next scenario or results
   useEffect(() => {
     if (gamePhase !== "feedback") return
     const timer = setTimeout(() => {
-      if (currentIndex + 1 >= scenarios.length) {
-        setGamePhase("results")
+      if (gameMode === "classic") {
+        // Classic: go through scenarios 0..15 in order, then results
+        const nextClassicIdx = scores.length  // scores.length is already incremented after answer
+        if (nextClassicIdx >= scenarios.length) {
+          setGamePhase("results")
+        } else {
+          setCurrentIndex(nextClassicIdx)
+          setSelectedOption(null)
+          setGamePhase("watching")
+        }
       } else {
-        setCurrentIndex((i) => i + 1)
+        // Infinite: pick next from shuffled queue (refill when empty)
+        const queue = shuffledQueue.length > 0
+          ? shuffledQueue
+          : shuffleArray(scenarios.map((_, i) => i))
+        const nextIdx = queue[0]
+        setShuffledQueue(queue.slice(1))
+        setCurrentIndex(nextIdx)
         setSelectedOption(null)
         setGamePhase("watching")
       }
     }, 2200)
     return () => clearTimeout(timer)
-  }, [gamePhase, currentIndex])
+  }, [gamePhase, scores, gameMode, shuffledQueue])
 
   // Load scenario players/ball when index changes (and we enter watching)
   useEffect(() => {
@@ -654,13 +1043,29 @@ export default function TacticalGamePage() {
     setCurrentBall(scenarios[currentIndex].ball)
   }, [gamePhase, currentIndex])
 
-  const handleStart = useCallback(() => {
-    setCurrentIndex(0)
+  const handleStart = useCallback((mode: GameMode) => {
+    setGameMode(mode)
     setScores([])
     setSelectedOption(null)
-    setCurrentPlayers(scenarios[0].players)
-    setCurrentBall(scenarios[0].ball)
+    setQuestionNum(1)
+    if (mode === "classic") {
+      setCurrentIndex(0)
+      setCurrentPlayers(scenarios[0].players)
+      setCurrentBall(scenarios[0].ball)
+      setShuffledQueue([])
+    } else {
+      const queue = shuffleArray(scenarios.map((_, i) => i))
+      const firstIdx = queue[0]
+      setShuffledQueue(queue.slice(1))
+      setCurrentIndex(firstIdx)
+      setCurrentPlayers(scenarios[firstIdx].players)
+      setCurrentBall(scenarios[firstIdx].ball)
+    }
     setGamePhase("watching")
+  }, [])
+
+  const handleStop = useCallback(() => {
+    setGamePhase("results")
   }, [])
 
   const handleOptionSelect = useCallback(
@@ -669,6 +1074,7 @@ export default function TacticalGamePage() {
       const score = scenario.options[optionIndex].score
       setScores((s) => [...s, score])
       setSelectedOption(optionIndex)
+      setQuestionNum((n) => n + 1)
       setGamePhase("feedback")
     },
     [gamePhase, scenario]
@@ -678,6 +1084,8 @@ export default function TacticalGamePage() {
     setCurrentIndex(0)
     setScores([])
     setSelectedOption(null)
+    setQuestionNum(1)
+    setShuffledQueue([])
     setCurrentPlayers([...defaultPlayers])
     setCurrentBall({ x: 0.5, y: 0.5 })
     setGamePhase("intro")
@@ -748,10 +1156,10 @@ export default function TacticalGamePage() {
               Tactisch IQ Spel
             </h1>
             <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "16px", maxWidth: "480px", margin: "0 auto 8px" }}>
-              8 realistische 11v11 voetbalscenario's. Analyseer de situatie en maak de juiste tactische keuze.
+              16 realistische 11v11 voetbalscenario's. Analyseer de situatie en maak de juiste tactische keuze.
             </p>
             <p style={{ color: "rgba(255,255,255,0.35)", fontSize: "13px" }}>
-              Maximale score: 24 punten
+              Klassiek: 16 scenario's · Max 48 punten &nbsp;|&nbsp; Oneindig: nooit stoppend
             </p>
           </div>
 
@@ -770,7 +1178,7 @@ export default function TacticalGamePage() {
             }}
           >
             {[
-              { icon: "⚽", label: "8 Scenario's", sub: "Alle fases van het spel" },
+              { icon: "⚽", label: "16 Scenario's", sub: "Alle fases van het spel" },
               { icon: "🧠", label: "Tactische keuzes", sub: "4 opties per situatie" },
               { icon: "🏆", label: "IQ Rating", sub: "Van Beginner tot Genie" },
             ].map((card) => (
@@ -791,23 +1199,16 @@ export default function TacticalGamePage() {
             ))}
           </div>
 
-          {/* Start button */}
-          <div style={{ textAlign: "center" }}>
+          {/* Mode buttons */}
+          <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
             <button
-              onClick={handleStart}
+              onClick={() => handleStart("classic")}
               style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "10px",
+                display: "inline-flex", alignItems: "center", gap: "10px",
                 background: "linear-gradient(135deg, #1D4ED8, #4FA9E6)",
-                color: "white",
-                border: "none",
-                borderRadius: "14px",
-                padding: "16px 40px",
-                fontSize: "18px",
-                fontWeight: 700,
-                cursor: "pointer",
-                boxShadow: "0 8px 32px rgba(79,169,230,0.35)",
+                color: "white", border: "none", borderRadius: "14px",
+                padding: "16px 32px", fontSize: "17px", fontWeight: 700,
+                cursor: "pointer", boxShadow: "0 8px 32px rgba(79,169,230,0.35)",
                 transition: "transform 0.15s, box-shadow 0.15s",
               }}
               onMouseEnter={(e) => {
@@ -819,8 +1220,30 @@ export default function TacticalGamePage() {
                 ;(e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 32px rgba(79,169,230,0.35)"
               }}
             >
-              Start spel
-              <ChevronRight size={20} />
+              🎯 Klassiek — 16 vragen
+              <ChevronRight size={18} />
+            </button>
+            <button
+              onClick={() => handleStart("infinite")}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: "10px",
+                background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+                color: "white", border: "none", borderRadius: "14px",
+                padding: "16px 32px", fontSize: "17px", fontWeight: 700,
+                cursor: "pointer", boxShadow: "0 8px 32px rgba(168,85,247,0.3)",
+                transition: "transform 0.15s, box-shadow 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                ;(e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)"
+                ;(e.currentTarget as HTMLButtonElement).style.boxShadow = "0 12px 40px rgba(168,85,247,0.5)"
+              }}
+              onMouseLeave={(e) => {
+                ;(e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"
+                ;(e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 32px rgba(168,85,247,0.3)"
+              }}
+            >
+              ∞ Oneindig modus
+              <ChevronRight size={18} />
             </button>
           </div>
         </div>
@@ -830,8 +1253,11 @@ export default function TacticalGamePage() {
 
   // ─── RESULTS ─────────────────────────────────────────────────────────────────
   if (gamePhase === "results") {
-    const { label, color } = getIntelligenceLabel(totalScore)
-    const pct = (totalScore / 24) * 100
+    const answeredCount = scores.length
+    const maxPossible = gameMode === "classic" ? 48 : answeredCount * 3
+    const normalizedScore = maxPossible > 0 ? Math.round((totalScore / maxPossible) * 48) : 0
+    const { label, color } = getIntelligenceLabel(normalizedScore)
+    const pct = maxPossible > 0 ? (totalScore / maxPossible) * 100 : 0
 
     return (
       <div
@@ -884,7 +1310,12 @@ export default function TacticalGamePage() {
               }}
             >
               {totalScore}
-              <span style={{ fontSize: "0.45em", color: "rgba(255,255,255,0.4)", fontWeight: 400 }}>/24</span>
+              <span style={{ fontSize: "0.45em", color: "rgba(255,255,255,0.4)", fontWeight: 400 }}>/{maxPossible}</span>
+              {gameMode === "infinite" && (
+                <div style={{ fontSize: "0.3em", color: "rgba(255,255,255,0.35)", fontWeight: 400, marginTop: "4px" }}>
+                  in {answeredCount} situaties
+                </div>
+              )}
             </div>
           </div>
 
@@ -936,19 +1367,19 @@ export default function TacticalGamePage() {
                 letterSpacing: "0.06em",
               }}
             >
-              Scenario overzicht
+              {gameMode === "infinite" ? `Overzicht (${answeredCount} gespeeld)` : "Scenario overzicht"}
             </div>
-            {scenarios.map((s, i) => {
+            {(gameMode === "classic" ? scenarios : scenarios.slice(0, answeredCount)).map((s, i) => {
               const sc = scores[i] ?? 0
               return (
                 <div
-                  key={s.id}
+                  key={`${s.id}-${i}`}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "10px 0",
-                    borderBottom: i < scenarios.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                    borderBottom: i < answeredCount - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -1063,7 +1494,9 @@ export default function TacticalGamePage() {
       >
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <span style={{ color: "rgba(255,255,255,0.7)", fontWeight: 700, fontSize: "15px" }}>
-            Scenario {currentIndex + 1}/8
+            {gameMode === "classic"
+              ? `Scenario ${scores.length + (gamePhase === "feedback" ? 0 : 1)}/16`
+              : `Situatie ${questionNum - (gamePhase === "feedback" ? 1 : 0)}`}
           </span>
           <span
             style={{
@@ -1078,20 +1511,31 @@ export default function TacticalGamePage() {
           >
             {scenario.phase}
           </span>
+          {gameMode === "infinite" && (
+            <span style={{
+              fontSize: "10px", color: "#a855f7", background: "rgba(168,85,247,0.15)",
+              border: "1px solid rgba(168,85,247,0.3)", borderRadius: "20px",
+              padding: "2px 8px", fontWeight: 700,
+            }}>∞ Oneindig</span>
+          )}
         </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            color: "#FBBF24",
-            fontWeight: 700,
-            fontSize: "15px",
-          }}
-        >
-          <Trophy size={16} />
-          Score: {currentScoreInProgress}/
-          {currentIndex * 3}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#FBBF24", fontWeight: 700, fontSize: "15px" }}>
+            <Trophy size={16} />
+            {currentScoreInProgress} pts
+          </div>
+          {gameMode === "infinite" && (
+            <button
+              onClick={handleStop}
+              style={{
+                background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)",
+                color: "#f87171", borderRadius: "8px", padding: "5px 12px",
+                fontSize: "13px", fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              Stop
+            </button>
+          )}
         </div>
       </div>
 

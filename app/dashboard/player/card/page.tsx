@@ -387,6 +387,14 @@ export default function PlayerCardPage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [generatingAI, setGeneratingAI] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [iqData, setIqData] = useState<{ score: number; label: string; color: string } | null>(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("tacticalIQ");
+      if (saved) setIqData(JSON.parse(saved) as { score: number; label: string; color: string });
+    } catch { /* ignore */ }
+  }, []);
 
   useEffect(() => {
     Promise.all([getMyPlayerData(), getAllPlayers()]).then(([p, all]) => {
@@ -749,14 +757,15 @@ export default function PlayerCardPage() {
               (ev.overall_score ?? 0) > best ? (ev.overall_score ?? 0) : best, 0) ?? 0;
             const currentScore = player.evaluations?.[0]?.overall_score ?? null;
 
-            const metaStats = [
+            const metaStats: { v: string; l: string; color?: string }[] = [
               { v: player.overall_rating.toString(), l: "OVR" },
               { v: evalCount.toString(),             l: "EVALS" },
               ...(currentScore ? [{ v: currentScore.toFixed(1), l: "HUIDIG" }] : []),
               ...(bestScore > 0 ? [{ v: bestScore.toFixed(1),   l: "PIEK" }] : []),
               ...(age           ? [{ v: age.toString(),          l: "LEEFT" }] : []),
               ...(heightCm      ? [{ v: `${heightCm}`,           l: "CM" }] : []),
-            ].slice(0, 6);
+              ...(iqData        ? [{ v: `${iqData.score}`, l: "IQ", color: iqData.color }] : []),
+            ].slice(0, 7);
 
             if (metaStats.length === 0) return null;
             return (
@@ -774,11 +783,12 @@ export default function PlayerCardPage() {
                       minWidth: 55,
                     }}>
                     <div
-                      className="text-lg sm:text-xl font-black tabular-nums leading-none text-white"
-                      style={{ fontFamily: "Outfit, sans-serif" }}>
+                      className="text-lg sm:text-xl font-black tabular-nums leading-none"
+                      style={{ fontFamily: "Outfit, sans-serif", color: st.color ?? "white" }}>
                       {st.v}
                     </div>
-                    <div className="text-[9px] text-white/30 mt-1 uppercase tracking-wider font-medium">
+                    <div className="text-[9px] mt-1 uppercase tracking-wider font-medium"
+                      style={{ color: st.color ? `${st.color}90` : "rgba(255,255,255,0.3)" }}>
                       {st.l}
                     </div>
                   </div>
@@ -901,6 +911,66 @@ export default function PlayerCardPage() {
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* ── Tactisch IQ ── */}
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-3">
+                Tactisch IQ
+              </div>
+              {iqData ? (
+                <div className="flex items-center gap-4 p-4 rounded-2xl border"
+                  style={{ background: `${iqData.color}0d`, borderColor: `${iqData.color}25` }}>
+                  {/* Score ring */}
+                  <div className="flex-shrink-0 relative w-16 h-16">
+                    <svg width="64" height="64" viewBox="0 0 64 64">
+                      <circle cx="32" cy="32" r="26" fill="none"
+                        stroke="rgba(255,255,255,0.07)" strokeWidth="5" />
+                      <circle cx="32" cy="32" r="26" fill="none"
+                        stroke={iqData.color} strokeWidth="5" strokeLinecap="round"
+                        strokeDasharray={`${(iqData.score / 24) * 163} 163`}
+                        transform="rotate(-90 32 32)" />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-sm font-black" style={{ color: iqData.color, fontFamily: "Outfit, sans-serif" }}>
+                        {iqData.score}
+                      </span>
+                    </div>
+                  </div>
+                  {/* Label */}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-black text-lg leading-tight"
+                      style={{ color: iqData.color, fontFamily: "Outfit, sans-serif" }}>
+                      {iqData.label}
+                    </div>
+                    <div className="text-[11px] text-white/35 mt-0.5">{iqData.score}/24 punten</div>
+                  </div>
+                  {/* Re-test link */}
+                  <Link href="/dashboard/player/game"
+                    className="flex-shrink-0 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all"
+                    style={{ background: `${iqData.color}18`, color: iqData.color,
+                      border: `1px solid ${iqData.color}30` }}>
+                    Opnieuw
+                  </Link>
+                </div>
+              ) : (
+                <Link href="/dashboard/player/game"
+                  className="flex items-center gap-3 p-4 rounded-2xl border transition-all"
+                  style={{ background: "rgba(79,169,230,0.06)", borderColor: "rgba(79,169,230,0.18)" }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: "rgba(79,169,230,0.15)" }}>
+                    <span className="text-lg">🧠</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-bold text-white">Doe de Tactisch IQ Test</div>
+                    <div className="text-[11px] text-white/35 mt-0.5">8 scenario&apos;s · 11v11 · Max 24 punten</div>
+                  </div>
+                  <span className="text-[11px] font-bold px-3 py-1.5 rounded-lg"
+                    style={{ background: "rgba(79,169,230,0.18)", color: "#4FA9E6" }}>
+                    Start →
+                  </span>
+                </Link>
+              )}
             </div>
 
             {/* Player DNA */}
