@@ -64,7 +64,7 @@ export async function middleware(request: NextRequest) {
       const role = profile?.role ?? "player";
       return NextResponse.redirect(new URL(`/dashboard/${role}`, request.url));
     }
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/welcome", request.url));
   }
 
   return response;
