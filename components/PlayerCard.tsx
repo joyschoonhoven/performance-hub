@@ -34,10 +34,33 @@ function CoreValueBar({ label, value, color }: { label: string; value: number; c
 
 function StatHex({ label, value }: { label: string; value: number }) {
   const color = value >= 8 ? "#10B981" : value >= 6.5 ? "#4FA9E6" : value >= 5 ? "#f59e0b" : "#ef4444";
+  // Hexagon points for a 36×42 viewBox
+  const hex = "18,2 34,11 34,31 18,40 2,31 2,11";
   return (
-    <div className="flex flex-col items-center gap-0.5">
-      <span className="text-xs font-bold tabular-nums" style={{ color }}>{value.toFixed(1)}</span>
-      <span className="text-[10px] text-slate-600 uppercase tracking-wider">{label}</span>
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative w-10 h-11">
+        <svg viewBox="0 0 36 42" className="w-full h-full">
+          {/* Background hex */}
+          <polygon points={hex} fill={`${color}15`} stroke={`${color}50`} strokeWidth="1.5" />
+          {/* Fill based on value (0–10) */}
+          <clipPath id={`hex-clip-${label}`}>
+            <polygon points={hex} />
+          </clipPath>
+          <rect
+            x="0" y={42 - (value / 10) * 42} width="36" height={42}
+            fill={`${color}30`}
+            clipPath={`url(#hex-clip-${label})`}
+          />
+          {/* Border overlay */}
+          <polygon points={hex} fill="none" stroke={color} strokeWidth="1.5" />
+          {/* Value text */}
+          <text x="18" y="24" textAnchor="middle" fontSize="10" fontWeight="800"
+            fill={color} fontFamily="Outfit, sans-serif">
+            {value.toFixed(1)}
+          </text>
+        </svg>
+      </div>
+      <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">{label}</span>
     </div>
   );
 }
