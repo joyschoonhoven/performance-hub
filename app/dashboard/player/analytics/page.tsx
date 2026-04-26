@@ -161,7 +161,7 @@ function IndexSparkline({ stats }: { stats: MatchStat[] }) {
 export default function PlayerAnalyticsPage() {
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"season" | "matches" | "radar">("season");
+  const [tab, setTab] = useState<"season" | "matches" | "radar">("radar");
 
   useEffect(() => {
     getMyPlayerData().then((p) => { setPlayer(p); setLoading(false); });
@@ -183,11 +183,30 @@ export default function PlayerAnalyticsPage() {
     });
 
   const latestEval = evaluations[0];
-  const radarData = latestEval?.scores?.map((s) => ({
-    subject: CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS],
-    value: s.score,
-    fullMark: 10,
-  })) ?? [];
+
+  // Build radar from latest evaluation — fallback to recent_scores (the 5 training scores always present)
+  const SCORE_LABEL_MAP: Record<string, string> = {
+    techniek: "Techniek",
+    fysiek: "Fysiek",
+    tactiek: "Tactiek",
+    mentaal: "Mentaal",
+    teamplay: "Teamplay",
+  };
+
+  const radarData: { subject: string; value: number; fullMark: number }[] =
+    latestEval?.scores?.length
+      ? latestEval.scores.map((s) => ({
+          subject: CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS] ?? s.category,
+          value: s.score,
+          fullMark: 10,
+        }))
+      : player?.recent_scores
+      ? Object.entries(player.recent_scores).map(([cat, score]) => ({
+          subject: SCORE_LABEL_MAP[cat] ?? cat,
+          value: score as number,
+          fullMark: 10,
+        }))
+      : [];
 
   const rColor = getRatingColor(player?.overall_rating ?? 65);
 
