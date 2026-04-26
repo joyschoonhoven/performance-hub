@@ -14,9 +14,14 @@ import type { Evaluation, PlayerWithDetails } from "@/lib/types";
 import Image from "next/image";
 import {
   ArrowLeft, Brain, Zap, Star, Trophy, TrendingUp, TrendingDown,
-  Minus, Plus, Calendar, Target, Loader2, Sparkles, UserCircle, ChevronDown, ChevronUp,
+  Minus, Plus, Calendar, Target, Loader2, Sparkles, UserCircle, ChevronDown, ChevronUp, Swords,
 } from "lucide-react";
 import { EVALUATION_SCHEMA } from "@/lib/types";
+import {
+  getPlayerMatchStats, aggregateSeasonStats, getIndexLabel,
+  calculateSeasonIndex, type MatchStat,
+} from "@/lib/match-stats";
+import { IndexBadge } from "@/components/PerformanceIndexCard";
 
 function parseSubScores(subNotes?: string): Record<string, number> | null {
   if (!subNotes) return null;
@@ -84,7 +89,7 @@ export default function PlayerDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"overview" | "dna" | "evaluations" | "challenges">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "dna" | "evaluations" | "challenges" | "matches">("overview");
   const [updatingProgress, setUpdatingProgress] = useState<string | null>(null);
   const [expandedScores, setExpandedScores] = useState<Set<string>>(new Set());
 
@@ -144,8 +149,15 @@ export default function PlayerDetailPage() {
     fullMark: 10,
   })) ?? [];
 
+  // Match stats for this player (mock: Lars = p0000001, others show empty)
+  const playerMatchStats = getPlayerMatchStats(player.id);
+  const matchSeason = aggregateSeasonStats(playerMatchStats);
+  const seasonIndex = calculateSeasonIndex(playerMatchStats);
+  const { color: idxColor, label: idxLabel } = getIndexLabel(seasonIndex);
+
   const tabs = [
     { id: "overview" as const, label: "Overview", icon: <Star size={14} /> },
+    { id: "matches" as const, label: "Wedstrijden", icon: <Swords size={14} /> },
     { id: "dna" as const, label: "Player DNA", icon: <Brain size={14} /> },
     { id: "evaluations" as const, label: "Evaluaties", icon: <Zap size={14} /> },
     { id: "challenges" as const, label: "Challenges", icon: <Trophy size={14} /> },
@@ -236,13 +248,21 @@ export default function PlayerDetailPage() {
             </div>
           </div>
 
-          {/* Big rating — desktop */}
-          <div className="hidden sm:block flex-shrink-0 text-right">
-            <div className="font-black tabular-nums leading-none" style={{ color: rColor, fontSize: "5rem", fontFamily: "Outfit, sans-serif" }}>{player.overall_rating}</div>
-            <div className="text-xs text-slate-400 uppercase tracking-widest mt-1" style={{ fontFamily: "Outfit, sans-serif" }}>Rating</div>
-            {identity?.ai_fit_score && (
-              <div className="text-xs text-slate-500 mt-1">
-                AI Fit: <span className="font-bold" style={{ color: rColor }}>{identity.ai_fit_score}</span>
+          {/* Big rating + Index — desktop */}
+          <div className="hidden sm:flex flex-col items-end gap-3 flex-shrink-0">
+            <div className="text-right">
+              <div className="font-black tabular-nums leading-none" style={{ color: rColor, fontSize: "4.5rem", fontFamily: "Outfit, sans-serif" }}>{player.overall_rating}</div>
+              <div className="text-xs text-slate-400 uppercase tracking-widest -mt-1" style={{ fontFamily: "Outfit, sans-serif" }}>Rating</div>
+            </div>
+            {playerMatchStats.length > 0 && (
+              <div className="flex flex-col items-center px-4 py-2 rounded-2xl"
+                style={{ background: `${idxColor}10`, border: `1px solid ${idxColor}25` }}>
+                <div className="text-2xl font-black tabular-nums leading-none"
+                  style={{ color: idxColor, fontFamily: "Outfit, sans-serif" }}>
+                  {seasonIndex}
+                </div>
+                <div className="text-[9px] font-bold uppercase tracking-wider mt-0.5" style={{ color: idxColor }}>{idxLabel}</div>
+                <div className="text-[9px] text-slate-400">Performance Index</div>
               </div>
             )}
           </div>
@@ -321,6 +341,144 @@ export default function PlayerDetailPage() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* MATCHES TAB */}
+      {activeTab === "matches" && (
+        <div className="space-y-5">
+          {playerMatchStats.length === 0 ? (
+            <div className="hub-card p-12 text-center space-y-4">
+              <Swords size={36} className="text-slate-300 mx-auto" />
+              <div className="text-slate-600 font-bold">Nog geen wedstrijden gelogd</div>
+              <Link href="/dashboard/coach/matches/new"
+                className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl"
+                style={{ background: "#4FA9E6", color: "white" }}>
+                <Plus size={14} /> Wedstrijd loggen
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Season KPI strip */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { label: "Performance Index", value: seasonIndex, suffix: "", color: idxColor },
+                  { label: "Doelpunten", value: matchSeason.goals, suffix: "", color: "#10B981" },
+                  { label: "Assists", value: matchSeason.assists, suffix: "", color: "#f59e0b" },
+                  { label: "Gem. Rating", value: matchSeason.avg_rating, suffix: "/10", color: "#8b5cf6" },
+                  { label: "Pass%", value: matchSeason.avg_pass_accuracy, suffix: "%", color: "#4FA9E6" },
+                  { label: "Duel%", value: matchSeason.duel_success_pct, suffix: "%", color: "#ef4444" },
+                  { label: "Key passes", value: matchSeason.key_passes, suffix: "", color: "#6366f1" },
+                  { label: "Wedstrijden", value: matchSeason.matches, suffix: "", color: "#64748b" },
+                ].map((s) => (
+                  <div key={s.label} className="hub-card p-4 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: s.color }} />
+                    <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">{s.label}</div>
+                    <div className="text-2xl font-black tabular-nums leading-none"
+                      style={{ color: s.color, fontFamily: "Outfit, sans-serif" }}>
+                      {s.value}{s.suffix}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Match log table */}
+              <div className="hub-card overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm" style={{ fontFamily: "Outfit, sans-serif" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid rgba(15,40,70,0.07)", background: "rgba(10,37,64,0.025)" }}>
+                        {["Datum","Tegenstander","Uitslag","Min","G","A","SOT","Pass%","KP","Duels","Rating","Index"].map((h) => (
+                          <th key={h} className="px-3 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider whitespace-nowrap"
+                            style={{ color: "rgba(15,40,70,0.35)" }}>
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {playerMatchStats.map((s: MatchStat, i: number) => {
+                        const parts = s.result.split("-");
+                        const mine = s.home_away === "home" ? parseInt(parts[0]) : parseInt(parts[1]);
+                        const theirs = s.home_away === "home" ? parseInt(parts[1]) : parseInt(parts[0]);
+                        const outcome = mine > theirs ? "W" : mine === theirs ? "G" : "V";
+                        const oc = outcome === "W" ? "#10B981" : outcome === "G" ? "#f59e0b" : "#ef4444";
+                        return (
+                          <tr key={s.id}
+                            style={{ borderBottom: i < playerMatchStats.length - 1 ? "1px solid rgba(15,40,70,0.05)" : "none" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(79,169,230,0.04)")}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                          >
+                            <td className="px-3 py-3 whitespace-nowrap">
+                              <div className="text-xs font-semibold text-slate-700">
+                                {new Date(s.match_date).toLocaleDateString("nl-NL", { day: "2-digit", month: "short" })}
+                              </div>
+                              <div className="text-[10px] text-slate-400">{s.competition}</div>
+                            </td>
+                            <td className="px-3 py-3 whitespace-nowrap">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold"
+                                  style={{ background: s.home_away === "home" ? "rgba(79,169,230,0.1)" : "rgba(15,40,70,0.06)", color: s.home_away === "home" ? "#4FA9E6" : "#64748b" }}>
+                                  {s.home_away === "home" ? "T" : "U"}
+                                </span>
+                                <span className="text-xs text-slate-700">{s.opponent}</span>
+                              </div>
+                            </td>
+                            <td className="px-3 py-3">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] font-black px-1.5 py-0.5 rounded"
+                                  style={{ background: `${oc}20`, color: oc }}>{outcome}</span>
+                                <span className="text-[11px] text-slate-500 font-mono">{s.result}</span>
+                              </div>
+                            </td>
+                            <td className="px-3 py-3 text-xs text-slate-500 tabular-nums">{s.minutes_played}'</td>
+                            <td className="px-3 py-3 text-xs font-bold tabular-nums" style={{ color: s.goals > 0 ? "#10B981" : "#94a3b8" }}>{s.goals}</td>
+                            <td className="px-3 py-3 text-xs font-bold tabular-nums" style={{ color: s.assists > 0 ? "#f59e0b" : "#94a3b8" }}>{s.assists}</td>
+                            <td className="px-3 py-3 text-xs text-slate-500 tabular-nums">{s.shots_on_target}/{s.shots}</td>
+                            <td className="px-3 py-3">
+                              <div className="flex items-center gap-1.5">
+                                <div className="h-1.5 w-10 bg-slate-100 rounded-full overflow-hidden">
+                                  <div className="h-full rounded-full"
+                                    style={{ width: `${s.pass_accuracy}%`, background: s.pass_accuracy >= 80 ? "#10B981" : s.pass_accuracy >= 65 ? "#f59e0b" : "#ef4444" }} />
+                                </div>
+                                <span className="text-[11px] text-slate-500 tabular-nums">{s.pass_accuracy}%</span>
+                              </div>
+                            </td>
+                            <td className="px-3 py-3 text-xs text-slate-500 tabular-nums">{s.key_passes}</td>
+                            <td className="px-3 py-3 text-xs text-slate-500 tabular-nums">{s.duels_won}/{s.duels_total}</td>
+                            <td className="px-3 py-3">
+                              <span className="text-sm font-black tabular-nums"
+                                style={{ color: s.match_rating >= 8 ? "#10B981" : s.match_rating >= 6.5 ? "#f59e0b" : "#ef4444", fontFamily: "Outfit, sans-serif" }}>
+                                {s.match_rating.toFixed(1)}
+                              </span>
+                            </td>
+                            <td className="px-3 py-3">
+                              <IndexBadge index={s.player_index ?? 0} />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Coach notes */}
+              {playerMatchStats.some((s: MatchStat) => s.notes) && (
+                <div className="space-y-2">
+                  <div className="hub-label">Coach Notities</div>
+                  {playerMatchStats.filter((s: MatchStat) => s.notes).map((s: MatchStat) => (
+                    <div key={s.id} className="hub-card p-4 flex items-start gap-3">
+                      <div className="text-[11px] font-bold text-slate-500 w-20 flex-shrink-0 mt-0.5">
+                        {new Date(s.match_date).toLocaleDateString("nl-NL", { day: "2-digit", month: "short" })}
+                      </div>
+                      <p className="text-sm text-slate-700 italic">&ldquo;{s.notes}&rdquo;</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
 

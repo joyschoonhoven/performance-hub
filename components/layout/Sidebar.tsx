@@ -11,7 +11,7 @@ import type { UserRole } from "@/lib/types";
 import {
   LayoutDashboard, Users, ClipboardList, Brain,
   Trophy, BarChart3, Settings, LogOut,
-  Shield, Star, Target, UserCircle, Sparkles, Gamepad2, Map,
+  Shield, Star, Target, UserCircle, Sparkles, Gamepad2, Map, Swords,
 } from "lucide-react";
 
 interface NavItem {
@@ -26,6 +26,7 @@ function getNavItems(role: UserRole): NavItem[] {
     { label: "Dashboard", href: "/dashboard/coach", icon: <LayoutDashboard size={16} /> },
     { label: "Mijn Profiel", href: "/dashboard/coach/profile", icon: <UserCircle size={16} /> },
     { label: "Spelers", href: "/dashboard/coach/players", icon: <Users size={16} /> },
+    { label: "Wedstrijden", href: "/dashboard/coach/matches", icon: <Swords size={16} />, badge: "NEW" },
     { label: "Evaluaties", href: "/dashboard/coach/evaluations", icon: <ClipboardList size={16} /> },
     { label: "AI Scouting", href: "/dashboard/coach/ai", icon: <Brain size={16} />, badge: "AI" },
     { label: "Analytics", href: "/dashboard/coach/analytics", icon: <BarChart3 size={16} /> },
@@ -36,7 +37,7 @@ function getNavItems(role: UserRole): NavItem[] {
     { label: "Player Card", href: "/dashboard/player/card", icon: <Star size={16} /> },
     { label: "Evaluaties", href: "/dashboard/player/evaluations", icon: <ClipboardList size={16} /> },
     { label: "Challenges", href: "/dashboard/player/challenges", icon: <Trophy size={16} /> },
-    { label: "Progressie", href: "/dashboard/player/analytics", icon: <BarChart3 size={16} /> },
+    { label: "Analytics", href: "/dashboard/player/analytics", icon: <BarChart3 size={16} />, badge: "NEW" },
     { label: "Tactisch IQ", href: "/dashboard/player/game", icon: <Gamepad2 size={16} /> },
     { label: "Heatmap",     href: "/dashboard/player/heatmap", icon: <Map size={16} /> },
   ];

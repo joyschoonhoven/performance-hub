@@ -9,8 +9,14 @@ import { ProgressLineChart } from "@/components/charts/ProgressLine";
 import { PlayerRadarChart } from "@/components/charts/RadarChart";
 import { PlayerComparisonChart } from "@/components/charts/PlayerComparisonChart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { BarChart3, TrendingUp, Users, GitCompare, LayoutGrid, Loader2 } from "lucide-react";
+import { BarChart3, TrendingUp, Users, GitCompare, LayoutGrid, Loader2, Activity } from "lucide-react";
 import type { Evaluation, PlayerWithDetails } from "@/lib/types";
+import {
+  MOCK_MATCH_STATS, getPlayersFromStats,
+  aggregateSeasonStats, getIndexLabel, calculateSeasonIndex,
+} from "@/lib/match-stats";
+import { IndexBadge } from "@/components/PerformanceIndexCard";
+import Link from "next/link";
 
 function buildProgressData(evaluations: Evaluation[]) {
   return [...evaluations]
@@ -22,7 +28,7 @@ function buildProgressData(evaluations: Evaluation[]) {
     });
 }
 
-type TabType = "overview" | "compare" | "ranking";
+type TabType = "overview" | "compare" | "ranking" | "index";
 
 export default function AnalyticsPage() {
   const [players, setPlayers] = useState<PlayerWithDetails[]>([]);
@@ -98,9 +104,18 @@ export default function AnalyticsPage() {
 
   const tabs = [
     { id: "overview" as const, label: "Team Overzicht", icon: <LayoutGrid size={14} /> },
+    { id: "index" as const, label: "Performance Index", icon: <Activity size={14} /> },
     { id: "ranking" as const, label: "Ranglijst", icon: <BarChart3 size={14} /> },
     { id: "compare" as const, label: "1v1 Vergelijken", icon: <GitCompare size={14} /> },
   ];
+
+  // Build index leaderboard from mock match stats
+  const indexPlayers = getPlayersFromStats().map((p) => {
+    const stats = MOCK_MATCH_STATS.filter((s) => s.player_id === p.id);
+    const season = aggregateSeasonStats(stats);
+    const { color, label } = getIndexLabel(season.season_index);
+    return { ...p, season, color, indexLabel: label };
+  }).sort((a, b) => b.season.season_index - a.season.season_index);
 
   return (
     <div className="space-y-6">
@@ -223,6 +238,125 @@ export default function AnalyticsPage() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── PERFORMANCE INDEX ── */}
+      {tab === "index" && (
+        <div className="space-y-5">
+          {/* Top index banner */}
+          {indexPlayers[0] && (() => {
+            const top = indexPlayers[0];
+            const { color } = getIndexLabel(top.season.season_index);
+            return (
+              <div className="relative rounded-3xl overflow-hidden p-6"
+                style={{ background: "linear-gradient(150deg, #060e1c 0%, #0A2540 45%, #0d3060 100%)" }}>
+                <div className="absolute top-0 left-0 right-0 h-[3px]"
+                  style={{ background: `linear-gradient(90deg, transparent, ${color}, #4FA9E6, transparent)` }} />
+                <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full blur-3xl opacity-20"
+                  style={{ background: color }} />
+                <div className="relative z-10 flex items-center gap-6">
+                  <div className="flex flex-col items-center">
+                    <div className="text-6xl font-black tabular-nums leading-none"
+                      style={{ color, fontFamily: "Outfit, sans-serif", textShadow: `0 0 30px ${color}40` }}>
+                      {top.season.season_index}
+                    </div>
+                    <div className="text-[10px] text-white/30 uppercase tracking-widest mt-1">Index #1</div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-[10px] uppercase tracking-widest mb-1" style={{ color }}>Beste Performance</div>
+                    <div className="text-2xl font-black text-white" style={{ fontFamily: "Outfit, sans-serif" }}>
+                      {top.name}
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-[10px] font-bold px-2 py-1 rounded-full"
+                        style={{ background: `${color}20`, color }}>{top.indexLabel}</span>
+                      <span className="text-xs text-white/40">{top.position} · {top.season.matches} wedstrijden</span>
+                    </div>
+                    <div className="flex gap-4 mt-3 text-white/60 text-xs">
+                      <span><span className="text-white font-bold">{top.season.goals}</span> G</span>
+                      <span><span className="text-white font-bold">{top.season.assists}</span> A</span>
+                      <span><span className="text-white font-bold">{top.season.avg_rating}</span> Rtg</span>
+                      <span><span className="text-white font-bold">{top.season.avg_pass_accuracy}%</span> Pass</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Leaderboard */}
+          <div className="hub-card overflow-hidden">
+            <div className="px-5 py-4 border-b border-hub-border flex items-center justify-between">
+              <span className="text-sm font-bold text-slate-900">Performance Index Ranglijst</span>
+              <Link href="/dashboard/coach/matches"
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg"
+                style={{ background: "rgba(79,169,230,0.08)", color: "#4FA9E6" }}>
+                Wedstrijdlog →
+              </Link>
+            </div>
+            <div className="divide-y divide-hub-border/50">
+              {indexPlayers.map((p, rank) => {
+                const maxIdx = indexPlayers[0]?.season.season_index ?? 100;
+                const barPct = (p.season.season_index / maxIdx) * 100;
+                return (
+                  <div key={p.id} className="px-5 py-4 flex items-center gap-4 transition-colors"
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(79,169,230,0.04)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                  >
+                    {/* Rank */}
+                    <div className="w-7 text-center flex-shrink-0">
+                      {rank === 0 ? (
+                        <span className="text-lg font-black" style={{ color: "#f59e0b" }}>🥇</span>
+                      ) : rank === 1 ? (
+                        <span className="text-lg font-black" style={{ color: "#94a3b8" }}>🥈</span>
+                      ) : rank === 2 ? (
+                        <span className="text-lg font-black" style={{ color: "#d97706" }}>🥉</span>
+                      ) : (
+                        <span className="text-sm font-black text-slate-400">#{rank + 1}</span>
+                      )}
+                    </div>
+
+                    {/* Name + position */}
+                    <div className="w-40 flex-shrink-0">
+                      <div className="text-sm font-bold text-slate-900">{p.name.split(" ")[0]} {p.name.split(" ").slice(1).join(" ")}</div>
+                      <div className="text-[10px] text-slate-400">{p.position} · {p.season.matches} wedstrijden</div>
+                    </div>
+
+                    {/* Index bar */}
+                    <div className="flex-1 hidden sm:block">
+                      <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-700"
+                          style={{ width: `${barPct}%`, background: `linear-gradient(90deg, ${p.color}60, ${p.color})` }} />
+                      </div>
+                    </div>
+
+                    {/* Quick stats */}
+                    <div className="hidden md:flex items-center gap-4 text-xs text-slate-500 flex-shrink-0">
+                      <span className="tabular-nums"><span className="font-bold text-slate-700">{p.season.goals}</span> G</span>
+                      <span className="tabular-nums"><span className="font-bold text-slate-700">{p.season.assists}</span> A</span>
+                      <span className="tabular-nums"><span className="font-bold text-slate-700">{p.season.avg_rating}</span> Rtg</span>
+                      <span className="tabular-nums"><span className="font-bold text-slate-700">{p.season.avg_pass_accuracy}%</span> Pass</span>
+                    </div>
+
+                    {/* Index badge */}
+                    <div className="flex-shrink-0 ml-2">
+                      <IndexBadge index={p.season.season_index} />
+                    </div>
+                  </div>
+                );
+              })}
+
+              {indexPlayers.length === 0 && (
+                <div className="py-12 text-center text-slate-500 text-sm">
+                  Nog geen wedstrijddata beschikbaar.
+                  <Link href="/dashboard/coach/matches/new" className="ml-2 text-hub-teal hover:underline">
+                    Log een wedstrijd →
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
