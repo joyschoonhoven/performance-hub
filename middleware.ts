@@ -33,13 +33,13 @@ export async function middleware(request: NextRequest) {
   const isDashboard = path.startsWith("/dashboard");
   const isOnboarding = path === "/onboarding";
 
-  // Not logged in → redirect to login
+  // Not logged in → redirect to welcome
   if (!user && isOnboarding) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/welcome", request.url));
   }
 
   if (!user && isDashboard) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/welcome", request.url));
   }
 
   // Logged in + on auth page → redirect to dashboard
