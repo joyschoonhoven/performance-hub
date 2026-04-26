@@ -11,7 +11,7 @@ import type { UserRole } from "@/lib/types";
 import {
   LayoutDashboard, Users, ClipboardList, Brain,
   Trophy, BarChart3, Settings, LogOut,
-  Shield, Star, Target, UserCircle, Sparkles, Gamepad2,
+  Shield, Star, Target, UserCircle, Sparkles, Gamepad2, Map,
 } from "lucide-react";
 
 interface NavItem {
@@ -37,7 +37,8 @@ function getNavItems(role: UserRole): NavItem[] {
     { label: "Evaluaties", href: "/dashboard/player/evaluations", icon: <ClipboardList size={16} /> },
     { label: "Challenges", href: "/dashboard/player/challenges", icon: <Trophy size={16} /> },
     { label: "Progressie", href: "/dashboard/player/analytics", icon: <BarChart3 size={16} /> },
-    { label: "Tactisch IQ", href: "/dashboard/player/game", icon: <Gamepad2 size={16} />, badge: "Nieuw" },
+    { label: "Tactisch IQ", href: "/dashboard/player/game", icon: <Gamepad2 size={16} /> },
+    { label: "Heatmap",     href: "/dashboard/player/heatmap", icon: <Map size={16} /> },
   ];
   return [
     { label: "Admin Panel", href: "/dashboard/admin", icon: <Shield size={16} /> },

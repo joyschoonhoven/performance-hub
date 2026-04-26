@@ -17,6 +17,7 @@ export default function RegisterPage() {
   const [role, setRole] = useState<UserRole>("player");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [focused, setFocused] = useState<string | null>(null);
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
@@ -46,11 +47,15 @@ export default function RegisterPage() {
     { value: "player" as UserRole, label: "Speler", desc: "Bekijk jouw stats & progressie", icon: <UserCheck size={14} /> },
   ];
 
-  const inputStyle = {
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    color: "#ffffff",
-  };
+  function inputStyle(field: string) {
+    const isFocused = focused === field;
+    return {
+      background: isFocused ? "rgba(79,169,230,0.08)" : "rgba(255,255,255,0.06)",
+      border: `1px solid ${isFocused ? "rgba(79,169,230,0.5)" : "rgba(255,255,255,0.12)"}`,
+      boxShadow: isFocused ? "0 0 0 3px rgba(79,169,230,0.08)" : "none",
+      color: "#ffffff",
+    };
+  }
 
   return (
     <div className="space-y-5">
@@ -117,17 +122,9 @@ export default function RegisterPage() {
               minLength={field.minLength}
               placeholder={field.placeholder}
               className="w-full rounded-xl px-4 py-3 text-sm placeholder:text-slate-500 focus:outline-none transition-all"
-              style={inputStyle}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "rgba(79,169,230,0.5)";
-                e.currentTarget.style.background = "rgba(79,169,230,0.08)";
-                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(79,169,230,0.08)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
-                e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
+              style={inputStyle(field.id)}
+              onFocus={() => setFocused(field.id)}
+              onBlur={() => setFocused(null)}
             />
           </div>
         ))}
@@ -142,14 +139,12 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm text-white"
+          className="w-full font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm text-white hover:brightness-110 active:scale-[0.98]"
           style={{
             background: loading ? "rgba(79,169,230,0.7)" : "#4FA9E6",
             boxShadow: "0 4px 16px rgba(79,169,230,0.3)",
             fontFamily: "Outfit, sans-serif",
           }}
-          onMouseEnter={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.background = "#2B8AC7"; }}
-          onMouseLeave={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.background = "#4FA9E6"; }}
         >
           {loading ? <Loader2 size={16} className="animate-spin" /> : null}
           Account aanmaken

@@ -357,8 +357,13 @@ export default function PlayerDashboardPage() {
             {radarData.length > 0 ? (
               <PlayerRadarChart data={radarData} color={rColor} size={280} />
             ) : (
-              <div className="h-48 flex items-center justify-center text-slate-600 text-sm">
-                Nog geen evaluatie data
+              <div className="h-48 flex flex-col items-center justify-center gap-2 text-center px-4">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-1"
+                  style={{ background: "rgba(79,169,230,0.08)", border: "1px solid rgba(79,169,230,0.15)" }}>
+                  <Activity size={18} style={{ color: "#4FA9E6" }} />
+                </div>
+                <div className="text-sm font-semibold text-slate-700">Nog geen evaluatie</div>
+                <div className="text-xs text-slate-500">Zodra jouw coach een evaluatie invult, zie je hier jouw performance radar.</div>
               </div>
             )}
           </div>

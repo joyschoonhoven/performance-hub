@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [focused, setFocused] = useState<string | null>(null);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -40,12 +41,15 @@ export default function LoginPage() {
     router.refresh();
   }
 
-  const inputBase = {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    color: "#F4F5F7",
-    caretColor: "#4FA9E6",
-  };
+  function inputStyle(field: string) {
+    const isFocused = focused === field;
+    return {
+      background: isFocused ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.05)",
+      border: `1px solid ${isFocused ? "rgba(79,169,230,0.5)" : "rgba(255,255,255,0.1)"}`,
+      color: "#F4F5F7",
+      caretColor: "#4FA9E6",
+    };
+  }
 
   return (
     <div className="space-y-5">
@@ -82,9 +86,9 @@ export default function LoginPage() {
               required
               placeholder="naam@club.nl"
               className="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all"
-              style={inputBase}
-              onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(79,169,230,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.07)"; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+              style={inputStyle("email")}
+              onFocus={() => setFocused("email")}
+              onBlur={() => setFocused(null)}
             />
           </div>
 
@@ -101,9 +105,9 @@ export default function LoginPage() {
                 required
                 placeholder="••••••••"
                 className="w-full rounded-xl px-4 py-3 pr-12 text-sm focus:outline-none transition-all"
-                style={inputBase}
-                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(79,169,230,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.07)"; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                style={inputStyle("password")}
+                onFocus={() => setFocused("password")}
+                onBlur={() => setFocused(null)}
               />
               <button type="button" onClick={() => setShowPass(!showPass)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
@@ -123,10 +127,8 @@ export default function LoginPage() {
           )}
 
           <button type="submit" disabled={loading}
-            className="w-full font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50"
-            style={{ background: "#4FA9E6", color: "#fff", boxShadow: "0 4px 16px rgba(79,169,230,0.3)", fontFamily: "Outfit, sans-serif" }}
-            onMouseEnter={(e) => { if (!loading) { (e.currentTarget as HTMLButtonElement).style.background = "#2B8AC7"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 20px rgba(79,169,230,0.4)"; } }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#4FA9E6"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(79,169,230,0.3)"; }}>
+            className="w-full font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 hover:brightness-110 active:scale-[0.98]"
+            style={{ background: "#4FA9E6", color: "#fff", boxShadow: "0 4px 16px rgba(79,169,230,0.3)", fontFamily: "Outfit, sans-serif" }}>
             {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Inloggen</span><ArrowRight size={15} /></>}
           </button>
         </form>
@@ -143,10 +145,8 @@ export default function LoginPage() {
         <div className="grid grid-cols-2 gap-2">
           {(["coach", "player"] as const).map((role) => (
             <button key={role} onClick={() => demoLogin(role)} disabled={loading}
-              className="rounded-xl py-2.5 text-xs font-semibold transition-all disabled:opacity-40 capitalize"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.45)", fontFamily: "Outfit, sans-serif" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(79,169,230,0.1)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(79,169,230,0.3)"; (e.currentTarget as HTMLButtonElement).style.color = "#4FA9E6"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.45)"; }}>
+              className="rounded-xl py-2.5 text-xs font-semibold transition-all disabled:opacity-40 capitalize hover:bg-[rgba(79,169,230,0.1)] hover:border-[rgba(79,169,230,0.3)] hover:text-[#4FA9E6]"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.45)", fontFamily: "Outfit, sans-serif" }}>
               {role === "coach" ? "👔 Coach" : "⚽ Speler"}
             </button>
           ))}

@@ -188,7 +188,13 @@ export default function PlayersPage() {
       {/* Player grid/list */}
       {view === "cards" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {filtered.map((player) => (
+          {filtered.length === 0 ? (
+            <div className="col-span-full hub-card p-12 text-center">
+              <Search size={32} className="mx-auto mb-3 text-slate-300" />
+              <div className="font-semibold text-slate-700 mb-1">Geen spelers gevonden</div>
+              <div className="text-sm text-slate-500">Probeer een andere zoekopdracht of filter</div>
+            </div>
+          ) : filtered.map((player) => (
             <Link key={player.id} href={`/dashboard/coach/players/${player.id}`}>
               <PlayerCard player={player} variant="compact" />
             </Link>

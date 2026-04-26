@@ -6,7 +6,7 @@ import Link from "next/link";
 import { getMyPlayerData, getAllPlayers } from "@/lib/supabase/queries";
 import { ARCHETYPES, SOCIOTYPES, POSITION_LABELS, CATEGORY_LABELS, EVALUATION_SCHEMA } from "@/lib/types";
 import { getRatingColor, getRatingLabel, getAge, formatDate, getScoreColor } from "@/lib/utils";
-import { Loader2, Settings, Sparkles, Activity, BarChart3, ShieldAlert, Bookmark, GitCompare, Camera, Wand2 } from "lucide-react";
+import { Loader2, Settings, Sparkles, Activity, BarChart3, ShieldAlert, Bookmark, GitCompare, Camera, Wand2, Map } from "lucide-react";
 import type { PlayerWithDetails } from "@/lib/types";
 import { SOCIOTYPE_ICONS } from "@/components/PlayerTypeHero";
 import { AvatarUpload } from "@/components/AvatarUpload";
@@ -81,12 +81,12 @@ function FifaCard({
   const tier = getFutTier(rating);
 
   const fifaStats = s ? [
-    { v: toFifa(s.fysiek),                                                  l: "PAC" },
-    { v: toFifa(s.techniek),                                                l: "SHO" },
-    { v: Math.round(toFifa(s.teamplay) * 0.6 + toFifa(s.techniek) * 0.4), l: "PAS" },
-    { v: Math.round(toFifa(s.techniek) * 0.55 + toFifa(s.fysiek) * 0.45), l: "DRI" },
-    { v: Math.round(toFifa(s.tactiek) * 0.65 + toFifa(s.mentaal) * 0.35), l: "DEF" },
-    { v: Math.round(toFifa(s.fysiek) * 0.60 + toFifa(s.mentaal) * 0.40),  l: "PHY" },
+    { v: toFifa(s.fysiek),                                                  l: "PAC", full: "Pace — Snelheid & explosiviteit" },
+    { v: toFifa(s.techniek),                                                l: "SHO", full: "Shooting — Technische schietkwaliteit" },
+    { v: Math.round(toFifa(s.teamplay) * 0.6 + toFifa(s.techniek) * 0.4), l: "PAS", full: "Passing — Aanspeel- & teamplay kwaliteit" },
+    { v: Math.round(toFifa(s.techniek) * 0.55 + toFifa(s.fysiek) * 0.45), l: "DRI", full: "Dribbling — Balcontrole & wendbaarheid" },
+    { v: Math.round(toFifa(s.tactiek) * 0.65 + toFifa(s.mentaal) * 0.35), l: "DEF", full: "Defending — Tactisch inzicht & mentale kracht" },
+    { v: Math.round(toFifa(s.fysiek) * 0.60 + toFifa(s.mentaal) * 0.40),  l: "PHY", full: "Physical — Fysieke kracht & mentale weerbaarheid" },
   ] : [];
 
   const av = avatarOverride ?? player.avatar_url;
@@ -195,7 +195,7 @@ function FifaCard({
           overflow: "hidden",
         }}>
         {av ? (
-          <Image src={av} alt={player.first_name} fill className="object-cover object-top" />
+          <Image src={av} alt={player.first_name} fill className="object-contain object-bottom" style={{ filter: "drop-shadow(0 8px 32px rgba(0,0,0,0.6))" }} />
         ) : (
           <div
             className="w-full h-full flex items-center justify-center font-black"
@@ -277,7 +277,7 @@ function FifaCard({
         <div className="absolute" style={{ zIndex: 3, left: BD + 6, right: BD + 6, bottom: BD + 7 }}>
           <div className="grid grid-cols-3" style={{ gap: "2px 3px" }}>
             {fifaStats.map((st) => (
-              <div key={st.l} className="flex items-center gap-1">
+              <div key={st.l} className="flex items-center gap-1" title={st.full}>
                 <span
                   className="font-black tabular-nums"
                   style={{ color: tier.ring, fontFamily: "Outfit, sans-serif", fontSize: 13, lineHeight: 1.2 }}>
@@ -532,36 +532,17 @@ export default function PlayerCardPage() {
 
         {/* ── Player photo — absolute right side ── */}
         {avatarUrl && (
-          <>
-            {/* Photo fills right 52% */}
-            <div
-              className="absolute pointer-events-none"
-              style={{ zIndex: 1, right: 0, top: 0, bottom: 0, width: "52%" }}>
-              <Image
-                src={avatarUrl}
-                alt={player.first_name}
-                fill
-                className="object-cover object-top"
-              />
-            </div>
-            {/* Left-side gradient mask over the photo */}
-            <div
-              className="absolute pointer-events-none"
-              style={{
-                zIndex: 2,
-                right: 0, top: 0, bottom: 0,
-                width: "52%",
-              }}>
-              <div
-                style={{
-                  position: "absolute",
-                  left: 0, top: 0, bottom: 0,
-                  width: "55%",
-                  background: "linear-gradient(to right, #020509 0%, transparent 100%)",
-                }}
-              />
-            </div>
-          </>
+          <div
+            className="absolute pointer-events-none"
+            style={{ zIndex: 1, right: 0, top: 0, bottom: 0, width: "56%" }}>
+            <Image
+              src={avatarUrl}
+              alt={player.first_name}
+              fill
+              className="object-contain object-bottom"
+              style={{ filter: "drop-shadow(-12px 0 32px #020509) drop-shadow(0 8px 24px rgba(0,0,0,0.5))" }}
+            />
+          </div>
         )}
 
         {/* ── Content area ── */}
@@ -665,17 +646,14 @@ export default function PlayerCardPage() {
               {avatarUrl && (
                 <div className="lg:hidden flex justify-end mb-3">
                   <div
-                    className="relative overflow-hidden rounded-2xl"
+                    className="relative"
                     style={{ width: 90, height: 180, flexShrink: 0 }}>
                     <Image
                       src={avatarUrl}
                       alt={player.first_name}
                       fill
-                      className="object-cover object-top"
-                    />
-                    <div
-                      className="absolute inset-0"
-                      style={{ background: "linear-gradient(to bottom, transparent 50%, #020509 100%)" }}
+                      className="object-contain object-bottom"
+                      style={{ filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.6))" }}
                     />
                   </div>
                 </div>
@@ -735,6 +713,16 @@ export default function PlayerCardPage() {
                   }}>
                   <GitCompare size={11} /> Vergelijken
                 </button>
+                <Link
+                  href="/dashboard/player/heatmap"
+                  className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all"
+                  style={{
+                    background: "rgba(255,100,50,0.12)",
+                    color: "rgba(255,160,100,0.9)",
+                    border: "1px solid rgba(255,100,50,0.25)",
+                  }}>
+                  <Map size={11} /> Heatmap
+                </Link>
               </div>
 
               {/* Radar chart */}
@@ -747,6 +735,54 @@ export default function PlayerCardPage() {
                   Nog geen evaluatiedata
                 </div>
               )}
+
+              {/* ── PES-style big stat blocks ── */}
+              {player.recent_scores && (() => {
+                const s = player.recent_scores!;
+                const blocks = [
+                  {
+                    label: "Aanvallend",
+                    value: Math.round(toFifa(s.techniek) * 0.55 + toFifa(s.fysiek) * 0.45),
+                    color: "#ef4444",
+                  },
+                  {
+                    label: "Technisch",
+                    value: Math.round(toFifa(s.techniek) * 0.5 + toFifa(s.teamplay) * 0.5),
+                    color: "#4FA9E6",
+                  },
+                  {
+                    label: "Verdedigend",
+                    value: Math.round(toFifa(s.tactiek) * 0.6 + toFifa(s.mentaal) * 0.4),
+                    color: "#10B981",
+                  },
+                ];
+                return (
+                  <div className="grid grid-cols-3 gap-2 mt-4">
+                    {blocks.map((b) => (
+                      <div
+                        key={b.label}
+                        className="relative overflow-hidden rounded-2xl p-4 flex flex-col items-center gap-1"
+                        style={{
+                          background: "rgba(255,255,255,0.04)",
+                          border: "1px solid rgba(255,255,255,0.08)",
+                        }}>
+                        {/* Color accent top bar */}
+                        <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
+                          style={{ background: b.color }} />
+                        <div
+                          className="font-black tabular-nums leading-none"
+                          style={{ fontSize: "clamp(1.8rem,6vw,2.5rem)", color: b.color, fontFamily: "Outfit, sans-serif" }}>
+                          {b.value}
+                        </div>
+                        <div className="text-[10px] font-bold uppercase tracking-widest"
+                          style={{ color: "rgba(255,255,255,0.35)" }}>
+                          {b.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
           </div>
 
