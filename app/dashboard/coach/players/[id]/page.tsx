@@ -652,6 +652,14 @@ export default function PlayerDetailPage() {
         const consensus = getConsensusAssessment(evals);
         const consensusArch = consensus.archetype ? ARCHETYPES[consensus.archetype as keyof typeof ARCHETYPES] : null;
         const consensusSocio = consensus.sociotype ? SOCIOTYPES[consensus.sociotype as keyof typeof SOCIOTYPES] : null;
+
+        const latestEvalForRadar = evals[0];
+        const evalRadarData = latestEvalForRadar?.scores?.map((s) => ({
+          subject: CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS] ?? s.category,
+          value: s.score,
+          fullMark: 10,
+        })) ?? [];
+
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -661,6 +669,25 @@ export default function PlayerDetailPage() {
                 <Plus size={14} /> Nieuwe evaluatie
               </Link>
             </div>
+
+            {/* Radar van laatste evaluatie */}
+            {evalRadarData.length > 0 && (
+              <div className="hub-card p-5"
+                style={{ border: "1px solid rgba(79,169,230,0.18)", background: "linear-gradient(135deg, #f0f7fd 0%, #ffffff 100%)" }}>
+                <div className="hub-label mb-1">Performance Radar — Laatste Evaluatie</div>
+                <p className="text-xs text-slate-500 mb-3">
+                  {latestEvalForRadar ? formatDate(latestEvalForRadar.evaluation_date) : ""}
+                  {latestEvalForRadar?.overall_score !== undefined && (
+                    <span className="ml-2 font-bold" style={{ color: rColor }}>
+                      {latestEvalForRadar.overall_score.toFixed(1)}/10
+                    </span>
+                  )}
+                </p>
+                <div className="flex justify-center">
+                  <PlayerRadarChart data={evalRadarData} color={rColor} size={280} />
+                </div>
+              </div>
+            )}
 
             {consensus.totalAssessments > 0 && (
               <div className="hub-card p-5 border-hub-teal/20">
