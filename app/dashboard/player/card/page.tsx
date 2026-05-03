@@ -816,6 +816,24 @@ export default function PlayerCardPage() {
               </div>
             </div>
 
+            {/* ── Performance Radar ── */}
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.25)" }}>
+                Performance Radar
+              </div>
+              {radarData.length > 0 ? (
+                <div className="rounded-2xl border flex justify-center py-4"
+                  style={{ background: "rgba(255,255,255,0.025)", borderColor: "rgba(255,255,255,0.07)" }}>
+                  <PlayerRadarChart data={radarData} color={rColor} size={300} />
+                </div>
+              ) : (
+                <div className="rounded-2xl border flex items-center justify-center h-32 text-sm"
+                  style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.20)" }}>
+                  Radar beschikbaar na eerste evaluatie van je coach
+                </div>
+              )}
+            </div>
+
             {/* Tactical IQ widget */}
             <div>
               <div className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.25)" }}>
