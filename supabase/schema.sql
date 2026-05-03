@@ -95,7 +95,8 @@ create table if not exists public.evaluation_scores (
   id uuid default uuid_generate_v4() primary key,
   evaluation_id uuid references public.evaluations(id) on delete cascade not null,
   category text not null check (category in ('techniek','fysiek','tactiek','mentaal','teamplay')),
-  score numeric(4,2) not null
+  score numeric(4,2) not null,
+  sub_notes text  -- JSON blob with sub-category scores per category
 );
 
 -- EVALUATION SUBCATEGORY SCORES

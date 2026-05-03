@@ -264,7 +264,12 @@ function NewEvaluationPageInner() {
       sub_notes: JSON.stringify(subScores[cat.id] ?? {}),
     }));
 
-    await supabase.from("evaluation_scores").insert(scoreInserts);
+    const { error: scoresError } = await supabase.from("evaluation_scores").insert(scoreInserts);
+    if (scoresError) {
+      setSaveError(`Scores konden niet worden opgeslagen: ${scoresError.message}`);
+      setLoading(false);
+      return;
+    }
 
     // Update player overall rating
     await supabase.from("players").update({ overall_rating: fifaRating }).eq("id", selectedPlayerId);
