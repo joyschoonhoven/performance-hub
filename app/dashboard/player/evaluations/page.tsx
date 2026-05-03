@@ -180,14 +180,46 @@ function EvaluationCard({ ev, isLatest }: { ev: Evaluation; isLatest: boolean })
 export default function PlayerEvaluationsPage() {
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [noPlayerRecord, setNoPlayerRecord] = useState(false);
 
   useEffect(() => {
-    getMyPlayerData().then((p) => { setPlayer(p); setLoading(false); });
+    getMyPlayerData().then((p) => {
+      if (p === null) setNoPlayerRecord(true);
+      setPlayer(p);
+      setLoading(false);
+    });
   }, []);
 
   if (loading) return (
     <div className="flex items-center justify-center py-32">
       <Loader2 size={32} className="animate-spin text-hub-teal" />
+    </div>
+  );
+
+  // Geen spelerrecord gevonden → onboarding niet afgerond
+  if (noPlayerRecord) return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+          <ClipboardList size={24} className="text-hub-teal" />
+          Mijn Evaluaties
+        </h1>
+      </div>
+      <div className="hub-card p-12 text-center max-w-md mx-auto space-y-4">
+        <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center"
+          style={{ background: "rgba(79,169,230,0.08)", border: "1px solid rgba(79,169,230,0.2)" }}>
+          <Activity size={28} style={{ color: "#4FA9E6" }} />
+        </div>
+        <h2 className="text-lg font-bold text-slate-900">Profiel nog niet aangemaakt</h2>
+        <p className="text-slate-600 text-sm">
+          Je spelersprofiel is nog niet ingesteld. Rond de onboarding af zodat je coach je kan vinden en evalueren.
+        </p>
+        <a href="/onboarding"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
+          style={{ background: "#4FA9E6" }}>
+          Profiel instellen
+        </a>
+      </div>
     </div>
   );
 
@@ -255,9 +287,23 @@ export default function PlayerEvaluationsPage() {
           <EvaluationCard key={ev.id} ev={ev} isLatest={i === 0} />
         ))}
         {evaluations.length === 0 && (
-          <div className="hub-card p-12 text-center">
-            <ClipboardList size={40} className="text-slate-700 mx-auto mb-3" />
-            <div className="text-slate-600">Nog geen evaluaties van je coach</div>
+          <div className="hub-card p-12 text-center space-y-3">
+            <div className="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center"
+              style={{ background: "rgba(79,169,230,0.08)", border: "1px solid rgba(79,169,230,0.2)" }}>
+              <ClipboardList size={26} style={{ color: "#4FA9E6" }} />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">Nog geen evaluaties</h3>
+            <p className="text-slate-600 text-sm max-w-xs mx-auto">
+              Je coach heeft nog geen beoordeling voor jou ingevuld. Zodra de coach een evaluatie aanmaakt, zie je hier je radar en scores.
+            </p>
+            <div className="mt-2 px-4 py-3 rounded-xl text-xs text-slate-600 text-left space-y-1"
+              style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+              <p className="font-semibold text-slate-700">Hoe werkt het?</p>
+              <p>1. Coach logt in op Performance Hub</p>
+              <p>2. Gaat naar <strong>Spelers → jouw naam</strong></p>
+              <p>3. Klikt op <strong>Evaluatie aanmaken</strong></p>
+              <p>4. Jij ontvangt de scores hier automatisch</p>
+            </div>
           </div>
         )}
       </div>
