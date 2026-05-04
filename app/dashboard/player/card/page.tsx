@@ -350,7 +350,7 @@ function FifaCard({
         className="absolute text-center"
         style={{ zIndex: 3, left: BD, right: BD, bottom: BD + 52 }}>
         <div
-          className="font-black text-white uppercase"
+          className="font-black text-slate-900 uppercase"
           style={{
             fontFamily: "Outfit, sans-serif",
             fontSize: 14,
@@ -384,7 +384,7 @@ function FifaCard({
                 </span>
                 <span
                   className="font-bold uppercase"
-                  style={{ color: "rgba(255,255,255,0.40)", fontSize: 9, letterSpacing: "0.04em" }}>
+                  style={{ color: "#6B7280", fontSize: 9, letterSpacing: "0.04em" }}>
                   {st.l}
                 </span>
               </div>
@@ -420,7 +420,7 @@ function SemiGauge({ score, color }: { score: number; color: string }) {
   return (
     <svg width="64" height="42" viewBox="0 0 64 42">
       <path d="M 6 38 A 26 26 0 0 1 58 38" fill="none"
-        stroke="rgba(255,255,255,0.08)" strokeWidth="5" strokeLinecap="round" />
+        stroke="#E4E7EB" strokeWidth="5" strokeLinecap="round" />
       <path d="M 6 38 A 26 26 0 0 1 58 38" fill="none"
         stroke={color} strokeWidth="5" strokeLinecap="round"
         strokeDasharray={`${fill} ${circ}`} />
@@ -440,7 +440,7 @@ function AttributeColumn({ categoryId, score, subNotes }: {
   const display = toFifa(score);
   return (
     <div className="flex flex-col items-center min-w-[120px]">
-      <div className="text-[11px] font-bold text-white/50 uppercase tracking-wider mb-1">{schema.label}</div>
+      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">{schema.label}</div>
       <SemiGauge score={display} color={sc} />
       <div className="mt-2 w-full space-y-1.5">
         {schema.subcategories.map((s) => {
@@ -450,9 +450,9 @@ function AttributeColumn({ categoryId, score, subNotes }: {
           const barPct = hasVal ? val * 10 : score * 10;
           return (
             <div key={s.id} className="flex items-center gap-1.5">
-              <span className="text-[10px] text-white/40 w-24 truncate flex-shrink-0">{s.label}</span>
+              <span className="text-[10px] text-slate-400 w-24 truncate flex-shrink-0">{s.label}</span>
               <div className="flex-1 h-1 rounded-full overflow-hidden"
-                style={{ background: "rgba(255,255,255,0.08)", minWidth: 30 }}>
+                style={{ background: "#F4F5F7", minWidth: 30 }}>
                 <div className="h-full rounded-full"
                   style={{ width: `${barPct}%`, backgroundColor: hasVal ? barColor : `${barColor}60` }} />
               </div>
@@ -578,34 +578,30 @@ export default function PlayerCardPage() {
       ══════════════════════════════════════════════════════════ */}
       <div
         className="relative overflow-hidden"
-        style={{ background: "#050d1a", minHeight: 480 }}>
+        style={{ background: "#FFFFFF", minHeight: 380, borderBottom: "1px solid #E4E7EB" }}>
 
-        {/* Background glow blobs */}
-        <div className="absolute pointer-events-none" style={{
-          top: -100, left: -60, width: 500, height: 500,
-          borderRadius: "50%", opacity: 0.10, filter: "blur(80px)",
-          background: rColor, zIndex: 0,
-        }} />
-        <div className="absolute pointer-events-none" style={{
-          bottom: -80, right: -80, width: 340, height: 340,
-          borderRadius: "50%", opacity: 0.07, filter: "blur(60px)",
-          background: "#4FA9E6", zIndex: 0,
-        }} />
+        {/* Top accent stripe */}
+        <div className="absolute top-0 left-0 right-0 h-[3px] pointer-events-none"
+          style={{ background: `linear-gradient(90deg, transparent, ${rColor}, #4FA9E6, transparent)`, zIndex: 5 }} />
+
+        {/* Subtle color wash */}
+        <div className="absolute pointer-events-none inset-0"
+          style={{ background: `radial-gradient(ellipse 60% 100% at 80% 50%, ${rColor}06 0%, transparent 70%)`, zIndex: 0 }} />
 
         {/* Player photo — right side, desktop only */}
         {avatarUrl && (
           <div
             className="hidden sm:block absolute pointer-events-none"
             style={{
-              zIndex: 1, right: 0, top: 0, bottom: 0, width: "52%",
-              background: "linear-gradient(to right, #050d1a 0%, #050d1a 28%, transparent 55%)",
+              zIndex: 1, right: 0, top: 0, bottom: 0, width: "48%",
+              background: "linear-gradient(to right, #FFFFFF 0%, #FFFFFF 20%, transparent 55%)",
             }}>
             <Image
               src={avatarUrl}
               alt={player.first_name}
               fill
               className="object-contain object-bottom"
-              style={{ filter: "drop-shadow(-16px 0 40px #050d1a)" }}
+              style={{ filter: "drop-shadow(-12px 0 32px rgba(255,255,255,0.9))" }}
             />
           </div>
         )}
@@ -631,11 +627,12 @@ export default function PlayerCardPage() {
 
             {/* FIRSTNAME — big */}
             <h1
-              className="font-black text-white uppercase leading-none"
+              className="font-black uppercase leading-none"
               style={{
                 fontFamily: "Outfit, sans-serif",
                 fontSize: "clamp(3rem,10vw,5.5rem)",
                 letterSpacing: "-0.02em",
+                color: "#0A2540",
               }}>
               {player.first_name.toUpperCase()}
             </h1>
@@ -648,7 +645,6 @@ export default function PlayerCardPage() {
                 fontSize: "clamp(2rem,7vw,3.8rem)",
                 color: rColor,
                 letterSpacing: "-0.02em",
-                textShadow: `0 0 40px ${rColor}40`,
               }}>
               {player.last_name.toUpperCase()}
             </h2>
@@ -657,11 +653,11 @@ export default function PlayerCardPage() {
             <div className="flex flex-wrap items-center gap-2 mb-6">
               <span
                 className="font-black uppercase text-xs px-3 py-1 rounded-full"
-                style={{ background: `${rColor}20`, color: rColor, border: `1px solid ${rColor}35` }}>
+                style={{ background: `${rColor}15`, color: rColor, border: `1px solid ${rColor}30` }}>
                 {POSITION_LABELS[player.position] ?? player.position}
               </span>
               {(player.team_name ?? club?.name) && (
-                <span className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <span className="text-sm font-semibold text-slate-500">
                   {player.team_name ?? club?.name}
                   {player.jersey_number ? ` · #${player.jersey_number}` : ""}
                 </span>
@@ -669,7 +665,7 @@ export default function PlayerCardPage() {
               {rLabel && (
                 <span
                   className="ml-auto font-black text-xs px-3 py-1 rounded-full tabular-nums"
-                  style={{ background: `${rColor}18`, color: rColor, border: `1px solid ${rColor}30` }}>
+                  style={{ background: `${rColor}12`, color: rColor, border: `1px solid ${rColor}25` }}>
                   {player.overall_rating} OVR
                 </span>
               )}
@@ -693,18 +689,17 @@ export default function PlayerCardPage() {
                     key={item.l}
                     className="flex-1 flex flex-col items-center justify-center px-3 py-2.5 rounded-t-xl"
                     style={{
-                      background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(255,255,255,0.07)",
+                      background: "#F4F5F7",
+                      border: "1px solid #E4E7EB",
                       borderBottom: "none",
                       minWidth: 52,
                     }}>
                     <div
                       className="text-lg font-black tabular-nums leading-none"
-                      style={{ fontFamily: "Outfit, sans-serif", color: item.color ?? "white" }}>
+                      style={{ fontFamily: "Outfit, sans-serif", color: item.color ?? "#0A2540" }}>
                       {item.v}
                     </div>
-                    <div className="text-[9px] mt-1 uppercase tracking-wider font-medium"
-                      style={{ color: item.color ? `${item.color}90` : "rgba(255,255,255,0.3)" }}>
+                    <div className="text-[9px] mt-1 uppercase tracking-wider font-medium text-slate-400">
                       {item.l}
                     </div>
                   </div>
@@ -716,13 +711,13 @@ export default function PlayerCardPage() {
           {/* ── Tab bar ── */}
           <div
             className="flex -mx-6 sm:-mx-8 lg:-mx-10 px-6 sm:px-8 lg:px-10 overflow-x-auto"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            style={{ borderBottom: "1px solid #E4E7EB" }}>
             {tabs.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className="relative flex items-center gap-1.5 px-4 py-3 text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0"
-                style={tab === t.id ? { color: rColor } : { color: "rgba(255,255,255,0.3)" }}>
+                style={tab === t.id ? { color: rColor } : { color: "#9CA3AF" }}>
                 {t.icon}{t.label}
                 {tab === t.id && (
                   <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-t" style={{ background: rColor }} />
@@ -736,7 +731,7 @@ export default function PlayerCardPage() {
       {/* ══════════════════════════════════════════════════════════
           TAB CONTENT
       ══════════════════════════════════════════════════════════ */}
-      <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-12" style={{ background: "#08111e" }}>
+      <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-12" style={{ background: "#F4F5F7" }}>
 
         {/* ── TAB 1: STATISTIEKEN ── */}
         {tab === "statistieken" && (
@@ -744,7 +739,7 @@ export default function PlayerCardPage() {
 
             {/* FIFA card + attribute columns row */}
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>
+              <div className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "#9CA3AF" }}>
                 FIFA Kaart &amp; Attributen
               </div>
               <div className="overflow-x-auto -mx-4 sm:mx-0">
@@ -768,7 +763,7 @@ export default function PlayerCardPage() {
                         onUpload={(url) => setAvatarUrl(url)}
                         size={38}
                       />
-                      <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.30)" }}>
+                      <span className="text-[11px]" style={{ color: "#9CA3AF" }}>
                         <Camera size={10} className="inline mr-1" />Foto uploaden
                       </span>
                     </div>
@@ -792,7 +787,7 @@ export default function PlayerCardPage() {
                     <Link
                       href="/dashboard/player/settings"
                       className="text-[11px] font-semibold px-4 py-1.5 rounded-lg"
-                      style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.40)", border: "1px solid rgba(255,255,255,0.10)" }}>
+                      style={{ background: "#F4F5F7", color: "#6B7280", border: "1px solid #E4E7EB" }}>
                       <Settings size={11} className="inline mr-1" />Bewerken
                     </Link>
                   </div>
@@ -808,7 +803,7 @@ export default function PlayerCardPage() {
                   ))}
 
                   {scores.length === 0 && (
-                    <div className="flex items-center justify-center text-white/20 text-sm w-64 h-40">
+                    <div className="flex items-center justify-center text-slate-300 text-sm w-64 h-40">
                       Nog geen evaluatiedata beschikbaar
                     </div>
                   )}
@@ -818,17 +813,17 @@ export default function PlayerCardPage() {
 
             {/* ── Performance Radar ── */}
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.25)" }}>
+              <div className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: "#9CA3AF" }}>
                 Performance Radar
               </div>
               {radarData.length > 0 ? (
                 <div className="rounded-2xl border flex justify-center py-4"
-                  style={{ background: "rgba(255,255,255,0.025)", borderColor: "rgba(255,255,255,0.07)" }}>
+                  style={{ background: "#FFFFFF", borderColor: "#E4E7EB" }}>
                   <PlayerRadarChart data={radarData} color={rColor} size={300} />
                 </div>
               ) : (
                 <div className="rounded-2xl border flex items-center justify-center h-32 text-sm"
-                  style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.20)" }}>
+                  style={{ background: "#F4F5F7", borderColor: "#E4E7EB", color: "#9CA3AF" }}>
                   Radar beschikbaar na eerste evaluatie van je coach
                 </div>
               )}
@@ -836,7 +831,7 @@ export default function PlayerCardPage() {
 
             {/* Tactical IQ widget */}
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.25)" }}>
+              <div className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: "#9CA3AF" }}>
                 Tactisch IQ
               </div>
               {iqData ? (
@@ -844,7 +839,7 @@ export default function PlayerCardPage() {
                   style={{ background: `${iqData.color}0d`, borderColor: `${iqData.color}25` }}>
                   <div className="flex-shrink-0 relative w-16 h-16">
                     <svg width="64" height="64" viewBox="0 0 64 64">
-                      <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="5" />
+                      <circle cx="32" cy="32" r="26" fill="none" stroke="#E4E7EB" strokeWidth="5" />
                       <circle cx="32" cy="32" r="26" fill="none"
                         stroke={iqData.color} strokeWidth="5" strokeLinecap="round"
                         strokeDasharray={`${(iqData.score / 24) * 163} 163`}
@@ -858,8 +853,8 @@ export default function PlayerCardPage() {
                     <div className="font-black text-lg leading-tight" style={{ color: iqData.color, fontFamily: "Outfit, sans-serif" }}>
                       {iqData.label}
                     </div>
-                    <div className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>{iqData.score}/24 punten</div>
-                    <div className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.30)" }}>
+                    <div className="text-[11px] mt-0.5" style={{ color: "#6B7280" }}>{iqData.score}/24 punten</div>
+                    <div className="text-[11px] mt-1" style={{ color: "#9CA3AF" }}>
                       Je tactisch inzicht is gemeten via 8 scenario scenario&apos;s. Hoe hoger, hoe meer je het spel leest.
                     </div>
                   </div>
@@ -878,8 +873,8 @@ export default function PlayerCardPage() {
                     <Brain size={20} style={{ color: "#4FA9E6" }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-white">Doe de Tactisch IQ Test</div>
-                    <div className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>8 scenario&apos;s · 11v11 situaties · Max 24 punten</div>
+                    <div className="text-sm font-bold text-slate-900">Doe de Tactisch IQ Test</div>
+                    <div className="text-[11px] mt-0.5" style={{ color: "#6B7280" }}>8 scenario&apos;s · 11v11 situaties · Max 24 punten</div>
                   </div>
                   <ChevronRight size={16} style={{ color: "#4FA9E6", flexShrink: 0 }} />
                 </Link>
@@ -906,7 +901,7 @@ export default function PlayerCardPage() {
                       <div className="flex-1 min-w-0">
                         <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5"
                           style={{ color: arch.color }}>ARCHETYPE</div>
-                        <div className="font-black text-white text-lg leading-tight"
+                        <div className="font-black text-slate-900 text-lg leading-tight"
                           style={{ fontFamily: "Outfit, sans-serif" }}>{arch.label}</div>
                       </div>
                       <div className="flex flex-wrap gap-1 justify-end">
@@ -922,7 +917,7 @@ export default function PlayerCardPage() {
                     <div className="px-5 py-4 space-y-4">
                       {/* Description as first-person */}
                       {archRole && (
-                        <p className="text-sm font-medium leading-relaxed" style={{ color: "rgba(255,255,255,0.80)" }}>
+                        <p className="text-sm font-medium leading-relaxed" style={{ color: "#111111" }}>
                           {archRole}
                         </p>
                       )}
@@ -940,8 +935,8 @@ export default function PlayerCardPage() {
                       {/* Wat betekent dit */}
                       <div>
                         <div className="text-[10px] font-black uppercase tracking-widest mb-2"
-                          style={{ color: "rgba(255,255,255,0.30)" }}>WAT BETEKENT DIT?</div>
-                        <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.60)" }}>
+                          style={{ color: "#9CA3AF" }}>WAT BETEKENT DIT?</div>
+                        <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
                           {arch.description}. Als {arch.label} wordt van jou verwacht dat je dit profiel elke wedstrijd belichaamt. Coaches herkennen dit archetype en spelen hun systeem hierop af.
                         </p>
                       </div>
@@ -950,13 +945,13 @@ export default function PlayerCardPage() {
                       {archTips && (
                         <div>
                           <div className="text-[10px] font-black uppercase tracking-widest mb-2"
-                            style={{ color: "rgba(255,255,255,0.30)" }}>3 TIPS OM DIT TE BENUTTEN</div>
+                            style={{ color: "#9CA3AF" }}>3 TIPS OM DIT TE BENUTTEN</div>
                           <div className="space-y-2">
                             {archTips.map((tip, i) => (
                               <div key={i} className="flex items-start gap-2.5">
                                 <span className="text-xs font-black mt-0.5 w-4 flex-shrink-0 tabular-nums"
                                   style={{ color: arch.color }}>{i + 1}</span>
-                                <span className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>{tip}</span>
+                                <span className="text-sm leading-relaxed" style={{ color: "#374151" }}>{tip}</span>
                               </div>
                             ))}
                           </div>
@@ -983,7 +978,7 @@ export default function PlayerCardPage() {
                         <div className="flex-1 min-w-0">
                           <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5"
                             style={{ color: socio.color_hex }}>PERSOONLIJKHEID</div>
-                          <div className="font-black text-white text-lg leading-tight"
+                          <div className="font-black text-slate-900 text-lg leading-tight"
                             style={{ fontFamily: "Outfit, sans-serif" }}>{socio.label}</div>
                         </div>
                       </div>
@@ -998,8 +993,8 @@ export default function PlayerCardPage() {
                         {/* Op het veld */}
                         <div>
                           <div className="text-[10px] font-black uppercase tracking-widest mb-2"
-                            style={{ color: "rgba(255,255,255,0.30)" }}>OP HET VELD</div>
-                          <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
+                            style={{ color: "#9CA3AF" }}>OP HET VELD</div>
+                          <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
                             {socioData.in_game}
                           </p>
                         </div>
@@ -1017,13 +1012,13 @@ export default function PlayerCardPage() {
                         {/* How to use it */}
                         <div>
                           <div className="text-[10px] font-black uppercase tracking-widest mb-2"
-                            style={{ color: "rgba(255,255,255,0.30)" }}>HOE ZET JE DIT IN?</div>
+                            style={{ color: "#9CA3AF" }}>HOE ZET JE DIT IN?</div>
                           <div className="space-y-2">
                             {socioData.tips.map((tip, i) => (
                               <div key={i} className="flex items-start gap-2.5">
                                 <span className="text-xs font-black mt-0.5 w-4 flex-shrink-0 tabular-nums"
                                   style={{ color: socio.color_hex }}>{i + 1}</span>
-                                <span className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>{tip}</span>
+                                <span className="text-sm leading-relaxed" style={{ color: "#374151" }}>{tip}</span>
                               </div>
                             ))}
                           </div>
@@ -1037,20 +1032,20 @@ export default function PlayerCardPage() {
                 {arch && socio && archId && socioId && (
                   <div
                     className="rounded-2xl p-5"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}>
+                    style={{ background: "#FFFFFF", border: "1px solid #E4E7EB" }}>
                     <div className="flex items-center gap-2 mb-3">
                       <span style={{ fontSize: "1.1rem" }}>✨</span>
                       <div className="text-[10px] font-black uppercase tracking-widest"
-                        style={{ color: "rgba(255,255,255,0.30)" }}>JOUW COMBINATIE</div>
+                        style={{ color: "#9CA3AF" }}>JOUW COMBINATIE</div>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap mb-3">
                       <span className="font-black text-sm px-3 py-1 rounded-full"
                         style={{ background: `${arch.color}20`, color: arch.color }}>{arch.label}</span>
-                      <span className="text-white/40 font-black">×</span>
+                      <span className="text-slate-400 font-black">×</span>
                       <span className="font-black text-sm px-3 py-1 rounded-full"
                         style={{ background: `${socio.color_hex}20`, color: socio.color_hex }}>{socio.label}</span>
                     </div>
-                    <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>
+                    <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
                       {getSynergyText(archId, socioId)}
                     </p>
                   </div>
@@ -1071,7 +1066,7 @@ export default function PlayerCardPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
+                    <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
                       {identity.ai_summary}
                     </p>
                   </div>
@@ -1081,18 +1076,18 @@ export default function PlayerCardPage() {
               /* Empty state */
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-                  style={{ background: "rgba(255,255,255,0.05)" }}>
-                  <Zap size={24} style={{ color: "rgba(255,255,255,0.20)" }} />
+                  style={{ background: "#F4F5F7" }}>
+                  <Zap size={24} style={{ color: "#9CA3AF" }} />
                 </div>
-                <div className="text-sm font-semibold mb-2" style={{ color: "rgba(255,255,255,0.50)" }}>
+                <div className="text-sm font-semibold mb-2" style={{ color: "#6B7280" }}>
                   Speler DNA nog niet ingesteld
                 </div>
-                <p className="text-xs max-w-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.30)" }}>
+                <p className="text-xs max-w-xs leading-relaxed" style={{ color: "#9CA3AF" }}>
                   Je coach heeft je speler DNA nog niet ingesteld. Vraag je coach een evaluatie in te vullen met je archetype en sociotype.
                 </p>
                 <Link href="/dashboard/player/settings"
                   className="mt-5 flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-xl transition-all"
-                  style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.10)" }}>
+                  style={{ background: "#FFFFFF", color: "#374151", border: "1px solid #E4E7EB" }}>
                   <Settings size={12} /> Instellingen
                 </Link>
               </div>
@@ -1103,7 +1098,7 @@ export default function PlayerCardPage() {
         {/* ── TAB 3: EVALUATIES ── */}
         {tab === "evaluaties" && (
           <div className="space-y-5">
-            <div className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.25)" }}>
+            <div className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: "#9CA3AF" }}>
               Evaluatiehistorie — {evalCount} {evalCount === 1 ? "beoordeling" : "beoordelingen"}
             </div>
 
@@ -1118,8 +1113,8 @@ export default function PlayerCardPage() {
             {(player.evaluations?.length ?? 0) >= 2 && (
               <div
                 className="rounded-2xl p-5"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                <div className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>
+                style={{ background: "#FFFFFF", border: "1px solid #E4E7EB" }}>
+                <div className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "#9CA3AF" }}>
                   Progressie
                 </div>
                 <div className="flex items-end gap-2 overflow-x-auto pb-1">
@@ -1129,7 +1124,7 @@ export default function PlayerCardPage() {
                     const isLast = i === arr.length - 1;
                     return (
                       <div key={ev.id} className="flex flex-col items-center gap-1 flex-shrink-0" style={{ minWidth: 48 }}>
-                        <span className="text-xs font-black tabular-nums" style={{ color: isLast ? rC : "rgba(255,255,255,0.50)" }}>
+                        <span className="text-xs font-black tabular-nums" style={{ color: isLast ? rC : "#9CA3AF" }}>
                           {ev.overall_score?.toFixed(1)}
                         </span>
                         <div className="w-8 rounded-t-lg" style={{
@@ -1137,7 +1132,7 @@ export default function PlayerCardPage() {
                           background: isLast ? rC : `${rC}50`,
                           transition: "height 0.3s ease",
                         }} />
-                        <span className="text-[9px] text-center" style={{ color: "rgba(255,255,255,0.25)" }}>
+                        <span className="text-[9px] text-center" style={{ color: "#9CA3AF" }}>
                           {new Date(ev.evaluation_date).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}
                         </span>
                       </div>
@@ -1149,7 +1144,7 @@ export default function PlayerCardPage() {
 
             {/* Evaluation history cards */}
             {(player.evaluations ?? []).length === 0 ? (
-              <div className="text-center py-16" style={{ color: "rgba(255,255,255,0.25)" }}>
+              <div className="text-center py-16" style={{ color: "#9CA3AF" }}>
                 <Activity size={28} className="mx-auto mb-3 opacity-30" />
                 <div className="text-sm">Nog geen evaluaties</div>
               </div>
@@ -1160,18 +1155,18 @@ export default function PlayerCardPage() {
                   <div
                     key={ev.id}
                     className="rounded-2xl overflow-hidden"
-                    style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
+                    style={{ border: "1px solid #E4E7EB", background: "#FFFFFF" }}>
                     <div className="flex items-center justify-between px-5 py-3"
-                      style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                      style={{ borderBottom: "1px solid #F4F5F7" }}>
                       <div>
-                        <div className="text-sm font-semibold text-white">{formatDate(ev.evaluation_date)}</div>
+                        <div className="text-sm font-semibold text-slate-900">{formatDate(ev.evaluation_date)}</div>
                         {ev.coach_name && (
-                          <div className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.30)" }}>{ev.coach_name}</div>
+                          <div className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>{ev.coach_name}</div>
                         )}
                       </div>
                       <div className="text-2xl font-black tabular-nums"
                         style={{ color: rC, fontFamily: "Outfit, sans-serif" }}>
-                        {ev.overall_score?.toFixed(1)}<span className="text-sm font-normal" style={{ color: "rgba(255,255,255,0.25)" }}>/10</span>
+                        {ev.overall_score?.toFixed(1)}<span className="text-sm font-normal" style={{ color: "#9CA3AF" }}>/10</span>
                       </div>
                     </div>
 
@@ -1200,7 +1195,7 @@ export default function PlayerCardPage() {
                           return (
                             <div key={s.category} className="flex items-center gap-1.5 text-xs font-bold">
                               <span>{schema?.icon}</span>
-                              <span style={{ color: "rgba(255,255,255,0.35)" }}>
+                              <span style={{ color: "#6B7280" }}>
                                 {CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS]}
                               </span>
                               <span style={{ color: sc }}>{toFifa(s.score)}</span>
@@ -1211,7 +1206,7 @@ export default function PlayerCardPage() {
                     )}
 
                     {ev.notes && (
-                      <div className="px-5 pb-4 text-xs italic" style={{ color: "rgba(255,255,255,0.30)" }}>
+                      <div className="px-5 pb-4 text-xs italic" style={{ color: "#9CA3AF" }}>
                         &ldquo;{ev.notes}&rdquo;
                       </div>
                     )}
@@ -1226,26 +1221,26 @@ export default function PlayerCardPage() {
         {tab === "medisch" && (
           <div className="space-y-5">
             <div className="flex items-center justify-between">
-              <div className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.25)" }}>
+              <div className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#9CA3AF" }}>
                 Medisch Profiel
               </div>
               <Link
                 href="/dashboard/player/settings"
                 className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all"
-                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.40)", border: "1px solid rgba(255,255,255,0.09)" }}>
+                style={{ background: "#F4F5F7", color: "#6B7280", border: "1px solid #E4E7EB" }}>
                 <Settings size={11} /> Bewerken
               </Link>
             </div>
 
             <div
               className="rounded-2xl p-5"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+              style={{ background: "#FFFFFF", border: "1px solid #E4E7EB" }}>
               <InjuryBodyMap injuries={injuries} dominantFoot={dominantFoot} readonly={true} />
             </div>
 
             {injuries.length === 0 && (
               <div className="text-center py-6">
-                <p className="text-xs" style={{ color: "rgba(255,255,255,0.30)" }}>
+                <p className="text-xs" style={{ color: "#9CA3AF" }}>
                   Geen blessures geregistreerd. Ga naar{" "}
                   <Link href="/dashboard/player/settings" className="underline" style={{ color: "#4FA9E6" }}>
                     instellingen
@@ -1265,8 +1260,8 @@ export default function PlayerCardPage() {
                 <Map size={18} style={{ color: "rgba(255,140,80,0.9)" }} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-white">Positie Heatmap</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.30)" }}>Bekijk je bewegingspatronen op het veld</div>
+                <div className="text-sm font-bold text-slate-900">Positie Heatmap</div>
+                <div className="text-[11px] mt-0.5" style={{ color: "#9CA3AF" }}>Bekijk je bewegingspatronen op het veld</div>
               </div>
               <ChevronRight size={16} style={{ color: "rgba(255,140,80,0.6)", flexShrink: 0 }} />
             </Link>

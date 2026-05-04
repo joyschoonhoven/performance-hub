@@ -239,14 +239,11 @@ export default function PlayerAnalyticsPage() {
       </div>
 
       {/* Hero strip: Index + key stats */}
-      <div className="relative rounded-3xl overflow-hidden p-6"
-        style={{ background: "linear-gradient(150deg, #060e1c 0%, #0A2540 45%, #0d3060 100%)" }}>
-        <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full opacity-20 blur-3xl pointer-events-none"
-          style={{ background: idxColor }} />
+      <div className="relative hub-card overflow-hidden p-6">
         <div className="absolute top-0 left-0 right-0 h-[3px]"
           style={{ background: `linear-gradient(90deg, transparent, ${idxColor}, #4FA9E6, transparent)` }} />
 
-        <div className="relative z-10 flex items-start gap-8">
+        <div className="flex items-start gap-8">
           {/* Index ring */}
           <div className="flex-shrink-0">
             <PerformanceIndexCard
@@ -270,17 +267,16 @@ export default function PlayerAnalyticsPage() {
               { label: "Tackles", value: season.tackles, sub: "totaal", color: "#64748b", icon: <Shield size={13} /> },
               { label: "Wedstrijden", value: season.matches, sub: `${season.minutes}'`, color: "#4FA9E6", icon: <Calendar size={13} /> },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl p-3"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div key={s.label} className="rounded-xl p-3 hub-surface">
                 <div className="flex items-center gap-1.5 mb-1.5" style={{ color: s.color }}>
                   {s.icon}
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">{s.label}</span>
+                  <span className="hub-label text-[10px]">{s.label}</span>
                 </div>
                 <div className="text-2xl font-black tabular-nums leading-none"
                   style={{ color: s.color, fontFamily: "Outfit, sans-serif" }}>
                   {s.value}{(s as { suffix?: string }).suffix ?? ""}
                 </div>
-                <div className="text-[10px] text-white/25 mt-0.5">{s.sub}</div>
+                <div className="text-[10px] text-slate-400 mt-0.5">{s.sub}</div>
               </div>
             ))}
           </div>
@@ -288,8 +284,8 @@ export default function PlayerAnalyticsPage() {
 
         {/* Index sparkline */}
         {matchStats.length >= 3 && (
-          <div className="relative z-10 mt-5 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-            <div className="text-[10px] text-white/30 uppercase tracking-widest mb-2">Performance Index verloop</div>
+          <div className="mt-5 pt-4 border-t border-hub-border">
+            <div className="hub-label text-[10px] mb-2">Performance Index verloop</div>
             <IndexSparkline stats={matchStats} />
           </div>
         )}

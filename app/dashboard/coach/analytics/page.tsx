@@ -201,7 +201,7 @@ export default function AnalyticsPage() {
                       <div className="w-10 text-xs font-bold text-slate-600 flex-shrink-0">{pd.position}</div>
                       <div className="flex-1 h-6 rounded-lg overflow-hidden" style={{ background: "#F4F5F7" }}>
                         <div className="h-full rounded-lg flex items-center px-2 transition-all"
-                          style={{ width: `${Math.max(pct, 8)}%`, background: "linear-gradient(90deg, #4FA9E6, #0A2540)" }}>
+                          style={{ width: `${Math.max(pct, 8)}%`, background: "linear-gradient(90deg, #4FA9E6, #2B8AC7)" }}>
                           <span className="text-[10px] font-bold text-white">{pd.count}</span>
                         </div>
                       </div>
@@ -249,35 +249,32 @@ export default function AnalyticsPage() {
             const top = indexPlayers[0];
             const { color } = getIndexLabel(top.season.season_index);
             return (
-              <div className="relative rounded-3xl overflow-hidden p-6"
-                style={{ background: "linear-gradient(150deg, #060e1c 0%, #0A2540 45%, #0d3060 100%)" }}>
+              <div className="relative hub-card overflow-hidden p-6">
                 <div className="absolute top-0 left-0 right-0 h-[3px]"
                   style={{ background: `linear-gradient(90deg, transparent, ${color}, #4FA9E6, transparent)` }} />
-                <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full blur-3xl opacity-20"
-                  style={{ background: color }} />
-                <div className="relative z-10 flex items-center gap-6">
-                  <div className="flex flex-col items-center">
+                <div className="flex items-center gap-6">
+                  <div className="flex flex-col items-center flex-shrink-0">
                     <div className="text-6xl font-black tabular-nums leading-none"
-                      style={{ color, fontFamily: "Outfit, sans-serif", textShadow: `0 0 30px ${color}40` }}>
+                      style={{ color, fontFamily: "Outfit, sans-serif" }}>
                       {top.season.season_index}
                     </div>
-                    <div className="text-[10px] text-white/30 uppercase tracking-widest mt-1">Index #1</div>
+                    <div className="hub-label text-[10px] mt-1">Index #1</div>
                   </div>
-                  <div className="flex-1">
-                    <div className="text-[10px] uppercase tracking-widest mb-1" style={{ color }}>Beste Performance</div>
-                    <div className="text-2xl font-black text-white" style={{ fontFamily: "Outfit, sans-serif" }}>
+                  <div className="flex-1 min-w-0">
+                    <div className="hub-label text-[10px] mb-1" style={{ color }}>Beste Performance</div>
+                    <div className="text-2xl font-black text-slate-900" style={{ fontFamily: "Outfit, sans-serif" }}>
                       {top.name}
                     </div>
                     <div className="flex items-center gap-2 mt-2">
                       <span className="text-[10px] font-bold px-2 py-1 rounded-full"
-                        style={{ background: `${color}20`, color }}>{top.indexLabel}</span>
-                      <span className="text-xs text-white/40">{top.position} · {top.season.matches} wedstrijden</span>
+                        style={{ background: `${color}15`, color }}>{top.indexLabel}</span>
+                      <span className="text-xs text-slate-400">{top.position} · {top.season.matches} wedstrijden</span>
                     </div>
-                    <div className="flex gap-4 mt-3 text-white/60 text-xs">
-                      <span><span className="text-white font-bold">{top.season.goals}</span> G</span>
-                      <span><span className="text-white font-bold">{top.season.assists}</span> A</span>
-                      <span><span className="text-white font-bold">{top.season.avg_rating}</span> Rtg</span>
-                      <span><span className="text-white font-bold">{top.season.avg_pass_accuracy}%</span> Pass</span>
+                    <div className="flex gap-4 mt-3 text-slate-500 text-xs">
+                      <span><span className="text-slate-900 font-bold">{top.season.goals}</span> G</span>
+                      <span><span className="text-slate-900 font-bold">{top.season.assists}</span> A</span>
+                      <span><span className="text-slate-900 font-bold">{top.season.avg_rating}</span> Rtg</span>
+                      <span><span className="text-slate-900 font-bold">{top.season.avg_pass_accuracy}%</span> Pass</span>
                     </div>
                   </div>
                 </div>

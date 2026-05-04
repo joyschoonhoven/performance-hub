@@ -45,7 +45,7 @@ export function PerformanceIndexCard({
             cy={svgSize / 2}
             r={radius}
             fill="none"
-            stroke="rgba(255,255,255,0.06)"
+            stroke="#E4E7EB"
             strokeWidth={stroke}
           />
           {/* Progress */}
@@ -66,11 +66,11 @@ export function PerformanceIndexCard({
         <div className="absolute flex flex-col items-center justify-center">
           <span
             className={`${labelSize} font-black tabular-nums leading-none`}
-            style={{ color, fontFamily: "Outfit, sans-serif", textShadow: `0 0 20px ${color}40` }}
+            style={{ color, fontFamily: "Outfit, sans-serif" }}
           >
             {index}
           </span>
-          <span className={`${subSize} text-white/30 uppercase tracking-widest font-bold mt-0.5`}>
+          <span className={`${subSize} text-slate-400 uppercase tracking-widest font-bold mt-0.5`}>
             INDEX
           </span>
         </div>
@@ -93,11 +93,11 @@ export function PerformanceIndexCard({
               {trend > 0 ? "▲" : "▼"} {Math.abs(trend)}
             </span>
           )}
-          <span className="text-[11px] text-white/30">
+          <span className="text-[11px] text-slate-400">
             {matches} wedstrijd{matches !== 1 ? "en" : ""}
           </span>
           {position && (
-            <span className="text-[11px] font-bold text-white/40">{position}</span>
+            <span className="text-[11px] font-bold text-slate-500">{position}</span>
           )}
         </div>
       </div>

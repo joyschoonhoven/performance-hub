@@ -1105,7 +1105,7 @@ export default function TacticalGamePage() {
       <div
         style={{
           minHeight: "100vh",
-          background: "#0e1a2b",
+          background: "#F4F5F7",
           padding: "32px 16px",
           fontFamily: "system-ui, -apple-system, sans-serif",
         }}
@@ -1118,7 +1118,7 @@ export default function TacticalGamePage() {
               display: "inline-flex",
               alignItems: "center",
               gap: "6px",
-              color: "rgba(255,255,255,0.5)",
+              color: "#6B7280",
               textDecoration: "none",
               fontSize: "14px",
               marginBottom: "32px",
@@ -1148,17 +1148,17 @@ export default function TacticalGamePage() {
               style={{
                 fontSize: "clamp(28px, 5vw, 42px)",
                 fontWeight: 800,
-                color: "white",
+                color: "#111111",
                 margin: "0 0 12px",
                 letterSpacing: "-0.5px",
               }}
             >
               Tactisch IQ Spel
             </h1>
-            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "16px", maxWidth: "480px", margin: "0 auto 8px" }}>
+            <p style={{ color: "#374151", fontSize: "16px", maxWidth: "480px", margin: "0 auto 8px" }}>
               16 realistische 11v11 voetbalscenario's. Analyseer de situatie en maak de juiste tactische keuze.
             </p>
-            <p style={{ color: "rgba(255,255,255,0.35)", fontSize: "13px" }}>
+            <p style={{ color: "#9CA3AF", fontSize: "13px" }}>
               Klassiek: 16 scenario's · Max 48 punten &nbsp;|&nbsp; Oneindig: nooit stoppend
             </p>
           </div>
@@ -1185,16 +1185,16 @@ export default function TacticalGamePage() {
               <div
                 key={card.label}
                 style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  borderRadius: "12px",
+                  background: "#FFFFFF",
+                  border: "1px solid #E4E7EB",
+                  borderRadius: "16px",
                   padding: "16px",
                   textAlign: "center",
                 }}
               >
                 <div style={{ fontSize: "28px", marginBottom: "8px" }}>{card.icon}</div>
-                <div style={{ color: "white", fontWeight: 600, fontSize: "14px" }}>{card.label}</div>
-                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", marginTop: "4px" }}>{card.sub}</div>
+                <div style={{ color: "#111111", fontWeight: 600, fontSize: "14px" }}>{card.label}</div>
+                <div style={{ color: "#6B7280", fontSize: "12px", marginTop: "4px" }}>{card.sub}</div>
               </div>
             ))}
           </div>
@@ -1263,7 +1263,7 @@ export default function TacticalGamePage() {
       <div
         style={{
           minHeight: "100vh",
-          background: "#0e1a2b",
+          background: "#F4F5F7",
           padding: "32px 16px",
           fontFamily: "system-ui, -apple-system, sans-serif",
         }}
@@ -1286,7 +1286,7 @@ export default function TacticalGamePage() {
             >
               <Trophy size={40} color="#FBBF24" />
             </div>
-            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "14px", marginBottom: "8px" }}>
+            <div style={{ color: "#6B7280", fontSize: "14px", marginBottom: "8px" }}>
               Jouw Voetbal IQ:
             </div>
             <div
@@ -1304,15 +1304,15 @@ export default function TacticalGamePage() {
               style={{
                 fontSize: "clamp(40px, 8vw, 64px)",
                 fontWeight: 900,
-                color: "white",
+                color: "#111111",
                 lineHeight: 1,
                 marginBottom: "8px",
               }}
             >
               {totalScore}
-              <span style={{ fontSize: "0.45em", color: "rgba(255,255,255,0.4)", fontWeight: 400 }}>/{maxPossible}</span>
+              <span style={{ fontSize: "0.45em", color: "#9CA3AF", fontWeight: 400 }}>/{maxPossible}</span>
               {gameMode === "infinite" && (
-                <div style={{ fontSize: "0.3em", color: "rgba(255,255,255,0.35)", fontWeight: 400, marginTop: "4px" }}>
+                <div style={{ fontSize: "0.3em", color: "#9CA3AF", fontWeight: 400, marginTop: "4px" }}>
                   in {answeredCount} situaties
                 </div>
               )}
@@ -1322,11 +1322,12 @@ export default function TacticalGamePage() {
           {/* Progress bar */}
           <div
             style={{
-              background: "rgba(255,255,255,0.08)",
+              background: "#F4F5F7",
               borderRadius: "8px",
               height: "12px",
               marginBottom: "32px",
               overflow: "hidden",
+              border: "1px solid #E4E7EB",
             }}
           >
             <div
@@ -1350,8 +1351,8 @@ export default function TacticalGamePage() {
           {/* Breakdown */}
           <div
             style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: "#FFFFFF",
+              border: "1px solid #E4E7EB",
               borderRadius: "16px",
               padding: "20px",
               marginBottom: "28px",
@@ -1361,7 +1362,7 @@ export default function TacticalGamePage() {
               style={{
                 fontSize: "13px",
                 fontWeight: 600,
-                color: "rgba(255,255,255,0.5)",
+                color: "#6B7280",
                 marginBottom: "16px",
                 textTransform: "uppercase",
                 letterSpacing: "0.06em",
@@ -1379,15 +1380,15 @@ export default function TacticalGamePage() {
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "10px 0",
-                    borderBottom: i < answeredCount - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                    borderBottom: i < answeredCount - 1 ? "1px solid #E4E7EB" : "none",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <span
                       style={{
                         fontSize: "11px",
-                        color: "white",
-                        background: getPhaseColor(s.phase) + "33",
+                        color: "#0A2540",
+                        background: getPhaseColor(s.phase) + "22",
                         border: `1px solid ${getPhaseColor(s.phase)}55`,
                         borderRadius: "4px",
                         padding: "2px 6px",
@@ -1396,7 +1397,7 @@ export default function TacticalGamePage() {
                     >
                       {s.phase}
                     </span>
-                    <span style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px" }}>{s.title}</span>
+                    <span style={{ color: "#374151", fontSize: "14px" }}>{s.title}</span>
                   </div>
                   <div style={{ display: "flex", gap: "4px" }}>
                     {[0, 1, 2].map((dot) => (
@@ -1406,7 +1407,7 @@ export default function TacticalGamePage() {
                           width: "10px",
                           height: "10px",
                           borderRadius: "50%",
-                          background: dot < sc ? "#FBBF24" : "rgba(255,255,255,0.15)",
+                          background: dot < sc ? "#FBBF24" : "#D1D5DB",
                         }}
                       />
                     ))}
@@ -1426,9 +1427,9 @@ export default function TacticalGamePage() {
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "8px",
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                color: "white",
+                background: "#FFFFFF",
+                border: "1px solid #E4E7EB",
+                color: "#111111",
                 borderRadius: "12px",
                 padding: "14px 20px",
                 fontSize: "15px",
@@ -1475,7 +1476,7 @@ export default function TacticalGamePage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#0e1a2b",
+        background: "#F4F5F7",
         padding: "16px",
         fontFamily: "system-ui, -apple-system, sans-serif",
       }}
@@ -1493,7 +1494,7 @@ export default function TacticalGamePage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ color: "rgba(255,255,255,0.7)", fontWeight: 700, fontSize: "15px" }}>
+          <span style={{ color: "#374151", fontWeight: 700, fontSize: "15px" }}>
             {gameMode === "classic"
               ? `Scenario ${scores.length + (gamePhase === "feedback" ? 0 : 1)}/16`
               : `Situatie ${questionNum - (gamePhase === "feedback" ? 1 : 0)}`}
@@ -1501,8 +1502,8 @@ export default function TacticalGamePage() {
           <span
             style={{
               fontSize: "11px",
-              color: "white",
-              background: getPhaseColor(scenario.phase) + "33",
+              color: "#0A2540",
+              background: getPhaseColor(scenario.phase) + "22",
               border: `1px solid ${getPhaseColor(scenario.phase)}66`,
               borderRadius: "20px",
               padding: "3px 10px",
@@ -1546,17 +1547,17 @@ export default function TacticalGamePage() {
         {/* Scenario description */}
         <div
           style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "#FFFFFF",
+            border: "1px solid #E4E7EB",
             borderRadius: "10px",
             padding: "12px 16px",
             marginBottom: "16px",
           }}
         >
-          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "11px", fontWeight: 600, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          <div style={{ color: "#6B7280", fontSize: "11px", fontWeight: 600, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
             {scenario.title}
           </div>
-          <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "13px", margin: 0, lineHeight: 1.5 }}>
+          <p style={{ color: "#374151", fontSize: "13px", margin: 0, lineHeight: 1.5 }}>
             {scenario.description}
           </p>
         </div>
@@ -1567,14 +1568,14 @@ export default function TacticalGamePage() {
         {gamePhase === "watching" && (
           <div
             style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.1)",
+              background: "#FFFFFF",
+              border: "1px solid #E4E7EB",
               borderRadius: "14px",
               padding: "24px",
               textAlign: "center",
             }}
           >
-            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "16px", fontWeight: 500 }}>
+            <div style={{ color: "#374151", fontSize: "16px", fontWeight: 500 }}>
               Analyseer de situatie{"·".repeat(dots)}
             </div>
             <div style={{ display: "flex", justifyContent: "center", gap: "6px", marginTop: "16px" }}>
@@ -1585,7 +1586,7 @@ export default function TacticalGamePage() {
                     width: "8px",
                     height: "8px",
                     borderRadius: "50%",
-                    background: dots > i ? "#4FA9E6" : "rgba(255,255,255,0.15)",
+                    background: dots > i ? "#4FA9E6" : "#D1D5DB",
                     transition: "background 0.3s",
                   }}
                 />
@@ -1598,7 +1599,7 @@ export default function TacticalGamePage() {
           <div>
             <p
               style={{
-                color: "white",
+                color: "#111111",
                 fontSize: "clamp(14px,2.5vw,17px)",
                 fontWeight: 700,
                 marginBottom: "16px",
@@ -1609,25 +1610,25 @@ export default function TacticalGamePage() {
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               {scenario.options.map((option, i) => {
-                let bg = "rgba(255,255,255,0.05)"
-                let border = "rgba(255,255,255,0.1)"
-                let textColor = "rgba(255,255,255,0.8)"
+                let bg = "#FFFFFF"
+                let border = "#E4E7EB"
+                let textColor = "#374151"
 
                 if (gamePhase === "feedback") {
                   if (i === selectedOption) {
                     if (option.score >= 2) {
-                      bg = "rgba(34,197,94,0.15)"
+                      bg = "rgba(34,197,94,0.08)"
                       border = "#F97316"
-                      textColor = "#86efac"
+                      textColor = "#166534"
                     } else {
-                      bg = "rgba(239,68,68,0.15)"
+                      bg = "rgba(239,68,68,0.08)"
                       border = "#ef4444"
-                      textColor = "#fca5a5"
+                      textColor = "#991b1b"
                     }
                   } else if (i === bestOptionIndex && i !== selectedOption) {
                     bg = "rgba(251,191,36,0.08)"
                     border = "#FBBF24"
-                    textColor = "#fde68a"
+                    textColor = "#92400e"
                   }
                 }
 
@@ -1652,16 +1653,16 @@ export default function TacticalGamePage() {
                     }}
                     onMouseEnter={(e) => {
                       if (gamePhase !== "question") return
-                      ;(e.currentTarget as HTMLButtonElement).style.background = "rgba(79,169,230,0.1)"
-                      ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(79,169,230,0.3)"
+                      ;(e.currentTarget as HTMLButtonElement).style.background = "rgba(79,169,230,0.08)"
+                      ;(e.currentTarget as HTMLButtonElement).style.borderColor = "#4FA9E6"
                     }}
                     onMouseLeave={(e) => {
                       if (gamePhase !== "question") return
-                      ;(e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.05)"
-                      ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.1)"
+                      ;(e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"
+                      ;(e.currentTarget as HTMLButtonElement).style.borderColor = "#E4E7EB"
                     }}
                   >
-                    <span style={{ color: "rgba(255,255,255,0.3)", marginRight: "10px", fontWeight: 400 }}>
+                    <span style={{ color: "#9CA3AF", marginRight: "10px", fontWeight: 400 }}>
                       {String.fromCharCode(65 + i)}.
                     </span>
                     {option.text}
@@ -1679,8 +1680,8 @@ export default function TacticalGamePage() {
                   borderRadius: "12px",
                   background:
                     scenario.options[selectedOption].score >= 2
-                      ? "rgba(34,197,94,0.1)"
-                      : "rgba(239,68,68,0.1)",
+                      ? "rgba(34,197,94,0.08)"
+                      : "rgba(239,68,68,0.08)",
                   border: `1px solid ${scenario.options[selectedOption].score >= 2 ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}`,
                   display: "flex",
                   justifyContent: "space-between",
@@ -1692,8 +1693,8 @@ export default function TacticalGamePage() {
                   style={{
                     color:
                       scenario.options[selectedOption].score >= 2
-                        ? "#86efac"
-                        : "#fca5a5",
+                        ? "#166534"
+                        : "#991b1b",
                     fontSize: "14px",
                     margin: 0,
                     lineHeight: 1.5,

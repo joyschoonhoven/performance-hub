@@ -158,22 +158,19 @@ export default function PlayerDashboardPage() {
     <div className="space-y-6">
 
       {/* ═══ HERO CARD ═════════════════════════════════════════════════════ */}
-      <div className="relative rounded-3xl overflow-hidden"
-        style={{ background: "linear-gradient(150deg, #060e1c 0%, #0A2540 50%, #0d3060 100%)" }}>
-        <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-20 blur-3xl pointer-events-none"
-          style={{ background: rColor }} />
+      <div className="relative hub-card overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-[3px]"
           style={{ background: `linear-gradient(90deg, transparent, ${rColor}, #4FA9E6, transparent)` }} />
 
-        <div className="relative z-10 p-6 sm:p-8">
+        <div className="p-6 sm:p-8">
           <div className="flex items-start gap-5">
             {/* Avatar */}
             <div className="relative flex-shrink-0">
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden flex items-center justify-center font-black text-3xl"
                 style={player.avatar_url
-                  ? { border: `2px solid ${rColor}50` }
-                  : { background: `linear-gradient(135deg, ${rColor}25, ${rColor}50)`,
-                      border: `2px solid ${rColor}50`, color: rColor, fontFamily: "Outfit, sans-serif" }}>
+                  ? { border: `2px solid ${rColor}40` }
+                  : { background: `linear-gradient(135deg, ${rColor}15, ${rColor}30)`,
+                      border: `2px solid ${rColor}40`, color: rColor, fontFamily: "Outfit, sans-serif" }}>
                 {player.avatar_url
                   ? <Image src={player.avatar_url} alt={player.first_name} width={96} height={96} className="object-cover w-full h-full" />
                   : `${player.first_name[0]}${player.last_name[0]}`}
@@ -189,29 +186,29 @@ export default function PlayerDashboardPage() {
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: "#4FA9E6" }}>
                 Performance Hub
               </p>
-              <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight"
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight"
                 style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
                 {player.first_name}{" "}
                 <span style={{ color: rColor }}>{player.last_name.toUpperCase()}</span>
               </h1>
               <div className="flex flex-wrap items-center gap-2 mt-2">
                 <span className="text-xs font-bold px-2.5 py-1 rounded-full border"
-                  style={{ background: `${rColor}20`, color: rColor, borderColor: `${rColor}40` }}>
+                  style={{ background: `${rColor}15`, color: rColor, borderColor: `${rColor}40` }}>
                   {POSITION_LABELS[player.position]}
                 </span>
                 {player.jersey_number && (
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/10 text-white/60 border border-white/10">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
                     #{player.jersey_number}
                   </span>
                 )}
                 {primaryArch && (
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                    style={{ background: `${primaryArch.color}20`, color: primaryArch.color }}>
+                    style={{ background: `${primaryArch.color}15`, color: primaryArch.color }}>
                     {primaryArch.icon} {primaryArch.label}
                   </span>
                 )}
                 {player.team_name && (
-                  <span className="text-xs text-white/40">{player.team_name}</span>
+                  <span className="text-xs text-slate-400">{player.team_name}</span>
                 )}
               </div>
             </div>
@@ -219,21 +216,20 @@ export default function PlayerDashboardPage() {
             {/* Rating */}
             <div className="hidden sm:flex flex-col items-center flex-shrink-0 pt-1">
               <div className="font-black tabular-nums leading-none"
-                style={{ color: rColor, fontSize: "5rem", fontFamily: "Outfit, sans-serif",
-                  textShadow: `0 0 40px ${rColor}40` }}>
+                style={{ color: rColor, fontSize: "5rem", fontFamily: "Outfit, sans-serif" }}>
                 {player.overall_rating}
               </div>
-              <div className="text-[10px] text-white/30 uppercase tracking-widest -mt-1">Rating</div>
+              <div className="text-[10px] text-slate-400 uppercase tracking-widest -mt-1">Rating</div>
             </div>
           </div>
 
           {/* Attribute strip */}
           {catAttrs.length > 0 && (
-            <div className="mt-5 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.09)" }}>
+            <div className="mt-5 pt-4 border-t border-slate-100">
               <div className="grid grid-cols-5 gap-2">
                 {catAttrs.map((attr) => (
-                  <div key={attr.label} className="text-center">
-                    <div className="relative h-1.5 bg-white/10 rounded-full overflow-hidden mb-1.5">
+                  <div key={attr.label} className="text-center bg-slate-100 rounded-xl px-2 py-2">
+                    <div className="relative h-1.5 bg-slate-200 rounded-full overflow-hidden mb-1.5">
                       <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-700"
                         style={{ width: `${attr.score * 10}%`, background: `linear-gradient(90deg, ${attr.color}70, ${attr.color})` }} />
                     </div>
@@ -241,13 +237,13 @@ export default function PlayerDashboardPage() {
                       style={{ color: attr.color, fontFamily: "Outfit, sans-serif" }}>
                       {Math.round(attr.score * 10)}
                     </div>
-                    <div className="text-[9px] font-bold tracking-wider mt-0.5 text-white/45 uppercase">
+                    <div className="text-[9px] font-bold tracking-wider mt-0.5 text-slate-400 uppercase">
                       {attr.label}
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="mt-2 text-[10px] text-white/20 text-right">
+              <div className="mt-2 text-[10px] text-slate-400 text-right">
                 {latestEval ? `Laatste evaluatie: ${formatDate(latestEval.evaluation_date)}` : ""}
               </div>
             </div>
