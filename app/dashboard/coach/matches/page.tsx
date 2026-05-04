@@ -20,7 +20,7 @@ function ResultBadge({ result, home_away }: { result: string; home_away: "home" 
   const myGoals = home_away === "home" ? parseInt(parts[0]) : parseInt(parts[1]);
   const theirGoals = home_away === "home" ? parseInt(parts[1]) : parseInt(parts[0]);
   const outcome = myGoals > theirGoals ? "W" : myGoals === theirGoals ? "G" : "V";
-  const color = outcome === "W" ? "#10B981" : outcome === "G" ? "#f59e0b" : "#ef4444";
+  const color = outcome === "W" ? "#4FA9E6" : outcome === "G" ? "#f59e0b" : "#ef4444";
   return (
     <div className="flex items-center gap-1.5">
       <span className="text-xs font-black px-1.5 py-0.5 rounded"
@@ -85,7 +85,7 @@ export default function CoachMatchesPage() {
         {[
           { label: "Performance Index", value: season.season_index, color: idxColor, suffix: "", icon: <Activity size={13} /> },
           { label: "Wedstrijden", value: season.matches, color: "#4FA9E6", suffix: "", icon: <Calendar size={13} /> },
-          { label: "Doelpunten", value: season.goals, color: "#10B981", suffix: "", icon: <Target size={13} /> },
+          { label: "Doelpunten", value: season.goals, color: "#4FA9E6", suffix: "", icon: <Target size={13} /> },
           { label: "Assists", value: season.assists, color: "#f59e0b", suffix: "", icon: <Trophy size={13} /> },
           { label: "Gem. Rating", value: season.avg_rating, color: "#8b5cf6", suffix: "/10", icon: <TrendingUp size={13} /> },
           { label: "Pass%", value: season.avg_pass_accuracy, color: "#4FA9E6", suffix: "%", icon: <Footprints size={13} /> },
@@ -221,7 +221,7 @@ export default function CoachMatchesPage() {
                   </td>
                   <td className="px-3 py-3 text-xs text-slate-600 tabular-nums">{s.minutes_played}'</td>
                   <td className="px-3 py-3 text-xs font-bold tabular-nums"
-                    style={{ color: s.goals > 0 ? "#10B981" : "#94a3b8" }}>
+                    style={{ color: s.goals > 0 ? "#4FA9E6" : "#94a3b8" }}>
                     {s.goals}
                   </td>
                   <td className="px-3 py-3 text-xs font-bold tabular-nums"
@@ -235,7 +235,7 @@ export default function CoachMatchesPage() {
                         <div className="h-full rounded-full"
                           style={{
                             width: `${s.pass_accuracy}%`,
-                            background: s.pass_accuracy >= 80 ? "#10B981" : s.pass_accuracy >= 65 ? "#f59e0b" : "#ef4444",
+                            background: s.pass_accuracy >= 80 ? "#4FA9E6" : s.pass_accuracy >= 65 ? "#f59e0b" : "#ef4444",
                           }} />
                       </div>
                       <span className="text-[11px] tabular-nums text-slate-600">{s.pass_accuracy}%</span>
@@ -249,7 +249,7 @@ export default function CoachMatchesPage() {
                   <td className="px-3 py-3">
                     <span className="text-sm font-black tabular-nums"
                       style={{
-                        color: s.match_rating >= 8 ? "#10B981" : s.match_rating >= 6.5 ? "#f59e0b" : "#ef4444",
+                        color: s.match_rating >= 8 ? "#4FA9E6" : s.match_rating >= 6.5 ? "#f59e0b" : "#ef4444",
                         fontFamily: "Outfit, sans-serif",
                       }}>
                       {s.match_rating.toFixed(1)}

@@ -8,9 +8,9 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getRatingColor(rating: number): string {
   if (rating >= 85) return "#F59E0B"; // Gold — elite
-  if (rating >= 75) return "#10B981"; // Premium emerald — sterk
-  if (rating >= 65) return "#4FA9E6"; // Premium light blue — goed
-  if (rating >= 55) return "#8B5CF6"; // Purple — gemiddeld
+  if (rating >= 75) return "#4FA9E6"; // Performance Blue — sterk
+  if (rating >= 65) return "#F97316"; // Energy Orange — goed
+  if (rating >= 55) return "#8B5CF6"; // Volt Purple — gemiddeld
   return "#94A3B8";                   // Muted slate — ontwikkeling
 }
 
@@ -24,11 +24,11 @@ export function getRatingLabel(rating: number): string {
 }
 
 export function getScoreColor(score: number): string {
-  if (score >= 8.5) return "#F59E0B"; // gold
-  if (score >= 7)   return "#10B981"; // emerald
-  if (score >= 5)   return "#4FA9E6"; // blue
-  if (score >= 3)   return "#F97316"; // orange
-  return "#EF4444";                   // red
+  if (score >= 8.5) return "#F59E0B"; // Gold — elite
+  if (score >= 7)   return "#4FA9E6"; // Performance Blue — sterk
+  if (score >= 5)   return "#F97316"; // Energy Orange — goed
+  if (score >= 3)   return "#8B5CF6"; // Volt Purple — matig
+  return "#EF4444";                   // Alert Red — zwak
 }
 
 export function calculateOverallFromScores(scores: Record<string, number>): number {

@@ -88,7 +88,7 @@ export function PerformanceIndexCard({
           {trend !== 0 && (
             <span
               className={`text-xs font-bold flex items-center gap-0.5`}
-              style={{ color: trend > 0 ? "#10B981" : "#ef4444" }}
+              style={{ color: trend > 0 ? "#4FA9E6" : "#ef4444" }}
             >
               {trend > 0 ? "▲" : "▼"} {Math.abs(trend)}
             </span>

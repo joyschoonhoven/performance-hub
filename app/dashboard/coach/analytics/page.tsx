@@ -82,7 +82,7 @@ export default function AnalyticsPage() {
     "40–59": "#94A3B8",
     "60–69": "#4FA9E6",
     "70–79": "#8B5CF6",
-    "80–89": "#10B981",
+    "80–89": "#4FA9E6",
     "90+": "#F59E0B",
   };
 
@@ -133,7 +133,7 @@ export default function AnalyticsPage() {
           <div className="flex items-center gap-3">
             {[
               { label: `${players.length} spelers`, bg: "#E8F4FC", color: "#4FA9E6" },
-              { label: `${players.filter(p => p.trend === "up").length} trending ↑`, bg: "#d1fae5", color: "#059669" },
+              { label: `${players.filter(p => p.trend === "up").length} trending ↑`, bg: "#d1fae5", color: "#2B8AC7" },
             ].map((s) => (
               <span key={s.label} className="text-xs font-bold px-3 py-1.5 rounded-full"
                 style={{ background: s.bg, color: s.color }}>
@@ -229,7 +229,7 @@ export default function AnalyticsPage() {
                     <div key={p.id} className="p-4 rounded-xl" style={{ background: "#F4F5F7", border: "1px solid #E4E7EB" }}>
                       <div className="flex items-center gap-2 mb-3">
                         <div className="text-sm font-bold text-slate-900">{p.first_name} {p.last_name}</div>
-                        <span className="hub-tag text-[10px]" style={{ background: "rgba(16,185,129,0.1)", color: "#10B981" }}>↑ Progressie</span>
+                        <span className="hub-tag text-[10px]" style={{ background: "rgba(16,185,129,0.1)", color: "#4FA9E6" }}>↑ Progressie</span>
                       </div>
                       {pd.length > 1 && <ProgressLineChart data={pd} height={100} />}
                     </div>
@@ -376,7 +376,7 @@ export default function AnalyticsPage() {
           <div className="grid grid-cols-2 gap-4">
             {[
               { val: compareA, set: setCompareA, label: "Speler A", color: "#4FA9E6" },
-              { val: compareB, set: setCompareB, label: "Speler B", color: "#10B981" },
+              { val: compareB, set: setCompareB, label: "Speler B", color: "#4FA9E6" },
             ].map(({ val, set, label, color }) => (
               <div key={label}>
                 <label className="flex items-center gap-2 hub-label mb-2">
@@ -406,7 +406,7 @@ export default function AnalyticsPage() {
                 { p: playerA, radar: radarA },
                 { p: playerB, radar: radarB },
               ].map(({ p, radar }, idx) => {
-                const c = idx === 0 ? "#4FA9E6" : "#10B981";
+                const c = idx === 0 ? "#4FA9E6" : "#4FA9E6";
                 return (
                   <div key={p.id} className="hub-card p-4">
                     <div className="hub-label mb-3 flex items-center gap-2">
@@ -431,7 +431,7 @@ export default function AnalyticsPage() {
                   data={radarA}
                   color="#4FA9E6"
                   secondaryData={radarB}
-                  secondaryColor="#10B981"
+                  secondaryColor="#4FA9E6"
                   size={300}
                 />
               </div>
@@ -441,7 +441,7 @@ export default function AnalyticsPage() {
                   <span className="text-xs font-medium text-slate-600">{playerA.first_name} {playerA.last_name}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-1 rounded-full border border-dashed" style={{ background: "#10B981", borderColor: "#10B981" }} />
+                  <div className="w-4 h-1 rounded-full border border-dashed" style={{ background: "#4FA9E6", borderColor: "#4FA9E6" }} />
                   <span className="text-xs font-medium text-slate-600">{playerB.first_name} {playerB.last_name}</span>
                 </div>
               </div>
@@ -464,7 +464,7 @@ export default function AnalyticsPage() {
                   <th className="text-right py-2">
                     <div className="flex items-center justify-end gap-1.5">
                       <span className="hub-label">{playerB.first_name}</span>
-                      <div className="w-2 h-2 rounded-full" style={{ background: "#10B981" }} />
+                      <div className="w-2 h-2 rounded-full" style={{ background: "#4FA9E6" }} />
                     </div>
                   </th>
                 </tr>
@@ -487,13 +487,13 @@ export default function AnalyticsPage() {
                           style={{ color: aWins ? "#4FA9E6" : tie ? "#111111" : "#CBD5E1", fontFamily: "Outfit, sans-serif" }}>
                           {row.fmt(row.a)}
                         </span>
-                        {aWins && <span className="ml-1.5 text-[10px] font-bold text-emerald-500">▲</span>}
+                        {aWins && <span className="ml-1.5 text-[10px] font-bold" style={{ color: "#4FA9E6" }}>▲</span>}
                       </td>
                       <td className="py-3 text-center text-xs text-slate-500">{row.label}</td>
                       <td className="py-3 text-right">
-                        {!aWins && !tie && <span className="mr-1.5 text-[10px] font-bold text-emerald-500">▲</span>}
+                        {!aWins && !tie && <span className="mr-1.5 text-[10px] font-bold" style={{ color: "#4FA9E6" }}>▲</span>}
                         <span className="text-base font-black tabular-nums"
-                          style={{ color: !aWins && !tie ? "#10B981" : tie ? "#111111" : "#CBD5E1", fontFamily: "Outfit, sans-serif" }}>
+                          style={{ color: !aWins && !tie ? "#4FA9E6" : tie ? "#111111" : "#CBD5E1", fontFamily: "Outfit, sans-serif" }}>
                           {row.fmt(row.b)}
                         </span>
                       </td>

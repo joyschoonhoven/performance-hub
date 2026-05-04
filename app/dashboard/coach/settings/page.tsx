@@ -264,7 +264,7 @@ function PasswordResetButton({ email }: { email: string }) {
       disabled={loading || sent}
       className="text-xs font-semibold px-4 py-2 rounded-xl transition-all border disabled:opacity-60"
       style={sent
-        ? { background: "#d1fae5", color: "#059669", borderColor: "#a7f3d0" }
+        ? { background: "#d1fae5", color: "#2B8AC7", borderColor: "#a7f3d0" }
         : { background: "#f8fafc", color: "#475569", borderColor: "#e2e8f0" }
       }
     >

@@ -37,7 +37,7 @@ function SubCriteriaBreakdown({ categoryId, subNotes }: { categoryId: string; su
       {schema.subcategories.map((sub) => {
         const val = subScores[sub.id];
         if (val === undefined) return null;
-        const sc = val >= 8.5 ? "#f59e0b" : val >= 7 ? "#10B981" : val >= 5 ? "#4FA9E6" : "#ef4444";
+        const sc = val >= 8.5 ? "#f59e0b" : val >= 7 ? "#4FA9E6" : val >= 5 ? "#4FA9E6" : "#ef4444";
         return (
           <div key={sub.id} className="flex items-center gap-2">
             <div className="w-32 text-[10px] text-slate-500 truncate flex-shrink-0">{sub.label}</div>
@@ -208,7 +208,7 @@ export default function PlayerDetailPage() {
                 </span>
               )}
               <span className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
-                player.trend === "up" ? "bg-emerald-50 text-emerald-600" :
+                player.trend === "up" ? "bg-sky-50 text-sky-600" :
                 player.trend === "down" ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-500"
               }`}>
                 {player.trend === "up" ? <TrendingUp size={10} /> : player.trend === "down" ? <TrendingDown size={10} /> : <Minus size={10} />}
@@ -220,7 +220,7 @@ export default function PlayerDetailPage() {
             {player.recent_scores && (
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {Object.entries(player.recent_scores).map(([cat, score]) => {
-                  const sc = score >= 8 ? "#059669" : score >= 6 ? "#4FA9E6" : "#ef4444";
+                  const sc = score >= 8 ? "#2B8AC7" : score >= 6 ? "#4FA9E6" : "#ef4444";
                   const bg = score >= 8 ? "#d1fae5" : score >= 6 ? "#E8F4FC" : "#fee2e2";
                   return (
                     <span key={cat} className="text-xs px-2 py-0.5 rounded-lg font-semibold" style={{ background: bg, color: sc }}>
@@ -363,7 +363,7 @@ export default function PlayerDetailPage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
                   { label: "Performance Index", value: seasonIndex, suffix: "", color: idxColor },
-                  { label: "Doelpunten", value: matchSeason.goals, suffix: "", color: "#10B981" },
+                  { label: "Doelpunten", value: matchSeason.goals, suffix: "", color: "#4FA9E6" },
                   { label: "Assists", value: matchSeason.assists, suffix: "", color: "#f59e0b" },
                   { label: "Gem. Rating", value: matchSeason.avg_rating, suffix: "/10", color: "#8b5cf6" },
                   { label: "Pass%", value: matchSeason.avg_pass_accuracy, suffix: "%", color: "#4FA9E6" },
@@ -402,7 +402,7 @@ export default function PlayerDetailPage() {
                         const mine = s.home_away === "home" ? parseInt(parts[0]) : parseInt(parts[1]);
                         const theirs = s.home_away === "home" ? parseInt(parts[1]) : parseInt(parts[0]);
                         const outcome = mine > theirs ? "W" : mine === theirs ? "G" : "V";
-                        const oc = outcome === "W" ? "#10B981" : outcome === "G" ? "#f59e0b" : "#ef4444";
+                        const oc = outcome === "W" ? "#4FA9E6" : outcome === "G" ? "#f59e0b" : "#ef4444";
                         return (
                           <tr key={s.id}
                             style={{ borderBottom: i < playerMatchStats.length - 1 ? "1px solid rgba(15,40,70,0.05)" : "none" }}
@@ -432,14 +432,14 @@ export default function PlayerDetailPage() {
                               </div>
                             </td>
                             <td className="px-3 py-3 text-xs text-slate-500 tabular-nums">{s.minutes_played}'</td>
-                            <td className="px-3 py-3 text-xs font-bold tabular-nums" style={{ color: s.goals > 0 ? "#10B981" : "#94a3b8" }}>{s.goals}</td>
+                            <td className="px-3 py-3 text-xs font-bold tabular-nums" style={{ color: s.goals > 0 ? "#4FA9E6" : "#94a3b8" }}>{s.goals}</td>
                             <td className="px-3 py-3 text-xs font-bold tabular-nums" style={{ color: s.assists > 0 ? "#f59e0b" : "#94a3b8" }}>{s.assists}</td>
                             <td className="px-3 py-3 text-xs text-slate-500 tabular-nums">{s.shots_on_target}/{s.shots}</td>
                             <td className="px-3 py-3">
                               <div className="flex items-center gap-1.5">
                                 <div className="h-1.5 w-10 bg-slate-100 rounded-full overflow-hidden">
                                   <div className="h-full rounded-full"
-                                    style={{ width: `${s.pass_accuracy}%`, background: s.pass_accuracy >= 80 ? "#10B981" : s.pass_accuracy >= 65 ? "#f59e0b" : "#ef4444" }} />
+                                    style={{ width: `${s.pass_accuracy}%`, background: s.pass_accuracy >= 80 ? "#4FA9E6" : s.pass_accuracy >= 65 ? "#f59e0b" : "#ef4444" }} />
                                 </div>
                                 <span className="text-[11px] text-slate-500 tabular-nums">{s.pass_accuracy}%</span>
                               </div>
@@ -448,7 +448,7 @@ export default function PlayerDetailPage() {
                             <td className="px-3 py-3 text-xs text-slate-500 tabular-nums">{s.duels_won}/{s.duels_total}</td>
                             <td className="px-3 py-3">
                               <span className="text-sm font-black tabular-nums"
-                                style={{ color: s.match_rating >= 8 ? "#10B981" : s.match_rating >= 6.5 ? "#f59e0b" : "#ef4444", fontFamily: "Outfit, sans-serif" }}>
+                                style={{ color: s.match_rating >= 8 ? "#4FA9E6" : s.match_rating >= 6.5 ? "#f59e0b" : "#ef4444", fontFamily: "Outfit, sans-serif" }}>
                                 {s.match_rating.toFixed(1)}
                               </span>
                             </td>
@@ -613,7 +613,7 @@ export default function PlayerDetailPage() {
                     {[
                       { key: "noodzaak", label: "Noodzaak", value: identity.core_noodzaak ?? 0, color: "#ef4444", desc: "Fysiek vermogen & werkethiek" },
                       { key: "creativiteit", label: "Creativiteit", value: identity.core_creativiteit ?? 0, color: "#a855f7", desc: "Techniek & tactisch inzicht" },
-                      { key: "vertrouwen", label: "Vertrouwen", value: identity.core_vertrouwen ?? 0, color: "#10B981", desc: "Mentale kracht & consistentie" },
+                      { key: "vertrouwen", label: "Vertrouwen", value: identity.core_vertrouwen ?? 0, color: "#4FA9E6", desc: "Mentale kracht & consistentie" },
                     ].map((kv) => (
                       <div key={kv.key} className="p-4 rounded-xl border border-hub-border bg-hub-surface space-y-3">
                         <div className="flex items-center gap-2">
@@ -827,7 +827,7 @@ export default function PlayerDetailPage() {
               const statusConfig = {
                 open: { color: "#475569", label: "Open" },
                 in_progress: { color: "#f59e0b", label: "Bezig" },
-                completed: { color: "#10B981", label: "Voltooid" },
+                completed: { color: "#4FA9E6", label: "Voltooid" },
                 expired: { color: "#ef4444", label: "Verlopen" },
               }[ch.status];
 

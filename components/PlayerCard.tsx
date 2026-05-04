@@ -33,7 +33,7 @@ function CoreValueBar({ label, value, color }: { label: string; value: number; c
 }
 
 function StatHex({ label, value }: { label: string; value: number }) {
-  const color = value >= 8 ? "#10B981" : value >= 6.5 ? "#4FA9E6" : value >= 5 ? "#f59e0b" : "#ef4444";
+  const color = value >= 8 ? "#4FA9E6" : value >= 6.5 ? "#4FA9E6" : value >= 5 ? "#f59e0b" : "#ef4444";
   // Hexagon points for a 36×42 viewBox
   const hex = "18,2 34,11 34,31 18,40 2,31 2,11";
   return (
@@ -317,7 +317,7 @@ export function PlayerCard({ player, variant = "full", onClick, selected }: Play
           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Kernwaarden</div>
           <CoreValueBar label="Noodzaak" value={identity.core_noodzaak} color="#ef4444" />
           <CoreValueBar label="Creativiteit" value={identity.core_creativiteit} color="#a855f7" />
-          <CoreValueBar label="Vertrouwen" value={identity.core_vertrouwen} color="#10B981" />
+          <CoreValueBar label="Vertrouwen" value={identity.core_vertrouwen} color="#4FA9E6" />
         </div>
       )}
 

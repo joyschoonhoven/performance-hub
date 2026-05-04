@@ -116,7 +116,7 @@ export default function CoachDashboardPage() {
                 {[
                   { label: `${totalPlayers} spelers`, color: "#4FA9E6", bg: "#E8F4FC" },
                   { label: `${avgRating} gem. rating`, color: "#0A2540", bg: "#E8F4FC" },
-                  { label: `${trendingUp} trending ↑`, color: "#059669", bg: "#d1fae5" },
+                  { label: `${trendingUp} trending ↑`, color: "#2B8AC7", bg: "#d1fae5" },
                 ].map(s => (
                   <span key={s.label} className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: s.bg, color: s.color }}>
                     {s.label}
@@ -141,7 +141,7 @@ export default function CoachDashboardPage() {
         {[
           { label: "Spelers", value: totalPlayers, icon: <Users size={18} />, color: "#4FA9E6", bg: "#E8F4FC", sub: `${activePlayers} actief` },
           { label: "Gem. rating", value: avgRating, icon: <Star size={18} />, color: "#d97706", bg: "#fef3c7", sub: "alle spelers" },
-          { label: "Progressie", value: trendingUp, icon: <TrendingUp size={18} />, color: "#059669", bg: "#d1fae5", sub: "trending omhoog" },
+          { label: "Progressie", value: trendingUp, icon: <TrendingUp size={18} />, color: "#2B8AC7", bg: "#d1fae5", sub: "trending omhoog" },
           { label: "Elite (80+)", value: elitePlayers, icon: <Zap size={18} />, color: "#0A2540", bg: "#E8F4FC", sub: "topscore" },
         ].map((stat) => (
           <div key={stat.label} className="hub-card p-5 relative overflow-hidden">
@@ -221,8 +221,8 @@ export default function CoachDashboardPage() {
                       {ev.scores?.map((s) => (
                         <span key={s.category} className="text-xs px-2 py-0.5 rounded-lg"
                           style={{
-                            background: `${s.score >= 8 ? "#10B981" : s.score >= 6 ? "#4FA9E6" : "#ef4444"}18`,
-                            color: s.score >= 8 ? "#10B981" : s.score >= 6 ? "#4FA9E6" : "#f87171",
+                            background: `${s.score >= 8 ? "#4FA9E6" : s.score >= 6 ? "#4FA9E6" : "#ef4444"}18`,
+                            color: s.score >= 8 ? "#4FA9E6" : s.score >= 6 ? "#4FA9E6" : "#f87171",
                           }}>
                           {s.category.slice(0, 3).toUpperCase()} {s.score.toFixed(1)}
                         </span>

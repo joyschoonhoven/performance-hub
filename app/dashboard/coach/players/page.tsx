@@ -88,7 +88,7 @@ export default function PlayersPage() {
               {[
                 { label: `${allPlayers.length} spelers`, color: "#4FA9E6", bg: "#E8F4FC" },
                 { label: `Gem. ${avgRating}`, color: "#0A2540", bg: "#E8F4FC" },
-                { label: `${eliteCount} elite (80+)`, color: "#059669", bg: "#d1fae5" },
+                { label: `${eliteCount} elite (80+)`, color: "#2B8AC7", bg: "#d1fae5" },
               ].map(s => (
                 <span key={s.label} className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: s.bg, color: s.color }}>
                   {s.label}

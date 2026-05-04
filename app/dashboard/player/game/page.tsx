@@ -664,7 +664,7 @@ const scenarios: Scenario[] = [
 
 function getPhaseColor(phase: string): string {
   switch (phase) {
-    case "Aanval": return "#22c55e"
+    case "Aanval": return "#F97316"
     case "Verdediging": return "#ef4444"
     case "Opbouw": return "#3b82f6"
     case "Transitie": return "#f59e0b"
@@ -1338,7 +1338,7 @@ export default function TacticalGamePage() {
                   totalScore >= 18
                     ? "linear-gradient(90deg, #FBBF24, #F59E0B)"
                     : totalScore >= 14
-                    ? "linear-gradient(90deg, #34D399, #10B981)"
+                    ? "linear-gradient(90deg, #34D399, #4FA9E6)"
                     : totalScore >= 10
                     ? "linear-gradient(90deg, #4FA9E6, #3B82F6)"
                     : "linear-gradient(90deg, #FB923C, #F97316)",
@@ -1617,7 +1617,7 @@ export default function TacticalGamePage() {
                   if (i === selectedOption) {
                     if (option.score >= 2) {
                       bg = "rgba(34,197,94,0.15)"
-                      border = "#22c55e"
+                      border = "#F97316"
                       textColor = "#86efac"
                     } else {
                       bg = "rgba(239,68,68,0.15)"

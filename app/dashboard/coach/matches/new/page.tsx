@@ -329,7 +329,7 @@ export default function NewMatchPage() {
           onClick={handleSave}
           disabled={saved}
           className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all"
-          style={{ background: saved ? "#10B981" : "#4FA9E6", color: "white" }}
+          style={{ background: saved ? "#4FA9E6" : "#4FA9E6", color: "white" }}
         >
           <Save size={15} />
           {saved ? "Opgeslagen! ✓" : `Opslaan · Index: ${liveIndex}`}

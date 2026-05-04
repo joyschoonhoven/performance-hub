@@ -50,14 +50,14 @@ const config: Config = {
           card: "#FFFFFF",
           border: "#E4E7EB",
           "border-light": "#D1D5DB",
-          teal: "#4FA9E6",        // Premium Light Blue — accent/actions
+          teal: "#4FA9E6",        // Performance Blue — accent/actions
           "teal-dim": "#2B8AC7",  // Deeper blue for hover
           indigo: "#0A2540",      // Deep Navy — authority/structure
           gold: "#d97706",
           "gold-dim": "#b45309",
           red: "#ef4444",
-          green: "#22c55e",
-          orange: "#f97316",
+          orange: "#f97316",      // Energy Orange
+          purple: "#8B5CF6",      // Volt Purple
         },
         // Sidebar — Deep Navy
         sidebar: {

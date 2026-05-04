@@ -29,7 +29,7 @@ interface ProgressLineChartProps {
 }
 
 const CATEGORY_COLORS = {
-  overall: "#10B981",
+  overall: "#4FA9E6",
   techniek: "#4FA9E6",
   fysiek: "#f59e0b",
   tactiek: "#ec4899",

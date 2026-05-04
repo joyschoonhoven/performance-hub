@@ -220,7 +220,7 @@
   .score-pill { @apply text-xs font-bold px-2 py-0.5 rounded-lg tabular-nums; }
 
   /* ── Trend ── */
-  .trend-up    { @apply text-emerald-600; }
+  .trend-up    { color: #4FA9E6; }
   .trend-down  { @apply text-red-500; }
   .trend-stable { color: #9CA3AF; }
 

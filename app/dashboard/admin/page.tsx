@@ -28,8 +28,8 @@ export default async function AdminPage() {
     : 0;
 
   const statusItems = [
-    { label: "AI Engine", desc: "Claude API integratie", status: "Actief", icon: <CheckCircle2 size={14} />, color: "#10B981" },
-    { label: "Supabase Auth", desc: "Database & authenticatie", status: "Actief", icon: <CheckCircle2 size={14} />, color: "#10B981" },
+    { label: "AI Engine", desc: "Claude API integratie", status: "Actief", icon: <CheckCircle2 size={14} />, color: "#4FA9E6" },
+    { label: "Supabase Auth", desc: "Database & authenticatie", status: "Actief", icon: <CheckCircle2 size={14} />, color: "#4FA9E6" },
     { label: "Email Notificaties", desc: "Evaluatie alerts via SMTP", status: "Inactief", icon: <Clock size={14} />, color: "#94a3b8" },
     { label: "PDF Export", desc: "Player card exports", status: "Beta", icon: <FlaskConical size={14} />, color: "#4FA9E6" },
   ];
@@ -50,10 +50,10 @@ export default async function AdminPage() {
       {/* Platform stats — live data */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Actieve spelers", value: playerCount ?? 0, icon: <Users size={20} />, color: "#10B981" },
+          { label: "Actieve spelers", value: playerCount ?? 0, icon: <Users size={20} />, color: "#4FA9E6" },
           { label: "Coaches", value: coachCount, icon: <Shield size={20} />, color: "#4FA9E6" },
           { label: "Evaluaties", value: evalCount ?? 0, icon: <ClipboardList size={20} />, color: "#f59e0b" },
-          { label: "Gem. rating", value: avgRating || "—", icon: <TrendingUp size={20} />, color: "#22c55e" },
+          { label: "Gem. rating", value: avgRating || "—", icon: <TrendingUp size={20} />, color: "#F97316" },
         ].map((s) => (
           <div key={s.label} className="hub-card p-5">
             <div className="flex items-start justify-between mb-3">

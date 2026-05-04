@@ -156,7 +156,7 @@ export default function CoachChallengesPage() {
               const statusConfig = {
                 open: { color: "#475569", label: "Open" },
                 in_progress: { color: "#f59e0b", label: "Bezig" },
-                completed: { color: "#10B981", label: "Voltooid" },
+                completed: { color: "#4FA9E6", label: "Voltooid" },
                 expired: { color: "#ef4444", label: "Verlopen" },
               }[ch.status];
 

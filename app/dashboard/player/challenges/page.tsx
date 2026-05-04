@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 const STATUS_CONFIG: Record<ChallengeStatus, { label: string; color: string; icon: React.ReactNode }> = {
   open: { label: "Open", color: "#475569", icon: <Clock size={12} /> },
   in_progress: { label: "Bezig", color: "#f59e0b", icon: <Zap size={12} /> },
-  completed: { label: "Voltooid", color: "#10B981", icon: <CheckCircle2 size={12} /> },
+  completed: { label: "Voltooid", color: "#4FA9E6", icon: <CheckCircle2 size={12} /> },
   expired: { label: "Verlopen", color: "#ef4444", icon: <Target size={12} /> },
 };
 

@@ -54,7 +54,7 @@ function MatchRow({ stat }: { stat: MatchStat }) {
     ? parseInt(stat.result.split("-")[1])
     : parseInt(stat.result.split("-")[0]);
   const outcome = myGoals > theirGoals ? "W" : myGoals === theirGoals ? "G" : "V";
-  const outcomeColor = outcome === "W" ? "#10B981" : outcome === "G" ? "#f59e0b" : "#ef4444";
+  const outcomeColor = outcome === "W" ? "#4FA9E6" : outcome === "G" ? "#f59e0b" : "#ef4444";
   const { color: idxColor } = getIndexLabel(stat.player_index ?? 0);
 
   return (
@@ -82,7 +82,7 @@ function MatchRow({ stat }: { stat: MatchStat }) {
       <div className="flex items-center gap-3 flex-shrink-0">
         <div className="text-center w-6">
           <div className="text-xs font-black tabular-nums"
-            style={{ color: stat.goals > 0 ? "#10B981" : "#cbd5e1" }}>
+            style={{ color: stat.goals > 0 ? "#4FA9E6" : "#cbd5e1" }}>
             {stat.goals}G
           </div>
         </div>
@@ -99,7 +99,7 @@ function MatchRow({ stat }: { stat: MatchStat }) {
         <div className="text-center w-8">
           <span className="text-sm font-black tabular-nums"
             style={{
-              color: stat.match_rating >= 8 ? "#10B981" : stat.match_rating >= 6.5 ? "#f59e0b" : "#ef4444",
+              color: stat.match_rating >= 8 ? "#4FA9E6" : stat.match_rating >= 6.5 ? "#f59e0b" : "#ef4444",
               fontFamily: "Outfit, sans-serif",
             }}>
             {stat.match_rating.toFixed(1)}
@@ -261,7 +261,7 @@ export default function PlayerAnalyticsPage() {
           {/* Season stats grid */}
           <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Doelpunten", value: season.goals, sub: `${season.goals_per_90}/90'`, color: "#10B981", icon: <Target size={13} /> },
+              { label: "Doelpunten", value: season.goals, sub: `${season.goals_per_90}/90'`, color: "#4FA9E6", icon: <Target size={13} /> },
               { label: "Assists", value: season.assists, sub: `${season.assists_per_90}/90'`, color: "#f59e0b", icon: <TrendingUp size={13} /> },
               { label: "Rating", value: season.avg_rating, sub: "gemiddeld", color: "#8b5cf6", icon: <Activity size={13} />, suffix: "/10" },
               { label: "Pass%", value: `${season.avg_pass_accuracy}%`, sub: "nauwkeurigheid", color: "#4FA9E6", icon: <Footprints size={13} /> },
@@ -326,7 +326,7 @@ export default function PlayerAnalyticsPage() {
               <span className="text-sm font-bold text-slate-900">Aanval</span>
             </div>
             <div className="space-y-3.5">
-              <PercentileBar label="Doelpunten" value={season.goals} max={15} color="#10B981" icon={<Target size={12} />} />
+              <PercentileBar label="Doelpunten" value={season.goals} max={15} color="#4FA9E6" icon={<Target size={12} />} />
               <PercentileBar label="Assists" value={season.assists} max={15} color="#f59e0b" icon={<TrendingUp size={12} />} />
               <PercentileBar label="Schoten" value={season.shots} max={50} color="#6366f1" icon={<Activity size={12} />} />
               <PercentileBar label="Schoten op doel" value={season.shots_on_target} max={30} color="#8b5cf6" icon={<Target size={12} />} />
@@ -343,7 +343,7 @@ export default function PlayerAnalyticsPage() {
             <div className="space-y-3.5">
               <PercentileBar label="Pass%" value={season.avg_pass_accuracy} max={100} color="#4FA9E6" format="%" icon={<Footprints size={12} />} />
               <PercentileBar label="Dribble%" value={season.dribble_success_pct} max={100} color="#f59e0b" format="%" icon={<Activity size={12} />} />
-              <PercentileBar label="Gem. rating" value={season.avg_rating} max={10} color="#10B981" icon={<Activity size={12} />} />
+              <PercentileBar label="Gem. rating" value={season.avg_rating} max={10} color="#4FA9E6" icon={<Activity size={12} />} />
             </div>
           </div>
 
