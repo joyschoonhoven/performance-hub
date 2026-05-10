@@ -104,8 +104,8 @@ export function PlayerRadarChart({
           key={`bg-${li}`}
           d={toPath(pts)}
           fill={li === gridPolys.length - 1
-            ? `${color}05`
-            : li % 2 === 0 ? "rgba(244,245,247,0.8)" : "rgba(255,255,255,0.6)"
+            ? `${color}08`
+            : li % 2 === 0 ? "rgba(0,27,72,0.025)" : "rgba(0,27,72,0.015)"
           }
           stroke="none"
         />
@@ -117,7 +117,7 @@ export function PlayerRadarChart({
           key={`grid-${li}`}
           d={toPath(pts)}
           fill="none"
-          stroke={li === gridPolys.length - 1 ? `${color}40` : "#E4E7EB"}
+          stroke={li === gridPolys.length - 1 ? `${color}40` : "#E2E5EC"}
           strokeWidth={li === gridPolys.length - 1 ? 1.5 : 1}
           strokeDasharray={li < gridPolys.length - 1 ? "3 4" : undefined}
         />
@@ -129,7 +129,7 @@ export function PlayerRadarChart({
         return (
           <text key={`lvl-${li}`}
             x={pt.x + 3} y={pt.y}
-            fontSize={7} fill="#9CA3AF" fontWeight={500}
+            fontSize={7} fill="#9BA3B2" fontWeight={500}
             dominantBaseline="middle" textAnchor="start">
             {Math.round(level * 10)}
           </text>
@@ -141,7 +141,7 @@ export function PlayerRadarChart({
         <line key={`axis-${i}`}
           x1={cx} y1={cy}
           x2={pt.x} y2={pt.y}
-          stroke="#D1D5DB"
+          stroke="#E2E5EC"
           strokeWidth={1}
         />
       ))}
@@ -220,8 +220,8 @@ export function PlayerRadarChart({
               width={labelW}
               height={pillH}
               rx={10}
-              fill="white"
-              stroke="#E4E7EB"
+              fill="#FFFFFF"
+              stroke="#E2E5EC"
               strokeWidth={1}
             />
             {/* Label text — always centered on p.x */}
@@ -232,9 +232,9 @@ export function PlayerRadarChart({
               dominantBaseline="middle"
               fontSize={10}
               fontWeight={700}
-              fill="#374151"
+              fill="#0D1117"
               letterSpacing="0.02em"
-              style={{ fontFamily: "Outfit, sans-serif" }}
+              style={{ fontFamily: "Inter, sans-serif" }}
             >
               {label}
             </text>

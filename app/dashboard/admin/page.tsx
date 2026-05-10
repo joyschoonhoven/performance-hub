@@ -39,11 +39,11 @@ export default async function AdminPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+          <h1 className="text-2xl font-black flex items-center gap-3" style={{ color: "#001B48" }}>
             <Shield size={24} className="text-amber-400" />
             Admin Panel
           </h1>
-          <p className="text-slate-600 text-sm mt-1">Schoonhoven Sports Performance Hub beheer</p>
+          <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>Schoonhoven Sports Performance Hub beheer</p>
         </div>
       </div>
 
@@ -61,7 +61,7 @@ export default async function AdminPage() {
                 {s.icon}
               </div>
             </div>
-            <div className="text-3xl font-black text-slate-900 tabular-nums">{s.value}</div>
+            <div className="text-3xl font-black tabular-nums" style={{ color: "#001B48", fontFamily: "Oswald, sans-serif" }}>{s.value}</div>
             <div className="hub-label mt-1">{s.label}</div>
           </div>
         ))}
@@ -77,26 +77,26 @@ export default async function AdminPage() {
             </button>
           </div>
           {allProfiles.length === 0 ? (
-            <div className="py-8 text-center text-slate-500 text-sm">Nog geen gebruikers</div>
+            <div className="py-8 text-center text-[#6C7589] text-sm">Nog geen gebruikers</div>
           ) : (
             <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
               {allProfiles.map((u) => (
                 <div key={u.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-hub-surface transition-all">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold bg-hub-surface border border-hub-border text-slate-900 flex-shrink-0">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold bg-hub-surface border border-hub-border flex-shrink-0" style={{ color: "#001B48" }}>
                     {(u.full_name ?? u.email ?? "?").charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-slate-900 truncate">{u.full_name ?? "—"}</div>
-                    <div className="text-xs text-slate-600 truncate">{u.email}</div>
+                    <div className="text-sm font-semibold truncate" style={{ color: "#0D1117" }}>{u.full_name ?? "—"}</div>
+                    <div className="text-xs truncate" style={{ color: "#6C7589" }}>{u.email}</div>
                   </div>
                   <span className={`hub-tag text-[10px] flex-shrink-0 ${
                     u.role === "coach" ? "bg-hub-teal/10 text-hub-teal" :
                     u.role === "admin" ? "bg-amber-500/10 text-amber-400" :
-                    "bg-slate-100 text-slate-600"
+                    "bg-[#F5F6F8] text-[#6C7589]"
                   }`}>
                     {u.role ?? "player"}
                   </span>
-                  <button className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
+                  <button className="transition-colors flex-shrink-0" style={{ color: "#6C7589" }} onMouseEnter={e => (e.currentTarget.style.color = "#001B48")} onMouseLeave={e => (e.currentTarget.style.color = "#6C7589")}>
                     <Settings size={14} />
                   </button>
                 </div>
@@ -109,7 +109,7 @@ export default async function AdminPage() {
         <div className="hub-card p-5">
           <div className="hub-label mb-4">Spelers Overzicht ({allPlayers.length})</div>
           {allPlayers.length === 0 ? (
-            <div className="py-8 text-center text-slate-500 text-sm">Nog geen spelers geregistreerd</div>
+            <div className="py-8 text-center text-[#6C7589] text-sm">Nog geen spelers geregistreerd</div>
           ) : (
             <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
               {allPlayers.map((p) => {
@@ -122,10 +122,10 @@ export default async function AdminPage() {
                       {p.first_name?.[0]}{p.last_name?.[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-semibold text-slate-900 truncate">
+                      <div className="text-xs font-semibold truncate" style={{ color: "#0D1117" }}>
                         {p.first_name} {p.last_name}
                       </div>
-                      <div className="text-[10px] text-slate-600">
+                      <div className="text-[10px]" style={{ color: "#6C7589" }}>
                         {POSITION_LABELS[p.position as keyof typeof POSITION_LABELS] ?? p.position} · {p.team_name}
                       </div>
                     </div>
@@ -155,8 +155,8 @@ export default async function AdminPage() {
                 {s.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-slate-900">{s.label}</div>
-                <div className="text-xs text-slate-600">{s.desc}</div>
+                <div className="text-sm font-semibold" style={{ color: "#0D1117" }}>{s.label}</div>
+                <div className="text-xs" style={{ color: "#6C7589" }}>{s.desc}</div>
               </div>
               <span className="hub-tag text-xs flex-shrink-0" style={{ color: s.color, background: `${s.color}15` }}>
                 {s.status}
@@ -164,7 +164,7 @@ export default async function AdminPage() {
             </div>
           ))}
         </div>
-        <p className="text-xs text-slate-500 mt-3 flex items-center gap-1.5">
+        <p className="text-xs text-[#6C7589] mt-3 flex items-center gap-1.5">
           <AlertCircle size={11} />
           Email notificaties vereisen SMTP-configuratie in omgevingsvariabelen.
         </p>

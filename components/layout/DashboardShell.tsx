@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import type { UserRole } from "@/lib/types";
-import { Menu, LogOut } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 interface DashboardShellProps {
   role: UserRole;
@@ -14,9 +14,34 @@ interface DashboardShellProps {
   children: React.ReactNode;
 }
 
+const ROUTE_LABELS: Record<string, string> = {
+  "/dashboard/player":             "Dashboard",
+  "/dashboard/player/card":        "Player Card",
+  "/dashboard/player/evaluations": "Evaluaties",
+  "/dashboard/player/challenges":  "Challenges",
+  "/dashboard/player/analytics":   "Analytics",
+  "/dashboard/player/game":        "Tactisch IQ",
+  "/dashboard/player/heatmap":     "Heatmap",
+  "/dashboard/player/settings":    "Instellingen",
+  "/dashboard/coach":              "Dashboard",
+  "/dashboard/coach/profile":      "Mijn Profiel",
+  "/dashboard/coach/players":      "Spelers",
+  "/dashboard/coach/matches":      "Wedstrijden",
+  "/dashboard/coach/evaluations":  "Evaluaties",
+  "/dashboard/coach/ai":           "AI Scouting",
+  "/dashboard/coach/analytics":    "Analytics",
+  "/dashboard/coach/challenges":   "Challenges",
+  "/dashboard/coach/settings":     "Instellingen",
+  "/dashboard/admin":              "Admin Panel",
+  "/dashboard/admin/users":        "Gebruikers",
+  "/dashboard/admin/assignments":  "Koppelingen",
+  "/dashboard/admin/analytics":    "Analytics",
+};
+
 export function DashboardShell({ role, userName, userEmail, children }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
 
   async function handleLogout() {
@@ -25,101 +50,201 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
     router.refresh();
   }
 
-  const roleLabel = role === "coach" ? "Coach" : role === "player" ? "Speler" : "Admin";
+  const pageLabel = ROUTE_LABELS[pathname] ?? "";
+  const firstName = userName.split(" ")[0];
+  const initials = userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex h-screen bg-hub-bg overflow-hidden">
+    <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "var(--bg)" }}>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-20 bg-black/60 lg:hidden backdrop-blur-sm"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 20,
+            background: "rgba(0,27,72,0.45)",
+            backdropFilter: "blur(4px)",
+          }}
+          className="lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar — fixed on mobile, static on desktop */}
-      <div className={`
-        fixed inset-y-0 left-0 z-30 lg:static lg:z-auto lg:flex lg:flex-shrink-0
-        transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-      `}>
-        <Sidebar
-          role={role}
-          userName={userName}
-          userEmail={userEmail}
-          onNavigate={() => setSidebarOpen(false)}
-        />
+      {/* Mobile sidebar full-width */}
+      <div
+        className="lg:hidden"
+        style={{
+          position: "fixed",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 30,
+          transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform 0.2s ease-out",
+        }}
+      >
+        <Sidebar role={role} userName={userName} userEmail={userEmail} onNavigate={() => setSidebarOpen(false)} />
       </div>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-y-auto min-w-0">
-        {/* Mobile top bar */}
-        <div className="lg:hidden sticky top-0 z-10 bg-white"
-          style={{ borderBottom: "1px solid #E4E7EB", boxShadow: "0 1px 8px rgba(10,37,64,0.06)" }}>
-          <div className="flex items-center gap-3 px-4 py-3">
+      {/* Desktop sidebar */}
+      <div className="hidden lg:flex">
+        <Sidebar role={role} userName={userName} userEmail={userEmail} />
+      </div>
+
+      {/* Main content area */}
+      <main style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", minWidth: 0 }}>
+        {/* Top bar */}
+        <div
+          style={{
+            height: 52,
+            flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 24px",
+            background: "var(--surface)",
+            borderBottom: "1px solid var(--border)",
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+          }}
+        >
+          {/* Left: mobile menu + page title */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
-              onClick={() => setSidebarOpen(true)}
-              className="p-2 rounded-xl transition-colors"
-              style={{ color: "#6B7280" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#F4F5F7"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+              className="lg:hidden"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 7,
+                border: "1px solid var(--border)",
+                background: "transparent",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "var(--text-muted)",
+              }}
             >
-              <Menu size={20} />
+              {sidebarOpen ? <X size={15} /> : <Menu size={15} />}
             </button>
-            <div className="flex-1 flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: "#0A2540" }}>
-                <span className="text-white text-[10px] font-black">PH</span>
-              </div>
-              <span className="font-bold text-sm" style={{ color: "#111111", fontFamily: "Outfit, sans-serif" }}>Performance Hub</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl"
-                style={{ background: "rgba(79,169,230,0.08)", border: "1px solid rgba(79,169,230,0.18)" }}>
-                <div className="w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-black text-white"
-                  style={{ background: "#0A2540" }}>
-                  {userName.charAt(0).toUpperCase()}
-                </div>
-                <span className="text-xs font-semibold" style={{ color: "#2B8AC7" }}>{roleLabel}</span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="p-2 rounded-xl transition-colors"
-                style={{ color: "#9CA3AF" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#ef4444"; (e.currentTarget as HTMLButtonElement).style.background = "#FEF2F2"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#9CA3AF"; (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
-                title="Uitloggen"
+
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span
+                style={{
+                  fontSize: 11,
+                  color: "var(--text-dim)",
+                  letterSpacing: "0.04em",
+                  fontWeight: 500,
+                }}
               >
-                <LogOut size={16} />
-              </button>
+                Performance Hub
+              </span>
+              {pageLabel && (
+                <>
+                  <span style={{ color: "var(--border-strong)", fontSize: 12 }}>/</span>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: "var(--text-2)",
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {pageLabel}
+                  </span>
+                </>
+              )}
             </div>
+          </div>
+
+          {/* Right: user chip + logout */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "5px 10px 5px 6px",
+                borderRadius: 8,
+                border: "1px solid var(--border)",
+                background: "var(--bg)",
+              }}
+            >
+              <div
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 6,
+                  background: "var(--navy)",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.02em",
+                  flexShrink: 0,
+                }}
+              >
+                {initials}
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 500, color: "var(--text-2)" }}>{firstName}</span>
+              <span
+                style={{
+                  fontSize: 9,
+                  fontWeight: 700,
+                  color: "var(--gold-dim)",
+                  background: "rgba(196,168,79,0.1)",
+                  padding: "2px 6px",
+                  borderRadius: 4,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {role === "coach" ? "Coach" : role === "player" ? "Speler" : "Admin"}
+              </span>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              title="Uitloggen"
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 7,
+                border: "1px solid var(--border)",
+                background: "transparent",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "var(--text-dim)",
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.color = "var(--red)";
+                (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(220,38,38,0.3)";
+                (e.currentTarget as HTMLButtonElement).style.background = "rgba(220,38,38,0.05)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.color = "var(--text-dim)";
+                (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)";
+                (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+              }}
+            >
+              <LogOut size={13} />
+            </button>
           </div>
         </div>
-        {/* Desktop top bar */}
-        <div className="hidden lg:flex items-center justify-between px-8 py-3 bg-white"
-          style={{ borderBottom: "1px solid #E4E7EB", boxShadow: "0 1px 4px rgba(10,37,64,0.04)" }}>
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: "#0A2540" }}>
-              <span className="text-white text-[10px] font-black">PH</span>
-            </div>
-            <span className="text-sm font-bold" style={{ color: "#111111", fontFamily: "Outfit, sans-serif" }}>Performance Hub</span>
-            <span className="text-xs mx-1" style={{ color: "#D1D5DB" }}>·</span>
-            <span className="text-xs" style={{ color: "#9CA3AF", fontFamily: "Outfit, sans-serif" }}>Schoonhoven Sports</span>
+
+        {/* Scrollable content */}
+        <div style={{ flex: 1, overflowY: "auto" }}>
+          <div style={{ padding: "28px 28px 40px", minHeight: "100%" }}>
+            {children}
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl"
-            style={{ background: "rgba(79,169,230,0.07)", border: "1px solid rgba(79,169,230,0.15)" }}>
-            <div className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black text-white"
-              style={{ background: "#0A2540" }}>
-              {userName.charAt(0).toUpperCase()}
-            </div>
-            <span className="text-xs font-semibold" style={{ color: "#2B8AC7", fontFamily: "Outfit, sans-serif" }}>{userName.split(" ")[0] || roleLabel}</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold"
-              style={{ background: "rgba(79,169,230,0.12)", color: "#4FA9E6" }}>{roleLabel}</span>
-          </div>
-        </div>
-        <div className="min-h-full p-4 lg:p-8">
-          {children}
         </div>
       </main>
     </div>

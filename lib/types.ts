@@ -326,6 +326,12 @@ export interface Evaluation {
   assessed_archetype?: ArchetypeType;
   assessed_sociotype?: SociotypeName;
   assessed_position?: PositionType;
+  // Qualitative coach feedback
+  strengths?: string;
+  improvement_points?: string;
+  potential_level?: string;
+  player_type_description?: string;
+  position_description?: string;
 }
 
 export interface EvaluationScore {
@@ -427,7 +433,7 @@ export const CATEGORY_ICONS: Record<EvaluationCategory, string> = {
 };
 
 export const CATEGORY_COLORS: Record<EvaluationCategory, string> = {
-  techniek: "#00b891",
+  techniek: "#4FA9E6",
   fysiek: "#6366f1",
   tactiek: "#d97706",
   mentaal: "#ef4444",
@@ -457,7 +463,7 @@ export const EVALUATION_SCHEMA: CategoryDef[] = [
     id: "techniek",
     label: "Techniek",
     icon: "⚽",
-    color: "#00b891",
+    color: "#4FA9E6",
     subcategories: [
       { id: "korte_pass", label: "Korte pass", description: "Kwaliteit en precisie van korte passes" },
       { id: "lange_pass", label: "Lange pass / Dieptepass", description: "Kwaliteit van lange ballen en dieptepasses" },

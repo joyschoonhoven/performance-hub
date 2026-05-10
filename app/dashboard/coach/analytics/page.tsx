@@ -55,14 +55,14 @@ export default function AnalyticsPage() {
   if (players.length === 0) return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+        <h1 className="text-2xl font-black flex items-center gap-3" style={{ color: 'var(--color-text-primary)' }}>
           <BarChart3 size={24} className="text-hub-teal" />
           Analytics
         </h1>
       </div>
       <div className="hub-card p-12 text-center">
-        <BarChart3 size={40} className="text-slate-300 mx-auto mb-3" />
-        <div className="text-slate-600">Nog geen spelers om te analyseren.</div>
+        <BarChart3 size={40} className="mx-auto mb-3" style={{ color: 'var(--color-text-muted)' }} />
+        <div style={{ color: 'var(--color-text-muted)' }}>Nog geen spelers om te analyseren.</div>
       </div>
     </div>
   );
@@ -124,11 +124,11 @@ export default function AnalyticsPage() {
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-hub-teal mb-0.5" style={{ fontFamily: "Outfit, sans-serif" }}>Coach</p>
-            <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2" style={{ fontFamily: "Outfit, sans-serif" }}>
+            <h1 className="text-2xl font-black flex items-center gap-2" style={{ fontFamily: "Outfit, sans-serif", color: 'var(--color-text-primary)' }}>
               <BarChart3 size={22} className="text-hub-teal" />
               Analytics
             </h1>
-            <p className="text-slate-500 text-sm mt-1">Team performance inzichten</p>
+            <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>Team performance inzichten</p>
           </div>
           <div className="flex items-center gap-3">
             {[
@@ -150,8 +150,8 @@ export default function AnalyticsPage() {
           <button key={t.id} onClick={() => setTab(t.id)}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0"
             style={tab === t.id
-              ? { background: "#0A2540", color: "#FFFFFF", boxShadow: "0 2px 8px rgba(10,37,64,0.2)" }
-              : { color: "#64748b" }
+              ? { background: '#FFFFFF', color: '#C4A84F', boxShadow: "0 2px 8px rgba(0,0,0,0.08)", border: "1px solid #E2E5EC" }
+              : { color: 'var(--color-text-muted)' }
             }>
             {t.icon}{t.label}
           </button>
@@ -174,11 +174,11 @@ export default function AnalyticsPage() {
               <div className="hub-label mb-4">Rating Verdeling</div>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={ratingBuckets} margin={{ left: -20, right: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F4F5F7" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E5EC" vertical={false} />
                   <XAxis dataKey="range" tick={{ fill: "#94A3B8", fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "#94A3B8", fontSize: 11 }} axisLine={false} tickLine={false} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#ffffff", border: "1px solid #E4E7EB", borderRadius: 12, fontSize: 12, boxShadow: "0 4px 16px rgba(10,37,64,0.08)" }}
+                    contentStyle={{ backgroundColor: "var(--color-surface-2)", border: "1px solid var(--color-border)", borderRadius: 12, fontSize: 12, color: "var(--color-text-primary)", boxShadow: "0 4px 16px rgba(0,0,0,0.4)" }}
                     cursor={{ fill: "rgba(79,169,230,0.05)" }}
                   />
                   <Bar dataKey="count" radius={[6, 6, 0, 0]}>
@@ -198,14 +198,14 @@ export default function AnalyticsPage() {
                   const pct = (pd.count / players.length) * 100;
                   return (
                     <div key={pd.position} className="flex items-center gap-3">
-                      <div className="w-10 text-xs font-bold text-slate-600 flex-shrink-0">{pd.position}</div>
-                      <div className="flex-1 h-6 rounded-lg overflow-hidden" style={{ background: "#F4F5F7" }}>
+                      <div className="w-10 text-xs font-bold flex-shrink-0" style={{ color: 'var(--color-text-muted)' }}>{pd.position}</div>
+                      <div className="flex-1 h-6 rounded-lg overflow-hidden" style={{ background: 'var(--color-surface)' }}>
                         <div className="h-full rounded-lg flex items-center px-2 transition-all"
                           style={{ width: `${Math.max(pct, 8)}%`, background: "linear-gradient(90deg, #4FA9E6, #2B8AC7)" }}>
                           <span className="text-[10px] font-bold text-white">{pd.count}</span>
                         </div>
                       </div>
-                      <div className="text-[10px] text-slate-500 w-20 text-right flex-shrink-0">
+                      <div className="text-[10px] w-20 text-right flex-shrink-0" style={{ color: 'var(--color-text-muted)' }}>
                         {POSITION_LABELS[pd.position as keyof typeof POSITION_LABELS]}
                       </div>
                     </div>
@@ -226,9 +226,9 @@ export default function AnalyticsPage() {
                 {players.filter((p) => p.trend === "up").map((p) => {
                   const pd = buildProgressData(p.evaluations ?? []);
                   return (
-                    <div key={p.id} className="p-4 rounded-xl" style={{ background: "#F4F5F7", border: "1px solid #E4E7EB" }}>
+                    <div key={p.id} className="p-4 rounded-xl" style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)' }}>
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="text-sm font-bold text-slate-900">{p.first_name} {p.last_name}</div>
+                        <div className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{p.first_name} {p.last_name}</div>
                         <span className="hub-tag text-[10px]" style={{ background: "rgba(16,185,129,0.1)", color: "#4FA9E6" }}>↑ Progressie</span>
                       </div>
                       {pd.length > 1 && <ProgressLineChart data={pd} height={100} />}
@@ -262,19 +262,19 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="hub-label text-[10px] mb-1" style={{ color }}>Beste Performance</div>
-                    <div className="text-2xl font-black text-slate-900" style={{ fontFamily: "Outfit, sans-serif" }}>
+                    <div className="text-2xl font-black" style={{ fontFamily: "Outfit, sans-serif", color: 'var(--color-text-primary)' }}>
                       {top.name}
                     </div>
                     <div className="flex items-center gap-2 mt-2">
                       <span className="text-[10px] font-bold px-2 py-1 rounded-full"
                         style={{ background: `${color}15`, color }}>{top.indexLabel}</span>
-                      <span className="text-xs text-slate-400">{top.position} · {top.season.matches} wedstrijden</span>
+                      <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{top.position} · {top.season.matches} wedstrijden</span>
                     </div>
-                    <div className="flex gap-4 mt-3 text-slate-500 text-xs">
-                      <span><span className="text-slate-900 font-bold">{top.season.goals}</span> G</span>
-                      <span><span className="text-slate-900 font-bold">{top.season.assists}</span> A</span>
-                      <span><span className="text-slate-900 font-bold">{top.season.avg_rating}</span> Rtg</span>
-                      <span><span className="text-slate-900 font-bold">{top.season.avg_pass_accuracy}%</span> Pass</span>
+                    <div className="flex gap-4 mt-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                      <span><span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{top.season.goals}</span> G</span>
+                      <span><span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{top.season.assists}</span> A</span>
+                      <span><span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{top.season.avg_rating}</span> Rtg</span>
+                      <span><span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{top.season.avg_pass_accuracy}%</span> Pass</span>
                     </div>
                   </div>
                 </div>
@@ -285,7 +285,7 @@ export default function AnalyticsPage() {
           {/* Leaderboard */}
           <div className="hub-card overflow-hidden">
             <div className="px-5 py-4 border-b border-hub-border flex items-center justify-between">
-              <span className="text-sm font-bold text-slate-900">Performance Index Ranglijst</span>
+              <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Performance Index Ranglijst</span>
               <Link href="/dashboard/coach/matches"
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg"
                 style={{ background: "rgba(79,169,230,0.08)", color: "#4FA9E6" }}>
@@ -316,24 +316,24 @@ export default function AnalyticsPage() {
 
                     {/* Name + position */}
                     <div className="w-40 flex-shrink-0">
-                      <div className="text-sm font-bold text-slate-900">{p.name.split(" ")[0]} {p.name.split(" ").slice(1).join(" ")}</div>
-                      <div className="text-[10px] text-slate-400">{p.position} · {p.season.matches} wedstrijden</div>
+                      <div className="text-sm font-bold" style={{ color: "#0D1117" }}>{p.name.split(" ")[0]} {p.name.split(" ").slice(1).join(" ")}</div>
+                      <div className="text-[10px] text-slate-400" style={{ color: "#6C7589" }}>{p.position} · {p.season.matches} wedstrijden</div>
                     </div>
 
                     {/* Index bar */}
                     <div className="flex-1 hidden sm:block">
-                      <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                      <div className="h-2 rounded-full overflow-hidden" style={{ background: "#E2E5EC" }}>
                         <div className="h-full rounded-full transition-all duration-700"
                           style={{ width: `${barPct}%`, background: `linear-gradient(90deg, ${p.color}60, ${p.color})` }} />
                       </div>
                     </div>
 
                     {/* Quick stats */}
-                    <div className="hidden md:flex items-center gap-4 text-xs text-slate-500 flex-shrink-0">
-                      <span className="tabular-nums"><span className="font-bold text-slate-700">{p.season.goals}</span> G</span>
-                      <span className="tabular-nums"><span className="font-bold text-slate-700">{p.season.assists}</span> A</span>
-                      <span className="tabular-nums"><span className="font-bold text-slate-700">{p.season.avg_rating}</span> Rtg</span>
-                      <span className="tabular-nums"><span className="font-bold text-slate-700">{p.season.avg_pass_accuracy}%</span> Pass</span>
+                    <div className="hidden md:flex items-center gap-4 text-xs flex-shrink-0" style={{ color: "#6C7589" }}>
+                      <span className="tabular-nums"><span className="font-bold" style={{ color: "#0D1117" }}>{p.season.goals}</span> G</span>
+                      <span className="tabular-nums"><span className="font-bold" style={{ color: "#0D1117" }}>{p.season.assists}</span> A</span>
+                      <span className="tabular-nums"><span className="font-bold" style={{ color: "#0D1117" }}>{p.season.avg_rating}</span> Rtg</span>
+                      <span className="tabular-nums"><span className="font-bold" style={{ color: "#0D1117" }}>{p.season.avg_pass_accuracy}%</span> Pass</span>
                     </div>
 
                     {/* Index badge */}
@@ -345,7 +345,7 @@ export default function AnalyticsPage() {
               })}
 
               {indexPlayers.length === 0 && (
-                <div className="py-12 text-center text-slate-500 text-sm">
+                <div className="py-12 text-center text-[#6C7589] text-sm">
                   Nog geen wedstrijddata beschikbaar.
                   <Link href="/dashboard/coach/matches/new" className="ml-2 text-hub-teal hover:underline">
                     Log een wedstrijd →
@@ -361,7 +361,7 @@ export default function AnalyticsPage() {
       {tab === "ranking" && (
         <div className="hub-card p-5">
           <div className="hub-label mb-1">Team Ranglijst per Kwaliteit</div>
-          <p className="text-xs text-slate-500 mb-5">Selecteer een categorie om alle spelers te vergelijken.</p>
+          <p className="text-xs text-[#6C7589] mb-5">Selecteer een categorie om alle spelers te vergelijken.</p>
           <PlayerComparisonChart players={players} defaultQuality="techniek" />
         </div>
       )}
@@ -381,7 +381,7 @@ export default function AnalyticsPage() {
                   {label}
                 </label>
                 <select value={val} onChange={(e) => set(e.target.value)}
-                  className="w-full bg-white border border-hub-border rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-hub-teal transition-all">
+                  className="w-full hub-select rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-hub-teal transition-all">
                   {players.map((p) => (
                     <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.overall_rating})</option>
                   ))}
@@ -435,11 +435,11 @@ export default function AnalyticsPage() {
               <div className="flex items-center justify-center gap-6 mt-4">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-1 rounded-full" style={{ background: "#4FA9E6" }} />
-                  <span className="text-xs font-medium text-slate-600">{playerA.first_name} {playerA.last_name}</span>
+                  <span className="text-xs font-medium text-[#6C7589]">{playerA.first_name} {playerA.last_name}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-1 rounded-full border border-dashed" style={{ background: "#4FA9E6", borderColor: "#4FA9E6" }} />
-                  <span className="text-xs font-medium text-slate-600">{playerB.first_name} {playerB.last_name}</span>
+                  <span className="text-xs font-medium text-[#6C7589]">{playerB.first_name} {playerB.last_name}</span>
                 </div>
               </div>
             </div>
@@ -486,7 +486,7 @@ export default function AnalyticsPage() {
                         </span>
                         {aWins && <span className="ml-1.5 text-[10px] font-bold" style={{ color: "#4FA9E6" }}>▲</span>}
                       </td>
-                      <td className="py-3 text-center text-xs text-slate-500">{row.label}</td>
+                      <td className="py-3 text-center text-xs text-[#6C7589]">{row.label}</td>
                       <td className="py-3 text-right">
                         {!aWins && !tie && <span className="mr-1.5 text-[10px] font-bold" style={{ color: "#4FA9E6" }}>▲</span>}
                         <span className="text-base font-black tabular-nums"

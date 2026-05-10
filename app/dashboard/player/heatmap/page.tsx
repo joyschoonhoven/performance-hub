@@ -133,10 +133,10 @@ function PitchHeatmap({ grid }: { grid: Grid }) {
 function HeatLegend() {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[9px] font-semibold uppercase tracking-wider text-slate-400">Laag</span>
+      <span className="text-[9px] font-semibold uppercase tracking-wider text-[#6C7589]">Laag</span>
       <div className="flex-1 h-1.5 rounded-full overflow-hidden"
         style={{ background: "linear-gradient(to right, rgba(4,92,220,0.6), rgba(0,160,255,0.7), rgba(0,200,160,0.75), rgba(255,180,0,0.8), rgba(255,60,0,0.85))" }} />
-      <span className="text-[9px] font-semibold uppercase tracking-wider text-slate-400">Hoog</span>
+      <span className="text-[9px] font-semibold uppercase tracking-wider text-[#6C7589]">Hoog</span>
     </div>
   );
 }
@@ -226,7 +226,7 @@ export default function HeatmapPage() {
           <div>
             <Link href="/dashboard/player/card"
               className="inline-flex items-center gap-1.5 mb-2 hub-label text-[10px]"
-              style={{ color: "#6B7280" }}>
+              style={{ color: "var(--color-text-muted)" }}>
               <ArrowLeft size={11} /> Spelersprofiel
             </Link>
             <h1 className="hub-heading text-xl">Positie Heatmap</h1>
@@ -253,7 +253,7 @@ export default function HeatmapPage() {
           <div className="hub-card overflow-hidden">
             {/* Photo */}
             <div className="relative h-36 flex items-center justify-center"
-              style={{ background: `linear-gradient(135deg, ${rColor}10, #F4F5F7)` }}>
+              style={{ background: `linear-gradient(135deg, ${rColor}15, var(--color-surface-2))` }}>
               <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl"
                 style={{ background: `linear-gradient(90deg, transparent, ${rColor}60, transparent)` }} />
               {player ? (
@@ -287,7 +287,7 @@ export default function HeatmapPage() {
               {player && (
                 <>
                   <div>
-                    <div className="text-sm font-black text-slate-900" style={{ fontFamily: "Outfit, sans-serif" }}>
+                    <div className="text-sm font-black" style={{ fontFamily: "Outfit, sans-serif", color: "#001B48" }}>
                       {player.first_name} {player.last_name}
                     </div>
                     <div className="flex items-center gap-1.5 mt-1 flex-wrap">
@@ -296,7 +296,7 @@ export default function HeatmapPage() {
                         {player.position}
                       </span>
                       {player.jersey_number && (
-                        <span className="text-[10px] text-slate-500">#{player.jersey_number}</span>
+                        <span className="text-[10px] text-[#6C7589]">#{player.jersey_number}</span>
                       )}
                     </div>
                   </div>
@@ -305,19 +305,19 @@ export default function HeatmapPage() {
                     {age && (
                       <div className="flex items-center justify-between">
                         <span className="hub-label text-[10px]">Leeftijd</span>
-                        <span className="text-xs font-semibold text-slate-700">{age} jaar</span>
+                        <span className="text-xs font-semibold" style={{ color: "#6C7589" }}>{age} jaar</span>
                       </div>
                     )}
                     {player.nationality && (
                       <div className="flex items-center justify-between">
                         <span className="hub-label text-[10px]">Nationaliteit</span>
-                        <span className="text-xs font-semibold text-slate-700">{player.nationality}</span>
+                        <span className="text-xs font-semibold" style={{ color: "#6C7589" }}>{player.nationality}</span>
                       </div>
                     )}
                     {player.team_name && (
                       <div className="flex items-center justify-between">
                         <span className="hub-label text-[10px]">Team</span>
-                        <span className="text-xs font-semibold text-slate-700 truncate max-w-[100px] text-right">
+                        <span className="text-xs font-semibold truncate max-w-[100px] text-right" style={{ color: "#6C7589" }}>
                           {player.team_name}
                         </span>
                       </div>
@@ -333,7 +333,7 @@ export default function HeatmapPage() {
                     {(player.evaluations?.length ?? 0) > 0 && (
                       <div className="flex items-center justify-between">
                         <span className="hub-label text-[10px]">Evaluaties</span>
-                        <span className="text-xs font-semibold text-slate-700">{player.evaluations!.length}</span>
+                        <span className="text-xs font-semibold" style={{ color: "#6C7589" }}>{player.evaluations!.length}</span>
                       </div>
                     )}
                   </div>
@@ -354,7 +354,7 @@ export default function HeatmapPage() {
                   </div>
                   <div>
                     <div className="hub-label text-[9px]">Archetype</div>
-                    <div className="text-xs font-bold text-slate-800">{arch.label}</div>
+                    <div className="text-xs font-bold" style={{ color: "#0D1117" }}>{arch.label}</div>
                   </div>
                 </div>
               )}
@@ -368,7 +368,7 @@ export default function HeatmapPage() {
                     </div>
                     <div>
                       <div className="hub-label text-[9px]">Sociotype</div>
-                      <div className="text-xs font-bold text-slate-800">{socio.label}</div>
+                      <div className="text-xs font-bold" style={{ color: "#0D1117" }}>{socio.label}</div>
                     </div>
                   </div>
                 );
@@ -404,7 +404,7 @@ export default function HeatmapPage() {
                   return (
                     <div key={s.label}>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-slate-600">{s.label}</span>
+                        <span className="text-xs text-[#6C7589]">{s.label}</span>
                         <span className="text-xs font-black tabular-nums" style={{ color: c, fontFamily: "Outfit, sans-serif" }}>
                           {s.value!.toFixed(1)}
                         </span>
@@ -437,8 +437,8 @@ export default function HeatmapPage() {
           {/* Tactical zone */}
           <div className="hub-card-accent p-5">
             <div className="hub-label text-[9px] mb-1">Tactische Zoneclassificatie</div>
-            <div className="text-sm font-bold text-slate-900 mb-2">{zoneDesc.short}</div>
-            <p className="text-xs leading-relaxed text-slate-600">{zoneDesc.tactical}</p>
+            <div className="text-sm font-bold mb-2" style={{ color: "#001B48" }}>{zoneDesc.short}</div>
+            <p className="text-xs leading-relaxed text-[#6C7589]">{zoneDesc.tactical}</p>
           </div>
 
           {/* Zone metrics */}
@@ -465,7 +465,7 @@ export default function HeatmapPage() {
             <div className="space-y-3">
               {posGroups.map((group) => (
                 <div key={group.label}>
-                  <div className="text-[9px] uppercase tracking-widest mb-1.5 text-slate-400">
+                  <div className="text-[9px] uppercase tracking-widest mb-1.5 text-[#6C7589]">
                     {group.label}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -479,7 +479,7 @@ export default function HeatmapPage() {
                           style={isSelected ? {
                             background: `${kColor}15`, border: `1px solid ${kColor}50`, color: kColor,
                           } : {
-                            background: "#F4F5F7", border: "1px solid #E4E7EB", color: "#6B7280",
+                            background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-text-muted)",
                           }}>
                           {key}
                           {isPlayerPos && (
@@ -496,7 +496,7 @@ export default function HeatmapPage() {
             {player?.position && (
               <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-hub-border">
                 <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: posColor }} />
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-[#6C7589]">
                   Primaire positie: {POSITION_LABELS[player.position as keyof typeof POSITION_LABELS]}
                 </span>
               </div>

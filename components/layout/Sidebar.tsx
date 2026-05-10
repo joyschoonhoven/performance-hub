@@ -6,12 +6,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 import type { UserRole } from "@/lib/types";
 import {
   LayoutDashboard, Users, ClipboardList, Brain,
   Trophy, BarChart3, Settings, LogOut,
-  Shield, Star, Target, UserCircle, Sparkles, Gamepad2, Map, Swords,
+  Shield, Star, Target, UserCircle, Gamepad2, Map, Swords,
 } from "lucide-react";
 
 interface NavItem {
@@ -23,29 +22,29 @@ interface NavItem {
 
 function getNavItems(role: UserRole): NavItem[] {
   if (role === "coach") return [
-    { label: "Dashboard", href: "/dashboard/coach", icon: <LayoutDashboard size={16} /> },
-    { label: "Mijn Profiel", href: "/dashboard/coach/profile", icon: <UserCircle size={16} /> },
-    { label: "Spelers", href: "/dashboard/coach/players", icon: <Users size={16} /> },
-    { label: "Wedstrijden", href: "/dashboard/coach/matches", icon: <Swords size={16} />, badge: "NEW" },
-    { label: "Evaluaties", href: "/dashboard/coach/evaluations", icon: <ClipboardList size={16} /> },
-    { label: "AI Scouting", href: "/dashboard/coach/ai", icon: <Brain size={16} />, badge: "AI" },
-    { label: "Analytics", href: "/dashboard/coach/analytics", icon: <BarChart3 size={16} /> },
-    { label: "Challenges", href: "/dashboard/coach/challenges", icon: <Trophy size={16} /> },
+    { label: "Dashboard",    href: "/dashboard/coach",             icon: <LayoutDashboard size={16} /> },
+    { label: "Profiel",      href: "/dashboard/coach/profile",     icon: <UserCircle size={16} /> },
+    { label: "Spelers",      href: "/dashboard/coach/players",     icon: <Users size={16} /> },
+    { label: "Wedstrijden",  href: "/dashboard/coach/matches",     icon: <Swords size={16} />, badge: "NEW" },
+    { label: "Evaluaties",   href: "/dashboard/coach/evaluations", icon: <ClipboardList size={16} /> },
+    { label: "AI Scouting",  href: "/dashboard/coach/ai",          icon: <Brain size={16} />, badge: "AI" },
+    { label: "Analytics",    href: "/dashboard/coach/analytics",   icon: <BarChart3 size={16} /> },
+    { label: "Challenges",   href: "/dashboard/coach/challenges",  icon: <Trophy size={16} /> },
   ];
   if (role === "player") return [
-    { label: "Dashboard", href: "/dashboard/player", icon: <LayoutDashboard size={16} /> },
-    { label: "Player Card", href: "/dashboard/player/card", icon: <Star size={16} /> },
-    { label: "Evaluaties", href: "/dashboard/player/evaluations", icon: <ClipboardList size={16} /> },
-    { label: "Challenges", href: "/dashboard/player/challenges", icon: <Trophy size={16} /> },
-    { label: "Analytics", href: "/dashboard/player/analytics", icon: <BarChart3 size={16} />, badge: "NEW" },
-    { label: "Tactisch IQ", href: "/dashboard/player/game", icon: <Gamepad2 size={16} /> },
-    { label: "Heatmap",     href: "/dashboard/player/heatmap", icon: <Map size={16} /> },
+    { label: "Dashboard",    href: "/dashboard/player",             icon: <LayoutDashboard size={16} /> },
+    { label: "Player Card",  href: "/dashboard/player/card",        icon: <Star size={16} /> },
+    { label: "Evaluaties",   href: "/dashboard/player/evaluations", icon: <ClipboardList size={16} /> },
+    { label: "Challenges",   href: "/dashboard/player/challenges",  icon: <Trophy size={16} /> },
+    { label: "Analytics",    href: "/dashboard/player/analytics",   icon: <BarChart3 size={16} />, badge: "NEW" },
+    { label: "Tactisch IQ",  href: "/dashboard/player/game",        icon: <Gamepad2 size={16} /> },
+    { label: "Heatmap",      href: "/dashboard/player/heatmap",     icon: <Map size={16} /> },
   ];
   return [
-    { label: "Admin Panel", href: "/dashboard/admin", icon: <Shield size={16} /> },
-    { label: "Gebruikers", href: "/dashboard/admin/users", icon: <Users size={16} /> },
-    { label: "Koppelingen", href: "/dashboard/admin/assignments", icon: <Target size={16} /> },
-    { label: "Analytics", href: "/dashboard/admin/analytics", icon: <BarChart3 size={16} /> },
+    { label: "Admin",        href: "/dashboard/admin",              icon: <Shield size={16} /> },
+    { label: "Gebruikers",   href: "/dashboard/admin/users",        icon: <Users size={16} /> },
+    { label: "Koppelingen",  href: "/dashboard/admin/assignments",  icon: <Target size={16} /> },
+    { label: "Analytics",    href: "/dashboard/admin/analytics",    icon: <BarChart3 size={16} /> },
   ];
 }
 
@@ -64,13 +63,13 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadAvatar() {
+    async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data } = await supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle();
       if (data?.avatar_url) setAvatarUrl(data.avatar_url);
     }
-    loadAvatar();
+    load();
   }, [supabase]);
 
   async function handleLogout() {
@@ -79,130 +78,284 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
     router.refresh();
   }
 
-  const roleConfig = {
-    coach: { label: "Coach", color: "#4FA9E6", bg: "rgba(79,169,230,0.15)" },
-    player: { label: "Speler", color: "#93C5FD", bg: "rgba(147,197,253,0.12)" },
-    admin: { label: "Admin", color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
-  }[role];
-
   const initials = userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
 
   return (
-    <aside className="w-64 flex-shrink-0 flex flex-col h-screen sticky top-0" style={{
-      background: "linear-gradient(180deg, #0A2540 0%, #0D2D4D 100%)",
-      borderRight: "1px solid rgba(255,255,255,0.06)",
-    }}>
-      {/* Logo */}
-      <div className="px-5 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center"
-            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <Image src="/logo.png" alt="Logo" width={36} height={36} className="object-contain w-full h-full" />
-          </div>
-          <div>
-            <div className="text-sm font-bold leading-tight text-white" style={{ fontFamily: "Outfit, sans-serif" }}>Performance Hub</div>
-            <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.3)" }}>Schoonhoven Sports</div>
-          </div>
+    <aside
+      style={{
+        width: 72,
+        flexShrink: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        height: "100vh",
+        position: "sticky",
+        top: 0,
+        background: "linear-gradient(180deg, #001B48 0%, #001234 100%)",
+        borderRight: "1px solid rgba(255,255,255,0.06)",
+        paddingTop: 16,
+        paddingBottom: 16,
+        gap: 0,
+      }}
+    >
+      {/* ── Logo mark ── */}
+      <Link href={`/dashboard/${role}`} onClick={onNavigate} style={{ display: "block", marginBottom: 8 }}>
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 10,
+            overflow: "hidden",
+            background: "rgba(196,168,79,0.12)",
+            border: "1px solid rgba(196,168,79,0.22)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Image src="/logo.png" alt="Logo" width={32} height={32} style={{ objectFit: "contain" }} />
         </div>
-      </div>
+      </Link>
 
-      {/* Nav section label */}
-      <div className="px-5 pt-5 pb-2">
-        <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.2)", fontFamily: "Outfit, sans-serif" }}>
-          Menu
-        </span>
-      </div>
+      {/* ── Divider ── */}
+      <div style={{ width: 32, height: 1, background: "rgba(255,255,255,0.08)", margin: "12px 0" }} />
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto pb-4">
+      {/* ── Nav items ── */}
+      <nav style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: "100%", padding: "0 8px" }}>
         {navItems.map((item) => {
-          const isActive = pathname === item.href ||
-            (item.href !== `/dashboard/${role}` && item.href !== `/dashboard/${role}/profile` && pathname.startsWith(item.href));
-          const active = isActive || pathname === item.href;
+          const isActive =
+            pathname === item.href ||
+            (item.href !== `/dashboard/${role}` &&
+              item.href !== `/dashboard/${role}/profile` &&
+              pathname.startsWith(item.href));
 
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative"
-              style={active ? {
-                background: "rgba(79,169,230,0.14)",
-                border: "1px solid rgba(79,169,230,0.22)",
-                color: "#4FA9E6",
-                fontFamily: "Outfit, sans-serif",
-              } : {
-                border: "1px solid transparent",
-                color: "rgba(255,255,255,0.42)",
-                fontFamily: "Outfit, sans-serif",
-              }}
-              onMouseEnter={(e) => {
-                if (!active) {
-                  e.currentTarget.style.color = "rgba(255,255,255,0.8)";
-                  e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!active) {
-                  e.currentTarget.style.color = "rgba(255,255,255,0.42)";
-                  e.currentTarget.style.background = "transparent";
-                }
-              }}
-            >
-              {active && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full"
-                  style={{ background: "#4FA9E6" }} />
-              )}
-              <span style={{ color: active ? "#4FA9E6" : undefined }}>{item.icon}</span>
-              <span className="flex-1">{item.label}</span>
-              {item.badge && (
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-0.5"
-                  style={{ background: "rgba(79,169,230,0.15)", color: "#4FA9E6" }}>
-                  <Sparkles size={9} /> {item.badge}
+            <div key={item.href} style={{ position: "relative", width: "100%" }} className="group">
+              <Link
+                href={item.href}
+                onClick={onNavigate}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                  padding: "8px 4px 6px",
+                  borderRadius: 8,
+                  gap: 4,
+                  background: isActive ? "rgba(196,168,79,0.12)" : "transparent",
+                  transition: "background 0.15s",
+                  textDecoration: "none",
+                  position: "relative",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) (e.currentTarget as HTMLElement).style.background = "transparent";
+                }}
+              >
+                {/* Active indicator */}
+                {isActive && (
+                  <div style={{
+                    position: "absolute",
+                    left: 0,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    width: 3,
+                    height: 20,
+                    borderRadius: "0 2px 2px 0",
+                    background: "#C4A84F",
+                  }} />
+                )}
+
+                {/* Icon */}
+                <span style={{ color: isActive ? "#C4A84F" : "rgba(255,255,255,0.38)", display: "flex" }}>
+                  {item.icon}
                 </span>
-              )}
-            </Link>
+
+                {/* Label */}
+                <span
+                  style={{
+                    fontSize: 9,
+                    fontWeight: 500,
+                    letterSpacing: "0.03em",
+                    color: isActive ? "#C4A84F" : "rgba(255,255,255,0.28)",
+                    lineHeight: 1,
+                    textAlign: "center",
+                    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
+                  }}
+                >
+                  {item.label}
+                </span>
+
+                {/* Badge dot */}
+                {item.badge && (
+                  <div style={{
+                    position: "absolute",
+                    top: 5,
+                    right: 8,
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: "#C4A84F",
+                    border: "1.5px solid #001B48",
+                  }} />
+                )}
+              </Link>
+
+              {/* Tooltip on hover */}
+              <div
+                className="pointer-events-none opacity-0 group-hover:opacity-100"
+                style={{
+                  position: "absolute",
+                  left: "calc(100% + 10px)",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "#0D1117",
+                  color: "#fff",
+                  fontSize: 11,
+                  fontWeight: 500,
+                  padding: "4px 8px",
+                  borderRadius: 5,
+                  whiteSpace: "nowrap",
+                  zIndex: 100,
+                  pointerEvents: "none",
+                  transition: "opacity 0.12s",
+                  letterSpacing: "0.01em",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+                }}
+              >
+                {item.label}
+              </div>
+            </div>
           );
         })}
       </nav>
 
-      {/* Bottom */}
-      <div className="px-3 pb-4 space-y-1" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "12px" }}>
-        <Link
-          href={`/dashboard/${role}/settings`}
-          className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all"
-          style={{ color: "rgba(255,255,255,0.3)", fontFamily: "Outfit, sans-serif" }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.7)"; e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.3)"; e.currentTarget.style.background = "transparent"; }}
-        >
-          <Settings size={15} />
-          <span>Instellingen</span>
-        </Link>
+      {/* ── Divider ── */}
+      <div style={{ width: 32, height: 1, background: "rgba(255,255,255,0.08)", margin: "8px 0" }} />
 
-        {/* User card */}
-        <div className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
-          <div className="w-8 h-8 rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center text-xs font-bold text-white"
-            style={avatarUrl ? {} : { background: "linear-gradient(135deg, #4FA9E6, #0A2540)" }}>
-            {avatarUrl
-              ? <Image src={avatarUrl} alt={userName} width={32} height={32} className="object-cover w-full h-full" />
-              : initials
-            }
+      {/* ── Bottom actions ── */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: "100%", padding: "0 8px" }}>
+        {/* Settings */}
+        <div style={{ position: "relative", width: "100%" }} className="group">
+          <Link
+            href={`/dashboard/${role}/settings`}
+            onClick={onNavigate}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              padding: "8px 4px 6px",
+              borderRadius: 8,
+              gap: 4,
+              textDecoration: "none",
+              transition: "background 0.15s",
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+          >
+            <Settings size={15} style={{ color: "rgba(255,255,255,0.28)" }} />
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.22)", fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>Inst.</span>
+          </Link>
+          <div
+            className="pointer-events-none opacity-0 group-hover:opacity-100"
+            style={{
+              position: "absolute",
+              left: "calc(100% + 10px)",
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "#0D1117",
+              color: "#fff",
+              fontSize: 11,
+              fontWeight: 500,
+              padding: "4px 8px",
+              borderRadius: 5,
+              whiteSpace: "nowrap",
+              zIndex: 100,
+              pointerEvents: "none",
+              transition: "opacity 0.12s",
+            }}
+          >
+            Instellingen
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold truncate text-white" style={{ fontFamily: "Outfit, sans-serif" }}>{userName}</div>
-            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md inline-block mt-0.5"
-              style={{ background: roleConfig.bg, color: roleConfig.color, fontFamily: "Outfit, sans-serif" }}>
-              {roleConfig.label}
-            </span>
-          </div>
-          <button onClick={handleLogout} title="Uitloggen"
-            className="p-1.5 rounded-lg transition-colors flex-shrink-0"
-            style={{ color: "rgba(255,255,255,0.25)" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#f87171"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.1)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.25)"; (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}>
-            <LogOut size={14} />
+        </div>
+
+        {/* Logout */}
+        <div style={{ position: "relative", width: "100%" }} className="group">
+          <button
+            onClick={handleLogout}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              padding: "8px 4px 6px",
+              borderRadius: 8,
+              gap: 4,
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              transition: "background 0.15s",
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(220,38,38,0.1)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+          >
+            <LogOut size={15} style={{ color: "rgba(255,255,255,0.28)" }} />
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.22)", fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>Uit</span>
           </button>
+          <div
+            className="pointer-events-none opacity-0 group-hover:opacity-100"
+            style={{
+              position: "absolute",
+              left: "calc(100% + 10px)",
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "#0D1117",
+              color: "#fff",
+              fontSize: 11,
+              fontWeight: 500,
+              padding: "4px 8px",
+              borderRadius: 5,
+              whiteSpace: "nowrap",
+              zIndex: 100,
+              pointerEvents: "none",
+              transition: "opacity 0.12s",
+            }}
+          >
+            Uitloggen
+          </div>
+        </div>
+      </div>
+
+      {/* ── Avatar ── */}
+      <div style={{ marginTop: 12 }}>
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            overflow: "hidden",
+            border: "1.5px solid rgba(196,168,79,0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "linear-gradient(135deg, #C4A84F, #8C7535)",
+            color: "#001B48",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.02em",
+            fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
+            flexShrink: 0,
+          }}
+        >
+          {avatarUrl
+            ? <Image src={avatarUrl} alt={userName} width={32} height={32} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
+            : initials}
         </div>
       </div>
     </aside>

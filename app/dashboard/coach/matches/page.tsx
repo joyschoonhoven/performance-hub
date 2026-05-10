@@ -27,7 +27,7 @@ function ResultBadge({ result, home_away }: { result: string; home_away: "home" 
         style={{ background: `${color}20`, color }}>
         {outcome}
       </span>
-      <span className="text-xs text-white/60 font-mono">{result}</span>
+      <span className="text-xs font-mono" style={{ color: "#6C7589" }}>{result}</span>
     </div>
   );
 }

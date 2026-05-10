@@ -30,9 +30,9 @@ function PercentileBar({
     <div className="flex items-center gap-3">
       <div className="w-5 flex-shrink-0" style={{ color }}>{icon}</div>
       <div className="w-28 flex-shrink-0">
-        <span className="text-xs text-slate-600 font-medium">{label}</span>
+        <span className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>{label}</span>
       </div>
-      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "rgba(15,40,70,0.06)" }}>
+      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'var(--color-border)' }}>
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${color}80, ${color})` }}
@@ -64,7 +64,7 @@ function MatchRow({ stat }: { stat: MatchStat }) {
     >
       {/* Date */}
       <div className="w-14 flex-shrink-0">
-        <div className="text-[11px] font-bold text-slate-700">
+        <div className="text-[11px] font-bold" style={{ color: 'var(--color-text-primary)' }}>
           {new Date(stat.match_date).toLocaleDateString("nl-NL", { day: "2-digit", month: "short" })}
         </div>
       </div>
@@ -75,25 +75,25 @@ function MatchRow({ stat }: { stat: MatchStat }) {
       </span>
       {/* Opponent */}
       <div className="flex-1 min-w-0">
-        <div className="text-xs font-semibold text-slate-800 truncate">{stat.opponent}</div>
-        <div className="text-[10px] text-slate-400">{stat.competition} · {stat.result}</div>
+        <div className="text-xs font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{stat.opponent}</div>
+        <div className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>{stat.competition} · {stat.result}</div>
       </div>
       {/* Quick stats */}
       <div className="flex items-center gap-3 flex-shrink-0">
         <div className="text-center w-6">
           <div className="text-xs font-black tabular-nums"
-            style={{ color: stat.goals > 0 ? "#4FA9E6" : "#cbd5e1" }}>
+            style={{ color: stat.goals > 0 ? "#4FA9E6" : "var(--color-text-muted)" }}>
             {stat.goals}G
           </div>
         </div>
         <div className="text-center w-6">
           <div className="text-xs font-black tabular-nums"
-            style={{ color: stat.assists > 0 ? "#f59e0b" : "#cbd5e1" }}>
+            style={{ color: stat.assists > 0 ? "#f59e0b" : "var(--color-text-muted)" }}>
             {stat.assists}A
           </div>
         </div>
         <div className="text-center w-10">
-          <div className="text-[11px] text-slate-500 tabular-nums">{stat.pass_accuracy}%</div>
+          <div className="text-[11px] tabular-nums" style={{ color: 'var(--color-text-muted)' }}>{stat.pass_accuracy}%</div>
         </div>
         {/* Rating */}
         <div className="text-center w-8">
@@ -226,14 +226,14 @@ export default function PlayerAnalyticsPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-black flex items-center gap-3"
-          style={{ color: "#0A2540", fontFamily: "Outfit, sans-serif" }}>
+          style={{ color: "var(--color-text-primary)", fontFamily: "Outfit, sans-serif" }}>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{ background: "rgba(79,169,230,0.1)", border: "1px solid rgba(79,169,230,0.2)" }}>
             <Activity size={18} style={{ color: "#4FA9E6" }} />
           </div>
           Performance Analytics
         </h1>
-        <p className="text-slate-500 text-sm mt-1 ml-12">
+        <p className="text-sm mt-1 ml-12" style={{ color: 'var(--color-text-muted)' }}>
           Seizoen 2024/25 · {season.matches} wedstrijden · {season.minutes} minuten
         </p>
       </div>
@@ -276,7 +276,7 @@ export default function PlayerAnalyticsPage() {
                   style={{ color: s.color, fontFamily: "Outfit, sans-serif" }}>
                   {s.value}{(s as { suffix?: string }).suffix ?? ""}
                 </div>
-                <div className="text-[10px] text-slate-400 mt-0.5">{s.sub}</div>
+                <div className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{s.sub}</div>
               </div>
             ))}
           </div>
@@ -293,7 +293,7 @@ export default function PlayerAnalyticsPage() {
 
       {/* Tabs */}
       <div className="flex gap-1.5 p-1 rounded-xl w-fit"
-        style={{ background: "rgba(15,40,70,0.05)" }}>
+        style={{ background: 'var(--color-surface)' }}>
         {([
           { key: "season", label: "Seizoen Stats" },
           { key: "matches", label: "Wedstrijden" },
@@ -304,8 +304,8 @@ export default function PlayerAnalyticsPage() {
             onClick={() => setTab(t.key)}
             className="text-xs font-semibold px-4 py-2 rounded-lg transition-all"
             style={tab === t.key
-              ? { background: "white", color: "#0A2540", boxShadow: "0 1px 4px rgba(15,40,70,0.1)" }
-              : { color: "#64748b" }}
+              ? { background: 'var(--color-surface-3)', color: 'var(--color-gold)', boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }
+              : { color: 'var(--color-text-muted)' }}
           >
             {t.label}
           </button>
@@ -319,7 +319,7 @@ export default function PlayerAnalyticsPage() {
           <div className="hub-card p-5">
             <div className="flex items-center gap-2 mb-4">
               <Target size={14} className="text-hub-teal" />
-              <span className="text-sm font-bold text-slate-900">Aanval</span>
+              <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Aanval</span>
             </div>
             <div className="space-y-3.5">
               <PercentileBar label="Doelpunten" value={season.goals} max={15} color="#4FA9E6" icon={<Target size={12} />} />
@@ -334,7 +334,7 @@ export default function PlayerAnalyticsPage() {
           <div className="hub-card p-5">
             <div className="flex items-center gap-2 mb-4">
               <Footprints size={14} className="text-hub-teal" />
-              <span className="text-sm font-bold text-slate-900">Passing & Techniek</span>
+              <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Passing & Techniek</span>
             </div>
             <div className="space-y-3.5">
               <PercentileBar label="Pass%" value={season.avg_pass_accuracy} max={100} color="#4FA9E6" format="%" icon={<Footprints size={12} />} />
@@ -347,7 +347,7 @@ export default function PlayerAnalyticsPage() {
           <div className="hub-card p-5">
             <div className="flex items-center gap-2 mb-4">
               <Shield size={14} className="text-hub-teal" />
-              <span className="text-sm font-bold text-slate-900">Defensief & Duels</span>
+              <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Defensief & Duels</span>
             </div>
             <div className="space-y-3.5">
               <PercentileBar label="Duel%" value={season.duel_success_pct} max={100} color="#ef4444" format="%" icon={<Swords size={12} />} />
@@ -361,7 +361,7 @@ export default function PlayerAnalyticsPage() {
             <div className="hub-card p-5">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp size={14} className="text-hub-teal" />
-                <span className="text-sm font-bold text-slate-900">Evaluatie Progressie</span>
+                <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Evaluatie Progressie</span>
               </div>
               <ProgressLineChart data={progressData} showCategories height={200} />
             </div>
@@ -374,16 +374,16 @@ export default function PlayerAnalyticsPage() {
         <div className="hub-card overflow-hidden">
           {/* Header row */}
           <div className="flex items-center gap-3 px-3 py-2 border-b border-hub-border"
-            style={{ background: "rgba(10,37,64,0.03)" }}>
-            <div className="w-14 text-[10px] font-bold uppercase tracking-wider text-slate-400">Datum</div>
+            style={{ background: 'var(--color-surface)' }}>
+            <div className="w-14 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Datum</div>
             <div className="w-6" />
-            <div className="flex-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">Tegenstander</div>
+            <div className="flex-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Tegenstander</div>
             <div className="flex items-center gap-3 flex-shrink-0">
-              <span className="w-6 text-[10px] font-bold text-slate-400 text-center">G</span>
-              <span className="w-6 text-[10px] font-bold text-slate-400 text-center">A</span>
-              <span className="w-10 text-[10px] font-bold text-slate-400 text-center">Pass%</span>
-              <span className="w-8 text-[10px] font-bold text-slate-400 text-center">Rtg</span>
-              <span className="w-9 text-[10px] font-bold text-slate-400 text-center">Idx</span>
+              <span className="w-6 text-[10px] font-bold text-center" style={{ color: 'var(--color-text-muted)' }}>G</span>
+              <span className="w-6 text-[10px] font-bold text-center" style={{ color: 'var(--color-text-muted)' }}>A</span>
+              <span className="w-10 text-[10px] font-bold text-center" style={{ color: 'var(--color-text-muted)' }}>Pass%</span>
+              <span className="w-8 text-[10px] font-bold text-center" style={{ color: 'var(--color-text-muted)' }}>Rtg</span>
+              <span className="w-9 text-[10px] font-bold text-center" style={{ color: 'var(--color-text-muted)' }}>Idx</span>
             </div>
           </div>
           <div className="divide-y divide-hub-border/50 p-1">
@@ -396,17 +396,17 @@ export default function PlayerAnalyticsPage() {
       {tab === "radar" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="hub-card p-5">
-            <div className="text-sm font-bold text-slate-900 mb-4">Performance Radar</div>
+            <div className="text-sm font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Performance Radar</div>
             {radarData.length > 0 ? (
               <PlayerRadarChart data={radarData} color={rColor} size={260} />
             ) : (
-              <div className="h-48 flex items-center justify-center text-slate-500 text-sm">
+              <div className="h-48 flex items-center justify-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Nog geen evaluatiedata
               </div>
             )}
           </div>
           <div className="hub-card p-5">
-            <div className="text-sm font-bold text-slate-900 mb-4">Categorie Scores</div>
+            <div className="text-sm font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Categorie Scores</div>
             {player?.recent_scores ? (
               <div className="space-y-4">
                 {Object.entries(player.recent_scores).map(([cat, score]) => {
@@ -415,7 +415,7 @@ export default function PlayerAnalyticsPage() {
                   return (
                     <div key={cat}>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm text-slate-700 font-medium">{label}</span>
+                        <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{label}</span>
                         <span className="text-sm font-black tabular-nums" style={{ color: sc }}>
                           {(score as number).toFixed(1)}
                         </span>
@@ -429,7 +429,7 @@ export default function PlayerAnalyticsPage() {
                 })}
               </div>
             ) : (
-              <div className="flex items-center justify-center h-48 text-slate-500 text-sm">
+              <div className="flex items-center justify-center h-48 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Nog geen score data
               </div>
             )}
