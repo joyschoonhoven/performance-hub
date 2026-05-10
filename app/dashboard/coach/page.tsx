@@ -6,7 +6,7 @@ import Link from "next/link";
 import {
   Loader2, Users, Plus, ChevronRight, Download, Share2,
   TrendingUp, TrendingDown, Minus, Trophy, ClipboardList,
-  Activity, Calendar, Sparkles, ArrowRight,
+  Activity, Sparkles, ArrowRight,
 } from "lucide-react";
 import { getAllPlayers } from "@/lib/supabase/queries";
 import {
@@ -23,7 +23,6 @@ export default function CoachDashboardPage() {
   const [players, setPlayers] = useState<PlayerWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [coachName, setCoachName] = useState("");
-  const [view, setView] = useState<"month" | "current">("current");
 
   useEffect(() => {
     async function load() {
@@ -93,30 +92,27 @@ export default function CoachDashboardPage() {
   const sortedEvals = [...allEvals].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const effectivenessSeries = sortedEvals.slice(-12);
 
-  // Wins/losses approximation: positive vs. negative trends
-  const wins = players.filter(p => {
+  // Trending up vs down (echte data)
+  const trendingUp = players.filter(p => {
     const evs = p.evaluations ?? [];
     return evs.length >= 2 && (evs[0].overall_score ?? 0) > (evs[1].overall_score ?? 0);
   }).length;
-  const losses = players.filter(p => {
+  const trendingDown = players.filter(p => {
     const evs = p.evaluations ?? [];
     return evs.length >= 2 && (evs[0].overall_score ?? 0) < (evs[1].overall_score ?? 0);
   }).length;
 
-  // Player commitment distribution (donut)
-  const reliable = players.filter(p => (p.evaluations?.length ?? 0) >= 5).length;
-  const committed = players.filter(p => {
+  // Verdeling op basis van aantal evaluaties (transparant gelabeld)
+  const wellEvaluated = players.filter(p => (p.evaluations?.length ?? 0) >= 5).length;
+  const someEvaluations = players.filter(p => {
     const n = p.evaluations?.length ?? 0;
     return n >= 2 && n < 5;
   }).length;
-  const helpful = players.filter(p => {
+  const notEvaluated = players.filter(p => {
     const n = p.evaluations?.length ?? 0;
     return n < 2;
   }).length;
-  const totalDist = Math.max(reliable + committed + helpful, 1);
-
-  // Lineup: top 11 players by rating
-  const lineup = [...players].sort((a, b) => b.overall_rating - a.overall_rating).slice(0, 11);
+  const totalDist = Math.max(wellEvaluated + someEvaluations + notEvaluated, 1);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -316,55 +312,69 @@ export default function CoachDashboardPage() {
       </div>
 
       {/* ═════════════════════ SECOND ROW ═════════════════════ */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr 0.9fr", gap: 14 }}>
-        {/* ── TEAM EFFECTIVENESS LINE ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr", gap: 14 }}>
+        {/* ── EFFECTIVENESS LINE — alleen actuele data ── */}
         <div className="card-lg" style={{ padding: 20 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em" }}>Team Effectiveness</h3>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 10, color: "var(--text-muted)" }}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                <span style={{ width: 16, height: 2, background: "var(--navy)", borderRadius: 1 }} />
-                Theoretisch
-              </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                <span style={{ width: 16, borderTop: "2px dashed var(--gold)" }} />
-                Huidig
-              </span>
+            <div>
+              <h3 style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em" }}>Squad Score Verloop</h3>
+              <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
+                Gemiddelde overall score per evaluatie
+              </p>
             </div>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10, color: "var(--text-muted)" }}>
+              <span style={{ width: 16, height: 2, background: "#C4A84F", borderRadius: 1 }} />
+              {effectivenessSeries.length} datapunten
+            </span>
           </div>
           <EffectivenessChart series={effectivenessSeries} />
-          <div style={{
-            display: "flex", justifyContent: "space-between",
-            marginTop: 8, fontSize: 10, color: "var(--text-dim)",
-            letterSpacing: "0.04em",
-          }}>
-            <span>Tijd →</span>
-            <span>Effectiviteit ↑</span>
-          </div>
         </div>
 
-        {/* ── TEAM LINEUP ── */}
+        {/* ── TREND COUNTER — vervangt fake lineup pitch ── */}
         <div className="card-lg" style={{ padding: 20 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em" }}>Team Lineup Summary</h3>
-            <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 12 }}>
-              <span style={{ color: "var(--text-muted)" }}>Wins <span style={{ color: "var(--green)", fontWeight: 700, fontSize: 13 }}>{wins}</span></span>
-              <span style={{ color: "var(--text-muted)" }}>Loses <span style={{ color: "var(--red)", fontWeight: 700, fontSize: 13 }}>{losses}</span></span>
-            </div>
+          <div style={{ marginBottom: 14 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em" }}>Speler Trends</h3>
+            <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
+              Laatste vs. voorlaatste evaluatie
+            </p>
           </div>
-          <FormationPitch lineup={lineup} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <TrendCounter
+              label="Stijgend"
+              value={trendingUp}
+              total={players.length}
+              color="var(--green)"
+              icon={<TrendingUp size={16} />}
+            />
+            <TrendCounter
+              label="Dalend"
+              value={trendingDown}
+              total={players.length}
+              color="var(--red)"
+              icon={<TrendingDown size={16} />}
+            />
+            <TrendCounter
+              label="Stabiel / Onbekend"
+              value={Math.max(0, players.length - trendingUp - trendingDown)}
+              total={players.length}
+              color="var(--text-muted)"
+              icon={<Minus size={16} />}
+            />
+          </div>
         </div>
 
-        {/* ── PLAYER STATS DONUT ── */}
+        {/* ── EVALUATIE-VERDELING DONUT — eerlijk gelabeld ── */}
         <div className="card-lg" style={{ padding: 20, position: "relative", overflow: "hidden" }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em", marginBottom: 4 }}>Team Player Stat</h3>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12 }}>Verdeling spelers</div>
+          <h3 style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em", marginBottom: 4 }}>Evaluatie Dekking</h3>
+          <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12 }}>
+            Hoeveel spelers zijn voldoende beoordeeld?
+          </p>
 
           <Donut
             slices={[
-              { label: "Reliable", value: reliable, color: "#FFD23F", pct: Math.round((reliable / totalDist) * 100) },
-              { label: "Committed", value: committed, color: "#FB923C", pct: Math.round((committed / totalDist) * 100) },
-              { label: "Helpful", value: helpful, color: "#FCE38A", pct: Math.round((helpful / totalDist) * 100) },
+              { label: "≥ 5 evaluaties", value: wellEvaluated, color: "#16A34A", pct: Math.round((wellEvaluated / totalDist) * 100) },
+              { label: "2 – 4 evaluaties", value: someEvaluations, color: "#D97706", pct: Math.round((someEvaluations / totalDist) * 100) },
+              { label: "< 2 evaluaties", value: notEvaluated, color: "#DC2626", pct: Math.round((notEvaluated / totalDist) * 100) },
             ]}
           />
         </div>
@@ -676,13 +686,13 @@ function EffectivenessChart({ series }: { series: { date: string; overall: numbe
   const H = 140;
   const PAD = 20;
 
-  if (series.length === 0) {
+  if (series.length < 2) {
     return (
       <div style={{
         height: H, display: "flex", alignItems: "center", justifyContent: "center",
-        color: "var(--text-muted)", fontSize: 12,
+        color: "var(--text-muted)", fontSize: 12, textAlign: "center",
       }}>
-        Geen data beschikbaar
+        Minimaal 2 evaluaties nodig voor verloop
       </div>
     );
   }
@@ -690,122 +700,66 @@ function EffectivenessChart({ series }: { series: { date: string; overall: numbe
   const xs = (i: number) => PAD + (i / Math.max(series.length - 1, 1)) * (W - 2 * PAD);
   const ys = (v: number) => H - PAD - ((v - 4) / 6) * (H - 2 * PAD);
 
-  // Theoretical: smooth ascending curve
-  const theoreticalPath = series.map((_, i) => {
-    const v = 5 + Math.sin((i / series.length) * Math.PI) * 2 + i * 0.15;
-    return `${i === 0 ? "M" : "L"}${xs(i)},${ys(Math.min(v, 9))}`;
-  }).join(" ");
-
-  // Current: actual data
   const actualPath = series.map((s, i) => `${i === 0 ? "M" : "L"}${xs(i)},${ys(s.overall)}`).join(" ");
-
-  // Fill under actual
   const fillPath = `${actualPath} L${xs(series.length - 1)},${H - PAD} L${PAD},${H - PAD} Z`;
 
   return (
     <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
       <defs>
         <linearGradient id="effFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#C4A84F" stopOpacity="0.2" />
+          <stop offset="0%" stopColor="#C4A84F" stopOpacity="0.22" />
           <stop offset="100%" stopColor="#C4A84F" stopOpacity="0.02" />
         </linearGradient>
       </defs>
 
-      {/* Y axis */}
+      {/* Grid lines at 5/7/9 */}
+      {[5, 7, 9].map(v => (
+        <g key={v}>
+          <line
+            x1={PAD} x2={W - PAD}
+            y1={ys(v)} y2={ys(v)}
+            stroke="var(--border)"
+            strokeWidth={0.7}
+            strokeDasharray="2 3"
+          />
+          <text x={PAD - 4} y={ys(v) + 3} fontSize={9} fill="var(--text-dim)" textAnchor="end">{v}</text>
+        </g>
+      ))}
+
       <line x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} stroke="var(--border)" strokeWidth={1} />
-      {/* X axis */}
       <line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} stroke="var(--border)" strokeWidth={1} />
 
-      {/* Theoretical line */}
-      <path d={theoreticalPath} fill="none" stroke="var(--navy)" strokeWidth={2} />
-
-      {/* Fill under actual */}
       <path d={fillPath} fill="url(#effFill)" />
+      <path d={actualPath} fill="none" stroke="#C4A84F" strokeWidth={2.5} />
 
-      {/* Actual line */}
-      <path d={actualPath} fill="none" stroke="#C4A84F" strokeWidth={2} strokeDasharray="5 3" />
-
-      {/* Dots on actual */}
       {series.map((s, i) => (
-        <circle key={i} cx={xs(i)} cy={ys(s.overall)} r={2.5} fill="#C4A84F" />
+        <circle key={i} cx={xs(i)} cy={ys(s.overall)} r={3} fill="#C4A84F" stroke="#fff" strokeWidth={1.5} />
       ))}
     </svg>
   );
 }
 
-function FormationPitch({ lineup }: { lineup: PlayerWithDetails[] }) {
-  // 4-3-3 formation positions (relative %)
-  const formations = [
-    [{ x: 50, y: 92, role: "GK" }],
-    [{ x: 18, y: 75, role: "LB" }, { x: 38, y: 78, role: "CB" }, { x: 62, y: 78, role: "CB" }, { x: 82, y: 75, role: "RB" }],
-    [{ x: 30, y: 52, role: "CM" }, { x: 50, y: 56, role: "CM" }, { x: 70, y: 52, role: "CM" }],
-    [{ x: 22, y: 25, role: "LW" }, { x: 50, y: 18, role: "ST" }, { x: 78, y: 25, role: "RW" }],
-  ];
-
-  const allPositions = formations.flat();
-
+function TrendCounter({ label, value, total, color, icon }: {
+  label: string; value: number; total: number; color: string; icon: React.ReactNode;
+}) {
+  const pct = total > 0 ? Math.round((value / total) * 100) : 0;
   return (
-    <div style={{
-      position: "relative",
-      borderRadius: 8,
-      overflow: "hidden",
-      background: "linear-gradient(180deg, #2C7A2C 0%, #1B5E1B 100%)",
-      padding: "14px 18px",
-      aspectRatio: "1.4 / 1",
-      minHeight: 200,
-    }}>
-      {/* Pitch lines */}
-      <div style={{ position: "absolute", inset: 8, border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: 4 }} />
-      <div style={{ position: "absolute", left: "50%", top: 8, bottom: 8, width: 1, background: "rgba(255,255,255,0.35)" }} />
-      <div style={{
-        position: "absolute", left: "50%", top: "50%", width: 60, height: 60,
-        borderRadius: "50%", border: "1.5px solid rgba(255,255,255,0.35)",
-        transform: "translate(-50%, -50%)",
-      }} />
-      {/* Penalty boxes */}
-      <div style={{ position: "absolute", left: "20%", right: "20%", top: 8, height: "18%", border: "1.5px solid rgba(255,255,255,0.35)", borderTop: "none" }} />
-      <div style={{ position: "absolute", left: "20%", right: "20%", bottom: 8, height: "18%", border: "1.5px solid rgba(255,255,255,0.35)", borderBottom: "none" }} />
-
-      {/* Player dots */}
-      {allPositions.map((pos, i) => {
-        const player = lineup[i];
-        return (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: `${pos.x}%`,
-              top: `${pos.y}%`,
-              transform: "translate(-50%, -50%)",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
-            }}
-          >
-            <div
-              style={{
-                width: 24, height: 24, borderRadius: "50%",
-                background: i === 0 ? "#C4A84F" : "#fff",
-                border: "1.5px solid rgba(255,255,255,0.7)",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-                fontSize: 9, fontWeight: 700,
-                color: i === 0 ? "#001B48" : "var(--navy)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontFeatureSettings: '"tnum" 1',
-              }}
-            >
-              {player?.jersey_number ?? pos.role.slice(0, 2)}
-            </div>
-            {player && (
-              <div style={{
-                fontSize: 8, fontWeight: 600, color: "#fff",
-                textShadow: "0 1px 2px rgba(0,0,0,0.5)",
-                letterSpacing: "0.02em",
-              }}>
-                {player.last_name}
-              </div>
-            )}
-          </div>
-        );
-      })}
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--text-2)" }}>
+          <span style={{ color }}>{icon}</span>
+          {label}
+        </span>
+        <span style={{
+          fontSize: 14, fontWeight: 700, color, letterSpacing: "-0.01em",
+          fontFeatureSettings: '"tnum" 1',
+        }}>
+          {value} <span style={{ fontSize: 10, color: "var(--text-dim)", fontWeight: 500 }}>· {pct}%</span>
+        </span>
+      </div>
+      <div className="progress-track" style={{ height: 4 }}>
+        <div className="progress-fill" style={{ width: `${pct}%`, background: color }} />
+      </div>
     </div>
   );
 }

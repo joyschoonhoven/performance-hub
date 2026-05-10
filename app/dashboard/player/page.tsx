@@ -4,15 +4,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Loader2, AlertTriangle, Maximize2, ChevronRight, Info,
-  TrendingUp, TrendingDown, Minus,
+  Loader2, AlertTriangle, Maximize2, ChevronRight, Info, HeartPulse,
 } from "lucide-react";
 import { getMyPlayerData } from "@/lib/supabase/queries";
 import {
-  CATEGORY_LABELS, CATEGORY_COLORS, POSITION_LABELS,
+  CATEGORY_LABELS, CATEGORY_COLORS, POSITION_LABELS, SORENESS_LOCATION_LABELS,
 } from "@/lib/types";
-import { getRatingColor, formatDate } from "@/lib/utils";
-import type { Evaluation, EvaluationCategory, PlayerWithDetails } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
+import type { Evaluation, EvaluationCategory, PlayerWithDetails, DailyCheckin } from "@/lib/types";
 
 /* ───────────────────────────────────────────────────────────── */
 /*  Helpers                                                      */
@@ -73,6 +72,7 @@ export default function PlayerDashboardPage() {
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
+  const [checkins, setCheckins] = useState<DailyCheckin[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -85,6 +85,18 @@ export default function PlayerDashboardPage() {
       }
       const data = await getMyPlayerData();
       setPlayer(data);
+
+      // Load self-reported check-ins (last 14 days)
+      if (data?.id) {
+        const { data: c } = await supabase
+          .from("daily_checkins")
+          .select("*")
+          .eq("player_id", data.id)
+          .order("checkin_date", { ascending: false })
+          .limit(14);
+        setCheckins((c ?? []) as DailyCheckin[]);
+      }
+
       setLoading(false);
     }
     load();
@@ -122,6 +134,38 @@ export default function PlayerDashboardPage() {
 
   // Per-category metrics
   const categories: EvaluationCategory[] = ["techniek", "fysiek", "tactiek", "mentaal", "teamplay"];
+
+  // ── Self-report metrics from daily_checkins ────────────────
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayCheckin = checkins.find(c => c.checkin_date.slice(0, 10) === todayStr);
+  const last7Checkins = checkins.slice(0, 7);
+
+  function checkinMetric(field: keyof DailyCheckin): {
+    mostRecent: number;
+    avg7: number;
+    avg14: number;
+    series: number[];
+  } | null {
+    const values = checkins
+      .map(c => c[field] as number | undefined)
+      .filter((v): v is number => typeof v === "number" && v > 0);
+    if (!values.length) return null;
+    const mostRecent = values[0];
+    const avg7arr = values.slice(0, 7);
+    const avg14arr = values.slice(0, 14);
+    const avg7 = avg7arr.reduce((a, b) => a + b, 0) / avg7arr.length;
+    const avg14 = avg14arr.reduce((a, b) => a + b, 0) / avg14arr.length;
+    const series = checkins.slice(0, 7).reverse().map(c => (c[field] as number | undefined) ?? 0);
+    return { mostRecent, avg7, avg14, series };
+  }
+
+  const sleepMetric = checkinMetric("sleep_quality");
+  const recoveryMetric = checkinMetric("perceived_recovery");
+  const sorenessMetric = checkinMetric("soreness");
+  const moodMetric = checkinMetric("mood");
+
+  // Soreness body locations (from latest check-in)
+  const sorenessBodyParts = todayCheckin?.soreness_locations ?? [];
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 20 }}>
@@ -242,20 +286,11 @@ export default function PlayerDashboardPage() {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", paddingBottom: 4 }}>
           <div>
-            <div style={{
-              display: "inline-block",
-              fontSize: 10, fontWeight: 700, letterSpacing: "0.14em",
-              padding: "3px 6px", borderRadius: 3, color: "#16A34A",
-              background: "rgba(22,163,74,0.1)", marginBottom: 8,
-              textTransform: "uppercase",
-            }}>
-              [BETA] Performance Report
-            </div>
             <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text)" }}>
               Performance Overview
             </h1>
             <p style={{ fontSize: 12.5, color: "var(--text-muted)", marginTop: 4 }}>
-              Percentages zijn testresultaten relatief ten opzichte van de doelwaarden voor jouw positie.
+              Percentages tonen je recente score relatief tot het niveau-gemiddelde van 5/10.
             </p>
           </div>
           <Link
@@ -265,7 +300,7 @@ export default function PlayerDashboardPage() {
               display: "inline-flex", alignItems: "center", gap: 4,
             }}
           >
-            <Info size={11} /> User Guide
+            <Info size={11} /> Bekijk evaluaties
           </Link>
         </div>
 
@@ -324,123 +359,135 @@ export default function PlayerDashboardPage() {
           })}
         </div>
 
-        {/* ── Row 2: 4 daily metrics + body diagram ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 14 }}>
-          {/* Mentaal */}
-          {(() => {
-            const cat: EvaluationCategory = "mentaal";
-            const m = buildMetric(evals, cat);
-            const pct = m.mostRecent ? Math.round(((m.mostRecent - 5) / 5) * 100) : 0;
-            const pct14 = m.avg14 ? Math.round(((m.avg14 - 5) / 5) * 100) : 0;
-            const pct30 = m.avg30 ? Math.round(((m.avg30 - 5) / 5) * 100) : 0;
-            return (
-              <MetricTile
-                title="Perceived Recovery"
-                sub="Collected most days"
-                color={CATEGORY_COLORS[cat]}
-                mostRecent={pct}
-                avg14={pct14}
-                avg30={pct30}
-                series={m.series}
-                period={["7-Day Avg.", "30-Day Avg."]}
-              />
-            );
-          })()}
+        {/* ── Row 2 — Self-report metrics (uit dagelijkse check-in) ── */}
+        <div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, marginTop: 4 }}>
+            <h2 style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.04em", color: "var(--text-2)", textTransform: "uppercase" }}>
+              Welzijn — uit jouw check-in
+            </h2>
+            <Link
+              href="/dashboard/player/checkin"
+              style={{
+                fontSize: 11, fontWeight: 600,
+                color: todayCheckin ? "var(--text-muted)" : "var(--gold-dim)",
+                display: "inline-flex", alignItems: "center", gap: 4,
+                padding: "4px 10px", borderRadius: 5,
+                background: todayCheckin ? "transparent" : "rgba(196,168,79,0.1)",
+                border: `1px solid ${todayCheckin ? "var(--border)" : "rgba(196,168,79,0.3)"}`,
+              }}
+            >
+              <HeartPulse size={11} /> {todayCheckin ? "Check-in aanpassen" : "Check-in invullen"}
+            </Link>
+          </div>
 
-          {/* Sleep proxy: Mentaal again as Sleep */}
-          {(() => {
-            const sc = latestEval?.scores?.find(s => s.category === "mentaal")?.score ?? 0;
-            const series = evals.slice(0, 7).reverse().map(ev =>
-              ev.scores?.find(s => s.category === "mentaal")?.score ?? 0
-            );
-            const filtered = series.filter(v => v > 0);
-            const avg7 = filtered.length ? filtered.slice(-4).reduce((a,b)=>a+b,0) / Math.min(4, filtered.length) : 0;
-            const avg30 = filtered.length ? filtered.reduce((a,b)=>a+b,0) / filtered.length : 0;
-            const pct = sc ? Math.round(((sc - 5) / 5) * 100) : 0;
-            const pct7 = avg7 ? Math.round(((avg7 - 5) / 5) * 100) : 0;
-            const pct30 = avg30 ? Math.round(((avg30 - 5) / 5) * 100) : 0;
-            return (
-              <MetricTile
-                title="Sleep Quality"
-                sub="Collected most days"
-                color="#7C3AED"
-                mostRecent={pct}
-                avg14={pct7}
-                avg30={pct30}
-                series={series}
-                period={["7-Day Avg.", "30-Day Avg."]}
-                warning={pct < -20}
-              />
-            );
-          })()}
-
-          {/* Teamplay as Soreness proxy */}
-          {(() => {
-            const cat: EvaluationCategory = "teamplay";
-            const m = buildMetric(evals, cat);
-            const pct = m.mostRecent ? Math.round(((m.mostRecent - 5) / 5) * 100) : 0;
-            const pct14 = m.avg14 ? Math.round(((m.avg14 - 5) / 5) * 100) : 0;
-            const pct30 = m.avg30 ? Math.round(((m.avg30 - 5) / 5) * 100) : 0;
-            return (
-              <MetricTile
-                title={CATEGORY_LABELS[cat]}
-                sub="Updated weekly"
-                color={CATEGORY_COLORS[cat]}
-                mostRecent={pct}
-                avg14={pct14}
-                avg30={pct30}
-                series={m.series}
-                period={["7-Day Avg.", "30-Day Avg."]}
-                warning={pct < -10}
-              />
-            );
-          })()}
-
-          {/* Body diagram / Focus areas */}
-          <NotchedCard>
-            <CardHeader title="Focus Areas" />
-            <div style={{ display: "flex", justifyContent: "center", margin: "8px 0" }}>
-              <BodyDiagram
-                highlightedCategories={categories.filter(c => {
-                  const sc = latestEval?.scores?.find(s => s.category === c)?.score;
-                  return sc && sc < 6;
-                })}
-              />
-            </div>
-            <p style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.5, marginTop: 6 }}>
-              Aandachtsgebieden uit de laatste evaluatie. Werk hier aan via de
-              <Link href="/dashboard/player/challenges" style={{ color: "var(--gold-dim)", fontWeight: 600 }}> challenges</Link>.
-            </p>
-          </NotchedCard>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 14 }}>
+            <CheckinMetricTile
+              title="Slaapkwaliteit"
+              sub="Eigen rapportage"
+              color="#7C3AED"
+              metric={sleepMetric}
+            />
+            <CheckinMetricTile
+              title="Perceived Recovery"
+              sub="Hoe hersteld voel je je?"
+              color="#16A34A"
+              metric={recoveryMetric}
+            />
+            <CheckinMetricTile
+              title="Spierpijn"
+              sub="Hoeveel last?"
+              color="#DC2626"
+              metric={sorenessMetric}
+              inverted
+            />
+            <CheckinMetricTile
+              title="Stemming"
+              sub="Mentale gesteldheid"
+              color="#D97706"
+              metric={moodMetric}
+            />
+          </div>
         </div>
 
-        {/* Footer info */}
-        <div style={{
-          marginTop: 4, padding: "12px 16px",
-          background: "var(--surface)", border: "1px solid var(--border)",
-          borderRadius: 8, display: "flex", alignItems: "center",
-          justifyContent: "space-between", gap: 10,
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{
-              fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", padding: "2px 6px",
-              borderRadius: 3, background: "var(--navy)", color: "#fff", textTransform: "uppercase",
-            }}>
-              Source
-            </span>
-            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
-              Performance Hub Insights
-            </span>
-            <span style={{ color: "var(--border-strong)" }}>·</span>
-            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
-              Designer: Schoonhoven Sports
-            </span>
+        {/* ── Row 3 — Coach-input categorieën + body diagram ── */}
+        <div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, marginTop: 8 }}>
+            <h2 style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.04em", color: "var(--text-2)", textTransform: "uppercase" }}>
+              Beoordeling — uit coach evaluatie
+            </h2>
+            {latestEval && (
+              <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
+                Laatst beoordeeld op {formatDate(latestEval.evaluation_date)}
+              </span>
+            )}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--text-muted)" }}>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+            {(["mentaal", "teamplay"] as EvaluationCategory[]).map(cat => {
+              const m = buildMetric(evals, cat);
+              const pct = m.mostRecent ? Math.round(((m.mostRecent - 5) / 5) * 100) : 0;
+              const pct14 = m.avg14 ? Math.round(((m.avg14 - 5) / 5) * 100) : 0;
+              const pct30 = m.avg30 ? Math.round(((m.avg30 - 5) / 5) * 100) : 0;
+              return (
+                <MetricTile
+                  key={cat}
+                  title={CATEGORY_LABELS[cat]}
+                  sub="Score uit laatste evaluatie"
+                  color={CATEGORY_COLORS[cat]}
+                  mostRecent={pct}
+                  avg14={pct14}
+                  avg30={pct30}
+                  series={m.series}
+                  warning={pct < -10}
+                />
+              );
+            })}
+
+            {/* Soreness body diagram from check-in */}
+            <NotchedCard>
+              <CardHeader
+                title="Pijnpunten"
+                sub={todayCheckin ? "Uit jouw check-in vandaag" : "Vul check-in in om te tonen"}
+              />
+              <div style={{ display: "flex", justifyContent: "center", margin: "8px 0" }}>
+                <BodyDiagram highlightedLocations={sorenessBodyParts} />
+              </div>
+              {sorenessBodyParts.length > 0 ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 6 }}>
+                  {sorenessBodyParts.map(loc => (
+                    <span key={loc} style={{
+                      fontSize: 10, fontWeight: 600,
+                      padding: "2px 7px", borderRadius: 4,
+                      background: "rgba(220,38,38,0.1)", color: "var(--red)",
+                      border: "1px solid rgba(220,38,38,0.2)",
+                    }}>
+                      {SORENESS_LOCATION_LABELS[loc]}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.5, marginTop: 6 }}>
+                  {todayCheckin
+                    ? "Geen pijnpunten gerapporteerd vandaag — top!"
+                    : "Markeer pijnpunten in je dagelijkse check-in zodat je coach het ziet."}
+                </p>
+              )}
+            </NotchedCard>
+          </div>
+        </div>
+
+        {/* Footer — datum laatste evaluatie */}
+        {latestEval && (
+          <div style={{
+            marginTop: 4, padding: "10px 14px",
+            display: "flex", alignItems: "center", gap: 8,
+            fontSize: 11, color: "var(--text-muted)",
+          }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--green)" }} />
-            Last Updated · {latestEval ? formatDate(latestEval.evaluation_date) : "—"}
+            Laatst bijgewerkt op {formatDate(latestEval.evaluation_date)}
+            {latestEval.coach_name && <span> · door {latestEval.coach_name}</span>}
           </div>
-        </div>
+        )}
       </main>
     </div>
   );
@@ -707,18 +754,29 @@ function RadarMini({ values, labels, colors }: { values: number[]; labels: strin
   );
 }
 
-function BodyDiagram({ highlightedCategories }: { highlightedCategories: EvaluationCategory[] }) {
-  // Map categories to body parts
-  const bodyMap: Record<EvaluationCategory, { x: number; y: number; r: number; label: string }> = {
-    techniek: { x: 30, y: 70, r: 6, label: "Voeten" },
-    fysiek:   { x: 30, y: 50, r: 8, label: "Spieren" },
-    tactiek:  { x: 30, y: 20, r: 6, label: "Hoofd" },
-    mentaal:  { x: 30, y: 25, r: 4, label: "Mind" },
-    teamplay: { x: 30, y: 60, r: 5, label: "Core" },
+function BodyDiagram({ highlightedLocations }: {
+  highlightedLocations?: string[];
+}) {
+  // Map soreness locations to coordinates on the body silhouette
+  const locMap: Record<string, { x: number; y: number; r: number }> = {
+    neck:       { x: 30, y: 22, r: 3 },
+    shoulders:  { x: 22, y: 28, r: 3 },
+    upper_back: { x: 30, y: 35, r: 5 },
+    lower_back: { x: 30, y: 55, r: 5 },
+    core:       { x: 30, y: 50, r: 4 },
+    groin:      { x: 30, y: 68, r: 3 },
+    quads:      { x: 26, y: 85, r: 4 },
+    hamstring:  { x: 34, y: 95, r: 4 },
+    knees:      { x: 30, y: 102, r: 3 },
+    calves:     { x: 30, y: 115, r: 4 },
+    ankles:     { x: 30, y: 125, r: 2 },
+    feet:       { x: 30, y: 132, r: 2 },
   };
 
+  const locations = highlightedLocations ?? [];
+
   return (
-    <svg width={120} height={140} viewBox="0 0 60 140">
+    <svg width={120} height={150} viewBox="0 0 60 150">
       {/* Head */}
       <circle cx={30} cy={14} r={7} fill="none" stroke="var(--border-strong)" strokeWidth={1} />
       {/* Body */}
@@ -736,17 +794,122 @@ function BodyDiagram({ highlightedCategories }: { highlightedCategories: Evaluat
         strokeWidth={1}
       />
 
-      {/* Highlighted areas */}
-      {highlightedCategories.map(cat => {
-        const b = bodyMap[cat];
-        const color = CATEGORY_COLORS[cat];
+      {/* Highlighted soreness spots */}
+      {locations.map(loc => {
+        const b = locMap[loc];
+        if (!b) return null;
         return (
-          <g key={cat}>
-            <circle cx={b.x} cy={b.y} r={b.r + 2} fill={`${color}33`} />
-            <circle cx={b.x} cy={b.y} r={b.r} fill={color} />
+          <g key={loc}>
+            <circle cx={b.x} cy={b.y} r={b.r + 2} fill="rgba(220,38,38,0.2)" />
+            <circle cx={b.x} cy={b.y} r={b.r} fill="#DC2626" />
           </g>
         );
       })}
     </svg>
+  );
+}
+
+function CheckinMetricTile({
+  title, sub, color, metric, inverted,
+}: {
+  title: string;
+  sub?: string;
+  color: string;
+  metric: { mostRecent: number; avg7: number; avg14: number; series: number[] } | null;
+  inverted?: boolean;
+}) {
+  if (!metric) {
+    return (
+      <NotchedCard>
+        <CardHeader title={title} sub={sub} />
+        <div style={{
+          padding: "20px 0",
+          textAlign: "center",
+          fontSize: 11,
+          color: "var(--text-muted)",
+          lineHeight: 1.5,
+        }}>
+          Nog geen check-in data.
+          <br />
+          <Link href="/dashboard/player/checkin" style={{ color: "var(--gold-dim)", fontWeight: 600 }}>
+            Vul nu in →
+          </Link>
+        </div>
+      </NotchedCard>
+    );
+  }
+
+  // For "inverted" (soreness, stress) we show 1-3 = good, 4-6 = ok, 7-10 = bad
+  // Convert to a delta-style % vs midpoint of 5
+  const valueColor = inverted
+    ? metric.mostRecent <= 3 ? "var(--green)" : metric.mostRecent <= 6 ? "var(--amber)" : "var(--red)"
+    : metric.mostRecent >= 7 ? "var(--green)" : metric.mostRecent >= 4 ? "var(--amber)" : "var(--red)";
+
+  return (
+    <NotchedCard>
+      <CardHeader title={title} sub={sub} />
+
+      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 10 }}>
+        <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>Vandaag</span>
+        <span
+          style={{
+            fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em",
+            color: valueColor, fontFeatureSettings: '"tnum" 1', lineHeight: 1,
+          }}
+        >
+          {metric.mostRecent}<span style={{ fontSize: 11, fontWeight: 500, color: "var(--text-dim)" }}>/10</span>
+        </span>
+      </div>
+
+      {/* Mini bar chart of last 7 days */}
+      <CheckinBars series={metric.series} color={color} inverted={inverted} />
+
+      <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 5 }}>
+        <AvgRowSimple label="7-dagen gem." value={metric.avg7} color={color} />
+        <AvgRowSimple label="14-dagen gem." value={metric.avg14} color={color} />
+      </div>
+    </NotchedCard>
+  );
+}
+
+function CheckinBars({ series, color, inverted }: { series: number[]; color: string; inverted?: boolean }) {
+  const heightTotal = 50;
+  return (
+    <div style={{ position: "relative", height: heightTotal, display: "flex", alignItems: "flex-end", gap: 3 }}>
+      {Array.from({ length: 7 }).map((_, i) => {
+        const v = series[i] ?? 0;
+        const isLatest = i === series.length - 1 && v > 0;
+        const h = v ? Math.max((v / 10) * heightTotal, 4) : 4;
+        const segColor = inverted
+          ? v <= 3 ? "var(--green)" : v <= 6 ? "var(--amber)" : "var(--red)"
+          : v >= 7 ? "var(--green)" : v >= 4 ? "var(--amber)" : "var(--red)";
+        return (
+          <div
+            key={i}
+            style={{
+              flex: 1,
+              height: h,
+              borderRadius: 2,
+              background: v > 0 ? (isLatest ? color : `${segColor}aa`) : "var(--border)",
+              transition: "all 0.3s",
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function AvgRowSimple({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{label}</span>
+      <span style={{
+        fontSize: 13, fontWeight: 700, color,
+        fontFeatureSettings: '"tnum" 1',
+      }}>
+        {value.toFixed(1)}
+      </span>
+    </div>
   );
 }

@@ -357,6 +357,47 @@ export interface Challenge {
 }
 
 // ============================================================
+// DAILY CHECK-IN (player self-assessment)
+// ============================================================
+
+export type SorenessLocation =
+  | "hamstring" | "calves" | "quads" | "groin"
+  | "lower_back" | "upper_back" | "shoulders"
+  | "knees" | "ankles" | "feet" | "neck" | "core";
+
+export interface DailyCheckin {
+  id: string;
+  player_id: string;
+  checkin_date: string;
+  sleep_quality?: number;
+  sleep_hours?: number;
+  perceived_recovery?: number;
+  energy_level?: number;
+  mood?: number;
+  soreness?: number;
+  stress_level?: number;
+  motivation?: number;
+  soreness_locations?: SorenessLocation[];
+  notes?: string;
+  created_at: string;
+}
+
+export const SORENESS_LOCATION_LABELS: Record<SorenessLocation, string> = {
+  hamstring:  "Hamstrings",
+  calves:     "Kuiten",
+  quads:      "Quadriceps",
+  groin:      "Lies",
+  lower_back: "Onderrug",
+  upper_back: "Bovenrug",
+  shoulders:  "Schouders",
+  knees:      "Knieën",
+  ankles:     "Enkels",
+  feet:       "Voeten",
+  neck:       "Nek",
+  core:       "Buikspieren / core",
+};
+
+// ============================================================
 // ENRICHED PLAYER (for UI)
 // ============================================================
 

@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Loader2, RefreshCw, Zap, ArrowRight, MessageCircle, Calendar,
-  TrendingUp, TrendingDown, Minus, Sparkles, Target,
+  Loader2, RefreshCw, Zap, MessageCircle,
+  TrendingUp, TrendingDown, Minus, Sparkles, Target, Brain,
 } from "lucide-react";
 import { ProgressLineChart } from "@/components/charts/ProgressLine";
 import { getMyPlayerData } from "@/lib/supabase/queries";
@@ -28,6 +28,20 @@ function buildProgressData(evaluations: Evaluation[]) {
       ev.scores?.forEach((s) => { scoreMap[s.category] = s.score; });
       return { date: ev.evaluation_date, overall: ev.overall_score ?? 7, ...scoreMap };
     });
+}
+
+function sociotypeImpact(id: string): string {
+  const impacts: Record<string, string> = {
+    leider:       "Je trekt het team mee in lastige momenten. Coach communiceert direct met jou over teamtaken. Verwachting: jij bent de stem op het veld in cruciale fases.",
+    strijder:     "Je tempo zakt nooit. Je wordt ingezet in duels die mentaal en fysiek pijn doen. Jouw onverzadigbaarheid drukt het ritme van de tegenstander.",
+    denker:       "Je leest het spel sneller dan medespelers. Je krijgt vrijheid om posities te kiezen, omdat jouw tactische keuzes vaak juist zijn.",
+    kunstenaar:   "Je beslissingen zijn moeilijk te lezen voor verdedigers. Coach geeft je de ruimte om risico te nemen — fouten horen bij creatieve waarde.",
+    professional: "Je presteert constant op een hoog gemiddelde. Je bent betrouwbaar in elke wedstrijd — geen pieken nodig, geen dalen geaccepteerd.",
+    rustbrenger:  "Je houdt het team kalm onder druk. Jij bent de speler die de bal vraagt als anderen panikeren. Coach rekent op jouw stabiliteit.",
+    joker:        "Je houdt de groep mentaal lichtvoetig. In zware fases bouw jij de spanning af — essentieel voor lange-termijn teamcohesie.",
+    killer:       "Je kunt afsluiten als het moment er is. Coach plaatst jou waar afronding telt, omdat jouw mentaliteit niet inzakt onder kansen.",
+  };
+  return impacts[id] ?? "";
 }
 
 function calculateAge(dob?: string): number | null {
@@ -351,45 +365,224 @@ export default function PlayerCardPage() {
         {/* PROFIEL */}
         {activeTab === "profiel" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            <div className="card" style={{ padding: 22 }}>
-              <SectionHeader title="Spelersprofiel" />
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                {archetype && (
-                  <ProfileBlock
-                    label="Archetype" value={archetype.label} sub={archetype.description}
-                    icon={archetype.icon} color={archetype.color}
-                  />
-                )}
-                {sociotype && (
-                  <ProfileBlock
-                    label="Sociotype" value={sociotype.label} sub={sociotype.description}
-                    icon={sociotype.icon} color={sociotype.color_hex}
-                  />
-                )}
-              </div>
-              {player.identity?.ai_summary && (
+            {/* ── ARCHETYPE ── */}
+            {archetype && (
+              <div className="card" style={{ padding: 0, overflow: "hidden" }}>
                 <div style={{
-                  marginTop: 18, padding: 14, borderRadius: 8,
-                  background: "var(--bg)", borderLeft: "3px solid var(--gold)",
+                  padding: "16px 22px",
+                  background: `linear-gradient(135deg, ${archetype.color}12, ${archetype.color}04)`,
+                  borderBottom: `1px solid ${archetype.color}25`,
+                  display: "flex", alignItems: "center", gap: 12,
                 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: "var(--gold-dim)", marginBottom: 6 }}>
-                    AI ANALYSE
+                  <div style={{
+                    width: 44, height: 44, borderRadius: 10,
+                    background: `${archetype.color}18`, border: `1px solid ${archetype.color}40`,
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22,
+                  }}>
+                    {archetype.icon}
                   </div>
-                  <p style={{ fontSize: 13, lineHeight: 1.55, color: "var(--text-2)" }}>
-                    {player.identity.ai_summary}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: "var(--text-muted)", textTransform: "uppercase" }}>
+                      Primair Archetype
+                    </div>
+                    <h3 style={{ fontSize: 18, fontWeight: 700, color: archetype.color, letterSpacing: "-0.02em", marginTop: 2 }}>
+                      {archetype.label}
+                    </h3>
+                  </div>
+                </div>
+                <div style={{ padding: 22 }}>
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: "var(--text-2)", marginBottom: 14 }}>
+                    {archetype.description}
                   </p>
-                </div>
-              )}
-            </div>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--text-dim)", textTransform: "uppercase", marginBottom: 8 }}>
+                    Kerneigenschappen
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {archetype.traits.map(t => (
+                      <span key={t} style={{
+                        fontSize: 11, fontWeight: 600,
+                        padding: "5px 10px", borderRadius: 5,
+                        background: `${archetype.color}10`, color: archetype.color,
+                        border: `1px solid ${archetype.color}25`,
+                      }}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
 
-            {player.identity && (
-              <div className="card" style={{ padding: 22 }}>
-                <SectionHeader title="Core Values" />
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-                  <CoreValue label="Noodzaak" value={player.identity.core_noodzaak} color="#DC2626" />
-                  <CoreValue label="Creativiteit" value={player.identity.core_creativiteit} color="#7C3AED" />
-                  <CoreValue label="Vertrouwen" value={player.identity.core_vertrouwen} color="#16A34A" />
+                  {/* Secondary archetype */}
+                  {player.identity?.secondary_archetype && (() => {
+                    const sec = ARCHETYPES[player.identity.secondary_archetype];
+                    return sec ? (
+                      <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--border)" }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--text-dim)", textTransform: "uppercase", marginBottom: 6 }}>
+                          Secundair Archetype
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 16 }}>{sec.icon}</span>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: sec.color }}>{sec.label}</span>
+                          <span style={{ fontSize: 12, color: "var(--text-muted)" }}>· {sec.description}</span>
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
                 </div>
+              </div>
+            )}
+
+            {/* ── SOCIOTYPE — uitgebreid ── */}
+            {sociotype && (
+              <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+                <div style={{
+                  padding: "16px 22px",
+                  background: `linear-gradient(135deg, ${sociotype.color_hex}12, ${sociotype.color_hex}04)`,
+                  borderBottom: `1px solid ${sociotype.color_hex}25`,
+                  display: "flex", alignItems: "center", gap: 12,
+                }}>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: 10,
+                    background: `${sociotype.color_hex}18`, border: `1px solid ${sociotype.color_hex}40`,
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22,
+                  }}>
+                    {sociotype.icon}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: "var(--text-muted)", textTransform: "uppercase" }}>
+                      Primair Sociotype · Karakter
+                    </div>
+                    <h3 style={{ fontSize: 18, fontWeight: 700, color: sociotype.color_hex, letterSpacing: "-0.02em", marginTop: 2 }}>
+                      {sociotype.label}
+                    </h3>
+                  </div>
+                </div>
+                <div style={{ padding: 22 }}>
+                  <p style={{ fontSize: 13.5, lineHeight: 1.65, color: "var(--text-2)", marginBottom: 16 }}>
+                    {sociotype.description}
+                  </p>
+
+                  {/* Trait cards */}
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--text-dim)", textTransform: "uppercase", marginBottom: 10 }}>
+                    Kernkwaliteiten
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 18 }}>
+                    {sociotype.traits.map((t, i) => (
+                      <div key={t} style={{
+                        padding: "12px 10px",
+                        borderRadius: 8,
+                        background: `${sociotype.color_hex}08`,
+                        border: `1px solid ${sociotype.color_hex}20`,
+                        textAlign: "center",
+                      }}>
+                        <div style={{
+                          fontSize: 9, fontWeight: 700, letterSpacing: "0.08em",
+                          color: sociotype.color_hex, opacity: 0.7,
+                          marginBottom: 4, textTransform: "uppercase",
+                        }}>
+                          0{i + 1}
+                        </div>
+                        <div style={{ fontSize: 12.5, fontWeight: 700, color: "var(--text)" }}>
+                          {t}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Behavioral profile description */}
+                  <div style={{
+                    padding: 14, borderRadius: 8,
+                    background: "var(--bg)",
+                    borderLeft: `3px solid ${sociotype.color_hex}`,
+                  }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: "var(--text-muted)", marginBottom: 6, textTransform: "uppercase" }}>
+                      Wat dit betekent voor jouw spel
+                    </div>
+                    <p style={{ fontSize: 12.5, lineHeight: 1.6, color: "var(--text-2)" }}>
+                      {sociotypeImpact(sociotype.id)}
+                    </p>
+                  </div>
+
+                  {/* Secondary sociotype */}
+                  {player.identity?.secondary_sociotype && (() => {
+                    const sec = SOCIOTYPES[player.identity.secondary_sociotype];
+                    return sec ? (
+                      <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--border)" }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--text-dim)", textTransform: "uppercase", marginBottom: 6 }}>
+                          Secundair Sociotype
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 16 }}>{sec.icon}</span>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: sec.color_hex }}>{sec.label}</span>
+                          <span style={{ fontSize: 12, color: "var(--text-muted)" }}>· {sec.description}</span>
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
+              </div>
+            )}
+
+            {/* ── CORE VALUES — uitgebreid ── */}
+            {player.identity && (player.identity.core_noodzaak ?? player.identity.core_creativiteit ?? player.identity.core_vertrouwen) !== undefined && (
+              <div className="card" style={{ padding: 22 }}>
+                <SectionHeader
+                  title="Core Values"
+                  sub="Drijfveren die jouw spel sturen"
+                />
+                <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                  <CoreValueExpanded
+                    label="Noodzaak"
+                    value={player.identity.core_noodzaak ?? 0}
+                    color="#DC2626"
+                    description="De urgentie en het 'moeten winnen' dat je drijft. Hoge noodzaak betekent dat je wedstrijden ziet als momenten waar elke actie telt — laag betekent dat je vanuit ontspanning speelt."
+                    levelLabels={[
+                      { max: 4, label: "Ontspannen speler", desc: "Je speelt vanuit plezier; druk weegt minder." },
+                      { max: 7, label: "Gezonde balans", desc: "Je voelt urgentie wanneer nodig, maar blijft vrij." },
+                      { max: 10, label: "Hoge intensiteit", desc: "Elke wedstrijd voelt als finale; hoge inzet." },
+                    ]}
+                  />
+                  <CoreValueExpanded
+                    label="Creativiteit"
+                    value={player.identity.core_creativiteit ?? 0}
+                    color="#7C3AED"
+                    description="Je vermogen om verrassende oplossingen te vinden. Hoge creativiteit betekent risicovolle, onverwachte keuzes — laag betekent dat je gestructureerd en voorspelbaar speelt."
+                    levelLabels={[
+                      { max: 4, label: "Gestructureerd", desc: "Je kiest de veilige optie; sterk in routines." },
+                      { max: 7, label: "Selectief creatief", desc: "Je durft te experimenteren in juiste momenten." },
+                      { max: 10, label: "Onorthodox", desc: "Je daagt patronen uit; onvoorspelbaar voor tegenstander." },
+                    ]}
+                  />
+                  <CoreValueExpanded
+                    label="Vertrouwen"
+                    value={player.identity.core_vertrouwen ?? 0}
+                    color="#16A34A"
+                    description="Het zelfvertrouwen waarmee je beslissingen neemt. Hoog vertrouwen betekent overtuigde acties zonder twijfel — laag betekent dat je wacht op anderen of de bal te snel afgeeft."
+                    levelLabels={[
+                      { max: 4, label: "Voorzichtig", desc: "Je zoekt bevestiging voor je een actie maakt." },
+                      { max: 7, label: "Zelfverzekerd", desc: "Je staat achter je beslissingen, ook bij fouten." },
+                      { max: 10, label: "Dominant", desc: "Je neemt verantwoordelijkheid in alle momenten." },
+                    ]}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* ── AI ANALYSE ── */}
+            {player.identity?.ai_summary && (
+              <div className="card" style={{ padding: 22 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                  <Brain size={15} style={{ color: "var(--gold-dim)" }} />
+                  <h3 style={{ fontSize: 14, fontWeight: 700, letterSpacing: "-0.01em" }}>
+                    Coach Analyse
+                  </h3>
+                  {player.identity.last_ai_analysis && (
+                    <span style={{ fontSize: 10, color: "var(--text-dim)", marginLeft: "auto" }}>
+                      {formatDate(player.identity.last_ai_analysis)}
+                    </span>
+                  )}
+                </div>
+                <p style={{ fontSize: 13, lineHeight: 1.65, color: "var(--text-2)" }}>
+                  {player.identity.ai_summary}
+                </p>
               </div>
             )}
 
@@ -404,6 +597,14 @@ export default function PlayerCardPage() {
               <div className="card" style={{ padding: 22 }}>
                 <SectionHeader title="Verbeterpunten" sub={`Per ${formatDate(latestEval.evaluation_date)}`} />
                 <p style={{ fontSize: 13, lineHeight: 1.6, color: "var(--text-2)" }}>{latestEval.improvement_points}</p>
+              </div>
+            )}
+
+            {!archetype && !sociotype && !player.identity?.ai_summary && (
+              <div className="card" style={{ padding: 24, textAlign: "center" }}>
+                <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
+                  Profiel wordt opgesteld door je coach na de eerste evaluaties.
+                </p>
               </div>
             )}
           </div>
@@ -624,71 +825,39 @@ export default function PlayerCardPage() {
           display: "flex", flexDirection: "column", gap: 18,
         }}
       >
-        {/* Volgende activiteit */}
+        {/* Snelste samenvatting */}
         <div className="card" style={{ padding: 18 }}>
-          <SectionHeader title="Volgende Activiteit" />
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-            <div style={{
-              width: 44, height: 44, borderRadius: 10, background: "rgba(0,27,72,0.06)",
-              display: "flex", alignItems: "center", justifyContent: "center", color: "var(--navy)",
-            }}>
-              <Calendar size={20} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>Training Sessie</div>
-              <div style={{ fontSize: 11, color: "var(--text-muted)" }}>Sportcomplex Schoonhoven</div>
-            </div>
+          <SectionHeader title="Snelle Indicatoren" />
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <QuickIndicator
+              label="Overall"
+              value={String(player.overall_rating)}
+              color={ratingColor}
+              hint={getRatingLabel(player.overall_rating)}
+            />
+            <QuickIndicator
+              label="Positie"
+              value={player.position}
+              color="var(--navy)"
+              hint={POSITION_LABELS[player.position]}
+            />
+            {archetype && (
+              <QuickIndicator
+                label="Archetype"
+                value={archetype.label}
+                color={archetype.color}
+                icon={archetype.icon}
+              />
+            )}
+            {sociotype && (
+              <QuickIndicator
+                label="Sociotype"
+                value={sociotype.label}
+                color={sociotype.color_hex}
+                icon={sociotype.icon}
+              />
+            )}
           </div>
-
-          {/* Mini formation pitch */}
-          <div style={{
-            position: "relative", borderRadius: 8, overflow: "hidden",
-            background: "linear-gradient(180deg, #16A34A 0%, #15803D 100%)",
-            padding: "16px 12px", marginBottom: 12,
-          }}>
-            <div style={{ position: "absolute", inset: 6, border: "1.5px solid rgba(255,255,255,0.4)", borderRadius: 4 }} />
-            <div style={{ position: "absolute", left: "50%", top: 6, bottom: 6, width: 1, background: "rgba(255,255,255,0.4)" }} />
-            <div style={{
-              position: "absolute", left: "50%", top: "50%", width: 36, height: 36,
-              borderRadius: "50%", border: "1.5px solid rgba(255,255,255,0.4)",
-              transform: "translate(-50%, -50%)",
-            }} />
-            <div style={{ position: "relative", height: 110, display: "grid", gridTemplateRows: "1fr 1fr 1fr 1fr", gap: 8 }}>
-              {[
-                [{ pos: 50 }],
-                [{ pos: 20 }, { pos: 40 }, { pos: 60 }, { pos: 80 }],
-                [{ pos: 30 }, { pos: 50 }, { pos: 70 }],
-                [{ pos: 25 }, { pos: 50, highlight: true }, { pos: 75 }],
-              ].map((row, ri) => (
-                <div key={ri} style={{ position: "relative" }}>
-                  {row.map((p, pi) => (
-                    <div
-                      key={pi}
-                      style={{
-                        position: "absolute", left: `${p.pos}%`, top: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: 10, height: 10, borderRadius: "50%",
-                        background: (p as { highlight?: boolean }).highlight ? "#C4A84F" : "#fff",
-                        boxShadow: (p as { highlight?: boolean }).highlight ? "0 0 0 3px rgba(196,168,79,0.4)" : "none",
-                      }}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            fontSize: 11, color: "var(--text-muted)", marginBottom: 12,
-          }}>
-            <span style={{ fontWeight: 600 }}>4-3-3 Aanvallend</span>
-            <span>Positie: <span style={{ color: "var(--gold-dim)", fontWeight: 700 }}>{player.position}</span></span>
-          </div>
-
-          <button className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-            Naar Trainingsplan <ArrowRight size={12} />
-          </button>
         </div>
 
         {/* Coach feedback */}
@@ -807,18 +976,94 @@ function ProfileBlock({ label, value, sub, icon, color }: {
   );
 }
 
-function CoreValue({ label, value, color }: { label: string; value: number; color: string }) {
+function CoreValueExpanded({ label, value, color, description, levelLabels }: {
+  label: string; value: number; color: string; description: string;
+  levelLabels: { max: number; label: string; desc: string }[];
+}) {
   const pct = Math.round((value / 10) * 100);
+  const level = levelLabels.find(l => value <= l.max) ?? levelLabels[levelLabels.length - 1];
   return (
-    <div>
-      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 6 }}>
-        {label}
+    <div style={{
+      padding: 16,
+      borderRadius: 10,
+      background: "var(--surface)",
+      border: "1px solid var(--border)",
+    }}>
+      {/* Header row */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 10, gap: 12 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 3 }}>
+            {label}
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color }}>
+            {level.label}
+          </div>
+        </div>
+        <div style={{
+          fontSize: 30, fontWeight: 800, color, letterSpacing: "-0.03em",
+          fontFeatureSettings: '"tnum" 1', lineHeight: 0.9,
+        }}>
+          {value.toFixed(1)}
+        </div>
       </div>
-      <div style={{ fontSize: 28, fontWeight: 800, color, letterSpacing: "-0.03em", fontFeatureSettings: '"tnum" 1', marginBottom: 6, lineHeight: 1 }}>
-        {value.toFixed(1)}
+
+      {/* Bar with markers */}
+      <div style={{ position: "relative", marginBottom: 14 }}>
+        <div className="progress-track" style={{ height: 6 }}>
+          <div className="progress-fill" style={{ width: `${pct}%`, background: color }} />
+        </div>
+        {/* Level dividers */}
+        {levelLabels.slice(0, -1).map((l) => (
+          <div
+            key={l.max}
+            style={{
+              position: "absolute",
+              left: `${(l.max / 10) * 100}%`,
+              top: -2, bottom: -2,
+              width: 1,
+              background: "var(--border-strong)",
+            }}
+          />
+        ))}
       </div>
-      <div className="progress-track">
-        <div className="progress-fill" style={{ width: `${pct}%`, background: color }} />
+
+      {/* Description of player's level */}
+      <p style={{ fontSize: 12, color: "var(--text-2)", lineHeight: 1.5, marginBottom: 10 }}>
+        <span style={{ fontWeight: 700, color }}>{level.label}.</span> {level.desc}
+      </p>
+
+      {/* General meaning */}
+      <p style={{ fontSize: 11.5, color: "var(--text-muted)", lineHeight: 1.55, fontStyle: "italic" }}>
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function QuickIndicator({ label, value, color, hint, icon }: {
+  label: string; value: string; color: string; hint?: string; icon?: string;
+}) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      gap: 10, paddingBottom: 10,
+      borderBottom: "1px solid var(--border)",
+    }}>
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 2 }}>
+          {label}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {icon && <span style={{ fontSize: 13 }}>{icon}</span>}
+          <span style={{ fontSize: 13, fontWeight: 700, color, letterSpacing: "-0.01em" }}>
+            {value}
+          </span>
+        </div>
+        {hint && (
+          <div style={{ fontSize: 10.5, color: "var(--text-dim)", marginTop: 2 }}>
+            {hint}
+          </div>
+        )}
       </div>
     </div>
   );

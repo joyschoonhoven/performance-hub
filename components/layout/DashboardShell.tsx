@@ -16,6 +16,7 @@ interface DashboardShellProps {
 
 const ROUTE_LABELS: Record<string, string> = {
   "/dashboard/player":             "Dashboard",
+  "/dashboard/player/checkin":     "Dagelijkse Check-in",
   "/dashboard/player/card":        "Player Card",
   "/dashboard/player/evaluations": "Evaluaties",
   "/dashboard/player/challenges":  "Challenges",
