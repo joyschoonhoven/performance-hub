@@ -22,6 +22,7 @@ import {
   calculateSeasonIndex, type MatchStat,
 } from "@/lib/match-stats";
 import { IndexBadge } from "@/components/PerformanceIndexCard";
+import { PlayerPhotoUpload } from "@/components/ui/PlayerPhotoUpload";
 
 function parseSubScores(subNotes?: string): Record<string, number> | null {
   if (!subNotes) return null;
@@ -173,20 +174,21 @@ export default function PlayerDetailPage() {
       {/* Premium page header */}
       <div className="hub-page-header p-6 sm:p-8">
         <div className="flex items-center gap-6">
-          {/* Avatar */}
-          <div className="relative flex-shrink-0">
-            <div className="w-24 h-24 rounded-2xl overflow-hidden flex items-center justify-center font-black text-2xl border-2"
-              style={player.avatar_url
-                ? { borderColor: `${rColor}30` }
-                : { background: `linear-gradient(135deg, ${rColor}15, ${rColor}30)`, borderColor: `${rColor}30`, color: rColor }}>
-              {player.avatar_url
-                ? <Image src={player.avatar_url} alt={player.first_name} width={96} height={96} className="object-cover w-full h-full" />
-                : `${player.first_name[0]}${player.last_name[0]}`
-              }
-            </div>
+          {/* Avatar — Coach can upload player photo here */}
+          <div className="relative flex-shrink-0" style={{ paddingBottom: 14 }}>
+            <PlayerPhotoUpload
+              playerId={player.id}
+              initialPhotoUrl={player.photo_url ?? player.avatar_url ?? null}
+              name={`${player.first_name} ${player.last_name}`}
+              position={player.position}
+              size="xl"
+              onUploaded={(url) => {
+                setPlayer((prev) => prev ? { ...prev, photo_url: url } : prev);
+              }}
+            />
             {player.jersey_number && (
               <div className="absolute -bottom-2 -left-2 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shadow-md border border-white"
-                style={{ background: `${rColor}15`, color: rColor }}>
+                style={{ background: `${rColor}15`, color: rColor, zIndex: 10 }}>
                 #{player.jersey_number}
               </div>
             )}

@@ -14,6 +14,8 @@ import {
 } from "@/lib/types";
 import { getRatingColor, formatDate } from "@/lib/utils";
 import type { PlayerWithDetails, EvaluationCategory } from "@/lib/types";
+import { FifaPlayerCard } from "@/components/ui/FifaPlayerCard";
+import { PlayerAvatar } from "@/components/ui/PlayerAvatar";
 
 /* ───────────────────────────────────────────────────────────── */
 /*  Page                                                         */
@@ -189,6 +191,60 @@ export default function CoachDashboardPage() {
           accent="var(--sfa-sky)"
           icon={<Trophy size={14} />}
         />
+      </div>
+
+      {/* ═════════════════════ FIFA-STYLE TOP PERFORMERS ═════════════════════ */}
+      <div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div>
+            <h2 style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--sfa-navy)" }}>
+              Top Performers
+            </h2>
+            <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
+              Beste spelers in je squad — op basis van overall rating
+            </p>
+          </div>
+          <Link href="/dashboard/coach/players" style={{
+            fontSize: 12, color: "var(--sfa-blue)", fontWeight: 600,
+            display: "inline-flex", alignItems: "center", gap: 4,
+          }}>
+            Alle spelers <ArrowRight size={12} />
+          </Link>
+        </div>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+          gap: 14,
+        }}>
+          {[...players]
+            .sort((a, b) => b.overall_rating - a.overall_rating)
+            .slice(0, 6)
+            .map((p, i) => {
+              const last = p.evaluations?.[0];
+              const tech = last?.scores?.find(s => s.category === "techniek")?.score;
+              const fys = last?.scores?.find(s => s.category === "fysiek")?.score;
+              const tac = last?.scores?.find(s => s.category === "tactiek")?.score;
+              return (
+                <FifaPlayerCard
+                  key={p.id}
+                  href={`/dashboard/coach/players/${p.id}`}
+                  photoUrl={p.photo_url ?? p.avatar_url}
+                  firstName={p.first_name}
+                  lastName={p.last_name}
+                  position={p.position}
+                  rating={p.overall_rating}
+                  club={p.team_name ?? p.club ?? "SFA"}
+                  highlight={i === 0}
+                  stats={[
+                    { label: "TEC", value: tech ? tech.toFixed(1) : "—" },
+                    { label: "FYS", value: fys ? fys.toFixed(1) : "—" },
+                    { label: "TAC", value: tac ? tac.toFixed(1) : "—" },
+                  ]}
+                />
+              );
+            })}
+        </div>
       </div>
 
       {/* ═════════════════════ MAIN GRID ═════════════════════ */}
@@ -456,18 +512,12 @@ export default function CoachDashboardPage() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = i % 2 === 0 ? "var(--surface)" : "var(--bg)"; }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                  <div style={{
-                    width: 30, height: 30, borderRadius: "50%", overflow: "hidden",
-                    background: "var(--navy)", color: "#fff",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 11, fontWeight: 700, flexShrink: 0,
-                  }}>
-                    {p.avatar_url ? (
-                      <Image src={p.avatar_url} alt="" width={30} height={30} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
-                    ) : (
-                      <span>{p.first_name[0]}{p.last_name[0]}</span>
-                    )}
-                  </div>
+                  <PlayerAvatar
+                    photoUrl={p.photo_url ?? p.avatar_url}
+                    name={`${p.first_name} ${p.last_name}`}
+                    position={p.position}
+                    size="sm"
+                  />
                   <span style={{ fontWeight: 600, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {p.first_name} {p.last_name}
                   </span>
