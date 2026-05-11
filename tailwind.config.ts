@@ -33,23 +33,37 @@ const config: Config = {
         input:  "hsl(var(--input))",
         ring:   "hsl(var(--ring))",
 
-        // ── Brand palette ────────────────────────────────────
-        navy: { DEFAULT: "#001B48", mid: "#002B6E", light: "#0A3280", faint: "#EEF2FB" },
-        gold: { DEFAULT: "#C4A84F", light: "#D4BC72", dim: "#8C7535", faint: "#FBF6E8" },
+        // ── SFA Brand palette ─────────────────────────────────
+        sfa: {
+          navy:      "#0D1B2A",
+          "navy-mid":"#1A2E45",
+          blue:      "#1B6CA8",
+          sky:       "#4DAEE5",
+          "sky-light":"#E6F4FC",
+          white:     "#FFFFFF",
+          "off-white":"#F4F7FA",
+          gray:      "#8A9BB0",
+          gold:      "#F0A500",
+          red:       "#D64045",
+        },
 
-        // ── Hub aliases ──────────────────────────────────────
+        // ── Compat aliases (back-compat for existing classes) ──
+        navy: { DEFAULT: "#0D1B2A", mid: "#1A2E45", light: "#1B6CA8", faint: "#E6F4FC" },
+        gold: { DEFAULT: "#F0A500", light: "#FFC04C", dim: "#B07700", faint: "#FFF6E0" },
+
+        // ── Hub aliases (back-compat → SFA palette) ──────────
         hub: {
-          bg:            "#F4F5F7",
+          bg:            "#F4F7FA",
           surface:       "#FFFFFF",
           card:          "#FFFFFF",
-          border:        "#E1E4EB",
-          "border-light":"#C8CDD9",
-          teal:          "#002B6E",
-          "teal-dim":    "#001B48",
-          indigo:        "#001B48",
-          gold:          "#C4A84F",
-          "gold-dim":    "#8C7535",
-          red:           "#DC2626",
+          border:        "#E6F4FC",
+          "border-light":"#8A9BB0",
+          teal:          "#1B6CA8",
+          "teal-dim":    "#0D1B2A",
+          indigo:        "#0D1B2A",
+          gold:          "#F0A500",
+          "gold-dim":    "#B07700",
+          red:           "#D64045",
           orange:        "#D97706",
           purple:        "#7C3AED",
           success:       "#16A34A",
@@ -95,7 +109,7 @@ const config: Config = {
         oswald:  helvetica,
         bebas:   helvetica,
         inter:   helvetica,
-        mono:    ['"JetBrains Mono"', '"Fira Code"', "monospace"],
+        mono:    ['"JetBrains Mono"', '"IBM Plex Mono"', '"Fira Code"', "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
 
       fontSize: {

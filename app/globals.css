@@ -1,37 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────────────────
-   DESIGN TOKENS
+   SFA DESIGN TOKENS — Schoonhoven Sports Academy
    ───────────────────────────────────────────────────────── */
 :root {
-  /* Brand */
-  --navy:        #001B48;
-  --navy-mid:    #002B6E;
-  --navy-light:  #0A3280;
-  --gold:        #C4A84F;
-  --gold-light:  #D4BC72;
-  --gold-dim:    #8C7535;
+  /* SFA Brand */
+  --sfa-navy:       #0D1B2A;
+  --sfa-navy-mid:   #1A2E45;
+  --sfa-blue:       #1B6CA8;
+  --sfa-sky:        #4DAEE5;
+  --sfa-sky-light:  #E6F4FC;
+  --sfa-white:      #FFFFFF;
+  --sfa-off-white:  #F4F7FA;
+  --sfa-gray:       #8A9BB0;
+  --sfa-gold:       #F0A500;
+  --sfa-red:        #D64045;
+
+  /* Legacy aliases — point to SFA equivalents for back-compat */
+  --navy:        var(--sfa-navy);
+  --navy-mid:    var(--sfa-navy-mid);
+  --navy-light:  var(--sfa-blue);
+  --gold:        var(--sfa-gold);
+  --gold-light:  #FFC04C;
+  --gold-dim:    #B07700;
 
   /* Surface */
-  --bg:          #F4F5F7;
-  --surface:     #FFFFFF;
-  --surface-2:   #EFF1F4;
-  --border:      #E1E4EB;
-  --border-strong: #C8CDD9;
+  --bg:          var(--sfa-off-white);
+  --surface:     var(--sfa-white);
+  --surface-2:   var(--sfa-sky-light);
+  --border:      #E6F4FC;
+  --border-strong:#C5D8E5;
 
   /* Typography */
-  --text:        #111827;
-  --text-2:      #374151;
-  --text-muted:  #6B7280;
-  --text-dim:    #9CA3AF;
+  --text:        var(--sfa-navy);
+  --text-2:      #2C3E55;
+  --text-muted:  var(--sfa-gray);
+  --text-dim:    #B0BECE;
 
   /* Status */
   --green:       #16A34A;
-  --red:         #DC2626;
+  --red:         var(--sfa-red);
   --amber:       #D97706;
-  --blue:        #2563EB;
+  --blue:        var(--sfa-blue);
 
   /* shadcn compat */
   --background:          0 0% 96%;
@@ -128,12 +142,18 @@
   }
 
   .stat {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
     font-weight: 700;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
     line-height: 1;
     color: var(--text);
     font-feature-settings: "tnum" 1;
+  }
+
+  .stat-num {
+    font-family: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-feature-settings: "tnum" 1;
+    font-weight: 700;
   }
 
   .section-title {

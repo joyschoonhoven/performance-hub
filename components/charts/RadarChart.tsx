@@ -27,7 +27,7 @@ function toPath(points: { x: number; y: number }[]) {
 
 export function PlayerRadarChart({
   data,
-  color = "#4FA9E6",
+  color = "#1B6CA8",
   secondaryData,
   secondaryColor = "#10b981",
   size = 280,
@@ -117,7 +117,7 @@ export function PlayerRadarChart({
           key={`grid-${li}`}
           d={toPath(pts)}
           fill="none"
-          stroke={li === gridPolys.length - 1 ? `${color}40` : "#E2E5EC"}
+          stroke={li === gridPolys.length - 1 ? `${color}40` : "#E6F4FC"}
           strokeWidth={li === gridPolys.length - 1 ? 1.5 : 1}
           strokeDasharray={li < gridPolys.length - 1 ? "3 4" : undefined}
         />
@@ -141,7 +141,7 @@ export function PlayerRadarChart({
         <line key={`axis-${i}`}
           x1={cx} y1={cy}
           x2={pt.x} y2={pt.y}
-          stroke="#E2E5EC"
+          stroke="#E6F4FC"
           strokeWidth={1}
         />
       ))}
@@ -221,7 +221,7 @@ export function PlayerRadarChart({
               height={pillH}
               rx={10}
               fill="#FFFFFF"
-              stroke="#E2E5EC"
+              stroke="#E6F4FC"
               strokeWidth={1}
             />
             {/* Label text — always centered on p.x */}

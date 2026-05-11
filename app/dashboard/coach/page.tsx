@@ -186,7 +186,7 @@ export default function CoachDashboardPage() {
           label="Active Challenges"
           value={String(players.reduce((s, p) =>
             s + (p.challenges?.filter(c => c.status === "in_progress").length ?? 0), 0))}
-          accent="var(--gold)"
+          accent="var(--sfa-sky)"
           icon={<Trophy size={14} />}
         />
       </div>
@@ -199,7 +199,7 @@ export default function CoachDashboardPage() {
             <h3 style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em" }}>Team Performance</h3>
             <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 11 }}>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "var(--text-muted)" }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--gold)" }} />
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--sfa-sky)" }} />
                 Vorige Maand
               </span>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "var(--text-muted)" }}>
@@ -238,7 +238,7 @@ export default function CoachDashboardPage() {
                 <div style={{
                   width: 84, height: 84, borderRadius: "50%", overflow: "hidden",
                   background: "linear-gradient(135deg, var(--navy), var(--navy-mid))",
-                  border: "3px solid var(--gold)",
+                  border: "3px solid var(--sfa-sky)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "#fff", fontSize: 26, fontWeight: 700,
                 }}>
@@ -323,7 +323,7 @@ export default function CoachDashboardPage() {
               </p>
             </div>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10, color: "var(--text-muted)" }}>
-              <span style={{ width: 16, height: 2, background: "#C4A84F", borderRadius: 1 }} />
+              <span style={{ width: 16, height: 2, background: "#4DAEE5", borderRadius: 1 }} />
               {effectivenessSeries.length} datapunten
             </span>
           </div>
@@ -651,7 +651,7 @@ function TeamRadar({ labels, current, previous }: {
       })}
 
       {/* Previous (dashed gold) */}
-      <path d={prevPath} fill="rgba(196,168,79,0.15)" stroke="#C4A84F" strokeWidth={1.5} strokeDasharray="5 3" />
+      <path d={prevPath} fill="rgba(77,174,229,0.15)" stroke="#4DAEE5" strokeWidth={1.5} strokeDasharray="5 3" />
 
       {/* Current (filled navy) */}
       <path d={currentPath} fill="rgba(0,27,72,0.18)" stroke="var(--navy)" strokeWidth={2} />
@@ -707,8 +707,8 @@ function EffectivenessChart({ series }: { series: { date: string; overall: numbe
     <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
       <defs>
         <linearGradient id="effFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#C4A84F" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#C4A84F" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#4DAEE5" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#4DAEE5" stopOpacity="0.02" />
         </linearGradient>
       </defs>
 
@@ -730,10 +730,10 @@ function EffectivenessChart({ series }: { series: { date: string; overall: numbe
       <line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} stroke="var(--border)" strokeWidth={1} />
 
       <path d={fillPath} fill="url(#effFill)" />
-      <path d={actualPath} fill="none" stroke="#C4A84F" strokeWidth={2.5} />
+      <path d={actualPath} fill="none" stroke="#4DAEE5" strokeWidth={2.5} />
 
       {series.map((s, i) => (
-        <circle key={i} cx={xs(i)} cy={ys(s.overall)} r={3} fill="#C4A84F" stroke="#fff" strokeWidth={1.5} />
+        <circle key={i} cx={xs(i)} cy={ys(s.overall)} r={3} fill="#4DAEE5" stroke="#fff" strokeWidth={1.5} />
       ))}
     </svg>
   );

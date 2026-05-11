@@ -218,8 +218,8 @@ export default function PlayerDashboardPage() {
               <span style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: "0.06em",
                 padding: "3px 8px", borderRadius: 4,
-                background: "rgba(196,168,79,0.12)", color: "var(--gold-dim)",
-                border: "1px solid rgba(196,168,79,0.25)",
+                background: "rgba(77,174,229,0.12)", color: "var(--sfa-blue)",
+                border: "1px solid rgba(77,174,229,0.25)",
               }}>
                 OVR · {player.overall_rating}
               </span>
@@ -369,11 +369,11 @@ export default function PlayerDashboardPage() {
               href="/dashboard/player/checkin"
               style={{
                 fontSize: 11, fontWeight: 600,
-                color: todayCheckin ? "var(--text-muted)" : "var(--gold-dim)",
+                color: todayCheckin ? "var(--text-muted)" : "var(--sfa-blue)",
                 display: "inline-flex", alignItems: "center", gap: 4,
                 padding: "4px 10px", borderRadius: 5,
-                background: todayCheckin ? "transparent" : "rgba(196,168,79,0.1)",
-                border: `1px solid ${todayCheckin ? "var(--border)" : "rgba(196,168,79,0.3)"}`,
+                background: todayCheckin ? "transparent" : "rgba(77,174,229,0.1)",
+                border: `1px solid ${todayCheckin ? "var(--border)" : "rgba(77,174,229,0.3)"}`,
               }}
             >
               <HeartPulse size={11} /> {todayCheckin ? "Check-in aanpassen" : "Check-in invullen"}
@@ -728,7 +728,7 @@ function RadarMini({ values, labels, colors }: { values: number[]; labels: strin
       })}
 
       {/* Filled polygon */}
-      <path d={path} fill="rgba(196,168,79,0.25)" stroke="#C4A84F" strokeWidth={1.5} />
+      <path d={path} fill="rgba(77,174,229,0.25)" stroke="#4DAEE5" strokeWidth={1.5} />
 
       {/* Vertices */}
       {points.map((p, i) => (
@@ -831,7 +831,7 @@ function CheckinMetricTile({
         }}>
           Nog geen check-in data.
           <br />
-          <Link href="/dashboard/player/checkin" style={{ color: "var(--gold-dim)", fontWeight: 600 }}>
+          <Link href="/dashboard/player/checkin" style={{ color: "var(--sfa-blue)", fontWeight: 600 }}>
             Vul nu in →
           </Link>
         </div>

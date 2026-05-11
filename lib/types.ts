@@ -287,6 +287,7 @@ export interface Player {
   secondary_position?: PositionType;
   jersey_number?: number;
   avatar_url?: string;
+  photo_url?: string;
   overall_rating: number;
   badge?: BadgeType;
   is_active: boolean;
@@ -474,11 +475,11 @@ export const CATEGORY_ICONS: Record<EvaluationCategory, string> = {
 };
 
 export const CATEGORY_COLORS: Record<EvaluationCategory, string> = {
-  techniek: "#4FA9E6",
-  fysiek: "#6366f1",
-  tactiek: "#d97706",
-  mentaal: "#ef4444",
-  teamplay: "#8b5cf6",
+  techniek: "#1B6CA8",  // sfa-blue
+  fysiek:   "#4DAEE5",  // sfa-sky
+  tactiek:  "#F0A500",  // sfa-gold (sparingly — for tactiek)
+  mentaal:  "#D64045",  // sfa-red
+  teamplay: "#16A34A",  // emerald
 };
 
 // ============================================================

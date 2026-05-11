@@ -92,8 +92,8 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
         height: "100vh",
         position: "sticky",
         top: 0,
-        background: "linear-gradient(180deg, #001B48 0%, #001234 100%)",
-        borderRight: "1px solid rgba(255,255,255,0.06)",
+        background: "linear-gradient(180deg, #0D1B2A 0%, #07101A 100%)",
+        borderRight: "1px solid rgba(77,174,229,0.08)",
         paddingTop: 16,
         paddingBottom: 16,
         gap: 0,
@@ -107,8 +107,8 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
             height: 40,
             borderRadius: 10,
             overflow: "hidden",
-            background: "rgba(196,168,79,0.12)",
-            border: "1px solid rgba(196,168,79,0.22)",
+            background: "rgba(77,174,229,0.12)",
+            border: "1px solid rgba(77,174,229,0.28)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -144,7 +144,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
                   padding: "8px 4px 6px",
                   borderRadius: 8,
                   gap: 4,
-                  background: isActive ? "rgba(196,168,79,0.12)" : "transparent",
+                  background: isActive ? "rgba(77,174,229,0.14)" : "transparent",
                   transition: "background 0.15s",
                   textDecoration: "none",
                   position: "relative",
@@ -166,12 +166,12 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
                     width: 3,
                     height: 20,
                     borderRadius: "0 2px 2px 0",
-                    background: "#C4A84F",
+                    background: "#4DAEE5",
                   }} />
                 )}
 
                 {/* Icon */}
-                <span style={{ color: isActive ? "#C4A84F" : "rgba(255,255,255,0.38)", display: "flex" }}>
+                <span style={{ color: isActive ? "#4DAEE5" : "rgba(255,255,255,0.38)", display: "flex" }}>
                   {item.icon}
                 </span>
 
@@ -181,7 +181,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
                     fontSize: 9,
                     fontWeight: 500,
                     letterSpacing: "0.03em",
-                    color: isActive ? "#C4A84F" : "rgba(255,255,255,0.28)",
+                    color: isActive ? "#4DAEE5" : "rgba(255,255,255,0.28)",
                     lineHeight: 1,
                     textAlign: "center",
                     fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
@@ -199,7 +199,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
                     width: 6,
                     height: 6,
                     borderRadius: "50%",
-                    background: "#C4A84F",
+                    background: "#4DAEE5",
                     border: "1.5px solid #001B48",
                   }} />
                 )}
@@ -341,11 +341,11 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
             height: 32,
             borderRadius: "50%",
             overflow: "hidden",
-            border: "1.5px solid rgba(196,168,79,0.4)",
+            border: "1.5px solid rgba(77,174,229,0.4)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: "linear-gradient(135deg, #C4A84F, #8C7535)",
+            background: "linear-gradient(135deg, #4DAEE5, #1B6CA8)",
             color: "#001B48",
             fontSize: 11,
             fontWeight: 700,

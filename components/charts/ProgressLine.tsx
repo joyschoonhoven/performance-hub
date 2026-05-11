@@ -29,8 +29,8 @@ interface ProgressLineChartProps {
 }
 
 const CATEGORY_COLORS = {
-  overall: "#4FA9E6",
-  techniek: "#4FA9E6",
+  overall: "#1B6CA8",
+  techniek: "#1B6CA8",
   fysiek: "#f59e0b",
   tactiek: "#ec4899",
   mentaal: "#ef4444",
@@ -46,7 +46,7 @@ export function ProgressLineChart({ data, showCategories = false, height = 200 }
   return (
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={formatted} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#E2E5EC" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E6F4FC" vertical={false} />
         <XAxis
           dataKey="date"
           tick={{ fill: "#6C7589", fontSize: 11 }}
@@ -62,7 +62,7 @@ export function ProgressLineChart({ data, showCategories = false, height = 200 }
         <Tooltip
           contentStyle={{
             backgroundColor: "#FFFFFF",
-            border: "1px solid #E2E5EC",
+            border: "1px solid #E6F4FC",
             borderRadius: "8px",
             color: "#0D1117",
             fontSize: "12px",

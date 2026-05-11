@@ -71,7 +71,7 @@ function getActivityFeed(player: PlayerWithDetails) {
       items.push({
         text: `Challenge "${ch.title}" voltooid.`,
         meta: `Voltooid op ${formatDate(ch.updated_at)}`,
-        color: "#C4A84F",
+        color: "#4DAEE5",
         date: new Date(ch.updated_at),
       });
     } else if (ch.status === "in_progress") {
@@ -177,7 +177,7 @@ export default function PlayerCardPage() {
         style={{
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(180deg, #001B48 0%, #000820 60%, #000510 100%)",
+          background: "linear-gradient(180deg, #0D1B2A 0%, #07101A 60%, #040A14 100%)",
           color: "#fff",
           minHeight: "calc(100vh - 52px)",
         }}
@@ -186,14 +186,14 @@ export default function PlayerCardPage() {
         <div
           style={{
             position: "absolute", top: -80, right: -80, width: 360, height: 360,
-            background: "linear-gradient(135deg, rgba(196,168,79,0.18) 0%, transparent 70%)",
+            background: "linear-gradient(135deg, rgba(77,174,229,0.18) 0%, transparent 70%)",
             transform: "rotate(45deg)", pointerEvents: "none",
           }}
         />
         <div
           style={{
             position: "absolute", bottom: 0, left: 0, right: 0, height: 1,
-            background: "linear-gradient(90deg, transparent, rgba(196,168,79,0.4), transparent)",
+            background: "linear-gradient(90deg, transparent, rgba(77,174,229,0.4), transparent)",
           }}
         />
 
@@ -202,7 +202,7 @@ export default function PlayerCardPage() {
           <div
             style={{
               width: 40, height: 40, borderRadius: 8,
-              background: "rgba(196,168,79,0.15)", border: "1px solid rgba(196,168,79,0.3)",
+              background: "rgba(77,174,229,0.15)", border: "1px solid rgba(77,174,229,0.3)",
               display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
             }}
           >
@@ -227,7 +227,7 @@ export default function PlayerCardPage() {
               />
               <div style={{
                 position: "absolute", inset: 0,
-                background: "linear-gradient(180deg, transparent 50%, #000510 100%)",
+                background: "linear-gradient(180deg, transparent 50%, #040A14 100%)",
                 borderRadius: 6,
               }} />
             </div>
@@ -235,10 +235,10 @@ export default function PlayerCardPage() {
             <div
               style={{
                 width: 220, height: 220, borderRadius: "50%",
-                background: "linear-gradient(135deg, rgba(196,168,79,0.25), rgba(196,168,79,0.05))",
-                border: "2px solid rgba(196,168,79,0.3)",
+                background: "linear-gradient(135deg, rgba(77,174,229,0.25), rgba(77,174,229,0.05))",
+                border: "2px solid rgba(77,174,229,0.3)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 72, fontWeight: 700, color: "#C4A84F", letterSpacing: "-0.04em",
+                fontSize: 72, fontWeight: 700, color: "#4DAEE5", letterSpacing: "-0.04em",
               }}
             >
               {player.first_name?.[0]}{player.last_name?.[0]}
@@ -268,7 +268,7 @@ export default function PlayerCardPage() {
               style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
                 padding: "3px 8px", borderRadius: 4,
-                background: "rgba(196,168,79,0.16)", color: "#C4A84F",
+                background: "rgba(77,174,229,0.16)", color: "#4DAEE5",
                 border: "1px solid rgba(196,168,79,0.32)",
               }}
             >
@@ -340,7 +340,7 @@ export default function PlayerCardPage() {
                   color: active ? "var(--navy)" : "var(--text-muted)",
                   background: "transparent", border: "none", cursor: "pointer",
                   padding: "0 0 14px 0", marginBottom: -15,
-                  borderBottom: active ? "2px solid #C4A84F" : "2px solid transparent",
+                  borderBottom: active ? "2px solid #4DAEE5" : "2px solid transparent",
                   transition: "all 0.15s", textTransform: "uppercase",
                 }}
               >
@@ -570,7 +570,7 @@ export default function PlayerCardPage() {
             {player.identity?.ai_summary && (
               <div className="card" style={{ padding: 22 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                  <Brain size={15} style={{ color: "var(--gold-dim)" }} />
+                  <Brain size={15} style={{ color: "var(--sfa-blue)" }} />
                   <h3 style={{ fontSize: 14, fontWeight: 700, letterSpacing: "-0.01em" }}>
                     Coach Analyse
                   </h3>
@@ -890,7 +890,7 @@ export default function PlayerCardPage() {
               </div>
               <button style={{
                 marginTop: 10, padding: "5px 12px", fontSize: 11, fontWeight: 700,
-                background: "var(--gold-dim)", color: "#fff", borderRadius: 5, border: "none",
+                background: "var(--sfa-blue)", color: "#fff", borderRadius: 5, border: "none",
                 cursor: "pointer", letterSpacing: "0.04em", textTransform: "uppercase",
                 display: "inline-flex", alignItems: "center", gap: 5,
               }}>

@@ -197,8 +197,8 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
                 style={{
                   fontSize: 9,
                   fontWeight: 700,
-                  color: "var(--gold-dim)",
-                  background: "rgba(196,168,79,0.1)",
+                  color: "var(--sfa-blue)",
+                  background: "rgba(77,174,229,0.1)",
                   padding: "2px 6px",
                   borderRadius: 4,
                   letterSpacing: "0.08em",

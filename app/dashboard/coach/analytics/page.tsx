@@ -150,7 +150,7 @@ export default function AnalyticsPage() {
           <button key={t.id} onClick={() => setTab(t.id)}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0"
             style={tab === t.id
-              ? { background: '#FFFFFF', color: '#C4A84F', boxShadow: "0 2px 8px rgba(0,0,0,0.08)", border: "1px solid #E2E5EC" }
+              ? { background: '#FFFFFF', color: '#4DAEE5', boxShadow: "0 2px 8px rgba(0,0,0,0.08)", border: "1px solid #E2E5EC" }
               : { color: 'var(--color-text-muted)' }
             }>
             {t.icon}{t.label}
