@@ -191,17 +191,17 @@ export default function PlayerCardDesignPage() {
             </button>
           </header>
 
-          {/* === Body grid: left (text + photo) | right (radar + bars) === */}
+          {/* === Body — 3 column grid: text | photo | radar === */}
           <div style={{
             position: "relative",
-            padding: "40px 36px 36px",
+            padding: "40px 36px 60px",
             display: "grid",
-            gridTemplateColumns: "1.05fr 1fr",
+            gridTemplateColumns: "minmax(260px, 1fr) minmax(280px, 380px) minmax(360px, 1fr)",
             gap: 0,
             zIndex: 5,
           }}>
-            {/* ── LEFT: TEXT + CUTOUT ── */}
-            <div style={{ position: "relative", paddingRight: 20 }}>
+            {/* ── LEFT: TEXT + IDENTITY STATS ── */}
+            <div style={{ position: "relative", paddingRight: 20, zIndex: 6 }}>
               <h1 style={{
                 fontSize: 44,
                 fontWeight: 800,
@@ -230,7 +230,6 @@ export default function PlayerCardDesignPage() {
                 lineHeight: 1.45,
                 color: "#fff",
                 marginBottom: 14,
-                maxWidth: 360,
               }}>
                 {PLAYER.bio_lead}
               </p>
@@ -239,40 +238,54 @@ export default function PlayerCardDesignPage() {
                 lineHeight: 1.55,
                 color: "rgba(255,255,255,0.72)",
                 marginBottom: 40,
-                maxWidth: 360,
               }}>
                 {PLAYER.bio}
               </p>
 
-              {/* Identity stats bottom-left */}
+              {/* Identity stats */}
               <div style={{
                 display: "flex",
                 flexDirection: "column",
                 gap: 18,
-                paddingTop: 24,
                 color: "#fff",
               }}>
                 <IdentityStat label="Date of Birth" value={PLAYER.date_of_birth} />
                 <IdentityStat label="Place of Birth" value={PLAYER.place_of_birth} />
                 <IdentityStat label="Height" value={PLAYER.height} />
               </div>
+            </div>
 
-              {/* ── CUTOUT PHOTO (overlapping right side) ── */}
+            {/* ── MIDDLE: CUTOUT PHOTO ── */}
+            <div style={{
+              position: "relative",
+              minHeight: 580,
+              display: "flex",
+              alignItems: "flex-end",
+              justifyContent: "center",
+              zIndex: 4,
+            }}>
               <div style={{
                 position: "absolute",
-                bottom: -36,
-                right: -200,
-                width: 480,
-                height: 620,
+                top: -20,
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: "115%",
+                height: "calc(100% + 60px)",
                 pointerEvents: "none",
-                zIndex: 4,
+                maxWidth: 440,
               }}>
                 <PlayerSilhouette />
               </div>
             </div>
 
             {/* ── RIGHT: RADAR + STAT BARS ── */}
-            <div style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "space-between", zIndex: 3 }}>
+            <div style={{
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              zIndex: 5,
+            }}>
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <BigRadar attrs={ATTRIBUTES} />
               </div>
@@ -292,10 +305,9 @@ export default function PlayerCardDesignPage() {
 
               {/* Competition badge bottom right */}
               <div style={{
-                position: "absolute",
-                bottom: -16,
-                right: 0,
+                marginTop: 30,
                 display: "inline-flex", alignItems: "center", gap: 8,
+                alignSelf: "flex-end",
               }}>
                 <div style={{
                   width: 30, height: 30, borderRadius: "50%",
