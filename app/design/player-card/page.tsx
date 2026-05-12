@@ -1,794 +1,342 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Quote, Trophy, TrendingUp, TrendingDown, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { Menu, ChevronDown, ArrowLeft } from "lucide-react";
+
+// Bypass edge cache
+export const dynamic = "force-dynamic";
 
 /* ─────────────────────────────────────────────────────────
-   MOCK DATA — pure static, for visual iteration only
+   MOCK DATA
    ───────────────────────────────────────────────────────── */
+
+const SEASONS = ["2026", "2025", "2024"] as const;
 
 const PLAYER = {
   first_name: "Joy",
   last_name: "Schoonhoven",
-  position: "CAM",
-  position_label: "Aanvallende Middenvelder",
-  jersey: 10,
-  age: 17,
-  nationality: "🇳🇱 Nederland",
-  club: "SFA · A1",
-  height: "1.78 m",
-  foot: "Rechts",
-  joined: "Aug 2024",
-  contract: "2027",
-  overall: 87,
-  overall_label: "Elite",
-  trend_delta: -1,
-  badge: "Rising Star",
+  position: "Aanvallende Middenvelder / Spits",
+  bio_lead: "Joy tekende in 2024 bij SFA voor een rol als creatief hart van het A1 elftal.",
+  bio: "Joy Schoonhoven is een Nederlandse middenvelder die de routes ziet die anderen missen. Zijn combinatie van techniek, spelinzicht en killer-mentaliteit maakt hem het zenuwcentrum van de Schoonhoven Sports Academy A-selectie.",
+  date_of_birth: "12/03/2008",
+  place_of_birth: "Schoonhoven, Nederland",
+  height: "1.78 m (5 ft 10 in)",
 };
 
 const ATTRIBUTES = [
-  { label: "Techniek",  value: 8.7, color: "#4DAEE5" },
-  { label: "Fysiek",    value: 7.4, color: "#7DC4EE" },
-  { label: "Tactiek",   value: 9.2, color: "#F0A500" },
-  { label: "Mentaal",   value: 8.8, color: "#D64045" },
-  { label: "Teamplay",  value: 8.1, color: "#16A34A" },
+  { label: "PACE",      value: 8.5 },
+  { label: "SHOOTING",  value: 8.7 },
+  { label: "PASSING",   value: 9.2 },
+  { label: "DRIBBLING", value: 8.9 },
+  { label: "DEFENDING", value: 6.2 },
+  { label: "FORM",      value: 8.4 },
+  { label: "HEALTH",    value: 9.0 },
 ];
 
-const SOCIOTYPE = {
-  label: "De Denker",
-  icon: "🧠",
-  description:
-    "Analytisch en strategisch. Leest het spel sneller dan medespelers en kiest de optimale route waar anderen kracht zoeken. Coach geeft jou vrijheid van positie omdat jouw beslissingen vaak juist zijn.",
-  traits: ["Tactisch", "Analytisch", "Strategisch"],
-  impact:
-    "Je krijgt vrijheid om posities te kiezen. Verwachting: jij dicteert het tempo in de opbouwfase en bepaalt wanneer het team druk moet zetten.",
-};
-
-const ARCHETYPE = {
-  label: "Classic 10",
-  icon: "🌟",
-  description: "Traditionele aanvallende middenvelder, creatief hart van het team.",
-  color: "#F0A500",
-  traits: ["Creativiteit", "Schot", "Assist"],
-};
-
-const CORE_VALUES = [
-  { label: "Noodzaak",     value: 7.2, color: "#D64045",
-    levelLabel: "Gezonde balans",
-    desc: "Je voelt urgentie wanneer nodig, maar blijft vrij." },
-  { label: "Creativiteit", value: 9.1, color: "#7C3AED",
-    levelLabel: "Onorthodox",
-    desc: "Je daagt patronen uit; onvoorspelbaar voor tegenstander." },
-  { label: "Vertrouwen",   value: 8.4, color: "#16A34A",
-    levelLabel: "Zelfverzekerd",
-    desc: "Je staat achter je beslissingen, ook bij fouten." },
+const FOOT_STATS = [
+  { label: "RIGHT FOOT", value: 9.1 },
+  { label: "LEFT FOOT",  value: 6.4 },
+  { label: "SKILLS",     value: 8.7 },
+  { label: "WORK RATE",  value: 8.3 },
 ];
-
-const EVOLUTION = [
-  { month: "Sep", value: 79 },
-  { month: "Okt", value: 81 },
-  { month: "Nov", value: 80 },
-  { month: "Dec", value: 84 },
-  { month: "Jan", value: 86 },
-  { month: "Feb", value: 88 },
-  { month: "Mrt", value: 87 },
-];
-
-const COACH_NOTE = {
-  body:
-    "Joy combineert spelinzicht van een 22-jarige met de verbeeldingskracht van een straatvoetballer. De challenge is om zijn fysieke piek volgend seizoen in lijn te brengen met zijn mentale niveau.",
-  coach: "M. van der Berg",
-  role: "Hoofdcoach SFA A1",
-  date: "Mar 14, 2026",
-};
-
-const MISSION = {
-  title: "Box-to-Box Conditie",
-  subtitle: "Maand 7 — Fysieke ontwikkeling",
-  progress: 64,
-  deadline: "31 Maart",
-  category: "Fysiek",
-};
 
 /* ─────────────────────────────────────────────────────────
    PAGE
    ───────────────────────────────────────────────────────── */
 
 export default function PlayerCardDesignPage() {
-  const initials = `${PLAYER.first_name[0]}${PLAYER.last_name[0]}`;
+  const [season, setSeason] = useState<(typeof SEASONS)[number]>("2026");
 
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#0A0E14",
-      color: "#fff",
+      background: "#E5E7EB",
+      padding: "40px 24px",
       fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-      overflow: "hidden",
-      position: "relative",
     }}>
-      {/* Ambient background — subtle gradient mesh */}
-      <div style={{
-        position: "fixed",
-        inset: 0,
-        background: `
-          radial-gradient(ellipse at 15% 0%, rgba(27,108,168,0.15), transparent 50%),
-          radial-gradient(ellipse at 85% 30%, rgba(240,165,0,0.08), transparent 50%),
-          radial-gradient(ellipse at 50% 100%, rgba(77,174,229,0.06), transparent 60%)
-        `,
-        pointerEvents: "none",
-      }} />
-
-      {/* ── TOP NAV (minimal) ── */}
-      <nav style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        padding: "20px 40px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        background: "rgba(10,14,20,0.7)",
-        backdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(255,255,255,0.04)",
-      }}>
+      {/* Top: back link */}
+      <div style={{ maxWidth: 1200, margin: "0 auto 16px" }}>
         <Link href="/design" style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 6,
-          fontSize: 12,
-          color: "rgba(255,255,255,0.5)",
-          textDecoration: "none",
+          display: "inline-flex", alignItems: "center", gap: 6,
+          fontSize: 12, color: "#6B7280", textDecoration: "none",
           letterSpacing: "0.02em",
         }}>
           <ArrowLeft size={14} /> Design preview
         </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div style={{
-            fontSize: 10,
-            letterSpacing: "0.16em",
-            fontWeight: 600,
-            color: "rgba(255,255,255,0.35)",
-            textTransform: "uppercase",
-          }}>
-            SFA · Player Card
-          </div>
-          <button style={{
-            padding: "8px 16px",
-            borderRadius: 6,
-            background: "rgba(77,174,229,0.1)",
-            border: "1px solid rgba(77,174,229,0.25)",
-            color: "#4DAEE5",
-            fontSize: 12,
-            fontWeight: 600,
-            letterSpacing: "0.02em",
-            cursor: "pointer",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 5,
-          }}>
-            Share <ArrowUpRight size={11} />
-          </button>
-        </div>
-      </nav>
+      </div>
 
       {/* ═══════════════════════════════════════════════════════════
-          HERO SECTION
+          HERO CARD
           ═══════════════════════════════════════════════════════════ */}
-      <section style={{
-        position: "relative",
-        padding: "60px 40px 0",
-        maxWidth: 1280,
+      <div style={{
+        maxWidth: 1200,
         margin: "0 auto",
+        background: "#0D1B2A",
+        borderRadius: 18,
+        overflow: "hidden",
+        boxShadow: "0 24px 60px rgba(13,27,42,0.35), 0 8px 24px rgba(13,27,42,0.15)",
+        position: "relative",
+        display: "grid",
+        gridTemplateColumns: "76px 1fr",
+        minHeight: 700,
       }}>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 420px",
-          gap: 60,
-          alignItems: "start",
+        {/* ── LEFT RAIL ── */}
+        <aside style={{
+          background: "#fff",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "20px 0",
+          gap: 24,
         }}>
-          {/* LEFT: Name & identity */}
-          <div style={{ paddingTop: 40 }}>
-            <div style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "5px 10px",
-              borderRadius: 999,
-              background: "rgba(240,165,0,0.08)",
-              border: "1px solid rgba(240,165,0,0.25)",
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: "0.14em",
-              color: "#F0A500",
-              textTransform: "uppercase",
-              marginBottom: 28,
-            }}>
-              <Sparkles size={11} /> {PLAYER.badge}
-            </div>
-
-            <div style={{
-              fontSize: 11,
-              letterSpacing: "0.22em",
-              fontWeight: 600,
-              color: "rgba(77,174,229,0.7)",
-              marginBottom: 18,
-              textTransform: "uppercase",
-            }}>
-              N° {PLAYER.jersey} · {PLAYER.position} · {PLAYER.position_label}
-            </div>
-
-            <h1 style={{
-              fontSize: 96,
-              fontWeight: 200,
-              letterSpacing: "-0.04em",
-              lineHeight: 0.95,
-              color: "rgba(255,255,255,0.95)",
-              marginBottom: 6,
-            }}>
-              {PLAYER.first_name}
-            </h1>
-            <h1 style={{
-              fontSize: 96,
-              fontWeight: 800,
-              letterSpacing: "-0.05em",
-              lineHeight: 0.95,
-              color: "#fff",
-              marginBottom: 32,
-            }}>
-              {PLAYER.last_name}.
-            </h1>
-
-            {/* Identity row */}
-            <div style={{
-              display: "flex",
-              gap: 40,
-              marginTop: 36,
-              paddingTop: 32,
-              borderTop: "1px solid rgba(255,255,255,0.08)",
-            }}>
-              <Stat label="AGE" value={`${PLAYER.age}`} />
-              <Stat label="HEIGHT" value={PLAYER.height} />
-              <Stat label="FOOT" value={PLAYER.foot} />
-              <Stat label="CLUB" value={PLAYER.club} />
-              <Stat label="CONTRACT" value={PLAYER.contract} />
-            </div>
+          {/* Hamburger */}
+          <button style={{
+            width: 44, height: 44, borderRadius: 6,
+            background: "#1B6CA8", color: "#fff",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            border: "none", cursor: "pointer",
+          }}>
+            <Menu size={20} />
+          </button>
+          {/* Club crest (SFA logo) */}
+          <div style={{
+            width: 44, height: 44,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            position: "relative",
+          }}>
+            <SFACrest size={36} />
           </div>
+        </aside>
 
-          {/* RIGHT: Rating monolith */}
-          <div style={{ position: "relative", paddingTop: 8 }}>
-            <div style={{
-              position: "relative",
-              padding: "44px 36px 36px",
-              borderRadius: 18,
-              background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 100%)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              backdropFilter: "blur(20px)",
-              overflow: "hidden",
-            }}>
-              {/* Glow */}
-              <div style={{
-                position: "absolute",
-                top: -100,
-                right: -80,
-                width: 280,
-                height: 280,
-                background: "radial-gradient(circle, rgba(240,165,0,0.15) 0%, transparent 65%)",
-                pointerEvents: "none",
-              }} />
+        {/* ── MAIN CONTENT ── */}
+        <main style={{ position: "relative" }}>
+          {/* Stadium ambient backdrop */}
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            background: `
+              radial-gradient(ellipse at 60% 40%, rgba(27,108,168,0.18) 0%, transparent 55%),
+              radial-gradient(ellipse at 90% 80%, rgba(77,174,229,0.1) 0%, transparent 50%),
+              linear-gradient(180deg, rgba(13,27,42,0) 0%, rgba(7,16,26,0.6) 100%)
+            `,
+            pointerEvents: "none",
+          }} />
 
-              <div style={{
-                fontSize: 10,
-                letterSpacing: "0.16em",
-                fontWeight: 600,
-                color: "rgba(255,255,255,0.4)",
-                marginBottom: 12,
-                textTransform: "uppercase",
-              }}>
-                Overall Rating
-              </div>
+          {/* Subtle stadium light streaks */}
+          <svg
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.04 }}
+            viewBox="0 0 1000 700"
+            preserveAspectRatio="none"
+          >
+            {Array.from({ length: 12 }).map((_, i) => (
+              <line key={i}
+                x1={i * 100}
+                y1={0}
+                x2={i * 100 + 200}
+                y2={700}
+                stroke="#fff"
+                strokeWidth={1}
+              />
+            ))}
+          </svg>
 
-              <div style={{ display: "flex", alignItems: "flex-end", gap: 16, marginBottom: 20 }}>
-                <div style={{
-                  fontSize: 160,
-                  fontWeight: 700,
-                  letterSpacing: "-0.06em",
-                  lineHeight: 0.85,
-                  color: "#F0A500",
-                  fontFamily: '"JetBrains Mono", monospace',
-                  textShadow: "0 4px 24px rgba(240,165,0,0.3)",
-                }}>
-                  {PLAYER.overall}
-                </div>
-                <div style={{ paddingBottom: 18 }}>
-                  <div style={{
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: "#F0A500",
+          {/* === Year tabs + Performance selector === */}
+          <header style={{
+            position: "relative",
+            padding: "26px 36px 0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            zIndex: 5,
+          }}>
+            <div style={{ display: "flex", gap: 28 }}>
+              {SEASONS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSeason(s)}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 8,
+                    background: "transparent", border: "none", cursor: "pointer",
+                    fontSize: 15, fontWeight: 600,
+                    color: season === s ? "#fff" : "rgba(255,255,255,0.4)",
                     letterSpacing: "-0.01em",
-                    marginBottom: 4,
-                  }}>
-                    {PLAYER.overall_label}
-                  </div>
-                  <div style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 4,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: PLAYER.trend_delta >= 0 ? "#16A34A" : "#D64045",
-                  }}>
-                    {PLAYER.trend_delta >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                    {PLAYER.trend_delta >= 0 ? "+" : ""}{PLAYER.trend_delta} vs last
-                  </div>
-                </div>
-              </div>
-
-              {/* Profile photo / initials */}
-              <div style={{
-                position: "relative",
-                width: "100%",
-                aspectRatio: "1/1",
-                borderRadius: 12,
-                overflow: "hidden",
-                background: "linear-gradient(135deg, #1A2E45 0%, #0D1B2A 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: 4,
-              }}>
-                {/* Layered initials with depth */}
-                <div style={{
-                  position: "absolute",
-                  fontSize: 240,
-                  fontWeight: 900,
-                  letterSpacing: "-0.08em",
-                  color: "rgba(77,174,229,0.04)",
-                  fontFamily: '"JetBrains Mono", monospace',
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%) scale(1.2)",
-                }}>
-                  {initials}
-                </div>
-                <div style={{
-                  fontSize: 180,
-                  fontWeight: 700,
-                  letterSpacing: "-0.06em",
-                  background: "linear-gradient(180deg, #4DAEE5 0%, #1B6CA8 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  fontFamily: '"JetBrains Mono", monospace',
-                  position: "relative",
-                  zIndex: 2,
-                }}>
-                  {initials}
-                </div>
-                {/* Position chip overlay */}
-                <div style={{
-                  position: "absolute",
-                  bottom: 14,
-                  left: 14,
-                  padding: "6px 12px",
-                  borderRadius: 6,
-                  background: "rgba(13,27,42,0.8)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(240,165,0,0.3)",
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: "#F0A500",
-                  letterSpacing: "0.08em",
-                }}>
-                  {PLAYER.position}
-                </div>
-                <div style={{
-                  position: "absolute",
-                  bottom: 14,
-                  right: 14,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: "rgba(255,255,255,0.5)",
-                  letterSpacing: "0.08em",
-                }}>
-                  #{PLAYER.jersey}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════
-          ATTRIBUTES + SOCIOTYPE
-          ═══════════════════════════════════════════════════════════ */}
-      <section style={{
-        maxWidth: 1280,
-        margin: "120px auto 0",
-        padding: "0 40px",
-      }}>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "440px 1fr",
-          gap: 60,
-        }}>
-          {/* Attributes radar */}
-          <div>
-            <SectionMark label="01" title="Attributes" sub="Latest evaluation" />
-            <div style={{ marginTop: 32 }}>
-              <PentagonRadar attrs={ATTRIBUTES} />
-            </div>
-
-            {/* Numeric breakdown */}
-            <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 14 }}>
-              {ATTRIBUTES.map((a) => (
-                <div key={a.label} style={{
-                  display: "grid",
-                  gridTemplateColumns: "100px 1fr 60px",
-                  gap: 14,
-                  alignItems: "center",
-                }}>
+                    padding: 0,
+                  }}
+                >
                   <span style={{
-                    fontSize: 11,
-                    letterSpacing: "0.1em",
-                    color: "rgba(255,255,255,0.5)",
-                    textTransform: "uppercase",
-                    fontWeight: 600,
-                  }}>
-                    {a.label}
-                  </span>
-                  <div style={{
-                    height: 4,
-                    borderRadius: 2,
-                    background: "rgba(255,255,255,0.05)",
-                    overflow: "hidden",
-                    position: "relative",
-                  }}>
-                    <div style={{
-                      height: "100%",
-                      width: `${a.value * 10}%`,
-                      background: `linear-gradient(90deg, ${a.color}, ${a.color}88)`,
-                      borderRadius: 2,
-                      boxShadow: `0 0 12px ${a.color}80`,
-                    }} />
-                  </div>
-                  <span style={{
-                    fontFamily: '"JetBrains Mono", monospace',
-                    fontSize: 15,
-                    fontWeight: 700,
-                    color: a.color,
-                    textAlign: "right",
-                    letterSpacing: "-0.02em",
-                  }}>
-                    {a.value.toFixed(1)}
-                  </span>
-                </div>
+                    width: 12, height: 12, borderRadius: "50%",
+                    border: `1.5px solid ${season === s ? "#4DAEE5" : "rgba(255,255,255,0.3)"}`,
+                    background: season === s ? "#4DAEE5" : "transparent",
+                    display: "inline-block",
+                    boxShadow: season === s ? "0 0 0 3px rgba(77,174,229,0.18)" : "none",
+                  }} />
+                  {s}
+                </button>
               ))}
             </div>
-          </div>
 
-          {/* Sociotype card */}
-          <div>
-            <SectionMark label="02" title="Sociotype" sub="Behavioral profile" />
-            <div style={{ marginTop: 32 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
-                <div style={{
-                  width: 68,
-                  height: 68,
-                  borderRadius: 16,
-                  background: "linear-gradient(135deg, rgba(96,165,250,0.12), rgba(96,165,250,0.03))",
-                  border: "1px solid rgba(96,165,250,0.25)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 32,
-                }}>
-                  {SOCIOTYPE.icon}
-                </div>
-                <div>
-                  <div style={{
-                    fontSize: 10,
-                    letterSpacing: "0.18em",
-                    color: "rgba(255,255,255,0.4)",
-                    marginBottom: 4,
-                    textTransform: "uppercase",
-                    fontWeight: 600,
-                  }}>
-                    Primary type
-                  </div>
-                  <h2 style={{
-                    fontSize: 36,
-                    fontWeight: 700,
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                    color: "#60A5FA",
-                  }}>
-                    {SOCIOTYPE.label}
-                  </h2>
-                </div>
+            <button style={{
+              display: "inline-flex", alignItems: "center", gap: 10,
+              padding: "8px 18px",
+              borderRadius: 999,
+              background: "transparent",
+              border: "1.5px solid rgba(77,174,229,0.5)",
+              color: "#fff",
+              fontSize: 13, fontWeight: 500,
+              cursor: "pointer",
+            }}>
+              Performance
+              <ChevronDown size={14} />
+            </button>
+          </header>
+
+          {/* === Body grid: left (text + photo) | right (radar + bars) === */}
+          <div style={{
+            position: "relative",
+            padding: "40px 36px 36px",
+            display: "grid",
+            gridTemplateColumns: "1.05fr 1fr",
+            gap: 0,
+            zIndex: 5,
+          }}>
+            {/* ── LEFT: TEXT + CUTOUT ── */}
+            <div style={{ position: "relative", paddingRight: 20 }}>
+              <h1 style={{
+                fontSize: 44,
+                fontWeight: 800,
+                letterSpacing: "-0.02em",
+                lineHeight: 1,
+                color: "#fff",
+                marginBottom: 10,
+                textTransform: "uppercase",
+              }}>
+                {PLAYER.first_name} {PLAYER.last_name}
+              </h1>
+              <div style={{
+                fontSize: 14,
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                color: "#4DAEE5",
+                textTransform: "uppercase",
+                marginBottom: 28,
+              }}>
+                {PLAYER.position}
               </div>
 
               <p style={{
-                fontSize: 16,
-                lineHeight: 1.65,
-                color: "rgba(255,255,255,0.75)",
-                marginBottom: 32,
-                maxWidth: 520,
+                fontSize: 14,
+                fontWeight: 700,
+                lineHeight: 1.45,
+                color: "#fff",
+                marginBottom: 14,
+                maxWidth: 360,
               }}>
-                {SOCIOTYPE.description}
+                {PLAYER.bio_lead}
+              </p>
+              <p style={{
+                fontSize: 13,
+                lineHeight: 1.55,
+                color: "rgba(255,255,255,0.72)",
+                marginBottom: 40,
+                maxWidth: 360,
+              }}>
+                {PLAYER.bio}
               </p>
 
-              {/* Traits grid */}
+              {/* Identity stats bottom-left */}
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 18,
+                paddingTop: 24,
+                color: "#fff",
+              }}>
+                <IdentityStat label="Date of Birth" value={PLAYER.date_of_birth} />
+                <IdentityStat label="Place of Birth" value={PLAYER.place_of_birth} />
+                <IdentityStat label="Height" value={PLAYER.height} />
+              </div>
+
+              {/* ── CUTOUT PHOTO (overlapping right side) ── */}
+              <div style={{
+                position: "absolute",
+                bottom: -36,
+                right: -200,
+                width: 480,
+                height: 620,
+                pointerEvents: "none",
+                zIndex: 4,
+              }}>
+                <PlayerSilhouette />
+              </div>
+            </div>
+
+            {/* ── RIGHT: RADAR + STAT BARS ── */}
+            <div style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "space-between", zIndex: 3 }}>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <BigRadar attrs={ATTRIBUTES} />
+              </div>
+
+              {/* Stat bars (2x2 grid) */}
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: 12,
-                marginBottom: 32,
+                gridTemplateColumns: "1fr 1fr",
+                columnGap: 40,
+                rowGap: 24,
+                marginTop: 30,
               }}>
-                {SOCIOTYPE.traits.map((t, i) => (
-                  <div key={t} style={{
-                    padding: "16px 14px",
-                    borderRadius: 10,
-                    background: "rgba(96,165,250,0.04)",
-                    border: "1px solid rgba(96,165,250,0.15)",
-                  }}>
-                    <div style={{
-                      fontSize: 10,
-                      fontFamily: '"JetBrains Mono", monospace',
-                      color: "rgba(96,165,250,0.6)",
-                      letterSpacing: "0.06em",
-                      marginBottom: 6,
-                    }}>
-                      0{i + 1}
-                    </div>
-                    <div style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      color: "rgba(255,255,255,0.92)",
-                      letterSpacing: "-0.01em",
-                    }}>
-                      {t}
-                    </div>
-                  </div>
+                {FOOT_STATS.map((s) => (
+                  <FootStat key={s.label} {...s} />
                 ))}
               </div>
 
-              {/* Impact callout */}
+              {/* Competition badge bottom right */}
               <div style={{
-                padding: 22,
-                borderRadius: 12,
-                background: "rgba(96,165,250,0.04)",
-                borderLeft: "3px solid #60A5FA",
-              }}>
-                <div style={{
-                  fontSize: 10,
-                  letterSpacing: "0.16em",
-                  fontWeight: 600,
-                  color: "rgba(96,165,250,0.7)",
-                  marginBottom: 10,
-                  textTransform: "uppercase",
-                }}>
-                  Wat dit betekent voor jouw spel
-                </div>
-                <p style={{
-                  fontSize: 14,
-                  lineHeight: 1.65,
-                  color: "rgba(255,255,255,0.85)",
-                }}>
-                  {SOCIOTYPE.impact}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════
-          CORE VALUES
-          ═══════════════════════════════════════════════════════════ */}
-      <section style={{
-        maxWidth: 1280,
-        margin: "120px auto 0",
-        padding: "0 40px",
-      }}>
-        <SectionMark label="03" title="Core values" sub="Drivers behind your game" />
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 20,
-          marginTop: 40,
-        }}>
-          {CORE_VALUES.map((cv) => (
-            <CoreValueCard key={cv.label} {...cv} />
-          ))}
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════
-          EVOLUTION + COACH NOTE
-          ═══════════════════════════════════════════════════════════ */}
-      <section style={{
-        maxWidth: 1280,
-        margin: "120px auto 0",
-        padding: "0 40px",
-      }}>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1.6fr 1fr",
-          gap: 60,
-        }}>
-          <div>
-            <SectionMark label="04" title="Evolution" sub="7-month trajectory" />
-            <EvolutionChart data={EVOLUTION} />
-          </div>
-
-          <div>
-            <SectionMark label="05" title="Coach view" sub="Latest assessment" />
-            <div style={{
-              marginTop: 32,
-              padding: 32,
-              borderRadius: 14,
-              background: "linear-gradient(180deg, rgba(240,165,0,0.05) 0%, transparent 100%)",
-              border: "1px solid rgba(240,165,0,0.15)",
-              position: "relative",
-              overflow: "hidden",
-            }}>
-              <Quote size={28} style={{
-                color: "rgba(240,165,0,0.25)",
                 position: "absolute",
-                top: 18,
-                right: 18,
-              }} />
-              <p style={{
-                fontSize: 17,
-                lineHeight: 1.6,
-                color: "rgba(255,255,255,0.88)",
-                fontWeight: 400,
-                marginBottom: 28,
-                letterSpacing: "-0.005em",
-              }}>
-                &ldquo;{COACH_NOTE.body}&rdquo;
-              </p>
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                paddingTop: 20,
-                borderTop: "1px solid rgba(255,255,255,0.06)",
+                bottom: -16,
+                right: 0,
+                display: "inline-flex", alignItems: "center", gap: 8,
               }}>
                 <div style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
+                  width: 30, height: 30, borderRadius: "50%",
                   background: "linear-gradient(135deg, #F0A500, #B07700)",
-                  color: "#0D1B2A",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 13,
-                  fontWeight: 700,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 10, fontWeight: 800, color: "#0D1B2A",
                   letterSpacing: "-0.02em",
                 }}>
-                  {COACH_NOTE.coach.split(" ").map((n) => n[0]).join("")}
+                  SFA
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.9)" }}>
-                    {COACH_NOTE.coach}
-                  </div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 1 }}>
-                    {COACH_NOTE.role} · {COACH_NOTE.date}
-                  </div>
-                </div>
+                <span style={{
+                  fontSize: 13, fontWeight: 700, color: "#fff",
+                  letterSpacing: "0.04em",
+                }}>
+                  Schoonhoven Sports Academy
+                </span>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </main>
+      </div>
 
-      {/* ═══════════════════════════════════════════════════════════
-          ACTIVE MISSION
-          ═══════════════════════════════════════════════════════════ */}
-      <section style={{
-        maxWidth: 1280,
-        margin: "120px auto 0",
-        padding: "0 40px 120px",
-      }}>
-        <SectionMark label="06" title="Active mission" sub="What you're building toward" />
-
-        <div style={{
-          marginTop: 40,
-          padding: "40px 44px",
-          borderRadius: 16,
-          background: "linear-gradient(135deg, rgba(77,174,229,0.06) 0%, rgba(13,27,42,0.4) 100%)",
-          border: "1px solid rgba(77,174,229,0.18)",
-          display: "grid",
-          gridTemplateColumns: "1fr 200px",
-          gap: 60,
-          alignItems: "center",
-        }}>
-          <div>
-            <div style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "5px 11px",
-              borderRadius: 999,
-              background: "rgba(77,174,229,0.1)",
-              border: "1px solid rgba(77,174,229,0.25)",
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: "0.12em",
-              color: "#4DAEE5",
-              textTransform: "uppercase",
-              marginBottom: 18,
-            }}>
-              <Trophy size={11} /> {MISSION.category}
-            </div>
-            <h3 style={{
-              fontSize: 36,
-              fontWeight: 700,
-              letterSpacing: "-0.03em",
-              marginBottom: 8,
-              color: "#fff",
-            }}>
-              {MISSION.title}
-            </h3>
-            <p style={{
-              fontSize: 14,
-              color: "rgba(255,255,255,0.5)",
-              marginBottom: 28,
-            }}>
-              {MISSION.subtitle} · Deadline {MISSION.deadline}
-            </p>
-
-            <div style={{ position: "relative", height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-              <div style={{
-                position: "absolute",
-                left: 0, top: 0, bottom: 0,
-                width: `${MISSION.progress}%`,
-                background: "linear-gradient(90deg, #4DAEE5, #1B6CA8)",
-                borderRadius: 3,
-                boxShadow: "0 0 16px rgba(77,174,229,0.5)",
-              }} />
-            </div>
-          </div>
-
-          <div style={{ textAlign: "right" }}>
-            <div style={{
-              fontSize: 84,
-              fontWeight: 700,
-              fontFamily: '"JetBrains Mono", monospace',
-              color: "#4DAEE5",
-              letterSpacing: "-0.04em",
-              lineHeight: 1,
-              textShadow: "0 4px 24px rgba(77,174,229,0.3)",
-            }}>
-              {MISSION.progress}<span style={{ fontSize: 28, color: "rgba(77,174,229,0.5)" }}>%</span>
-            </div>
-            <div style={{
-              fontSize: 11,
-              letterSpacing: "0.14em",
-              color: "rgba(255,255,255,0.4)",
-              marginTop: 6,
-              textTransform: "uppercase",
-              fontWeight: 600,
-            }}>
-              Completion
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer marker */}
+      {/* ── Helper note ── */}
       <div style={{
-        textAlign: "center",
-        padding: "0 0 60px",
-        fontSize: 10,
-        letterSpacing: "0.2em",
-        color: "rgba(255,255,255,0.2)",
-        textTransform: "uppercase",
-        fontWeight: 600,
+        maxWidth: 1200,
+        margin: "20px auto 0",
+        padding: "16px 20px",
+        borderRadius: 10,
+        background: "#fff",
+        border: "1px solid #E5E7EB",
+        fontSize: 12,
+        color: "#6B7280",
+        lineHeight: 1.6,
       }}>
-        SFA Performance Hub · Design v1
+        <strong style={{ color: "#1B6CA8" }}>Cutout demo:</strong> nu een SVG silhouet als placeholder.
+        In productie wordt elke speler-foto automatisch uitgeknipt via{" "}
+        <code style={{ background: "#F4F5F7", padding: "1px 5px", borderRadius: 3 }}>
+          @imgly/background-removal
+        </code>{" "}
+        (al geïnstalleerd in <code>AvatarUpload.tsx</code>). Coach uploadt gewone foto → cutout
+        rendert automatisch tussen tekst en radar.
       </div>
     </div>
   );
@@ -798,24 +346,21 @@ export default function PlayerCardDesignPage() {
    COMPONENTS
    ───────────────────────────────────────────────────────── */
 
-function Stat({ label, value }: { label: string; value: string }) {
+function IdentityStat({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <div style={{
-        fontSize: 10,
-        letterSpacing: "0.16em",
-        color: "rgba(255,255,255,0.35)",
-        marginBottom: 6,
-        textTransform: "uppercase",
-        fontWeight: 600,
+        fontSize: 13,
+        fontWeight: 700,
+        color: "rgba(255,255,255,0.95)",
+        marginBottom: 4,
       }}>
         {label}
       </div>
       <div style={{
-        fontSize: 16,
-        fontWeight: 600,
-        color: "rgba(255,255,255,0.92)",
-        letterSpacing: "-0.01em",
+        fontSize: 13,
+        color: "rgba(255,255,255,0.6)",
+        fontWeight: 500,
       }}>
         {value}
       </div>
@@ -823,51 +368,199 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function SectionMark({ label, title, sub }: { label: string; title: string; sub: string }) {
+function FootStat({ label, value }: { label: string; value: number }) {
+  const pct = (value / 10) * 100;
   return (
     <div>
       <div style={{
-        display: "flex",
-        alignItems: "baseline",
-        gap: 14,
-        marginBottom: 4,
-      }}>
-        <span style={{
-          fontSize: 11,
-          fontFamily: '"JetBrains Mono", monospace',
-          color: "rgba(255,255,255,0.3)",
-          letterSpacing: "0.04em",
-        }}>
-          {label}
-        </span>
-        <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
-      </div>
-      <h2 style={{
-        fontSize: 42,
-        fontWeight: 700,
-        letterSpacing: "-0.04em",
-        lineHeight: 1.05,
-        color: "#fff",
-        marginBottom: 4,
-      }}>
-        {title}
-      </h2>
-      <div style={{
         fontSize: 13,
-        color: "rgba(255,255,255,0.4)",
-        letterSpacing: "0.01em",
+        fontStyle: "italic",
+        fontWeight: 700,
+        letterSpacing: "0.04em",
+        color: "#fff",
+        marginBottom: 8,
       }}>
-        {sub}
+        {label}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+        {/* filled portion */}
+        <div style={{
+          height: 3,
+          flex: pct / 100,
+          background: "linear-gradient(90deg, #1B6CA8, #4DAEE5)",
+          borderRadius: 999,
+          boxShadow: "0 0 8px rgba(77,174,229,0.6)",
+        }} />
+        {/* empty portion */}
+        <div style={{
+          height: 3,
+          flex: (100 - pct) / 100,
+          background: "rgba(255,255,255,0.18)",
+          borderRadius: 999,
+        }} />
       </div>
     </div>
   );
 }
 
-function PentagonRadar({ attrs }: { attrs: typeof ATTRIBUTES }) {
-  const size = 380;
+function SFACrest({ size = 36 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 36 36" style={{ display: "block" }}>
+      <defs>
+        <linearGradient id="crestGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#1B6CA8" />
+          <stop offset="100%" stopColor="#0D1B2A" />
+        </linearGradient>
+      </defs>
+      {/* Shield */}
+      <path
+        d="M 18 2 L 32 6 L 32 18 C 32 26 26 32 18 34 C 10 32 4 26 4 18 L 4 6 Z"
+        fill="url(#crestGrad)"
+        stroke="#F0A500"
+        strokeWidth={1.2}
+      />
+      {/* SFA */}
+      <text
+        x="18"
+        y="22"
+        fontSize="9"
+        fontWeight="900"
+        textAnchor="middle"
+        fill="#F0A500"
+        style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif", letterSpacing: "0.08em" }}
+      >
+        SFA
+      </text>
+    </svg>
+  );
+}
+
+/**
+ * Player silhouette placeholder — represents where the
+ * background-removed cutout photo would render in production.
+ */
+function PlayerSilhouette() {
+  return (
+    <svg viewBox="0 0 400 600" style={{ width: "100%", height: "100%" }}>
+      <defs>
+        <linearGradient id="bodyGrad" x1="0.5" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.95" />
+          <stop offset="60%" stopColor="#E6F4FC" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#0D1B2A" stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id="kitGrad" x1="0.5" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#0D1B2A" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id="ground" cx="0.5" cy="1" r="0.5">
+          <stop offset="0%" stopColor="#0D1B2A" stopOpacity="0.6" />
+          <stop offset="100%" stopColor="#0D1B2A" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      {/* Ground shadow */}
+      <ellipse cx="200" cy="580" rx="120" ry="20" fill="url(#ground)" />
+
+      {/* Body — running pose */}
+      <g transform="translate(60, 40)">
+        {/* Head */}
+        <ellipse cx="160" cy="42" rx="34" ry="40" fill="url(#bodyGrad)" />
+        {/* Hair shadow on top of head */}
+        <path d="M 130 30 Q 160 -5 195 25 Q 200 38 192 45 Q 175 30 145 35 Z" fill="#fff" opacity="0.55" />
+
+        {/* Neck */}
+        <path d="M 145 80 L 178 80 L 180 100 L 142 100 Z" fill="url(#bodyGrad)" />
+
+        {/* Shirt/Torso (running motion, twisted) */}
+        <path
+          d="M 80 110
+             Q 130 95 145 100
+             L 178 100
+             Q 220 105 250 130
+             Q 260 145 248 160
+             L 220 180
+             Q 200 240 210 290
+             Q 195 310 170 305
+             L 140 308
+             Q 110 305 100 280
+             Q 95 220 85 175
+             Q 60 145 80 110 Z"
+          fill="url(#kitGrad)"
+        />
+        {/* Number on chest */}
+        <text x="170" y="190" fontSize="34" fontWeight="900" fill="#1B6CA8" textAnchor="middle" opacity="0.45"
+          style={{ fontFamily: 'JetBrains Mono, monospace' }}>10</text>
+
+        {/* Right arm extended forward */}
+        <path
+          d="M 80 130
+             Q 50 140 30 165
+             Q 18 185 15 210
+             Q 20 220 35 215
+             Q 50 195 65 175
+             Q 78 158 88 145 Z"
+          fill="url(#bodyGrad)"
+        />
+
+        {/* Left arm back, bent */}
+        <path
+          d="M 250 130
+             Q 285 140 305 175
+             Q 312 195 305 215
+             Q 290 220 280 200
+             Q 270 185 258 168 Z"
+          fill="url(#bodyGrad)"
+        />
+
+        {/* Shorts */}
+        <path
+          d="M 100 300
+             L 215 300
+             L 230 380
+             L 195 385
+             L 175 320
+             L 155 320
+             L 140 385
+             L 100 380 Z"
+          fill="url(#kitGrad)"
+        />
+
+        {/* Front leg (stride) */}
+        <path
+          d="M 100 380
+             Q 80 430 70 480
+             Q 65 510 80 520
+             Q 100 525 110 510
+             Q 130 455 140 410
+             Q 145 392 140 385 Z"
+          fill="url(#bodyGrad)"
+        />
+
+        {/* Back leg (push) */}
+        <path
+          d="M 195 385
+             Q 220 410 240 450
+             Q 245 470 235 485
+             Q 220 490 210 475
+             Q 195 440 185 420
+             Q 180 405 195 385 Z"
+          fill="url(#bodyGrad)"
+        />
+
+        {/* Front foot */}
+        <ellipse cx="92" cy="525" rx="22" ry="9" fill="#0D1B2A" opacity="0.75" />
+        {/* Back foot */}
+        <ellipse cx="240" cy="490" rx="22" ry="9" fill="#0D1B2A" opacity="0.75" />
+      </g>
+    </svg>
+  );
+}
+
+function BigRadar({ attrs }: { attrs: typeof ATTRIBUTES }) {
+  const size = 440;
   const cx = size / 2;
   const cy = size / 2;
-  const R = 130;
+  const R = 150;
   const n = attrs.length;
 
   const points = attrs.map((a, i) => {
@@ -882,8 +575,9 @@ function PentagonRadar({ attrs }: { attrs: typeof ATTRIBUTES }) {
   const labelPoints = attrs.map((_, i) => {
     const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
     return {
-      x: cx + Math.cos(angle) * (R + 28),
-      y: cy + Math.sin(angle) * (R + 28),
+      x: cx + Math.cos(angle) * (R + 32),
+      y: cy + Math.sin(angle) * (R + 32),
+      angle,
     };
   });
 
@@ -893,244 +587,45 @@ function PentagonRadar({ attrs }: { attrs: typeof ATTRIBUTES }) {
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: "visible" }}>
       <defs>
         <linearGradient id="radarFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4DAEE5" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#1B6CA8" stopOpacity="0.08" />
+          <stop offset="0%" stopColor="#1B6CA8" stopOpacity="1" />
+          <stop offset="100%" stopColor="#1B6CA8" stopOpacity="0.7" />
         </linearGradient>
-        <filter id="radarGlow" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="6" />
-        </filter>
       </defs>
 
-      {/* Grid rings */}
-      {[0.25, 0.5, 0.75, 1].map((ring) => {
-        const ringPath = Array.from({ length: n }).map((_, i) => {
-          const a = (i / n) * Math.PI * 2 - Math.PI / 2;
-          return `${i === 0 ? "M" : "L"}${cx + Math.cos(a) * R * ring},${cy + Math.sin(a) * R * ring}`;
-        }).join(" ") + " Z";
-        return (
-          <path
-            key={ring}
-            d={ringPath}
-            fill="none"
-            stroke="rgba(255,255,255,0.06)"
-            strokeWidth={ring === 1 ? 1 : 0.7}
-          />
-        );
-      })}
-
-      {/* Spokes */}
-      {Array.from({ length: n }).map((_, i) => {
-        const a = (i / n) * Math.PI * 2 - Math.PI / 2;
-        return (
-          <line
-            key={i}
-            x1={cx} y1={cy}
-            x2={cx + Math.cos(a) * R}
-            y2={cy + Math.sin(a) * R}
-            stroke="rgba(255,255,255,0.05)"
-            strokeWidth={0.7}
-          />
-        );
-      })}
-
-      {/* Glow underlay */}
-      <path d={path} fill="#4DAEE5" fillOpacity={0.35} filter="url(#radarGlow)" />
-
-      {/* Filled polygon */}
-      <path d={path} fill="url(#radarFill)" stroke="#4DAEE5" strokeWidth={1.5} />
-
-      {/* Vertices */}
-      {points.map((p, i) => (
-        <g key={i}>
-          <circle cx={p.x} cy={p.y} r={5} fill={attrs[i].color} stroke="#0A0E14" strokeWidth={2} />
-          <circle cx={p.x} cy={p.y} r={9} fill={attrs[i].color} fillOpacity={0.2} />
-        </g>
+      {/* Grid circles (concentric) */}
+      {[0.25, 0.5, 0.75, 1].map((ring) => (
+        <circle
+          key={ring}
+          cx={cx}
+          cy={cy}
+          r={R * ring}
+          fill="none"
+          stroke="rgba(255,255,255,0.12)"
+          strokeWidth={ring === 1 ? 1.5 : 1}
+        />
       ))}
+
+      {/* Filled polygon (solid blue) */}
+      <path d={path} fill="url(#radarFill)" stroke="#4DAEE5" strokeWidth={2} />
 
       {/* Labels */}
       {labelPoints.map((p, i) => (
-        <g key={i}>
-          <text
-            x={p.x}
-            y={p.y - 5}
-            fontSize={10}
-            fill="rgba(255,255,255,0.4)"
-            textAnchor="middle"
-            style={{ fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif', letterSpacing: "0.12em", fontWeight: 600, textTransform: "uppercase" }}
-          >
-            {attrs[i].label.toUpperCase()}
-          </text>
-          <text
-            x={p.x}
-            y={p.y + 10}
-            fontSize={16}
-            fill={attrs[i].color}
-            textAnchor="middle"
-            style={{ fontFamily: '"JetBrains Mono", monospace', fontWeight: 700, letterSpacing: "-0.02em" }}
-          >
-            {attrs[i].value.toFixed(1)}
-          </text>
-        </g>
-      ))}
-
-      {/* Center value */}
-      <text x={cx} y={cy + 3} fontSize={28} fontWeight={700} fill="rgba(255,255,255,0.85)" textAnchor="middle"
-        style={{ fontFamily: '"JetBrains Mono", monospace', letterSpacing: "-0.04em" }}>
-        {PLAYER.overall}
-      </text>
-      <text x={cx} y={cy + 22} fontSize={9} fill="rgba(255,255,255,0.3)" textAnchor="middle"
-        style={{ letterSpacing: "0.18em", fontWeight: 600 }}>
-        OVR
-      </text>
-    </svg>
-  );
-}
-
-function CoreValueCard({ label, value, color, levelLabel, desc }: typeof CORE_VALUES[number]) {
-  return (
-    <div style={{
-      padding: 28,
-      borderRadius: 14,
-      background: "rgba(255,255,255,0.02)",
-      border: "1px solid rgba(255,255,255,0.06)",
-      position: "relative",
-      overflow: "hidden",
-    }}>
-      <div style={{
-        position: "absolute",
-        top: 0, right: 0,
-        width: 100,
-        height: 100,
-        background: `radial-gradient(circle at top right, ${color}25, transparent 70%)`,
-        pointerEvents: "none",
-      }} />
-
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
-        <div>
-          <div style={{
-            fontSize: 10,
-            letterSpacing: "0.14em",
-            color: "rgba(255,255,255,0.4)",
+        <text
+          key={i}
+          x={p.x}
+          y={p.y}
+          fontSize={13}
+          fill="#fff"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          style={{
             fontWeight: 600,
-            marginBottom: 4,
-            textTransform: "uppercase",
-          }}>
-            {label}
-          </div>
-          <div style={{ fontSize: 16, fontWeight: 700, color, letterSpacing: "-0.01em" }}>
-            {levelLabel}
-          </div>
-        </div>
-        <div style={{
-          fontSize: 44,
-          fontWeight: 700,
-          color,
-          fontFamily: '"JetBrains Mono", monospace',
-          letterSpacing: "-0.04em",
-          lineHeight: 0.9,
-          textShadow: `0 4px 16px ${color}40`,
-        }}>
-          {value.toFixed(1)}
-        </div>
-      </div>
-
-      <div style={{
-        height: 3,
-        borderRadius: 999,
-        background: "rgba(255,255,255,0.04)",
-        overflow: "hidden",
-        marginBottom: 16,
-      }}>
-        <div style={{
-          height: "100%",
-          width: `${value * 10}%`,
-          background: `linear-gradient(90deg, ${color}, ${color}aa)`,
-          borderRadius: 999,
-          boxShadow: `0 0 10px ${color}80`,
-        }} />
-      </div>
-
-      <p style={{
-        fontSize: 13,
-        lineHeight: 1.55,
-        color: "rgba(255,255,255,0.55)",
-      }}>
-        {desc}
-      </p>
-    </div>
-  );
-}
-
-function EvolutionChart({ data }: { data: typeof EVOLUTION }) {
-  const W = 700;
-  const H = 240;
-  const PAD = { top: 28, right: 32, bottom: 32, left: 32 };
-
-  const min = 75;
-  const max = 92;
-  const range = max - min;
-
-  const xs = (i: number) => PAD.left + (i / (data.length - 1)) * (W - PAD.left - PAD.right);
-  const ys = (v: number) => H - PAD.bottom - ((v - min) / range) * (H - PAD.top - PAD.bottom);
-
-  // Smooth curve via catmull-rom-ish bezier
-  const points = data.map((d, i) => ({ x: xs(i), y: ys(d.value) }));
-  let path = `M${points[0].x},${points[0].y}`;
-  for (let i = 0; i < points.length - 1; i++) {
-    const p0 = points[Math.max(i - 1, 0)];
-    const p1 = points[i];
-    const p2 = points[i + 1];
-    const p3 = points[Math.min(i + 2, points.length - 1)];
-    const cp1x = p1.x + (p2.x - p0.x) / 6;
-    const cp1y = p1.y + (p2.y - p0.y) / 6;
-    const cp2x = p2.x - (p3.x - p1.x) / 6;
-    const cp2y = p2.y - (p3.y - p1.y) / 6;
-    path += ` C${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
-  }
-  const fillPath = `${path} L${points[points.length - 1].x},${H - PAD.bottom} L${points[0].x},${H - PAD.bottom} Z`;
-
-  return (
-    <div style={{ marginTop: 32 }}>
-      <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
-        <defs>
-          <linearGradient id="evoFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#F0A500" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#F0A500" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="evoStroke" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#4DAEE5" />
-            <stop offset="100%" stopColor="#F0A500" />
-          </linearGradient>
-        </defs>
-
-        {/* Y grid */}
-        {[80, 85, 90].map(v => (
-          <g key={v}>
-            <line x1={PAD.left} x2={W - PAD.right} y1={ys(v)} y2={ys(v)} stroke="rgba(255,255,255,0.04)" strokeDasharray="3 4" />
-            <text x={PAD.left - 8} y={ys(v) + 3} fontSize={9} fill="rgba(255,255,255,0.3)" textAnchor="end"
-              style={{ fontFamily: '"JetBrains Mono", monospace' }}>
-              {v}
-            </text>
-          </g>
-        ))}
-
-        <path d={fillPath} fill="url(#evoFill)" />
-        <path d={path} fill="none" stroke="url(#evoStroke)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
-
-        {points.map((p, i) => (
-          <g key={i}>
-            <circle cx={p.x} cy={p.y} r={5} fill="#0A0E14" stroke="#F0A500" strokeWidth={2} />
-            <text x={p.x} y={H - 8} fontSize={10} fill="rgba(255,255,255,0.4)" textAnchor="middle"
-              style={{ letterSpacing: "0.08em", fontWeight: 600 }}>
-              {data[i].month.toUpperCase()}
-            </text>
-            <text x={p.x} y={p.y - 14} fontSize={11} fill="rgba(255,255,255,0.8)" textAnchor="middle"
-              style={{ fontFamily: '"JetBrains Mono", monospace', fontWeight: 700, letterSpacing: "-0.02em" }}>
-              {data[i].value}
-            </text>
-          </g>
-        ))}
-      </svg>
-    </div>
+            letterSpacing: "0.08em",
+          }}
+        >
+          {attrs[i].label}
+        </text>
+      ))}
+    </svg>
   );
 }
