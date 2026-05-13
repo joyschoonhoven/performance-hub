@@ -93,15 +93,24 @@ export default function PlayerDetailPage() {
   const [activeTab, setActiveTab] = useState<"overview" | "dna" | "evaluations" | "challenges" | "matches">("overview");
   const [updatingProgress, setUpdatingProgress] = useState<string | null>(null);
   const [expandedScores, setExpandedScores] = useState<Set<string>>(new Set());
+  const [playerMatchStats, setPlayerMatchStats] = useState<MatchStat[]>([]);
 
   function toggleScore(key: string) {
     setExpandedScores((prev) => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n; });
   }
 
   useEffect(() => {
-    if (id) {
-      getPlayerById(id).then((p) => { setPlayer(p); setLoading(false); });
+    async function load() {
+      if (!id) return;
+      const p = await getPlayerById(id);
+      setPlayer(p);
+      if (p) {
+        const stats = await getPlayerMatchStats(p.id);
+        setPlayerMatchStats(stats);
+      }
+      setLoading(false);
     }
+    load();
   }, [id]);
 
   async function updateChallengeProgress(challengeId: string, progress: number) {
@@ -150,8 +159,7 @@ export default function PlayerDetailPage() {
     fullMark: 10,
   })) ?? [];
 
-  // Match stats for this player (mock: Lars = p0000001, others show empty)
-  const playerMatchStats = getPlayerMatchStats(player.id);
+  // Match stats from Supabase (loaded async via useEffect above)
   const matchSeason = aggregateSeasonStats(playerMatchStats);
   const seasonIndex = calculateSeasonIndex(playerMatchStats);
   const { color: idxColor, label: idxLabel } = getIndexLabel(seasonIndex);

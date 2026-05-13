@@ -162,14 +162,21 @@ export default function PlayerAnalyticsPage() {
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"season" | "matches" | "radar">("radar");
+  const [matchStats, setMatchStats] = useState<MatchStat[]>([]);
 
   useEffect(() => {
-    getMyPlayerData().then((p) => { setPlayer(p); setLoading(false); });
+    async function load() {
+      const p = await getMyPlayerData();
+      setPlayer(p);
+      if (p?.id) {
+        const stats = await getPlayerMatchStats(p.id);
+        setMatchStats(stats);
+      }
+      setLoading(false);
+    }
+    load();
   }, []);
 
-  // For demo: use Lars (p0000001) stats
-  const playerId = "p0000001";
-  const matchStats = useMemo(() => getPlayerMatchStats(playerId), []);
   const season = useMemo(() => aggregateSeasonStats(matchStats), [matchStats]);
   const { color: idxColor } = getIndexLabel(season.season_index);
 

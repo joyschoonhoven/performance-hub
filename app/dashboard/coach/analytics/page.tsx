@@ -12,8 +12,9 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { BarChart3, TrendingUp, Users, GitCompare, LayoutGrid, Loader2, Activity } from "lucide-react";
 import type { Evaluation, PlayerWithDetails } from "@/lib/types";
 import {
-  MOCK_MATCH_STATS, getPlayersFromStats,
-  aggregateSeasonStats, getIndexLabel, calculateSeasonIndex,
+  getAllMatchStats,
+  aggregateSeasonStats, getIndexLabel,
+  type MatchStat,
 } from "@/lib/match-stats";
 import { IndexBadge } from "@/components/PerformanceIndexCard";
 import Link from "next/link";
@@ -36,14 +37,18 @@ export default function AnalyticsPage() {
   const [compareA, setCompareA] = useState("");
   const [compareB, setCompareB] = useState("");
   const [tab, setTab] = useState<TabType>("overview");
+  const [matchStats, setMatchStats] = useState<MatchStat[]>([]);
 
   useEffect(() => {
-    getAllPlayers().then((p) => {
+    async function load() {
+      const [p, stats] = await Promise.all([getAllPlayers(), getAllMatchStats()]);
       setPlayers(p);
+      setMatchStats(stats);
       if (p.length > 0) setCompareA(p[0].id);
       if (p.length > 1) setCompareB(p[1].id);
       setLoading(false);
-    });
+    }
+    load();
   }, []);
 
   if (loading) return (
@@ -109,9 +114,17 @@ export default function AnalyticsPage() {
     { id: "compare" as const, label: "1v1 Vergelijken", icon: <GitCompare size={14} /> },
   ];
 
-  // Build index leaderboard from mock match stats
-  const indexPlayers = getPlayersFromStats().map((p) => {
-    const stats = MOCK_MATCH_STATS.filter((s) => s.player_id === p.id);
+  // Build index leaderboard from real match stats (per player)
+  const playersWithStats: { id: string; name: string; position: string }[] = [];
+  const seenPlayerIds = new Set<string>();
+  matchStats.forEach(s => {
+    if (!seenPlayerIds.has(s.player_id)) {
+      seenPlayerIds.add(s.player_id);
+      playersWithStats.push({ id: s.player_id, name: s.player_name, position: s.position });
+    }
+  });
+  const indexPlayers = playersWithStats.map((p) => {
+    const stats = matchStats.filter((s) => s.player_id === p.id);
     const season = aggregateSeasonStats(stats);
     const { color, label } = getIndexLabel(season.season_index);
     return { ...p, season, color, indexLabel: label };

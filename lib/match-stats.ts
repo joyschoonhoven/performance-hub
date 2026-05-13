@@ -1,7 +1,12 @@
 // ============================================================
-// MATCH STATISTICS — SciSports-style data layer
+// MATCH STATISTICS — Coach-entered post-match data
+// ============================================================
+// All data here originates from the coach filling in
+// /dashboard/coach/matches/new after a match. No tracking systems
+// involved. Data persists in Supabase: matches + match_player_stats.
 // ============================================================
 
+import { createClient } from "./supabase/client";
 import type { PositionType } from "./types";
 
 export interface MatchStat {
@@ -14,39 +19,31 @@ export interface MatchStat {
   opponent: string;
   competition: string;
   home_away: "home" | "away";
-  result: string; // e.g. "2-1"
+  result: string;
   minutes_played: number;
-  // Attack
   goals: number;
   assists: number;
   shots: number;
   shots_on_target: number;
-  // Passing
   passes: number;
-  pass_accuracy: number; // 0-100 %
+  pass_accuracy: number;
   key_passes: number;
-  // Dribbling
   dribbles_attempted: number;
   dribbles_completed: number;
-  // Defence
   tackles: number;
   interceptions: number;
   duels_won: number;
   duels_total: number;
   aerial_duels_won: number;
   aerial_duels_total: number;
-  // Discipline
   yellow_cards: number;
   red_cards: number;
   fouls_committed: number;
-  // GK only
   saves?: number;
   clean_sheet?: boolean;
-  // Match rating
-  match_rating: number; // 1-10
+  match_rating: number;
   notes?: string;
-  // Computed (filled by calculatePlayerIndex)
-  player_index?: number; // 0-100 SciSports-style
+  player_index?: number;
 }
 
 // ============================================================
@@ -54,68 +51,30 @@ export interface MatchStat {
 // ============================================================
 
 const POSITION_WEIGHTS: Record<string, Record<string, number>> = {
-  GK: {
-    saves: 0.30, clean_sheet: 0.25, pass_accuracy: 0.15,
-    aerial_duels_won_pct: 0.10, duels_won_pct: 0.10, match_rating: 0.10,
-  },
-  CB: {
-    duels_won_pct: 0.25, aerial_duels_won_pct: 0.20, interceptions: 0.20,
-    tackles: 0.15, pass_accuracy: 0.12, match_rating: 0.08,
-  },
-  LB: {
-    pass_accuracy: 0.20, key_passes: 0.18, duels_won_pct: 0.18,
-    tackles: 0.15, assists: 0.14, match_rating: 0.15,
-  },
-  RB: {
-    pass_accuracy: 0.20, key_passes: 0.18, duels_won_pct: 0.18,
-    tackles: 0.15, assists: 0.14, match_rating: 0.15,
-  },
-  CDM: {
-    duels_won_pct: 0.25, interceptions: 0.20, tackles: 0.18,
-    pass_accuracy: 0.20, key_passes: 0.10, match_rating: 0.07,
-  },
-  CM: {
-    pass_accuracy: 0.22, key_passes: 0.20, duels_won_pct: 0.18,
-    assists: 0.15, interceptions: 0.10, match_rating: 0.15,
-  },
-  CAM: {
-    key_passes: 0.25, assists: 0.22, shot_accuracy: 0.18,
-    dribble_success: 0.15, pass_accuracy: 0.10, match_rating: 0.10,
-  },
-  LW: {
-    dribble_success: 0.22, key_passes: 0.20, shot_accuracy: 0.18,
-    goals: 0.18, assists: 0.12, match_rating: 0.10,
-  },
-  RW: {
-    dribble_success: 0.22, key_passes: 0.20, shot_accuracy: 0.18,
-    goals: 0.18, assists: 0.12, match_rating: 0.10,
-  },
-  ST: {
-    goals: 0.30, shot_accuracy: 0.22, duels_won_pct: 0.15,
-    assists: 0.13, key_passes: 0.10, match_rating: 0.10,
-  },
-  SS: {
-    goals: 0.25, assists: 0.22, key_passes: 0.20,
-    dribble_success: 0.15, shot_accuracy: 0.10, match_rating: 0.08,
-  },
+  GK:  { saves: 0.30, clean_sheet: 0.25, pass_accuracy: 0.15, aerial_duels_won_pct: 0.10, duels_won_pct: 0.10, match_rating: 0.10 },
+  CB:  { duels_won_pct: 0.25, aerial_duels_won_pct: 0.20, interceptions: 0.20, tackles: 0.15, pass_accuracy: 0.12, match_rating: 0.08 },
+  LB:  { pass_accuracy: 0.20, key_passes: 0.18, duels_won_pct: 0.18, tackles: 0.15, assists: 0.14, match_rating: 0.15 },
+  RB:  { pass_accuracy: 0.20, key_passes: 0.18, duels_won_pct: 0.18, tackles: 0.15, assists: 0.14, match_rating: 0.15 },
+  CDM: { duels_won_pct: 0.25, interceptions: 0.20, tackles: 0.18, pass_accuracy: 0.20, key_passes: 0.10, match_rating: 0.07 },
+  CM:  { pass_accuracy: 0.22, key_passes: 0.20, duels_won_pct: 0.18, assists: 0.15, interceptions: 0.10, match_rating: 0.15 },
+  CAM: { key_passes: 0.25, assists: 0.22, shot_accuracy: 0.18, dribble_success: 0.15, pass_accuracy: 0.10, match_rating: 0.10 },
+  LW:  { dribble_success: 0.22, key_passes: 0.20, shot_accuracy: 0.18, goals: 0.18, assists: 0.12, match_rating: 0.10 },
+  RW:  { dribble_success: 0.22, key_passes: 0.20, shot_accuracy: 0.18, goals: 0.18, assists: 0.12, match_rating: 0.10 },
+  ST:  { goals: 0.30, shot_accuracy: 0.22, duels_won_pct: 0.15, assists: 0.13, key_passes: 0.10, match_rating: 0.10 },
+  SS:  { goals: 0.25, assists: 0.22, key_passes: 0.20, dribble_success: 0.15, shot_accuracy: 0.10, match_rating: 0.08 },
 };
 
 export function calculatePlayerIndex(stat: MatchStat): number {
-  const pos = stat.position;
-  const weights = POSITION_WEIGHTS[pos] ?? POSITION_WEIGHTS.CM;
-
-  // Normalise raw metrics to 0-100
+  const weights = POSITION_WEIGHTS[stat.position] ?? POSITION_WEIGHTS.CM;
   const metrics: Record<string, number> = {
     goals: Math.min(stat.goals * 25, 100),
     assists: Math.min(stat.assists * 20, 100),
-    shot_accuracy: stat.shots > 0
-      ? (stat.shots_on_target / stat.shots) * 100 : 50,
+    shot_accuracy: stat.shots > 0 ? (stat.shots_on_target / stat.shots) * 100 : 50,
     key_passes: Math.min(stat.key_passes * 12, 100),
     pass_accuracy: stat.pass_accuracy,
     dribble_success: stat.dribbles_attempted > 0
       ? (stat.dribbles_completed / stat.dribbles_attempted) * 100 : 60,
-    duels_won_pct: stat.duels_total > 0
-      ? (stat.duels_won / stat.duels_total) * 100 : 50,
+    duels_won_pct: stat.duels_total > 0 ? (stat.duels_won / stat.duels_total) * 100 : 50,
     aerial_duels_won_pct: stat.aerial_duels_total > 0
       ? (stat.aerial_duels_won / stat.aerial_duels_total) * 100 : 50,
     tackles: Math.min(stat.tackles * 15, 100),
@@ -128,115 +87,182 @@ export function calculatePlayerIndex(stat: MatchStat): number {
   let score = 0;
   let totalWeight = 0;
   for (const [key, weight] of Object.entries(weights)) {
-    const value = metrics[key] ?? 0;
-    score += value * weight;
+    score += (metrics[key] ?? 0) * weight;
     totalWeight += weight;
   }
-
   const raw = totalWeight > 0 ? score / totalWeight : 50;
-  // Minutes penalty (scale down if < 60 min)
   const minFactor = stat.minutes_played >= 90 ? 1 : stat.minutes_played >= 60 ? 0.95 : 0.85;
   return Math.round(Math.min(Math.max(raw * minFactor, 10), 100));
 }
 
 export function calculateSeasonIndex(stats: MatchStat[]): number {
   if (!stats.length) return 0;
-  const indices = stats.map((s) => s.player_index ?? calculatePlayerIndex(s));
+  const indices = stats.map(s => s.player_index ?? calculatePlayerIndex(s));
   return Math.round(indices.reduce((a, b) => a + b, 0) / indices.length);
 }
 
 export function getIndexLabel(index: number): { label: string; color: string } {
-  if (index >= 85) return { label: "Elite", color: "#f59e0b" };
-  if (index >= 75) return { label: "Uitstekend", color: "#10B981" };
-  if (index >= 65) return { label: "Goed", color: "#4FA9E6" };
-  if (index >= 55) return { label: "Gemiddeld", color: "#8b5cf6" };
-  if (index >= 45) return { label: "Matig", color: "#f97316" };
-  return { label: "Laag", color: "#ef4444" };
+  if (index >= 85) return { label: "Elite",       color: "#F0A500" };
+  if (index >= 75) return { label: "Uitstekend",  color: "#16A34A" };
+  if (index >= 65) return { label: "Goed",        color: "#4DAEE5" };
+  if (index >= 55) return { label: "Gemiddeld",   color: "#7C3AED" };
+  if (index >= 45) return { label: "Matig",       color: "#D97706" };
+  return { label: "Laag", color: "#D64045" };
 }
 
 // ============================================================
-// MOCK DATA
+// SUPABASE QUERIES — replace the old mock data layer
 // ============================================================
 
-// Compact helper — fouls defaults to 0
-function makeMatch(
-  id: string, player_id: string, player_name: string, position: PositionType,
-  date: string, opponent: string, competition: string, home_away: "home" | "away",
-  result: string, min: number, goals: number, assists: number,
-  shots: number, sot: number, passes: number, pass_acc: number,
-  kp: number, da: number, dc: number,
-  dw: number, dt: number, adw: number, adt: number,
-  tackles: number, int_: number, yc: number, rc: number,
-  rating: number, notes?: string,
-): MatchStat {
-  const stat: MatchStat = {
-    id, player_id, player_name, position,
-    coach_id: "00000000-0000-0000-0000-000000000002",
-    match_date: date, opponent, competition, home_away, result,
-    minutes_played: min, goals, assists, shots,
-    shots_on_target: sot, passes, pass_accuracy: pass_acc,
-    key_passes: kp, dribbles_attempted: da, dribbles_completed: dc,
-    duels_won: dw, duels_total: dt,
-    aerial_duels_won: adw, aerial_duels_total: adt,
-    tackles, interceptions: int_, yellow_cards: yc, red_cards: rc,
-    fouls_committed: 0, match_rating: rating, notes,
-  };
-  stat.player_index = calculatePlayerIndex(stat);
-  return stat;
+type MatchRow = {
+  id: string;
+  match_date: string;
+  opponent: string;
+  competition: string | null;
+  home_away: "home" | "away" | null;
+  result: string | null;
+  notes: string | null;
+};
+
+type MpsRow = {
+  id: string;
+  match_id: string;
+  player_id: string;
+  position: string | null;
+  minutes_played: number | null;
+  goals: number;
+  assists: number;
+  shots: number;
+  shots_on_target: number;
+  passes: number;
+  pass_accuracy: number | null;
+  key_passes: number;
+  dribbles_attempted: number;
+  dribbles_completed: number;
+  duels_won: number;
+  duels_total: number;
+  aerial_duels_won: number;
+  aerial_duels_total: number;
+  tackles: number;
+  interceptions: number;
+  yellow_cards: number;
+  red_cards: number;
+  fouls_committed: number;
+  match_rating: number | null;
+  notes: string | null;
+};
+
+function rowsToStats(
+  matches: MatchRow[],
+  mps: MpsRow[],
+  playerNames: Record<string, { name: string; position: PositionType }>,
+): MatchStat[] {
+  const matchById = new Map(matches.map(m => [m.id, m]));
+  return mps.flatMap((row) => {
+    const m = matchById.get(row.match_id);
+    if (!m) return [];
+    const playerInfo = playerNames[row.player_id];
+    const stat: MatchStat = {
+      id: row.id,
+      player_id: row.player_id,
+      player_name: playerInfo?.name ?? "—",
+      position: (row.position as PositionType) ?? playerInfo?.position ?? "CM",
+      coach_id: "",
+      match_date: m.match_date,
+      opponent: m.opponent,
+      competition: m.competition ?? "Competitie",
+      home_away: (m.home_away as "home" | "away") ?? "home",
+      result: m.result ?? "",
+      minutes_played: row.minutes_played ?? 0,
+      goals: row.goals,
+      assists: row.assists,
+      shots: row.shots,
+      shots_on_target: row.shots_on_target,
+      passes: row.passes,
+      pass_accuracy: row.pass_accuracy ?? 0,
+      key_passes: row.key_passes,
+      dribbles_attempted: row.dribbles_attempted,
+      dribbles_completed: row.dribbles_completed,
+      duels_won: row.duels_won,
+      duels_total: row.duels_total,
+      aerial_duels_won: row.aerial_duels_won,
+      aerial_duels_total: row.aerial_duels_total,
+      tackles: row.tackles,
+      interceptions: row.interceptions,
+      yellow_cards: row.yellow_cards,
+      red_cards: row.red_cards,
+      fouls_committed: row.fouls_committed,
+      match_rating: row.match_rating ?? 0,
+      notes: row.notes ?? undefined,
+    };
+    stat.player_index = calculatePlayerIndex(stat);
+    return [stat];
+  }).sort((a, b) => new Date(b.match_date).getTime() - new Date(a.match_date).getTime());
 }
 
-export const MOCK_MATCH_STATS: MatchStat[] = [
-  // ── Lars van der Berg (ST) ─────────────────────────────
-  makeMatch("m001","p0000001","Lars van der Berg","ST","2025-01-18","Gouda FC","KNVB U17","home","3-1",90,2,1,5,4,22,72,2,4,3,7,10,2,3,1,0,0,1,8.5,"Twee doelpunten en een assist. Uitstekende dag."),
-  makeMatch("m002","p0000001","Lars van der Berg","ST","2025-01-11","Rijnmond Jeugd","Competitie","away","0-2",90,0,0,3,1,18,65,1,3,1,5,9,1,2,0,1,0,2,5.5,"Moeilijke wedstrijd. Weinig balbezit."),
-  makeMatch("m003","p0000001","Lars van der Berg","ST","2025-01-04","FC Dordrecht U17","Competitie","home","2-0",90,1,0,4,3,24,70,2,5,4,8,11,3,4,0,0,1,1,7.8),
-  makeMatch("m004","p0000001","Lars van der Berg","ST","2024-12-21","Rotterdam U17","Competitie","away","1-1",85,1,1,4,3,20,68,3,4,3,6,10,2,3,0,0,0,2,7.2),
-  makeMatch("m005","p0000001","Lars van der Berg","ST","2024-12-14","Ajax U17","Cup","home","1-3",90,1,0,6,3,19,64,1,6,4,7,12,3,5,1,0,0,3,6.5,"Goed gescoord maar Ajax was te sterk."),
-  makeMatch("m006","p0000001","Lars van der Berg","ST","2024-12-07","PSV U17","Competitie","away","0-1",70,0,0,2,1,15,62,0,3,2,5,9,1,3,1,0,1,2,5.8),
-  makeMatch("m007","p0000001","Lars van der Berg","ST","2024-11-30","Feyenoord U17","Competitie","home","2-2",90,1,2,5,4,21,71,3,4,3,7,10,2,3,0,0,0,1,7.6,"Twee assists. Goede samenwerking met middenvelders."),
-  makeMatch("m008","p0000001","Lars van der Berg","ST","2024-11-23","Den Haag U17","Competitie","away","4-0",90,3,1,7,6,26,74,4,5,4,8,12,2,4,0,0,0,1,9.1,"Hat-trick! Beste wedstrijd van het seizoen."),
+/** Fetch match stats for a single player from Supabase. */
+export async function getPlayerMatchStats(playerId: string): Promise<MatchStat[]> {
+  const supabase = createClient();
+  const { data: mps } = await supabase
+    .from("match_player_stats")
+    .select("*")
+    .eq("player_id", playerId);
+  if (!mps?.length) return [];
 
-  // ── Jaylen Martens (CM) ────────────────────────────────
-  makeMatch("m009","p0000002","Jaylen Martens","CM","2025-01-18","Gouda FC","KNVB U17","home","3-1",90,0,2,2,1,58,88,5,3,2,10,15,3,5,2,0,0,1,8.2,"Domineerde het middenveld. 2 assists."),
-  makeMatch("m010","p0000002","Jaylen Martens","CM","2025-01-11","Rijnmond Jeugd","Competitie","away","0-2",90,0,0,1,0,45,82,2,2,1,7,12,2,4,1,1,0,2,5.2),
-  makeMatch("m011","p0000002","Jaylen Martens","CM","2025-01-04","FC Dordrecht U17","Competitie","home","2-0",90,1,1,3,2,62,90,6,4,3,11,14,2,3,0,0,0,1,8.8,"Schitterende pass range vandaag."),
-  makeMatch("m012","p0000002","Jaylen Martens","CM","2024-12-21","Rotterdam U17","Competitie","away","1-1",90,0,1,1,1,55,85,4,2,2,8,13,1,3,1,0,0,2,7.1),
-  makeMatch("m013","p0000002","Jaylen Martens","CM","2024-12-14","Ajax U17","Cup","home","1-3",90,0,0,2,0,48,80,3,3,2,6,11,2,4,1,1,1,3,6.0),
-  makeMatch("m014","p0000002","Jaylen Martens","CM","2024-12-07","PSV U17","Competitie","away","0-1",90,0,0,1,0,42,78,2,1,1,5,10,0,2,2,0,1,2,5.5),
-  makeMatch("m015","p0000002","Jaylen Martens","CM","2024-11-30","Feyenoord U17","Competitie","home","2-2",90,1,0,3,2,60,87,5,3,3,9,14,1,3,0,0,0,1,7.8),
-  makeMatch("m016","p0000002","Jaylen Martens","CM","2024-11-23","Den Haag U17","Competitie","away","4-0",90,0,2,2,1,65,91,7,4,3,12,15,2,4,0,0,0,0,8.5,"Beste passgame van het seizoen."),
+  const matchIds = Array.from(new Set(mps.map((r: MpsRow) => r.match_id)));
+  const [matchesRes, playerRes] = await Promise.all([
+    supabase.from("matches").select("*").in("id", matchIds),
+    supabase.from("players").select("id, first_name, last_name, position").eq("id", playerId).maybeSingle(),
+  ]);
 
-  // ── Noah Fernandez (CAM) ───────────────────────────────
-  makeMatch("m017","p0000006","Noah Fernandez","CAM","2025-01-18","Gouda FC","KNVB U17","home","3-1",90,1,2,4,3,48,85,7,6,5,8,12,1,2,1,0,0,1,9.2,"Absolute klasse. Tiki-taka op zijn best."),
-  makeMatch("m018","p0000006","Noah Fernandez","CAM","2025-01-11","Rijnmond Jeugd","Competitie","away","0-2",90,0,0,3,1,40,80,4,4,2,5,10,1,2,1,1,0,3,5.5),
-  makeMatch("m019","p0000006","Noah Fernandez","CAM","2025-01-04","FC Dordrecht U17","Competitie","home","2-0",90,2,1,5,4,52,87,8,7,6,9,13,0,1,0,0,0,0,8.9,"Twee doelpunten en creativiteit op topniveau."),
-  makeMatch("m020","p0000006","Noah Fernandez","CAM","2024-12-21","Rotterdam U17","Competitie","away","1-1",90,0,1,3,2,46,83,6,5,4,7,11,1,2,0,0,0,1,7.4),
-  makeMatch("m021","p0000006","Noah Fernandez","CAM","2024-12-14","Ajax U17","Cup","home","1-3",90,1,0,5,3,44,81,5,5,4,6,11,0,1,0,0,1,2,7.0,"Scoorde maar ploeg verloor."),
-  makeMatch("m022","p0000006","Noah Fernandez","CAM","2024-12-07","PSV U17","Competitie","away","0-1",80,0,0,2,1,38,79,3,4,2,5,9,0,1,0,0,0,2,6.2),
-  makeMatch("m023","p0000006","Noah Fernandez","CAM","2024-11-30","Feyenoord U17","Competitie","home","2-2",90,1,1,4,3,50,86,7,6,5,8,12,1,2,0,0,0,1,8.3),
-  makeMatch("m024","p0000006","Noah Fernandez","CAM","2024-11-23","Den Haag U17","Competitie","away","4-0",90,2,3,6,5,55,89,9,7,6,10,13,1,2,0,0,0,0,9.5,"Man of the Match. 5 directe bijdragen."),
-];
-
-// Get stats for a specific player
-export function getPlayerMatchStats(playerId: string): MatchStat[] {
-  return MOCK_MATCH_STATS.filter((s) => s.player_id === playerId)
-    .sort((a, b) => new Date(b.match_date).getTime() - new Date(a.match_date).getTime());
-}
-
-// Get all unique players from stats
-export function getPlayersFromStats(): { id: string; name: string; position: PositionType }[] {
-  const seen = new Set<string>();
-  const result: { id: string; name: string; position: PositionType }[] = [];
-  for (const s of MOCK_MATCH_STATS) {
-    if (!seen.has(s.player_id)) {
-      seen.add(s.player_id);
-      result.push({ id: s.player_id, name: s.player_name, position: s.position });
-    }
+  const names: Record<string, { name: string; position: PositionType }> = {};
+  if (playerRes.data) {
+    names[playerId] = {
+      name: `${playerRes.data.first_name} ${playerRes.data.last_name}`,
+      position: playerRes.data.position as PositionType,
+    };
   }
-  return result;
+  return rowsToStats((matchesRes.data ?? []) as MatchRow[], mps as MpsRow[], names);
 }
 
-// Season aggregates
+/** Fetch all match stats across the squad. */
+export async function getAllMatchStats(): Promise<MatchStat[]> {
+  const supabase = createClient();
+  const { data: mps } = await supabase.from("match_player_stats").select("*");
+  if (!mps?.length) return [];
+
+  const matchIds = Array.from(new Set(mps.map((r: MpsRow) => r.match_id)));
+  const playerIds = Array.from(new Set(mps.map((r: MpsRow) => r.player_id)));
+
+  const [matchesRes, playersRes] = await Promise.all([
+    supabase.from("matches").select("*").in("id", matchIds),
+    supabase.from("players").select("id, first_name, last_name, position").in("id", playerIds),
+  ]);
+
+  const names: Record<string, { name: string; position: PositionType }> = {};
+  (playersRes.data ?? []).forEach((p: { id: string; first_name: string; last_name: string; position: string }) => {
+    names[p.id] = {
+      name: `${p.first_name} ${p.last_name}`,
+      position: p.position as PositionType,
+    };
+  });
+  return rowsToStats((matchesRes.data ?? []) as MatchRow[], mps as MpsRow[], names);
+}
+
+/** List all matches (without per-player stats) for the matches list page. */
+export async function listMatches() {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("matches")
+    .select("*")
+    .order("match_date", { ascending: false });
+  return (data ?? []) as MatchRow[];
+}
+
+// ============================================================
+// Season aggregates — synchronous, work on already-loaded stats
+// ============================================================
+
 export interface SeasonStats {
   matches: number;
   minutes: number;
@@ -268,7 +294,6 @@ export function aggregateSeasonStats(stats: MatchStat[]): SeasonStats {
       season_index: 0, goals_per_90: 0, assists_per_90: 0,
     };
   }
-
   const totals = stats.reduce(
     (acc, s) => ({
       minutes: acc.minutes + s.minutes_played,
@@ -296,10 +321,8 @@ export function aggregateSeasonStats(stats: MatchStat[]): SeasonStats {
       rating_sum: 0,
     }
   );
-
   const n = stats.length;
   const per90 = totals.minutes > 0 ? 90 / totals.minutes : 0;
-
   return {
     matches: n,
     minutes: totals.minutes,

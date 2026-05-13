@@ -39,7 +39,7 @@ function getNavItems(role: UserRole): NavItem[] {
     { label: "Challenges",   href: "/dashboard/player/challenges",  icon: <Trophy size={16} /> },
     { label: "Analytics",    href: "/dashboard/player/analytics",   icon: <BarChart3 size={16} /> },
     { label: "Tactisch IQ",  href: "/dashboard/player/game",        icon: <Gamepad2 size={16} /> },
-    { label: "Heatmap",      href: "/dashboard/player/heatmap",     icon: <Map size={16} /> },
+    { label: "Posities",     href: "/dashboard/player/heatmap",     icon: <Map size={16} /> },
   ];
   return [
     { label: "Admin",        href: "/dashboard/admin",              icon: <Shield size={16} /> },

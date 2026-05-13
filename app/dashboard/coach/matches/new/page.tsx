@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { calculatePlayerIndex, getIndexLabel } from "@/lib/match-stats";
 import { POSITION_LABELS } from "@/lib/types";
 import type { PositionType } from "@/lib/types";
-import { ArrowLeft, Save, Activity, Target, Shield, Footprints, User } from "lucide-react";
+import { ArrowLeft, Save, Activity, Target, Shield, Footprints, User, Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const POSITIONS: PositionType[] = ["GK","CB","LB","RB","CDM","CM","CAM","LW","RW","ST","SS"];
 const COMPETITIONS = ["Competitie","KNVB U17","Cup","Vriendschappelijk","Toernooi"];
@@ -100,6 +101,23 @@ export default function NewMatchPage() {
   const router = useRouter();
   const [form, setForm] = useState<FormData>(DEFAULTS);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [players, setPlayers] = useState<{ id: string; first_name: string; last_name: string; position: PositionType }[]>([]);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string>("");
+
+  useEffect(() => {
+    async function loadPlayers() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("players")
+        .select("id, first_name, last_name, position")
+        .eq("is_active", true)
+        .order("last_name", { ascending: true });
+      setPlayers(data ?? []);
+    }
+    loadPlayers();
+  }, []);
 
   const set = (key: keyof FormData, value: FormData[keyof FormData]) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -114,8 +132,76 @@ export default function NewMatchPage() {
   });
   const { label: idxLabel, color: idxColor } = getIndexLabel(liveIndex);
 
-  function handleSave() {
-    // In production: POST to API route / Supabase
+  async function handleSave() {
+    if (!selectedPlayerId) {
+      setError("Selecteer een speler.");
+      return;
+    }
+    if (!form.opponent || !form.match_date) {
+      setError("Vul tegenstander en datum in.");
+      return;
+    }
+    setError(null);
+    setSaving(true);
+
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // 1. Insert match
+    const { data: match, error: mErr } = await supabase
+      .from("matches")
+      .insert({
+        match_date: form.match_date,
+        opponent: form.opponent,
+        competition: form.competition,
+        home_away: form.home_away,
+        result: form.result,
+        notes: form.notes || null,
+        coach_id: user?.id ?? null,
+      })
+      .select()
+      .single();
+    if (mErr || !match) {
+      setError(mErr?.message ?? "Kon wedstrijd niet opslaan.");
+      setSaving(false);
+      return;
+    }
+
+    // 2. Insert per-player stats
+    const { error: sErr } = await supabase
+      .from("match_player_stats")
+      .insert({
+        match_id: match.id,
+        player_id: selectedPlayerId,
+        position: form.position,
+        minutes_played: form.minutes_played,
+        goals: form.goals,
+        assists: form.assists,
+        shots: form.shots,
+        shots_on_target: form.shots_on_target,
+        passes: form.passes,
+        pass_accuracy: form.pass_accuracy,
+        key_passes: form.key_passes,
+        dribbles_attempted: form.dribbles_attempted,
+        dribbles_completed: form.dribbles_completed,
+        duels_won: form.duels_won,
+        duels_total: form.duels_total,
+        aerial_duels_won: form.aerial_duels_won,
+        aerial_duels_total: form.aerial_duels_total,
+        tackles: form.tackles,
+        interceptions: form.interceptions,
+        yellow_cards: form.yellow_cards,
+        red_cards: form.red_cards,
+        fouls_committed: form.fouls_committed,
+        match_rating: form.match_rating,
+        notes: form.notes || null,
+      });
+    if (sErr) {
+      setError(sErr.message);
+      setSaving(false);
+      return;
+    }
+
     setSaved(true);
     setTimeout(() => router.push("/dashboard/coach/matches"), 1200);
   }
@@ -165,16 +251,28 @@ export default function NewMatchPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-              Spelernaam
+              Speler
             </label>
-            <input
-              type="text"
-              value={form.player_name}
-              onChange={(e) => set("player_name", e.target.value)}
-              placeholder="Lars van der Berg"
+            <select
+              value={selectedPlayerId}
+              onChange={(e) => {
+                setSelectedPlayerId(e.target.value);
+                const p = players.find(pp => pp.id === e.target.value);
+                if (p) {
+                  set("player_name", `${p.first_name} ${p.last_name}`);
+                  set("position", p.position);
+                }
+              }}
               className="w-full px-3 py-2 text-sm border rounded-xl outline-none"
               style={{ borderColor: "rgba(15,40,70,0.1)", fontFamily: "Outfit, sans-serif" }}
-            />
+            >
+              <option value="">— Kies speler —</option>
+              {players.map(p => (
+                <option key={p.id} value={p.id}>
+                  {p.first_name} {p.last_name} ({p.position})
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
@@ -321,18 +419,28 @@ export default function NewMatchPage() {
       </div>
 
       {/* Save */}
+      {error && (
+        <div style={{
+          padding: "10px 14px", borderRadius: 8,
+          background: "rgba(214,64,69,0.08)",
+          border: "1px solid rgba(214,64,69,0.25)",
+          color: "#D64045", fontSize: 13, fontWeight: 500,
+        }}>
+          ⚠️ {error}
+        </div>
+      )}
       <div className="flex items-center justify-between pb-8">
         <Link href="/dashboard/coach/matches" className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
           Annuleren
         </Link>
         <button
           onClick={handleSave}
-          disabled={saved}
+          disabled={saved || saving}
           className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all"
-          style={{ background: saved ? "#4FA9E6" : "#4FA9E6", color: "white" }}
+          style={{ background: saved ? "#16A34A" : "#1B6CA8", color: "white", opacity: saving ? 0.7 : 1 }}
         >
-          <Save size={15} />
-          {saved ? "Opgeslagen! ✓" : `Opslaan · Index: ${liveIndex}`}
+          {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+          {saved ? "Opgeslagen ✓" : saving ? "Bezig met opslaan..." : `Opslaan · Index: ${liveIndex}`}
         </button>
       </div>
     </div>
