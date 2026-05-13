@@ -49,12 +49,14 @@ export default function PlayerCardDesignPage() {
   const [season, setSeason] = useState<(typeof SEASONS)[number]>("2026");
 
   return (
-    <div style={{
+    <div className="pc-page" style={{
       minHeight: "100vh",
       background: "#E5E7EB",
       padding: "40px 24px",
       fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
     }}>
+      <ResponsiveStyles />
+
       {/* Top: back link */}
       <div style={{ maxWidth: 1200, margin: "0 auto 16px" }}>
         <Link href="/design" style={{
@@ -69,7 +71,7 @@ export default function PlayerCardDesignPage() {
       {/* ═══════════════════════════════════════════════════════════
           HERO CARD
           ═══════════════════════════════════════════════════════════ */}
-      <div style={{
+      <div className="pc-hero" style={{
         maxWidth: 1200,
         margin: "0 auto",
         background: "#0D1B2A",
@@ -142,7 +144,7 @@ export default function PlayerCardDesignPage() {
           </svg>
 
           {/* === Year tabs + Performance selector === */}
-          <header style={{
+          <header className="pc-header" style={{
             position: "relative",
             padding: "26px 36px 0",
             display: "flex",
@@ -192,7 +194,7 @@ export default function PlayerCardDesignPage() {
           </header>
 
           {/* === Body — 3 column grid: text | photo | radar === */}
-          <div style={{
+          <div className="pc-body" style={{
             position: "relative",
             padding: "40px 36px 60px",
             display: "grid",
@@ -201,8 +203,8 @@ export default function PlayerCardDesignPage() {
             zIndex: 5,
           }}>
             {/* ── LEFT: TEXT + IDENTITY STATS ── */}
-            <div style={{ position: "relative", paddingRight: 20, zIndex: 6 }}>
-              <h1 style={{
+            <div className="pc-text" style={{ position: "relative", paddingRight: 20, zIndex: 6 }}>
+              <h1 className="pc-name" style={{
                 fontSize: 44,
                 fontWeight: 800,
                 letterSpacing: "-0.02em",
@@ -256,7 +258,7 @@ export default function PlayerCardDesignPage() {
             </div>
 
             {/* ── MIDDLE: CUTOUT PHOTO ── */}
-            <div style={{
+            <div className="pc-photo-col" style={{
               position: "relative",
               minHeight: 580,
               display: "flex",
@@ -264,7 +266,7 @@ export default function PlayerCardDesignPage() {
               justifyContent: "center",
               zIndex: 4,
             }}>
-              <div style={{
+              <div className="pc-photo-wrap" style={{
                 position: "absolute",
                 top: -20,
                 left: "50%",
@@ -279,19 +281,19 @@ export default function PlayerCardDesignPage() {
             </div>
 
             {/* ── RIGHT: RADAR + STAT BARS ── */}
-            <div style={{
+            <div className="pc-right" style={{
               position: "relative",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
               zIndex: 5,
             }}>
-              <div style={{ display: "flex", justifyContent: "center" }}>
+              <div className="pc-radar-wrap" style={{ display: "flex", justifyContent: "center" }}>
                 <BigRadar attrs={ATTRIBUTES} />
               </div>
 
               {/* Stat bars (2x2 grid) */}
-              <div style={{
+              <div className="pc-foot-stats" style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 columnGap: 40,
@@ -565,6 +567,89 @@ function PlayerSilhouette() {
         <ellipse cx="240" cy="490" rx="22" ry="9" fill="#0D1B2A" opacity="0.75" />
       </g>
     </svg>
+  );
+}
+
+function ResponsiveStyles() {
+  return (
+    <style dangerouslySetInnerHTML={{ __html: `
+      /* ─── Tablet / Mobile (≤ 900px) ───────────────────── */
+      @media (max-width: 900px) {
+        .pc-page { padding: 16px 12px !important; }
+        .pc-hero {
+          grid-template-columns: 56px 1fr !important;
+          min-height: 0 !important;
+          border-radius: 14px !important;
+        }
+        .pc-hero aside { padding: 14px 0 !important; gap: 14px !important; }
+        .pc-hero aside button { width: 36px !important; height: 36px !important; }
+        .pc-header {
+          padding: 16px 18px 0 !important;
+          flex-wrap: wrap !important;
+          gap: 12px !important;
+        }
+        .pc-header > div { gap: 14px !important; }
+        .pc-header button { font-size: 12px !important; padding: 6px 12px !important; }
+
+        .pc-body {
+          grid-template-columns: 1fr !important;
+          padding: 24px 18px 32px !important;
+          gap: 0 !important;
+        }
+        .pc-name { font-size: 28px !important; }
+        .pc-text { padding-right: 0 !important; }
+        .pc-text p { max-width: 100% !important; }
+
+        .pc-photo-col {
+          min-height: 360px !important;
+          order: 2 !important;
+          margin-top: 24px !important;
+        }
+        .pc-photo-wrap {
+          width: 80% !important;
+          max-width: 280px !important;
+          top: 0 !important;
+          height: 100% !important;
+        }
+
+        .pc-right { order: 3 !important; margin-top: 12px !important; }
+        .pc-radar-wrap svg { max-width: 280px !important; height: auto !important; }
+        .pc-foot-stats {
+          grid-template-columns: 1fr 1fr !important;
+          column-gap: 20px !important;
+          row-gap: 18px !important;
+          margin-top: 22px !important;
+        }
+      }
+
+      /* ─── Phone (≤ 480px) ─────────────────────────────── */
+      @media (max-width: 480px) {
+        .pc-page { padding: 12px 8px !important; }
+        .pc-hero {
+          grid-template-columns: 48px 1fr !important;
+          border-radius: 12px !important;
+        }
+        .pc-hero aside { padding: 10px 0 !important; gap: 10px !important; }
+        .pc-hero aside button { width: 32px !important; height: 32px !important; }
+
+        .pc-header {
+          padding: 12px 14px 0 !important;
+          flex-direction: column !important;
+          align-items: flex-start !important;
+        }
+        .pc-header > div { gap: 10px !important; }
+        .pc-header > div button { font-size: 11px !important; }
+
+        .pc-body { padding: 18px 14px 24px !important; }
+        .pc-name { font-size: 22px !important; }
+
+        .pc-photo-col { min-height: 280px !important; }
+        .pc-photo-wrap { max-width: 220px !important; }
+
+        .pc-radar-wrap svg { max-width: 240px !important; }
+        .pc-foot-stats { column-gap: 14px !important; row-gap: 14px !important; }
+      }
+    ` }} />
   );
 }
 
