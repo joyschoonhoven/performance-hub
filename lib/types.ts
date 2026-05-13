@@ -288,6 +288,9 @@ export interface Player {
   jersey_number?: number;
   avatar_url?: string;
   photo_url?: string;
+  height_cm?: number;
+  weight_kg?: number;
+  dominant_foot?: "left" | "right" | "both";
   overall_rating: number;
   badge?: BadgeType;
   is_active: boolean;
