@@ -763,100 +763,258 @@ function AttrRow({ label, value, color }: { label: string; value: number; color:
 }
 
 function PentagonRadar({ attrs, rating }: { attrs: { label: string; value: number; color: string }[]; rating: number }) {
-  const size = 380;
+  const size = 440;
   const cx = size / 2;
-  const cy = size / 2;
-  const R = 130;
+  const cy = size / 2 + 24; // shift down so label tops have room
+  const R = 140;
   const n = attrs.length;
 
-  const points = attrs.map((a, i) => {
+  // ── 3D projection: tilt the plane around the X axis (perspective foreshortening) ──
+  const TILT = 0.55;        // y-scale to simulate viewing from above-front
+  const DEPTH = 26;          // vertical offset for the "front face" extrusion
+  const SHADOW_OFFSET = 50;  // ground shadow offset
+
+  // Project a 2D radar point onto the tilted plane
+  const project = (angle: number, r: number) => ({
+    x: cx + Math.cos(angle) * r,
+    y: cy + Math.sin(angle) * r * TILT,
+  });
+
+  // Surface (top) data polygon points
+  const surfacePoints = attrs.map((a, i) => {
+    const ratio = Math.max(0, a.value / 10);
+    const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+    return project(angle, R * ratio);
+  });
+
+  // Floor (bottom of extrusion) — same x but y offset down
+  const floorPoints = surfacePoints.map(p => ({ x: p.x, y: p.y + DEPTH }));
+
+  // Shadow polygon — flattened and offset down, also wider blur
+  const shadowPoints = attrs.map((a, i) => {
     const ratio = Math.max(0, a.value / 10);
     const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
     return {
-      x: cx + Math.cos(angle) * R * ratio,
-      y: cy + Math.sin(angle) * R * ratio,
+      x: cx + Math.cos(angle) * R * ratio * 0.95,
+      y: cy + Math.sin(angle) * R * ratio * TILT + SHADOW_OFFSET,
     };
   });
 
+  const pathOf = (pts: { x: number; y: number }[]) =>
+    pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ") + " Z";
+
+  const surfacePath = pathOf(surfacePoints);
+  const shadowPath  = pathOf(shadowPoints);
+
+  // Side faces of the extrusion — connect each pair of surface points to their floor twins
+  const sideFaces = surfacePoints.map((sp, i) => {
+    const next = surfacePoints[(i + 1) % n];
+    const spF = floorPoints[i];
+    const nextF = floorPoints[(i + 1) % n];
+    return {
+      path: `M${sp.x},${sp.y} L${next.x},${next.y} L${nextF.x},${nextF.y} L${spF.x},${spF.y} Z`,
+      // shading depends on facing direction (front faces brighter, side faces dimmer)
+      shade: Math.sin(((i + 0.5) / n) * Math.PI * 2 - Math.PI / 2),
+    };
+  });
+
+  // Label points sit at outer ring, projected on tilt
   const labelPoints = attrs.map((_, i) => {
     const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-    return {
-      x: cx + Math.cos(angle) * (R + 28),
-      y: cy + Math.sin(angle) * (R + 28),
-    };
+    return project(angle, R + 30);
   });
 
-  const path = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ") + " Z";
+  // Grid rings — same tilt
+  const ringRadii = [0.25, 0.5, 0.75, 1];
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: "visible", maxWidth: "100%", height: "auto" }}>
+    <svg
+      width={size} height={size + 40}
+      viewBox={`0 0 ${size} ${size + 40}`}
+      style={{ overflow: "visible", maxWidth: "100%", height: "auto" }}
+    >
       <defs>
-        <linearGradient id="radarFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4DAEE5" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#1B6CA8" stopOpacity="0.08" />
+        {/* Top surface — luminous gradient */}
+        <linearGradient id="radarTop" x1="0.5" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stopColor="#7BC9F0" stopOpacity="0.95" />
+          <stop offset="55%" stopColor="#4DAEE5" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#1B6CA8" stopOpacity="0.7" />
         </linearGradient>
-        <filter id="radarGlow" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="6" />
+        {/* Side extrusion gradient */}
+        <linearGradient id="radarSide" x1="0.5" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stopColor="#1B6CA8" />
+          <stop offset="100%" stopColor="#0A2F4F" />
+        </linearGradient>
+        {/* Specular highlight */}
+        <radialGradient id="radarHighlight" cx="0.4" cy="0.25" r="0.65">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.5" />
+          <stop offset="50%" stopColor="#fff" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+        </radialGradient>
+        {/* Glow filter */}
+        <filter id="radarGlow3D" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="8" />
         </filter>
+        {/* Soft shadow filter */}
+        <filter id="radarShadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="16" />
+        </filter>
+        {/* Ring stroke gradient — fades toward back */}
+        <linearGradient id="ringFade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.04" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0.16" />
+        </linearGradient>
       </defs>
 
-      {[0.25, 0.5, 0.75, 1].map(ring => {
-        const ringPath = Array.from({ length: n }).map((_, i) => {
-          const a = (i / n) * Math.PI * 2 - Math.PI / 2;
-          return `${i === 0 ? "M" : "L"}${cx + Math.cos(a) * R * ring},${cy + Math.sin(a) * R * ring}`;
-        }).join(" ") + " Z";
-        return (
-          <path key={ring} d={ringPath} fill="none"
-            stroke="rgba(255,255,255,0.06)"
-            strokeWidth={ring === 1 ? 1 : 0.7} />
-        );
-      })}
+      {/* ── GROUND SHADOW (under everything) ── */}
+      <path d={shadowPath} fill="#000" fillOpacity="0.45" filter="url(#radarShadow)" />
 
+      {/* ── TILTED GRID RINGS (ellipses under data) ── */}
+      {ringRadii.map((ring) => (
+        <g key={ring}>
+          <ellipse
+            cx={cx} cy={cy}
+            rx={R * ring}
+            ry={R * ring * TILT}
+            fill="none"
+            stroke="url(#ringFade)"
+            strokeWidth={ring === 1 ? 1 : 0.6}
+            strokeDasharray={ring === 1 ? "none" : "3 5"}
+          />
+        </g>
+      ))}
+
+      {/* ── SPOKES (in perspective) ── */}
       {Array.from({ length: n }).map((_, i) => {
         const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+        const end = project(a, R);
         return (
-          <line key={i} x1={cx} y1={cy}
-            x2={cx + Math.cos(a) * R}
-            y2={cy + Math.sin(a) * R}
-            stroke="rgba(255,255,255,0.05)" strokeWidth={0.7} />
+          <line key={i}
+            x1={cx} y1={cy}
+            x2={end.x} y2={end.y}
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth={0.6}
+          />
         );
       })}
 
-      <path d={path} fill="#4DAEE5" fillOpacity={0.35} filter="url(#radarGlow)" />
-      <path d={path} fill="url(#radarFill)" stroke="#4DAEE5" strokeWidth={1.5} />
+      {/* ── GLOW UNDER DATA POLYGON ── */}
+      <path d={surfacePath} fill="#4DAEE5" fillOpacity="0.5" filter="url(#radarGlow3D)" />
 
-      {points.map((p, i) => (
+      {/* ── EXTRUSION SIDE FACES (3D depth) ── */}
+      {sideFaces.map((face, i) => (
+        <path
+          key={i}
+          d={face.path}
+          fill="url(#radarSide)"
+          opacity={0.6 + face.shade * 0.3}
+          stroke="rgba(0,0,0,0.3)"
+          strokeWidth={0.5}
+        />
+      ))}
+
+      {/* ── TOP SURFACE (the actual data polygon) ── */}
+      <path
+        d={surfacePath}
+        fill="url(#radarTop)"
+        stroke="#7BC9F0"
+        strokeWidth={2}
+        strokeLinejoin="round"
+      />
+
+      {/* Specular highlight overlay on top face */}
+      <path d={surfacePath} fill="url(#radarHighlight)" />
+
+      {/* ── VERTEX SPHERES (3D balls at each data point) ── */}
+      {surfacePoints.map((p, i) => (
         <g key={i}>
-          <circle cx={p.x} cy={p.y} r={5} fill={attrs[i].color} stroke="#0A0E14" strokeWidth={2} />
-          <circle cx={p.x} cy={p.y} r={9} fill={attrs[i].color} fillOpacity={0.2} />
+          {/* outer ambient glow */}
+          <circle cx={p.x} cy={p.y} r={14}
+            fill={attrs[i].color} fillOpacity={0.18}
+            filter="url(#radarGlow3D)" />
+          {/* core ball with gradient shading */}
+          <defs>
+            <radialGradient id={`vertex-${i}`} cx="0.35" cy="0.3" r="0.7">
+              <stop offset="0%" stopColor="#fff" stopOpacity="0.95" />
+              <stop offset="40%" stopColor={attrs[i].color} stopOpacity="1" />
+              <stop offset="100%" stopColor={attrs[i].color} stopOpacity="0.6" />
+            </radialGradient>
+          </defs>
+          <circle cx={p.x} cy={p.y} r={7}
+            fill={`url(#vertex-${i})`}
+            stroke="#0A0E14"
+            strokeWidth={1.5} />
+          {/* specular dot */}
+          <circle cx={p.x - 2} cy={p.y - 2.2} r={1.8} fill="#fff" fillOpacity="0.85" />
         </g>
       ))}
 
-      {labelPoints.map((p, i) => (
-        <g key={i}>
-          <text x={p.x} y={p.y - 5} fontSize={10}
-            fill="rgba(255,255,255,0.4)" textAnchor="middle"
-            style={{ letterSpacing: "0.12em", fontWeight: 600 }}>
-            {attrs[i].label.toUpperCase()}
-          </text>
-          <text x={p.x} y={p.y + 10} fontSize={16}
-            fill={attrs[i].color} textAnchor="middle"
-            style={{ fontFamily: '"JetBrains Mono", monospace', fontWeight: 700, letterSpacing: "-0.02em" }}>
-            {attrs[i].value > 0 ? attrs[i].value.toFixed(1) : "—"}
-          </text>
-        </g>
-      ))}
+      {/* ── LABELS (positioned around outer ring) ── */}
+      {labelPoints.map((p, i) => {
+        const isTop = p.y < cy - 30;
+        return (
+          <g key={i}>
+            <text
+              x={p.x}
+              y={p.y + (isTop ? -8 : 12)}
+              fontSize={10}
+              fill="rgba(255,255,255,0.5)"
+              textAnchor="middle"
+              style={{ letterSpacing: "0.14em", fontWeight: 700 }}
+            >
+              {attrs[i].label.toUpperCase()}
+            </text>
+            <text
+              x={p.x}
+              y={p.y + (isTop ? 6 : 26)}
+              fontSize={17}
+              fill={attrs[i].color}
+              textAnchor="middle"
+              style={{
+                fontFamily: '"JetBrains Mono", monospace',
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {attrs[i].value > 0 ? attrs[i].value.toFixed(1) : "—"}
+            </text>
+          </g>
+        );
+      })}
 
-      <text x={cx} y={cy + 3} fontSize={28} fontWeight={700}
-        fill="rgba(255,255,255,0.85)" textAnchor="middle"
-        style={{ fontFamily: '"JetBrains Mono", monospace', letterSpacing: "-0.04em" }}>
-        {rating}
-      </text>
-      <text x={cx} y={cy + 22} fontSize={9}
-        fill="rgba(255,255,255,0.3)" textAnchor="middle"
-        style={{ letterSpacing: "0.18em", fontWeight: 600 }}>
-        OVR
-      </text>
+      {/* ── CENTER OVR (floating above the surface) ── */}
+      <g>
+        {/* Disk under OVR */}
+        <ellipse
+          cx={cx} cy={cy + 4}
+          rx={30} ry={30 * TILT}
+          fill="rgba(13,27,42,0.85)"
+          stroke="rgba(77,174,229,0.35)"
+          strokeWidth={1}
+        />
+        <text
+          x={cx} y={cy + 3}
+          fontSize={26} fontWeight={800}
+          fill="#fff"
+          textAnchor="middle"
+          style={{
+            fontFamily: '"JetBrains Mono", monospace',
+            letterSpacing: "-0.04em",
+            filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.6))",
+          }}
+        >
+          {rating}
+        </text>
+        <text
+          x={cx} y={cy + 18}
+          fontSize={8}
+          fill="rgba(255,255,255,0.4)"
+          textAnchor="middle"
+          style={{ letterSpacing: "0.22em", fontWeight: 700 }}
+        >
+          OVR
+        </text>
+      </g>
     </svg>
   );
 }
