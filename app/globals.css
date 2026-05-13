@@ -116,19 +116,49 @@
    ───────────────────────────────────────────────────────── */
 @layer components {
 
-  /* Cards */
+  /* Cards — with 3D hover lift */
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+    box-shadow:
+      0 1px 3px rgba(13,27,42,0.04),
+      0 4px 12px rgba(13,27,42,0.03),
+      0 16px 32px -8px rgba(13,27,42,0.04);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-style: preserve-3d;
   }
 
   .card-lg {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 14px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.04);
+    box-shadow:
+      0 2px 6px rgba(13,27,42,0.05),
+      0 8px 24px rgba(13,27,42,0.04),
+      0 32px 64px -16px rgba(13,27,42,0.08);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-style: preserve-3d;
+  }
+
+  /* Optional: opt-in class for clickable cards that should lift on hover */
+  .card-interactive,
+  .card-lg.card-interactive {
+    cursor: pointer;
+  }
+  .card-interactive:hover,
+  .card-lg.card-interactive:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 4px 12px rgba(13,27,42,0.06),
+      0 16px 40px rgba(13,27,42,0.08),
+      0 32px 64px -8px rgba(13,27,42,0.1);
+  }
+  .card-interactive:active {
+    transform: translateY(-1px);
+    transition-duration: 0.05s;
   }
 
   /* Typography utilities */
@@ -210,25 +240,48 @@
     text-transform: uppercase;
   }
 
-  /* Buttons */
+  /* Buttons — 3D press states with depth shadow */
   .btn-primary {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 8px 16px;
     border-radius: 7px;
-    background: var(--navy);
+    background: linear-gradient(180deg, var(--sfa-blue) 0%, var(--navy) 100%);
     color: #fff;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 13px;
     font-weight: 600;
     border: none;
     cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
     letter-spacing: 0.01em;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.15) inset,
+      0 -1px 0 rgba(0,0,0,0.2) inset,
+      0 2px 4px rgba(13,27,42,0.2),
+      0 4px 12px rgba(27,108,168,0.25);
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.15s;
   }
-  .btn-primary:hover { background: var(--navy-mid); }
-  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.2) inset,
+      0 -1px 0 rgba(0,0,0,0.2) inset,
+      0 4px 8px rgba(13,27,42,0.22),
+      0 8px 20px rgba(27,108,168,0.32);
+  }
+  .btn-primary:active {
+    transform: translateY(1px);
+    box-shadow:
+      0 0 0 rgba(255,255,255,0.1) inset,
+      0 -1px 0 rgba(0,0,0,0.2) inset,
+      0 1px 2px rgba(13,27,42,0.18),
+      0 2px 4px rgba(27,108,168,0.18);
+    transition-duration: 0.04s;
+  }
 
   .btn-gold {
     display: inline-flex;
@@ -236,16 +289,23 @@
     gap: 6px;
     padding: 8px 16px;
     border-radius: 7px;
-    background: var(--gold);
+    background: linear-gradient(180deg, #FFC04C 0%, var(--gold) 100%);
     color: var(--navy);
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 13px;
     font-weight: 700;
     border: none;
     cursor: pointer;
-    transition: background 0.15s;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.4) inset,
+      0 -1px 0 rgba(0,0,0,0.15) inset,
+      0 2px 4px rgba(176,119,0,0.3),
+      0 4px 12px rgba(240,165,0,0.3);
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.15s, filter 0.15s;
   }
-  .btn-gold:hover { background: var(--gold-light); }
+  .btn-gold:hover { transform: translateY(-1px); filter: brightness(1.06); }
+  .btn-gold:active { transform: translateY(1px); transition-duration: 0.04s; }
 
   .btn-ghost {
     display: inline-flex;
@@ -253,16 +313,24 @@
     gap: 6px;
     padding: 7px 14px;
     border-radius: 7px;
-    background: transparent;
+    background: var(--surface);
     color: var(--text-2);
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 13px;
     font-weight: 500;
     border: 1px solid var(--border);
     cursor: pointer;
-    transition: all 0.15s;
+    box-shadow: 0 1px 2px rgba(13,27,42,0.04);
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.15s, background 0.15s, border-color 0.15s;
   }
-  .btn-ghost:hover { background: var(--surface-2); border-color: var(--border-strong); }
+  .btn-ghost:hover {
+    background: var(--surface-2);
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13,27,42,0.06);
+  }
+  .btn-ghost:active { transform: translateY(0); transition-duration: 0.04s; }
 
   /* Input */
   .input {
