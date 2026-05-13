@@ -233,154 +233,122 @@ export default function PlayerCardPage() {
             </div>
           </div>
 
-          {/* RIGHT: rating monolith with cutout photo */}
-          <div style={{ position: "relative", paddingTop: 8 }}>
+          {/* RIGHT: rating + free-floating cutout photo */}
+          <div className="pc-photo-zone" style={{ position: "relative", paddingTop: 8, minHeight: 580 }}>
+            {/* Ambient golden glow behind photo */}
             <div style={{
+              position: "absolute",
+              top: 40, right: -40,
+              width: 480, height: 480,
+              background: "radial-gradient(circle, rgba(240,165,0,0.18) 0%, transparent 60%)",
+              pointerEvents: "none",
+              zIndex: 0,
+            }} />
+
+            {/* Big OVR display floating top-right */}
+            <div className="pc-ovr-block" style={{
               position: "relative",
-              padding: "44px 36px 36px",
-              borderRadius: 18,
-              background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 100%)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              backdropFilter: "blur(20px)",
-              overflow: "hidden",
+              display: "flex",
+              alignItems: "flex-end",
+              gap: 18,
+              marginBottom: 24,
+              zIndex: 2,
             }}>
-              <div style={{
-                position: "absolute", top: -100, right: -80,
-                width: 280, height: 280,
-                background: "radial-gradient(circle, rgba(240,165,0,0.15) 0%, transparent 65%)",
-                pointerEvents: "none",
-              }} />
-
-              <div style={{
-                fontSize: 10, letterSpacing: "0.16em", fontWeight: 600,
-                color: "rgba(255,255,255,0.4)", marginBottom: 12,
-                textTransform: "uppercase",
+              <div className="pc-overall" style={{
+                fontSize: 180, fontWeight: 700,
+                letterSpacing: "-0.06em", lineHeight: 0.82,
+                color: "#F0A500",
+                fontFamily: '"JetBrains Mono", monospace',
+                textShadow: "0 8px 40px rgba(240,165,0,0.45)",
               }}>
-                Overall Rating
+                {player.overall_rating}
               </div>
-
-              <div style={{ display: "flex", alignItems: "flex-end", gap: 16, marginBottom: 20 }}>
-                <div className="pc-overall" style={{
-                  fontSize: 160, fontWeight: 700,
-                  letterSpacing: "-0.06em", lineHeight: 0.85,
-                  color: "#F0A500",
-                  fontFamily: '"JetBrains Mono", monospace',
-                  textShadow: "0 4px 24px rgba(240,165,0,0.3)",
-                }}>
-                  {player.overall_rating}
-                </div>
-                <div style={{ paddingBottom: 18 }}>
-                  <div style={{
-                    fontSize: 14, fontWeight: 600, color: "#F0A500",
-                    letterSpacing: "-0.01em", marginBottom: 4,
-                  }}>
-                    {getRatingLabel(player.overall_rating)}
-                  </div>
-                  <div style={{
-                    display: "inline-flex", alignItems: "center", gap: 4,
-                    fontSize: 12, fontWeight: 600,
-                    color: trendDelta > 0 ? "#16A34A" : trendDelta < 0 ? "#D64045" : "rgba(255,255,255,0.5)",
-                  }}>
-                    {trendDelta > 0 ? <TrendingUp size={12} /> : trendDelta < 0 ? <TrendingDown size={12} /> : <Minus size={12} />}
-                    {trendDelta > 0 ? "+" : ""}{trendDelta.toFixed(1)} vs vorige
-                  </div>
-                </div>
-              </div>
-
-              {/* Profile photo OR initials with depth */}
-              <div style={{
-                position: "relative",
-                width: "100%",
-                aspectRatio: "1/1",
-                borderRadius: 12,
-                overflow: "hidden",
-                background: "linear-gradient(135deg, #1A2E45 0%, #0D1B2A 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: 4,
-              }}>
-                {photoUrl ? (
-                  <>
-                    {/* Background watermark with initials */}
-                    <div style={{
-                      position: "absolute",
-                      fontSize: 240, fontWeight: 900,
-                      letterSpacing: "-0.08em",
-                      color: "rgba(77,174,229,0.06)",
-                      fontFamily: '"JetBrains Mono", monospace',
-                      top: "50%", left: "50%",
-                      transform: "translate(-50%, -50%) scale(1.2)",
-                      zIndex: 1,
-                    }}>
-                      {initials}
-                    </div>
-                    {/* The actual cutout photo */}
-                    <Image
-                      src={photoUrl}
-                      alt={`${player.first_name} ${player.last_name}`}
-                      fill
-                      style={{ objectFit: "cover", objectPosition: "center top", zIndex: 2 }}
-                      unoptimized
-                    />
-                    {/* Bottom fade to blend with card */}
-                    <div style={{
-                      position: "absolute",
-                      inset: 0,
-                      background: "linear-gradient(180deg, transparent 50%, rgba(13,27,42,0.9) 100%)",
-                      zIndex: 3, pointerEvents: "none",
-                    }} />
-                  </>
-                ) : (
-                  <>
-                    <div style={{
-                      position: "absolute",
-                      fontSize: 240, fontWeight: 900,
-                      letterSpacing: "-0.08em",
-                      color: "rgba(77,174,229,0.04)",
-                      fontFamily: '"JetBrains Mono", monospace',
-                      top: "50%", left: "50%",
-                      transform: "translate(-50%, -50%) scale(1.2)",
-                    }}>
-                      {initials}
-                    </div>
-                    <div style={{
-                      fontSize: 180, fontWeight: 700,
-                      letterSpacing: "-0.06em",
-                      background: "linear-gradient(180deg, #4DAEE5 0%, #1B6CA8 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      fontFamily: '"JetBrains Mono", monospace',
-                      position: "relative", zIndex: 2,
-                    }}>
-                      {initials}
-                    </div>
-                  </>
-                )}
-
-                {/* Overlay chips */}
+              <div style={{ paddingBottom: 22 }}>
                 <div style={{
-                  position: "absolute", bottom: 14, left: 14, zIndex: 4,
-                  padding: "6px 12px", borderRadius: 6,
-                  background: "rgba(13,27,42,0.8)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(240,165,0,0.3)",
-                  fontSize: 11, fontWeight: 700,
-                  color: "#F0A500", letterSpacing: "0.08em",
+                  fontSize: 10, letterSpacing: "0.18em",
+                  color: "rgba(255,255,255,0.4)",
+                  fontWeight: 600, textTransform: "uppercase",
+                  marginBottom: 6,
                 }}>
-                  {player.position}
+                  Overall
                 </div>
-                {player.jersey_number && (
-                  <div style={{
-                    position: "absolute", bottom: 14, right: 14, zIndex: 4,
-                    fontSize: 11, fontWeight: 700,
-                    color: "rgba(255,255,255,0.5)",
-                    letterSpacing: "0.08em",
-                  }}>
-                    #{player.jersey_number}
-                  </div>
-                )}
+                <div style={{
+                  fontSize: 16, fontWeight: 700, color: "#F0A500",
+                  letterSpacing: "-0.01em", marginBottom: 6,
+                }}>
+                  {getRatingLabel(player.overall_rating)}
+                </div>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 4,
+                  fontSize: 12, fontWeight: 600,
+                  color: trendDelta > 0 ? "#16A34A" : trendDelta < 0 ? "#D64045" : "rgba(255,255,255,0.5)",
+                }}>
+                  {trendDelta > 0 ? <TrendingUp size={12} /> : trendDelta < 0 ? <TrendingDown size={12} /> : <Minus size={12} />}
+                  {trendDelta > 0 ? "+" : ""}{trendDelta.toFixed(1)} vs vorige
+                </div>
               </div>
+            </div>
+
+            {/* FREE-FLOATING CUTOUT PHOTO — no border, bleeds into bg */}
+            <div className="pc-photo-wrap" style={{
+              position: "relative",
+              width: "100%",
+              minHeight: 440,
+              display: "flex",
+              alignItems: "flex-end",
+              justifyContent: "center",
+              zIndex: 1,
+            }}>
+              {/* Subtle huge initials watermark behind */}
+              <div className="pc-watermark" style={{
+                position: "absolute",
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%) scale(1.4)",
+                fontSize: 320, fontWeight: 900,
+                letterSpacing: "-0.08em",
+                color: "rgba(77,174,229,0.04)",
+                fontFamily: '"JetBrains Mono", monospace',
+                pointerEvents: "none",
+                whiteSpace: "nowrap",
+                zIndex: 0,
+              }}>
+                {initials}
+              </div>
+
+              {photoUrl ? (
+                <div className="pc-photo-inner" style={{
+                  position: "relative",
+                  width: "100%",
+                  maxWidth: 460,
+                  height: 540,
+                  zIndex: 2,
+                }}>
+                  <Image
+                    src={photoUrl}
+                    alt={`${player.first_name} ${player.last_name}`}
+                    fill
+                    style={{
+                      objectFit: "contain",
+                      objectPosition: "bottom center",
+                      filter: "drop-shadow(0 24px 32px rgba(0,0,0,0.5))",
+                    }}
+                    unoptimized
+                  />
+                </div>
+              ) : (
+                <div style={{
+                  position: "relative", zIndex: 2,
+                  fontSize: 220, fontWeight: 700,
+                  letterSpacing: "-0.06em",
+                  background: "linear-gradient(180deg, #4DAEE5 0%, #1B6CA8 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  fontFamily: '"JetBrains Mono", monospace',
+                  filter: "drop-shadow(0 12px 32px rgba(77,174,229,0.3))",
+                }}>
+                  {initials}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1061,7 +1029,11 @@ function ResponsiveStyles() {
         }
         .pc-firstname, .pc-lastname { font-size: 56px !important; }
         .pc-stats-row { gap: 20px !important; padding-top: 24px !important; margin-top: 24px !important; }
-        .pc-overall { font-size: 110px !important; }
+        .pc-overall { font-size: 130px !important; }
+        .pc-photo-zone { min-height: 460px !important; }
+        .pc-photo-wrap { min-height: 380px !important; }
+        .pc-photo-inner { max-width: 360px !important; height: 440px !important; }
+        .pc-watermark { font-size: 220px !important; }
         .pc-attr-soc {
           grid-template-columns: 1fr !important;
           gap: 60px !important;
@@ -1084,7 +1056,9 @@ function ResponsiveStyles() {
       @media (max-width: 480px) {
         .pc-hero { padding: 24px 16px 0 !important; }
         .pc-firstname, .pc-lastname { font-size: 40px !important; }
-        .pc-overall { font-size: 80px !important; }
+        .pc-overall { font-size: 96px !important; }
+        .pc-photo-inner { max-width: 280px !important; height: 340px !important; }
+        .pc-watermark { font-size: 160px !important; }
         .pc-section-title { font-size: 24px !important; }
         .pc-socio-name { font-size: 22px !important; }
         .pc-cv-num { font-size: 34px !important; }
