@@ -87,15 +87,14 @@ export default function PlayerDashboardPage() {
         <BgMesh />
         <div style={{
           maxWidth: 460, margin: "120px auto",
-          padding: "40px 32px", borderRadius: 18,
-          background: "rgba(13,27,42,0.6)",
-          backdropFilter: "blur(20px)",
-          border: "1px solid rgba(77,174,229,0.18)",
-          textAlign: "center", color: "#fff",
-          boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
+          padding: "44px 32px", borderRadius: 24,
+          background: "#FFFFFF",
+          border: "1px solid rgba(13,27,42,0.05)",
+          textAlign: "center", color: "#0D1B2A",
+          boxShadow: "0 1px 3px rgba(13,27,42,0.04), 0 24px 64px rgba(13,27,42,0.08)",
         }}>
           <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Welkom{userName ? `, ${userName.split(" ")[0]}` : ""}</h2>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", marginBottom: 22 }}>
+          <p style={{ fontSize: 14, color: "rgba(13,27,42,0.55)", marginBottom: 22 }}>
             Vul je profiel in zodat je coach je kan evalueren.
           </p>
           <Link href="/onboarding" style={primaryBtn}>
@@ -399,27 +398,32 @@ function Hero({ player, archetype, sociotype, userName }: {
     <Tilt3D max={5} lift={4} scale={1.005} glare={false}>
       <div className="dash-hero" style={{
         position: "relative",
-        borderRadius: 24,
+        borderRadius: 32,
         overflow: "hidden",
-        background: "linear-gradient(135deg, rgba(27,108,168,0.18) 0%, rgba(13,27,42,0.6) 60%, rgba(10,14,20,0.4) 100%)",
-        backdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: "linear-gradient(135deg, #FFFFFF 0%, #FAFCFE 50%, #F4F7FA 100%)",
+        border: "1px solid rgba(13,27,42,0.05)",
         boxShadow: `
-          0 24px 80px rgba(0,0,0,0.55),
-          0 0 0 1px rgba(255,255,255,0.04) inset,
-          0 1px 0 rgba(255,255,255,0.08) inset
+          0 4px 16px rgba(13,27,42,0.04),
+          0 24px 64px rgba(13,27,42,0.06),
+          0 56px 120px -24px rgba(27,108,168,0.12),
+          0 1px 0 rgba(255,255,255,0.8) inset
         `,
-        padding: 32,
-        color: "#fff",
+        padding: 36,
+        color: "#0D1B2A",
       }}>
-        {/* Pitch lines pattern */}
         <PitchPattern />
 
-        {/* Ambient golden glow */}
+        {/* Ambient blue-gold glow on light bg */}
         <div style={{
           position: "absolute", top: -120, right: -120,
-          width: 400, height: 400,
-          background: "radial-gradient(circle, rgba(240,165,0,0.22) 0%, transparent 60%)",
+          width: 420, height: 420,
+          background: "radial-gradient(circle, rgba(240,165,0,0.10) 0%, transparent 60%)",
+          pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute", bottom: -100, left: -100,
+          width: 360, height: 360,
+          background: "radial-gradient(circle, rgba(77,174,229,0.10) 0%, transparent 60%)",
           pointerEvents: "none",
         }} />
 
@@ -431,52 +435,53 @@ function Hero({ player, archetype, sociotype, userName }: {
           position: "relative",
           zIndex: 2,
         }}>
-          {/* LEFT — name & badges */}
           <div>
             <div style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              fontSize: 11, fontWeight: 600, letterSpacing: "0.16em",
-              color: "rgba(77,174,229,0.85)", textTransform: "uppercase",
-              marginBottom: 16,
+              display: "inline-flex", alignItems: "center", gap: 8,
+              fontSize: 11, fontWeight: 600, letterSpacing: "0.14em",
+              color: "#1B6CA8", textTransform: "uppercase",
+              marginBottom: 18,
+              padding: "5px 12px", borderRadius: 999,
+              background: "rgba(77,174,229,0.08)",
+              border: "1px solid rgba(77,174,229,0.18)",
             }}>
               <span style={{
                 width: 6, height: 6, borderRadius: "50%",
                 background: "#4DAEE5",
-                boxShadow: "0 0 12px #4DAEE5",
+                boxShadow: "0 0 10px #4DAEE5",
                 animation: "dashPulse 2s ease-in-out infinite",
               }} />
               {greeting}, {firstName || "Athlete"}
             </div>
 
             <h1 className="dash-hero-name" style={{
-              fontSize: 56, fontWeight: 800, letterSpacing: "-0.04em",
-              lineHeight: 0.95, marginBottom: 6, color: "#fff",
+              fontSize: 56, fontWeight: 700, letterSpacing: "-0.035em",
+              lineHeight: 0.95, marginBottom: 6, color: "#0D1B2A",
             }}>
               {player.first_name}
             </h1>
             <h1 className="dash-hero-name" style={{
-              fontSize: 56, fontWeight: 900, letterSpacing: "-0.05em",
+              fontSize: 56, fontWeight: 800, letterSpacing: "-0.04em",
               lineHeight: 0.95, marginBottom: 18,
-              background: "linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.5) 120%)",
+              background: "linear-gradient(180deg, #1B6CA8 0%, #0D1B2A 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}>
-              {player.last_name?.toUpperCase()}
+              {player.last_name}
             </h1>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 22 }}>
-              <HeroChip label={player.position} accent="#4DAEE5" emphasis />
+              <HeroChip label={player.position} accent="#1B6CA8" emphasis />
               <HeroChip label={POSITION_LABELS[player.position]} />
               {player.jersey_number && <HeroChip label={`#${player.jersey_number}`} mono />}
               {archetype && <HeroChip label={archetype.label} accent={archetype.color} icon={archetype.icon} />}
               {sociotype && <HeroChip label={sociotype.label} accent={sociotype.color_hex} icon={sociotype.icon} />}
             </div>
 
-            {/* Quick stats line */}
             <div style={{
-              display: "flex", gap: 28,
-              paddingTop: 20,
-              borderTop: "1px solid rgba(255,255,255,0.08)",
+              display: "flex", gap: 32,
+              paddingTop: 22,
+              borderTop: "1px solid rgba(13,27,42,0.06)",
               flexWrap: "wrap",
             }}>
               <HeroStat label="Evaluaties" value={String(player.evaluations?.length ?? 0)} />
@@ -486,13 +491,14 @@ function Hero({ player, archetype, sociotype, userName }: {
             </div>
           </div>
 
-          {/* RIGHT — OVR ring + avatar */}
           <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
             <OVRRing rating={overall} photoUrl={photoUrl} initials={initials} />
             <div style={{
-              fontSize: 12, fontWeight: 700, letterSpacing: "0.14em",
+              fontSize: 11, fontWeight: 700, letterSpacing: "0.14em",
               color: overallColor(overall), textTransform: "uppercase",
-              textShadow: `0 0 16px ${overallColor(overall)}80`,
+              padding: "5px 12px", borderRadius: 999,
+              background: `${overallColor(overall)}12`,
+              border: `1px solid ${overallColor(overall)}30`,
             }}>
               {ratingLabel}
             </div>
@@ -517,19 +523,19 @@ function OVRRing({ rating, photoUrl, initials }: { rating: number; photoUrl: str
         <defs>
           <linearGradient id="ovrRing" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor={color} />
-            <stop offset="50%" stopColor="#fff" stopOpacity="0.5" />
-            <stop offset="100%" stopColor={color} stopOpacity="0.4" />
+            <stop offset="50%" stopColor={color} stopOpacity="0.8" />
+            <stop offset="100%" stopColor={color} stopOpacity="0.5" />
           </linearGradient>
           <filter id="ovrGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="6" />
+            <feGaussianBlur stdDeviation="5" />
           </filter>
         </defs>
         {/* Track */}
         <circle cx={size/2} cy={size/2} r={r} fill="none"
-          stroke="rgba(255,255,255,0.08)" strokeWidth={stroke} />
+          stroke="rgba(13,27,42,0.06)" strokeWidth={stroke} />
         {/* Glow */}
         <circle cx={size/2} cy={size/2} r={r} fill="none"
-          stroke={color} strokeOpacity="0.6"
+          stroke={color} strokeOpacity="0.35"
           strokeWidth={stroke + 4}
           strokeDasharray={`${dash} ${C}`}
           strokeLinecap="round"
@@ -545,16 +551,16 @@ function OVRRing({ rating, photoUrl, initials }: { rating: number; photoUrl: str
         />
       </svg>
 
-      {/* Inner content */}
       <div style={{
         position: "absolute",
         inset: stroke + 6,
         borderRadius: "50%",
         overflow: "hidden",
-        background: "radial-gradient(circle at 30% 20%, rgba(255,255,255,0.12), rgba(13,27,42,0.85))",
-        border: "1px solid rgba(255,255,255,0.06)",
+        background: "radial-gradient(circle at 30% 20%, #FFFFFF, #F4F7FA 75%)",
+        border: "1px solid rgba(13,27,42,0.05)",
         display: "flex", alignItems: "center", justifyContent: "center",
         flexDirection: "column",
+        boxShadow: "0 8px 24px rgba(13,27,42,0.06) inset",
       }}>
         {photoUrl ? (
           <div style={{ position: "absolute", inset: 0 }}>
@@ -567,23 +573,22 @@ function OVRRing({ rating, photoUrl, initials }: { rating: number; photoUrl: str
             />
             <div style={{
               position: "absolute", inset: 0,
-              background: "linear-gradient(180deg, transparent 30%, rgba(13,27,42,0.92) 95%)",
+              background: "linear-gradient(180deg, transparent 30%, rgba(255,255,255,0.96) 95%)",
             }} />
             <div style={{
               position: "absolute", bottom: 18, left: 0, right: 0,
               textAlign: "center",
-              fontSize: 56, fontWeight: 900,
+              fontSize: 56, fontWeight: 800,
               fontFamily: '"JetBrains Mono", monospace',
               color: overallColor(rating),
               letterSpacing: "-0.04em",
-              textShadow: `0 4px 24px ${overallColor(rating)}aa`,
             }}>
               {rating}
             </div>
             <div style={{
               position: "absolute", bottom: 8, left: 0, right: 0,
               textAlign: "center", fontSize: 9, fontWeight: 700,
-              letterSpacing: "0.22em", color: "rgba(255,255,255,0.55)",
+              letterSpacing: "0.22em", color: "rgba(13,27,42,0.4)",
             }}>
               OVR
             </div>
@@ -593,23 +598,22 @@ function OVRRing({ rating, photoUrl, initials }: { rating: number; photoUrl: str
             <div style={{
               fontSize: 36, fontWeight: 700,
               fontFamily: '"JetBrains Mono", monospace',
-              color: "rgba(77,174,229,0.4)", letterSpacing: "-0.04em",
-              position: "absolute", top: 28,
+              color: "rgba(27,108,168,0.18)", letterSpacing: "-0.04em",
+              position: "absolute", top: 30,
             }}>
               {initials}
             </div>
             <div style={{
-              fontSize: 72, fontWeight: 900,
+              fontSize: 72, fontWeight: 800,
               fontFamily: '"JetBrains Mono", monospace',
               color: overallColor(rating),
               letterSpacing: "-0.05em",
-              textShadow: `0 4px 24px ${overallColor(rating)}aa`,
             }}>
               {rating}
             </div>
             <div style={{
               fontSize: 10, fontWeight: 700,
-              letterSpacing: "0.24em", color: "rgba(255,255,255,0.5)",
+              letterSpacing: "0.24em", color: "rgba(13,27,42,0.4)",
               marginTop: -4,
             }}>
               OVR
@@ -633,76 +637,74 @@ function SkillCard({ cat, label, score, delta, series, onClick }: {
   const hasData = score > 0;
 
   return (
-    <Tilt3D max={12} lift={10} scale={1.02} glare>
+    <Tilt3D max={10} lift={8} scale={1.02} glare>
       <button
         onClick={onClick}
         style={{
           width: "100%", textAlign: "left",
-          background: "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: 18,
-          padding: "20px 22px",
-          color: "#fff",
+          background: "linear-gradient(180deg, #FFFFFF 0%, #FAFCFE 100%)",
+          border: "1px solid rgba(13,27,42,0.05)",
+          borderRadius: 22,
+          padding: "22px 24px",
+          color: "#0D1B2A",
           cursor: "pointer",
           position: "relative",
           overflow: "hidden",
           boxShadow: `
-            0 12px 32px rgba(0,0,0,0.25),
-            0 1px 0 rgba(255,255,255,0.08) inset
+            0 1px 3px rgba(13,27,42,0.03),
+            0 8px 24px rgba(13,27,42,0.05),
+            0 32px 64px -16px ${meta.color}1F,
+            0 1px 0 rgba(255,255,255,0.9) inset
           `,
         }}
       >
-        {/* accent corner glow */}
         <div style={{
-          position: "absolute", top: -40, right: -40,
-          width: 160, height: 160,
-          background: `radial-gradient(circle, ${meta.glow} 0%, transparent 70%)`,
+          position: "absolute", top: -50, right: -50,
+          width: 180, height: 180,
+          background: `radial-gradient(circle, ${meta.color}1A 0%, transparent 70%)`,
           pointerEvents: "none",
         }} />
 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{
-              width: 36, height: 36, borderRadius: 10,
-              background: `${meta.color}18`,
-              border: `1px solid ${meta.color}30`,
+              width: 40, height: 40, borderRadius: 14,
+              background: `linear-gradient(135deg, ${meta.color}1F, ${meta.color}10)`,
+              border: `1px solid ${meta.color}24`,
               display: "flex", alignItems: "center", justifyContent: "center",
               color: meta.color,
-              boxShadow: `0 0 16px ${meta.glow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
+              boxShadow: `0 4px 12px ${meta.color}25, inset 0 1px 0 rgba(255,255,255,0.6)`,
             }}>
               {meta.icon}
             </div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#0D1B2A", letterSpacing: "-0.015em" }}>
                 {label}
               </div>
-              <div style={{ fontSize: 10, letterSpacing: "0.12em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginTop: 1 }}>
+              <div style={{ fontSize: 10, letterSpacing: "0.12em", color: "rgba(13,27,42,0.4)", textTransform: "uppercase", marginTop: 2, fontWeight: 600 }}>
                 Skill module
               </div>
             </div>
           </div>
-          <ChevronRight size={14} style={{ color: "rgba(255,255,255,0.35)" }} />
+          <ChevronRight size={14} style={{ color: "rgba(13,27,42,0.3)" }} />
         </div>
 
-        {/* Score + delta */}
-        <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 12 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 14 }}>
           <div style={{
-            fontSize: 52, fontWeight: 800,
+            fontSize: 52, fontWeight: 700,
             fontFamily: '"JetBrains Mono", monospace',
-            color: hasData ? meta.color : "rgba(255,255,255,0.25)",
+            color: hasData ? meta.color : "rgba(13,27,42,0.18)",
             letterSpacing: "-0.04em", lineHeight: 1,
-            textShadow: hasData ? `0 4px 24px ${meta.glow}` : "none",
           }}>
             {hasData ? score.toFixed(1) : "—"}
           </div>
-          {hasData && delta !== 0 && Math.abs(delta) >= 0.05 && (
+          {hasData && Math.abs(delta) >= 0.05 && (
             <div style={{
               display: "inline-flex", alignItems: "center", gap: 3,
               fontSize: 12, fontWeight: 700,
-              padding: "3px 7px", borderRadius: 6,
-              background: delta > 0 ? "rgba(22,163,74,0.15)" : "rgba(214,64,69,0.15)",
-              border: `1px solid ${delta > 0 ? "rgba(22,163,74,0.3)" : "rgba(214,64,69,0.3)"}`,
+              padding: "4px 9px", borderRadius: 999,
+              background: delta > 0 ? "rgba(22,163,74,0.1)" : "rgba(214,64,69,0.1)",
+              border: `1px solid ${delta > 0 ? "rgba(22,163,74,0.2)" : "rgba(214,64,69,0.2)"}`,
               color: delta > 0 ? "#16A34A" : "#D64045",
             }}>
               {delta > 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
@@ -711,13 +713,12 @@ function SkillCard({ cat, label, score, delta, series, onClick }: {
           )}
         </div>
 
-        {/* Mini sparkline */}
         <MiniSparkline series={series} color={meta.color} />
 
         <div style={{
-          marginTop: 10,
+          marginTop: 12,
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          fontSize: 10, color: "rgba(255,255,255,0.4)", letterSpacing: "0.04em",
+          fontSize: 11, color: "rgba(13,27,42,0.4)", letterSpacing: "0.02em",
         }}>
           <span>{series.filter(v => v > 0).length} evaluaties</span>
           <span style={{ color: meta.color, fontWeight: 600 }}>Bekijk detail →</span>
@@ -729,37 +730,49 @@ function SkillCard({ cat, label, score, delta, series, onClick }: {
 
 function MiniSparkline({ series, color }: { series: number[]; color: string }) {
   const W = 200;
-  const H = 36;
-  const PAD = 2;
+  const H = 40;
+  const PAD = 3;
   const max = Math.max(...series.filter(v => v > 0), 10);
   if (series.filter(v => v > 0).length < 2) {
     return (
       <div style={{
         height: H,
         display: "flex", alignItems: "center",
-        fontSize: 11, color: "rgba(255,255,255,0.3)",
+        fontSize: 11, color: "rgba(13,27,42,0.3)",
       }}>
         Onvoldoende data
       </div>
     );
   }
+  // Smooth bezier curve for soft, rounded line
   const xs = (i: number) => PAD + (i / (series.length - 1)) * (W - 2 * PAD);
   const ys = (v: number) => H - PAD - (v / max) * (H - 2 * PAD);
-  const path = series.map((v, i) => `${i === 0 ? "M" : "L"}${xs(i).toFixed(1)},${ys(v).toFixed(1)}`).join(" ");
-  const fillPath = `${path} L${xs(series.length - 1)},${H - PAD} L${xs(0)},${H - PAD} Z`;
+  const points = series.map((v, i) => ({ x: xs(i), y: ys(v) }));
+  let path = `M${points[0].x},${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[Math.max(i - 1, 0)];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[Math.min(i + 2, points.length - 1)];
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+    path += ` C${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+  }
+  const fillPath = `${path} L${points[points.length - 1].x},${H - PAD} L${points[0].x},${H - PAD} Z`;
   return (
     <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: "block" }}>
       <defs>
         <linearGradient id={`spark-${color}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="0%" stopColor={color} stopOpacity="0.28" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
       <path d={fillPath} fill={`url(#spark-${color})`} />
-      <path d={path} fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"
-        style={{ filter: `drop-shadow(0 0 4px ${color}80)` }} />
-      {series.map((v, i) => v > 0 && i === series.length - 1 ? (
-        <circle key={i} cx={xs(i)} cy={ys(v)} r={3} fill={color} stroke="#0A0E14" strokeWidth={1.5} />
+      <path d={path} fill="none" stroke={color} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+      {points.map((p, i) => i === points.length - 1 && series[i] > 0 ? (
+        <circle key={i} cx={p.x} cy={p.y} r={3.5} fill={color} stroke="#FFFFFF" strokeWidth={2} />
       ) : null)}
     </svg>
   );
@@ -789,25 +802,26 @@ function WellbeingTile({ label, icon, value, color, emoji, inverted }: {
     : "rgba(255,255,255,0.2)";
 
   return (
-    <Tilt3D max={14} lift={8} scale={1.025} glare>
+    <Tilt3D max={12} lift={6} scale={1.025} glare>
       <div style={{
         position: "relative",
-        padding: 18,
-        borderRadius: 16,
-        background: "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 100%)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        padding: 20,
+        borderRadius: 22,
+        background: "linear-gradient(180deg, #FFFFFF 0%, #FAFCFE 100%)",
+        border: "1px solid rgba(13,27,42,0.05)",
         boxShadow: `
-          0 8px 24px rgba(0,0,0,0.25),
-          0 1px 0 rgba(255,255,255,0.08) inset
+          0 1px 3px rgba(13,27,42,0.03),
+          0 6px 18px rgba(13,27,42,0.05),
+          0 24px 48px -12px ${color}1A,
+          0 1px 0 rgba(255,255,255,0.9) inset
         `,
-        color: "#fff",
+        color: "#0D1B2A",
         overflow: "hidden",
       }}>
         <div style={{
           position: "absolute", top: -30, right: -30,
-          width: 100, height: 100,
-          background: `radial-gradient(circle, ${color}1F 0%, transparent 70%)`,
+          width: 110, height: 110,
+          background: `radial-gradient(circle, ${color}18 0%, transparent 70%)`,
           pointerEvents: "none",
         }} />
 
@@ -815,17 +829,17 @@ function WellbeingTile({ label, icon, value, color, emoji, inverted }: {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
               <span style={{ color }}>{icon}</span>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "rgba(255,255,255,0.55)", textTransform: "uppercase" }}>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "rgba(13,27,42,0.5)", textTransform: "uppercase" }}>
                 {label}
               </span>
             </div>
           </div>
-          <div style={{ fontSize: 24, opacity: hasValue ? 1 : 0.3 }}>{emoji[emojiIdx]}</div>
+          <div style={{ fontSize: 26, opacity: hasValue ? 1 : 0.3 }}>{emoji[emojiIdx]}</div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 12 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 14 }}>
           <span style={{
-            fontSize: 36, fontWeight: 800,
+            fontSize: 38, fontWeight: 700,
             fontFamily: '"JetBrains Mono", monospace',
             color: displayColor,
             letterSpacing: "-0.03em", lineHeight: 0.9,
@@ -833,26 +847,24 @@ function WellbeingTile({ label, icon, value, color, emoji, inverted }: {
             {hasValue ? value : "—"}
           </span>
           {hasValue && (
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>
+            <span style={{ fontSize: 12, color: "rgba(13,27,42,0.35)", fontWeight: 500 }}>
               /10
             </span>
           )}
         </div>
 
-        {/* Energy bar */}
         <div style={{
-          height: 5, borderRadius: 999,
-          background: "rgba(255,255,255,0.05)",
+          height: 6, borderRadius: 999,
+          background: "rgba(13,27,42,0.05)",
           overflow: "hidden", position: "relative",
         }}>
           <div style={{
             position: "absolute", left: 0, top: 0, bottom: 0,
             width: `${pct}%`,
             background: hasValue
-              ? `linear-gradient(90deg, ${displayColor}, ${displayColor}80)`
+              ? `linear-gradient(90deg, ${displayColor}, ${displayColor}cc)`
               : "transparent",
             borderRadius: 999,
-            boxShadow: hasValue ? `0 0 8px ${displayColor}99` : "none",
             transition: "width 0.7s cubic-bezier(0.16, 1, 0.3, 1)",
           }} />
         </div>
@@ -869,35 +881,36 @@ function AchievementBadge({ label, icon, color, sub }: {
   label: string; icon: React.ReactNode; color: string; sub: string;
 }) {
   return (
-    <Tilt3D max={8} lift={6} scale={1.015} glare>
+    <Tilt3D max={8} lift={5} scale={1.015} glare>
       <div style={{
-        display: "flex", alignItems: "center", gap: 12,
-        padding: "12px 14px",
-        borderRadius: 12,
-        background: "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.015) 100%)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        display: "flex", alignItems: "center", gap: 14,
+        padding: "14px 16px",
+        borderRadius: 16,
+        background: "linear-gradient(135deg, #FFFFFF 0%, #FAFCFE 100%)",
+        border: "1px solid rgba(13,27,42,0.05)",
         boxShadow: `
-          0 6px 20px rgba(0,0,0,0.2),
-          0 1px 0 rgba(255,255,255,0.05) inset
+          0 1px 3px rgba(13,27,42,0.03),
+          0 6px 18px rgba(13,27,42,0.05),
+          0 16px 32px -10px ${color}25,
+          0 1px 0 rgba(255,255,255,0.9) inset
         `,
-        color: "#fff",
+        color: "#0D1B2A",
         position: "relative",
         overflow: "hidden",
       }}>
         <div style={{
-          width: 38, height: 38, borderRadius: 10,
-          background: `linear-gradient(135deg, ${color}30, ${color}10)`,
-          border: `1px solid ${color}30`,
+          width: 40, height: 40, borderRadius: 14,
+          background: `linear-gradient(135deg, ${color}22, ${color}08)`,
+          border: `1px solid ${color}24`,
           display: "flex", alignItems: "center", justifyContent: "center",
           color, flexShrink: 0,
-          boxShadow: `0 0 16px ${color}40, inset 0 1px 0 rgba(255,255,255,0.1)`,
+          boxShadow: `0 4px 10px ${color}25, inset 0 1px 0 rgba(255,255,255,0.6)`,
         }}>
           {icon}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{label}</div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>{sub}</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#0D1B2A", letterSpacing: "-0.01em" }}>{label}</div>
+          <div style={{ fontSize: 11, color: "rgba(13,27,42,0.45)" }}>{sub}</div>
         </div>
       </div>
     </Tilt3D>
@@ -914,17 +927,16 @@ function Timeline({ events }: {
   return (
     <div style={{
       position: "relative",
-      borderRadius: 18,
-      background: "rgba(255,255,255,0.025)",
-      backdropFilter: "blur(10px)",
-      border: "1px solid rgba(255,255,255,0.07)",
+      borderRadius: 22,
+      background: "#FFFFFF",
+      border: "1px solid rgba(13,27,42,0.05)",
       padding: 4,
       overflow: "hidden",
-      boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+      boxShadow: "0 1px 3px rgba(13,27,42,0.03), 0 8px 24px rgba(13,27,42,0.05)",
     }}>
       <div className="timeline-scroll" style={{
-        display: "flex", gap: 12,
-        padding: 16,
+        display: "flex", gap: 14,
+        padding: 18,
         overflowX: "auto",
         scrollSnapType: "x mandatory",
         WebkitOverflowScrolling: "touch",
@@ -952,22 +964,23 @@ function TimelineCard({ event, index }: {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, delay: 0.04 * index }}
       style={{
-        flex: "0 0 200px",
+        flex: "0 0 210px",
         scrollSnapAlign: "start",
-        padding: 16,
-        borderRadius: 14,
-        background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        color: "#fff",
+        padding: 18,
+        borderRadius: 18,
+        background: "linear-gradient(180deg, #FAFCFE 0%, #F4F7FA 100%)",
+        border: "1px solid rgba(13,27,42,0.05)",
+        color: "#0D1B2A",
         position: "relative",
         overflow: "hidden",
       }}
     >
       <div style={{
         position: "absolute", top: 0, left: 0,
-        width: 3, height: "100%",
+        width: 4, height: "100%",
         background: color,
-        boxShadow: `0 0 10px ${color}`,
+        borderTopLeftRadius: 18,
+        borderBottomLeftRadius: 18,
       }} />
 
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
@@ -977,31 +990,31 @@ function TimelineCard({ event, index }: {
         </span>
       </div>
 
-      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>
+      <div style={{ fontSize: 12, color: "rgba(13,27,42,0.5)", marginBottom: 10 }}>
         {event.date.toLocaleDateString("nl-NL", { day: "2-digit", month: "short" })}
       </div>
 
       {isEval && event.score !== undefined && (
         <div style={{
-          fontSize: 32, fontWeight: 800,
+          fontSize: 32, fontWeight: 700,
           fontFamily: '"JetBrains Mono", monospace',
           color: overallColor(((event.score - 1) / 9) * 59 + 40),
           letterSpacing: "-0.03em", lineHeight: 1,
         }}>
           {event.score.toFixed(1)}
-          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", fontWeight: 500, marginLeft: 4 }}>/10</span>
+          <span style={{ fontSize: 12, color: "rgba(13,27,42,0.35)", fontWeight: 500, marginLeft: 4 }}>/10</span>
         </div>
       )}
 
       {!isEval && (
-        <div style={{ display: "flex", gap: 8, marginTop: 4, fontFamily: '"JetBrains Mono", monospace' }}>
+        <div style={{ display: "flex", gap: 10, marginTop: 4, fontFamily: '"JetBrains Mono", monospace' }}>
           {(event.data as DailyCheckin).sleep_quality && (
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)" }}>
+            <span style={{ fontSize: 11, color: "rgba(13,27,42,0.65)" }}>
               😴 {(event.data as DailyCheckin).sleep_quality}
             </span>
           )}
           {(event.data as DailyCheckin).mood && (
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)" }}>
+            <span style={{ fontSize: 11, color: "rgba(13,27,42,0.65)" }}>
               😊 {(event.data as DailyCheckin).mood}
             </span>
           )}
@@ -1018,57 +1031,66 @@ function TimelineCard({ event, index }: {
 function GoalCard({ goal }: { goal: { title: string; progress: number; category?: EvaluationCategory } }) {
   const color = goal.category ? CAT_META[goal.category].color : "#4DAEE5";
   return (
-    <Tilt3D max={10} lift={8} scale={1.015} glare>
+    <Tilt3D max={10} lift={6} scale={1.015} glare>
       <div style={{
-        padding: 18,
-        borderRadius: 14,
-        background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.015) 100%)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        color: "#fff",
-        boxShadow: "0 8px 24px rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.05) inset",
+        padding: 20,
+        borderRadius: 20,
+        background: "#FFFFFF",
+        border: "1px solid rgba(13,27,42,0.05)",
+        color: "#0D1B2A",
+        boxShadow: `
+          0 1px 3px rgba(13,27,42,0.03),
+          0 6px 18px rgba(13,27,42,0.05),
+          0 20px 48px -12px ${color}1F,
+          0 1px 0 rgba(255,255,255,0.9) inset
+        `,
         position: "relative",
         overflow: "hidden",
       }}>
+        <div style={{
+          position: "absolute", top: -40, right: -40,
+          width: 130, height: 130,
+          background: `radial-gradient(circle, ${color}14 0%, transparent 70%)`,
+          pointerEvents: "none",
+        }} />
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color, textTransform: "uppercase", marginBottom: 4 }}>
               {goal.category ? CATEGORY_LABELS[goal.category] : "Goal"}
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", lineHeight: 1.3 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#0D1B2A", lineHeight: 1.3 }}>
               {goal.title}
             </div>
           </div>
           <Target size={18} style={{ color, flexShrink: 0 }} />
         </div>
 
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 8 }}>
           <span style={{
-            fontSize: 24, fontWeight: 800,
+            fontSize: 26, fontWeight: 700,
             fontFamily: '"JetBrains Mono", monospace',
             color, letterSpacing: "-0.03em",
           }}>
-            {goal.progress}<span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", fontWeight: 500 }}>%</span>
+            {goal.progress}<span style={{ fontSize: 13, color: "rgba(13,27,42,0.35)", fontWeight: 500 }}>%</span>
           </span>
-          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.45)" }}>
+          <span style={{ fontSize: 10, color: "rgba(13,27,42,0.45)" }}>
             voltooid
           </span>
         </div>
 
         <div style={{
-          height: 5, borderRadius: 999,
-          background: "rgba(255,255,255,0.05)",
+          height: 6, borderRadius: 999,
+          background: "rgba(13,27,42,0.05)",
           overflow: "hidden",
         }}>
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${goal.progress}%` }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             style={{
               height: "100%",
-              background: `linear-gradient(90deg, ${color}, ${color}90)`,
+              background: `linear-gradient(90deg, ${color}, ${color}cc)`,
               borderRadius: 999,
-              boxShadow: `0 0 10px ${color}99`,
             }}
           />
         </div>
@@ -1113,7 +1135,7 @@ function SkillDetailModal({ cat, score, evaluations, onClose }: {
         onClick={onClose}
         style={{
           position: "fixed", inset: 0, zIndex: 50,
-          background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)",
+          background: "rgba(13,27,42,0.25)", backdropFilter: "blur(6px)",
         }}
       />
       <motion.div
@@ -1124,58 +1146,65 @@ function SkillDetailModal({ cat, score, evaluations, onClose }: {
         style={{
           position: "fixed", top: 0, right: 0, bottom: 0,
           width: "min(560px, 100vw)", zIndex: 51,
-          background: "linear-gradient(180deg, #1A2E45 0%, #0A0E14 100%)",
-          borderLeft: "1px solid rgba(255,255,255,0.08)",
-          boxShadow: "-24px 0 64px rgba(0,0,0,0.6)",
-          color: "#fff", overflow: "auto",
+          background: "linear-gradient(180deg, #FFFFFF 0%, #FAFCFE 100%)",
+          borderLeft: "1px solid rgba(13,27,42,0.06)",
+          boxShadow: "-24px 0 64px rgba(13,27,42,0.18)",
+          color: "#0D1B2A", overflow: "auto",
         }}
       >
         <div style={{
           padding: "24px 28px",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(13,27,42,0.05)",
           display: "flex", alignItems: "center", justifyContent: "space-between",
           position: "sticky", top: 0,
-          background: "linear-gradient(180deg, rgba(26,46,69,0.96) 0%, rgba(13,27,42,0.92) 100%)",
+          background: "rgba(255,255,255,0.85)",
           backdropFilter: "blur(20px)",
           zIndex: 2,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{
-              width: 40, height: 40, borderRadius: 10,
-              background: `${meta.color}18`,
-              border: `1px solid ${meta.color}40`,
+              width: 44, height: 44, borderRadius: 14,
+              background: `linear-gradient(135deg, ${meta.color}1F, ${meta.color}10)`,
+              border: `1px solid ${meta.color}28`,
               display: "flex", alignItems: "center", justifyContent: "center",
               color: meta.color,
-              boxShadow: `0 0 20px ${meta.glow}`,
+              boxShadow: `0 4px 12px ${meta.color}20, inset 0 1px 0 rgba(255,255,255,0.6)`,
             }}>
               {meta.icon}
             </div>
             <div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+              <div style={{ fontSize: 11, color: "rgba(13,27,42,0.45)", letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>
                 Skill Module
               </div>
-              <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em" }}>{label}</h2>
+              <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: "#0D1B2A" }}>{label}</h2>
             </div>
           </div>
           <button onClick={onClose} style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            color: "#fff", cursor: "pointer",
+            width: 38, height: 38, borderRadius: 12,
+            background: "#FFFFFF",
+            border: "1px solid rgba(13,27,42,0.08)",
+            color: "#0D1B2A", cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 1px 3px rgba(13,27,42,0.05), 0 4px 12px rgba(13,27,42,0.05)",
           }}>
             <X size={16} />
           </button>
         </div>
 
-        <div style={{ padding: 28, display: "flex", flexDirection: "column", gap: 22 }}>
-          {/* Current score huge */}
+        <div style={{ padding: 28, display: "flex", flexDirection: "column", gap: 24 }}>
           <div style={{
-            padding: 26, borderRadius: 16,
-            background: `linear-gradient(135deg, ${meta.color}1A 0%, transparent 100%)`,
-            border: `1px solid ${meta.color}30`,
+            padding: 28, borderRadius: 22,
+            background: `linear-gradient(135deg, ${meta.color}10 0%, #FFFFFF 100%)`,
+            border: `1px solid ${meta.color}24`,
             position: "relative", overflow: "hidden",
+            boxShadow: `0 1px 3px rgba(13,27,42,0.03), 0 12px 32px ${meta.color}1A`,
           }}>
+            <div style={{
+              position: "absolute", top: -40, right: -40,
+              width: 160, height: 160,
+              background: `radial-gradient(circle, ${meta.color}1F 0%, transparent 70%)`,
+              pointerEvents: "none",
+            }} />
             <div style={{
               fontSize: 10, fontWeight: 700, letterSpacing: "0.14em",
               color: meta.color, textTransform: "uppercase", marginBottom: 10,
@@ -1183,50 +1212,49 @@ function SkillDetailModal({ cat, score, evaluations, onClose }: {
               Huidige Score
             </div>
             <div style={{
-              fontSize: 96, fontWeight: 800,
+              fontSize: 96, fontWeight: 700,
               fontFamily: '"JetBrains Mono", monospace',
               color: meta.color, letterSpacing: "-0.05em", lineHeight: 0.85,
-              textShadow: `0 4px 32px ${meta.glow}`,
             }}>
               {score > 0 ? score.toFixed(1) : "—"}
             </div>
-            <div style={{ display: "flex", gap: 18, marginTop: 16 }}>
+            <div style={{ display: "flex", gap: 22, marginTop: 18 }}>
               <DetailStat label="14-dagen gem." value={avg14?.toFixed(1) ?? "—"} color={meta.color} />
               <DetailStat label="30-dagen gem." value={avg30?.toFixed(1) ?? "—"} color={meta.color} />
               <DetailStat label="Datapunten" value={String(series.length)} color={meta.color} />
             </div>
           </div>
 
-          {/* History */}
           <div>
-            <h3 style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", textTransform: "uppercase", marginBottom: 12 }}>
+            <h3 style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "rgba(13,27,42,0.5)", textTransform: "uppercase", marginBottom: 14 }}>
               Geschiedenis
             </h3>
             {series.length === 0 ? (
               <EmptyHint text="Nog geen evaluaties voor deze categorie." />
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {[...series].reverse().slice(0, 10).map((s, i) => (
                   <div key={i} style={{
-                    padding: "12px 16px", borderRadius: 10,
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.06)",
+                    padding: "14px 18px", borderRadius: 14,
+                    background: "#FFFFFF",
+                    border: "1px solid rgba(13,27,42,0.05)",
                     display: "flex", alignItems: "center", gap: 14,
+                    boxShadow: "0 1px 3px rgba(13,27,42,0.03)",
                   }}>
                     <div style={{
-                      fontSize: 20, fontWeight: 800,
+                      fontSize: 22, fontWeight: 700,
                       fontFamily: '"JetBrains Mono", monospace',
                       color: meta.color, letterSpacing: "-0.03em",
-                      width: 48, textAlign: "right",
+                      width: 52, textAlign: "right",
                     }}>
                       {s.score.toFixed(1)}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.85)" }}>
+                      <div style={{ fontSize: 12, color: "#0D1B2A", fontWeight: 600 }}>
                         {formatDate(s.date)}
                       </div>
                       {s.notes && (
-                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>
+                        <div style={{ fontSize: 11, color: "rgba(13,27,42,0.5)", marginTop: 3 }}>
                           {s.notes.slice(0, 70)}{s.notes.length > 70 ? "…" : ""}
                         </div>
                       )}
@@ -1253,14 +1281,14 @@ function Section({ title, subtitle, children, action }: {
     <section>
       <div style={{
         display: "flex", alignItems: "flex-end", justifyContent: "space-between",
-        marginBottom: 14, gap: 12, flexWrap: "wrap",
+        marginBottom: 16, gap: 12, flexWrap: "wrap",
       }}>
         <div>
-          <h2 style={{ fontSize: 20, fontWeight: 700, color: "#fff", letterSpacing: "-0.02em" }}>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: "#0D1B2A", letterSpacing: "-0.022em" }}>
             {title}
           </h2>
           {subtitle && (
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>
+            <div style={{ fontSize: 12.5, color: "rgba(13,27,42,0.5)", marginTop: 3 }}>
               {subtitle}
             </div>
           )}
@@ -1275,19 +1303,19 @@ function Section({ title, subtitle, children, action }: {
 function HeroChip({ label, accent, icon, mono, emphasis }: {
   label: string; accent?: string; icon?: string; mono?: boolean; emphasis?: boolean;
 }) {
-  const color = accent ?? "rgba(255,255,255,0.55)";
+  const color = accent ?? "rgba(13,27,42,0.6)";
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 6,
-      fontSize: 11, fontWeight: emphasis ? 700 : 600, letterSpacing: emphasis ? "0.08em" : "0.04em",
-      padding: emphasis ? "5px 12px" : "4px 11px",
+      fontSize: 11, fontWeight: emphasis ? 700 : 600, letterSpacing: emphasis ? "0.08em" : "0.02em",
+      padding: emphasis ? "6px 14px" : "5px 12px",
       borderRadius: 999,
-      background: accent ? `${accent}14` : "rgba(255,255,255,0.05)",
-      color: accent ? color : "rgba(255,255,255,0.7)",
-      border: `1px solid ${accent ? `${accent}30` : "rgba(255,255,255,0.08)"}`,
+      background: accent ? `${accent}10` : "rgba(13,27,42,0.04)",
+      color: accent ? color : "rgba(13,27,42,0.7)",
+      border: `1px solid ${accent ? `${accent}24` : "rgba(13,27,42,0.06)"}`,
       fontFamily: mono ? '"JetBrains Mono", monospace' : undefined,
       textTransform: emphasis ? "uppercase" : undefined,
-      boxShadow: emphasis ? `0 0 12px ${accent}25` : "none",
+      boxShadow: emphasis ? `0 4px 12px ${accent}1F` : "none",
     }}>
       {icon && <span>{icon}</span>}
       {label}
@@ -1299,14 +1327,14 @@ function HeroStat({ label, value, valueColor }: { label: string; value: string; 
   return (
     <div>
       <div style={{
-        fontSize: 10, letterSpacing: "0.16em", fontWeight: 600,
-        color: "rgba(255,255,255,0.35)", textTransform: "uppercase", marginBottom: 4,
+        fontSize: 10, letterSpacing: "0.14em", fontWeight: 600,
+        color: "rgba(13,27,42,0.4)", textTransform: "uppercase", marginBottom: 5,
       }}>
         {label}
       </div>
       <div style={{
         fontSize: 16, fontWeight: 700,
-        color: valueColor ?? "#fff", letterSpacing: "-0.01em",
+        color: valueColor ?? "#0D1B2A", letterSpacing: "-0.015em",
       }}>
         {value}
       </div>
@@ -1317,11 +1345,11 @@ function HeroStat({ label, value, valueColor }: { label: string; value: string; 
 function DetailStat({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div>
-      <div style={{ fontSize: 9, letterSpacing: "0.16em", color: "rgba(255,255,255,0.45)", textTransform: "uppercase", marginBottom: 4 }}>
+      <div style={{ fontSize: 9.5, letterSpacing: "0.14em", color: "rgba(13,27,42,0.45)", textTransform: "uppercase", marginBottom: 5, fontWeight: 600 }}>
         {label}
       </div>
       <div style={{
-        fontSize: 18, fontWeight: 700,
+        fontSize: 20, fontWeight: 700,
         fontFamily: '"JetBrains Mono", monospace',
         color, letterSpacing: "-0.02em",
       }}>
@@ -1334,11 +1362,11 @@ function DetailStat({ label, value, color }: { label: string; value: string; col
 function EmptyHint({ text }: { text: string }) {
   return (
     <div style={{
-      padding: "20px 16px", borderRadius: 12,
-      background: "rgba(255,255,255,0.02)",
-      border: "1px dashed rgba(255,255,255,0.1)",
+      padding: "22px 18px", borderRadius: 16,
+      background: "rgba(13,27,42,0.02)",
+      border: "1px dashed rgba(13,27,42,0.1)",
       textAlign: "center",
-      fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.55,
+      fontSize: 12, color: "rgba(13,27,42,0.5)", lineHeight: 1.55,
     }}>
       {text}
     </div>
@@ -1350,12 +1378,12 @@ function FullScreenLoader() {
     <div style={dashboardBg}>
       <BgMesh />
       <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center", gap: 12,
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 14,
         minHeight: "calc(100vh - 52px)", justifyContent: "center",
         margin: "-28px -28px -40px",
       }}>
-        <Loader2 size={32} className="animate-spin" style={{ color: "#4DAEE5" }} />
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
+        <Loader2 size={32} className="animate-spin" style={{ color: "#1B6CA8" }} />
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "rgba(13,27,42,0.5)", textTransform: "uppercase", fontWeight: 600 }}>
           Performance Lab
         </div>
       </div>
@@ -1368,9 +1396,9 @@ function BgMesh() {
     <div style={{
       position: "absolute", inset: 0,
       background: `
-        radial-gradient(ellipse 60% 50% at 15% 10%, rgba(27,108,168,0.35), transparent 50%),
-        radial-gradient(ellipse 40% 40% at 90% 20%, rgba(240,165,0,0.18), transparent 55%),
-        radial-gradient(ellipse 50% 60% at 50% 100%, rgba(77,174,229,0.18), transparent 60%)
+        radial-gradient(ellipse 70% 60% at 15% 0%, rgba(77,174,229,0.10), transparent 55%),
+        radial-gradient(ellipse 50% 50% at 95% 25%, rgba(240,165,0,0.08), transparent 60%),
+        radial-gradient(ellipse 60% 70% at 50% 100%, rgba(27,108,168,0.06), transparent 65%)
       `,
       pointerEvents: "none",
       zIndex: 0,
@@ -1382,9 +1410,9 @@ function NoiseOverlay() {
   return (
     <div style={{
       position: "absolute", inset: 0,
-      backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
-      opacity: 0.4,
-      mixBlendMode: "overlay",
+      backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.025 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+      opacity: 0.5,
+      mixBlendMode: "multiply",
       pointerEvents: "none",
       zIndex: 0,
     }} />
@@ -1395,13 +1423,13 @@ function PitchPattern() {
   return (
     <svg style={{
       position: "absolute", inset: 0, width: "100%", height: "100%",
-      opacity: 0.06, pointerEvents: "none",
+      opacity: 0.08, pointerEvents: "none",
     }} viewBox="0 0 100 60" preserveAspectRatio="none">
-      <rect x={2} y={2} width={96} height={56} fill="none" stroke="#fff" strokeWidth={0.15} />
-      <line x1={50} y1={2} x2={50} y2={58} stroke="#fff" strokeWidth={0.15} />
-      <circle cx={50} cy={30} r={6} fill="none" stroke="#fff" strokeWidth={0.15} />
-      <rect x={2} y={18} width={14} height={24} fill="none" stroke="#fff" strokeWidth={0.15} />
-      <rect x={84} y={18} width={14} height={24} fill="none" stroke="#fff" strokeWidth={0.15} />
+      <rect x={2} y={2} width={96} height={56} fill="none" stroke="#1B6CA8" strokeWidth={0.15} />
+      <line x1={50} y1={2} x2={50} y2={58} stroke="#1B6CA8" strokeWidth={0.15} />
+      <circle cx={50} cy={30} r={6} fill="none" stroke="#1B6CA8" strokeWidth={0.15} />
+      <rect x={2} y={18} width={14} height={24} fill="none" stroke="#1B6CA8" strokeWidth={0.15} />
+      <rect x={84} y={18} width={14} height={24} fill="none" stroke="#1B6CA8" strokeWidth={0.15} />
     </svg>
   );
 }
@@ -1413,10 +1441,10 @@ function PitchPattern() {
 const dashboardBg: React.CSSProperties = {
   margin: "-28px -28px -40px",
   minHeight: "calc(100vh - 52px)",
-  background: "linear-gradient(180deg, #0A0E14 0%, #061018 50%, #03070C 100%)",
+  background: "linear-gradient(180deg, #F4F7FA 0%, #FFFFFF 40%, #F0F4F9 100%)",
   position: "relative",
   overflow: "hidden",
-  fontFamily: '"Helvetica Neue", "Inter", "Satoshi", system-ui, sans-serif',
+  fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
 };
 
 const primaryBtn: React.CSSProperties = {
@@ -1429,12 +1457,13 @@ const primaryBtn: React.CSSProperties = {
 };
 
 const ghostBtnDark: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: 5,
-  padding: "6px 12px", borderRadius: 999,
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.1)",
-  color: "rgba(255,255,255,0.75)",
-  fontSize: 11, fontWeight: 600, textDecoration: "none",
+  display: "inline-flex", alignItems: "center", gap: 6,
+  padding: "7px 14px", borderRadius: 999,
+  background: "#FFFFFF",
+  border: "1px solid rgba(13,27,42,0.08)",
+  color: "rgba(13,27,42,0.7)",
+  fontSize: 11.5, fontWeight: 600, textDecoration: "none",
+  boxShadow: "0 1px 3px rgba(13,27,42,0.04), 0 4px 12px rgba(13,27,42,0.04)",
 };
 
 function overallColor(r: number): string {

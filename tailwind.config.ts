@@ -1,12 +1,12 @@
 import type { Config } from "tailwindcss";
 
 const helvetica = [
-  '"Helvetica Neue"',
-  "Helvetica",
+  '"Inter"',
   "-apple-system",
   "BlinkMacSystemFont",
+  '"SF Pro Text"',
   '"Segoe UI"',
-  "Arial",
+  "system-ui",
   "sans-serif",
 ];
 
@@ -94,11 +94,12 @@ const config: Config = {
       },
 
       borderRadius: {
-        lg:  "10px",
-        md:  "7px",
-        sm:  "5px",
-        xl:  "14px",
-        "2xl": "18px",
+        lg:  "14px",
+        md:  "10px",
+        sm:  "7px",
+        xl:  "18px",
+        "2xl": "24px",
+        "3xl": "32px",
       },
 
       fontFamily: {
