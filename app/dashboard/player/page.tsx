@@ -57,33 +57,46 @@ export default function PlayerDashboardPage() {
 
   useEffect(() => {
     async function load() {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles").select("full_name").eq("id", user.id).single();
-        setUserName(profile?.full_name ?? "");
-      }
-      const p = await getMyPlayerData();
-      setPlayer(p);
-      if (p?.id) {
-        const { data: cs } = await supabase
-          .from("daily_checkins")
-          .select("*")
-          .eq("player_id", p.id)
-          .order("checkin_date", { ascending: false })
-          .limit(30);
-        setCheckins((cs ?? []) as DailyCheckin[]);
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          try {
+            const { data: profile } = await supabase
+              .from("profiles").select("full_name").eq("id", user.id).single();
+            setUserName(profile?.full_name ?? "");
+          } catch (e) { console.warn("profile fetch failed:", e); }
+        }
+        const p = await getMyPlayerData();
+        setPlayer(p);
+        if (p?.id) {
+          try {
+            const { data: cs } = await supabase
+              .from("daily_checkins")
+              .select("*")
+              .eq("player_id", p.id)
+              .order("checkin_date", { ascending: false })
+              .limit(30);
+            setCheckins((cs ?? []) as DailyCheckin[]);
+          } catch (e) { console.warn("daily_checkins fetch failed (run migration?):", e); }
 
-        const { data: gs } = await supabase
-          .from("game_scores")
-          .select("*")
-          .eq("player_id", p.id)
-          .order("total_score", { ascending: false })
-          .limit(20);
-        setGameScores((gs ?? []) as GameScore[]);
+          try {
+            const { data: gs, error } = await supabase
+              .from("game_scores")
+              .select("*")
+              .eq("player_id", p.id)
+              .order("total_score", { ascending: false })
+              .limit(20);
+            if (!error && gs) setGameScores(gs as GameScore[]);
+          } catch (e) {
+            console.warn("game_scores query failed (run migration?):", e);
+          }
+        }
+      } catch (e) {
+        console.error("Dashboard load failed:", e);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     load();
   }, []);
