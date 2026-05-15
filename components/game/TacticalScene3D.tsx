@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useMemo, Suspense } from "react";
+import { useRef, useMemo, Suspense, Component, type ReactNode } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows } from "@react-three/drei";
+import { OrbitControls, ContactShadows } from "@react-three/drei";
 import type { Group, Mesh } from "three";
 
 export interface SceneP { id: number; team: "blue" | "red"; x: number; y: number; number: number; highlighted?: boolean }
@@ -14,27 +14,47 @@ interface Props {
   height?: number;
 }
 
+/** Error boundary so a Three.js crash doesn't take down the whole page. */
+class ThreeErrorBoundary extends Component<{ children: ReactNode; fallback: ReactNode }, { error: boolean }> {
+  state = { error: false };
+  static getDerivedStateFromError() { return { error: true }; }
+  componentDidCatch(error: Error) { console.error("3D scene crashed:", error); }
+  render() { return this.state.error ? this.props.fallback : this.props.children; }
+}
+
+function FallbackPitch({ height }: { height: number }) {
+  return (
+    <div style={{
+      width: "100%", height,
+      background: "linear-gradient(180deg, #2A4D33 0%, #143320 100%)",
+      borderRadius: 16,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      color: "rgba(255,255,255,0.5)", fontSize: 13,
+    }}>
+      ⚽ 3D scene niet beschikbaar
+    </div>
+  );
+}
+
 /**
  * 3D pitch + low-poly players.
- * - Camera at low angle behind blue team
- * - Players are cylinders + sphere heads (mobile-game style)
- * - Highlighted players have a glowing gold ring + slight float bob
- * - Ball rotates and bobs subtly
  */
 export function TacticalScene3D({ players, ball, height = 460 }: Props) {
   return (
-    <div style={{ width: "100%", height, position: "relative" }}>
-      <Canvas
-        shadows
-        camera={{ position: [0, 28, 32], fov: 36, near: 0.1, far: 200 }}
-        dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true }}
-      >
-        <Suspense fallback={null}>
-          <SceneContents players={players} ball={ball} />
-        </Suspense>
-      </Canvas>
-    </div>
+    <ThreeErrorBoundary fallback={<FallbackPitch height={height} />}>
+      <div style={{ width: "100%", height, position: "relative" }}>
+        <Canvas
+          shadows
+          camera={{ position: [0, 28, 32], fov: 36, near: 0.1, far: 200 }}
+          dpr={[1, 2]}
+          gl={{ antialias: true, alpha: true }}
+        >
+          <Suspense fallback={null}>
+            <SceneContents players={players} ball={ball} />
+          </Suspense>
+        </Canvas>
+      </div>
+    </ThreeErrorBoundary>
   );
 }
 
@@ -55,9 +75,6 @@ function SceneContents({ players, ball }: { players: SceneP[]; ball: SceneBall }
       />
       <directionalLight position={[-15, 20, -10]} intensity={0.4} color="#4DAEE5" />
       <pointLight position={[0, 12, 0]} intensity={0.5} color="#F0A500" distance={40} />
-
-      {/* Subtle environment for reflections on the ball */}
-      <Environment preset="night" background={false} />
 
       {/* The pitch */}
       <Pitch />

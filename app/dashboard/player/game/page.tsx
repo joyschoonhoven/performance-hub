@@ -1088,10 +1088,38 @@ export default function TacticalGamePage() {
     setCurrentBall(scenarios[currentIndex].ball)
   }, [gamePhase, currentIndex])
 
+  // Save score once when game ends
+  const [scoreSaved, setScoreSaved] = useState(false)
+  useEffect(() => {
+    if (gamePhase !== "results" || scoreSaved || scores.length === 0) return
+    setScoreSaved(true)
+    ;(async () => {
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+        const { data: player } = await supabase.from("players").select("id").eq("profile_id", user.id).maybeSingle()
+        if (!player) return
+        const answeredCount = scores.length
+        const maxPossible = gameMode === "classic" ? 48 : answeredCount * 3
+        const normalizedScore = maxPossible > 0 ? Math.round((totalScore / maxPossible) * 48) : 0
+        const { label } = getIntelligenceLabel(normalizedScore)
+        const pct = maxPossible > 0 ? (totalScore / maxPossible) * 100 : 0
+        await supabase.from("game_scores").insert({
+          player_id: player.id,
+          mode: gameMode,
+          total_score: totalScore,
+          max_possible: maxPossible,
+          scenarios_played: answeredCount,
+          accuracy_pct: Number(pct.toFixed(2)),
+          iq_label: label,
+        })
+      } catch (e) { console.error("Score save failed:", e) }
+    })()
+  }, [gamePhase, scoreSaved, scores.length, gameMode, totalScore])
+
   const handleStart = useCallback((mode: GameMode) => {
-    if (typeof window !== "undefined") {
-      (window as Window & { __iqSaved?: boolean }).__iqSaved = false
-    }
+    setScoreSaved(false)
     setGameMode(mode)
     setScores([])
     setSelectedOption(null)
@@ -1314,29 +1342,6 @@ export default function TacticalGamePage() {
     const normalizedScore = maxPossible > 0 ? Math.round((totalScore / maxPossible) * 48) : 0
     const { label, color } = getIntelligenceLabel(normalizedScore)
     const pct = maxPossible > 0 ? (totalScore / maxPossible) * 100 : 0
-
-    // Save score to Supabase (once per results screen)
-    if (typeof window !== "undefined" && !(window as Window & { __iqSaved?: boolean }).__iqSaved && answeredCount > 0) {
-      (window as Window & { __iqSaved?: boolean }).__iqSaved = true
-      ;(async () => {
-        try {
-          const supabase = createClient()
-          const { data: { user } } = await supabase.auth.getUser()
-          if (!user) return
-          const { data: player } = await supabase.from("players").select("id").eq("profile_id", user.id).maybeSingle()
-          if (!player) return
-          await supabase.from("game_scores").insert({
-            player_id: player.id,
-            mode: gameMode,
-            total_score: totalScore,
-            max_possible: maxPossible,
-            scenarios_played: answeredCount,
-            accuracy_pct: Number(pct.toFixed(2)),
-            iq_label: label,
-          })
-        } catch (e) { console.error(e) }
-      })()
-    }
 
     return (
       <div
