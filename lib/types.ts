@@ -402,6 +402,22 @@ export const SORENESS_LOCATION_LABELS: Record<SorenessLocation, string> = {
 };
 
 // ============================================================
+// TACTICAL IQ GAME SCORES
+// ============================================================
+
+export interface GameScore {
+  id: string;
+  player_id: string;
+  mode: "classic" | "infinite";
+  total_score: number;
+  max_possible: number;
+  scenarios_played: number;
+  accuracy_pct?: number;
+  iq_label?: string;
+  created_at: string;
+}
+
+// ============================================================
 // ENRICHED PLAYER (for UI)
 // ============================================================
 

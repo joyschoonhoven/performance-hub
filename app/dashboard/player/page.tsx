@@ -19,7 +19,7 @@ import {
 import { getRatingLabel, formatDate } from "@/lib/utils";
 import { Tilt3D } from "@/components/ui/Tilt3D";
 import type {
-  Evaluation, EvaluationCategory, PlayerWithDetails, DailyCheckin,
+  Evaluation, EvaluationCategory, PlayerWithDetails, DailyCheckin, GameScore,
 } from "@/lib/types";
 
 /* ─────────────────────────────────────────────────────────
@@ -50,6 +50,7 @@ const CAT_META: Record<EvaluationCategory, { color: string; glow: string; icon: 
 export default function PlayerDashboardPage() {
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
   const [checkins, setCheckins] = useState<DailyCheckin[]>([]);
+  const [gameScores, setGameScores] = useState<GameScore[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedSkill, setExpandedSkill] = useState<EvaluationCategory | null>(null);
   const [userName, setUserName] = useState("");
@@ -73,6 +74,14 @@ export default function PlayerDashboardPage() {
           .order("checkin_date", { ascending: false })
           .limit(30);
         setCheckins((cs ?? []) as DailyCheckin[]);
+
+        const { data: gs } = await supabase
+          .from("game_scores")
+          .select("*")
+          .eq("player_id", p.id)
+          .order("total_score", { ascending: false })
+          .limit(20);
+        setGameScores((gs ?? []) as GameScore[]);
       }
       setLoading(false);
     }
@@ -196,6 +205,16 @@ export default function PlayerDashboardPage() {
       label: "Elite Status",
       icon: <Sparkles size={18} />, color: "#16A34A",
       sub: `OVR ${player.overall_rating}+`,
+    });
+  }
+
+  // Best Tactical IQ score
+  const bestGameScore = gameScores[0];  // already sorted by total_score desc
+  if (bestGameScore) {
+    achievements.push({
+      label: `IQ Highscore ${bestGameScore.total_score}`,
+      icon: <Brain size={18} />, color: "#7C3AED",
+      sub: bestGameScore.iq_label ?? "Tactisch IQ",
     });
   }
 
@@ -327,6 +346,21 @@ export default function PlayerDashboardPage() {
               </div>
             </Section>
           </div>
+
+          {/* ═══════════════════ TACTICAL IQ HIGHSCORE ═══════════════════ */}
+          {gameScores.length > 0 && (
+            <Section
+              title="Tactisch IQ"
+              subtitle={`${gameScores.length} ${gameScores.length === 1 ? "game" : "games"} gespeeld`}
+              action={
+                <Link href="/dashboard/player/game" style={ghostBtnDark}>
+                  Speel opnieuw <ArrowRight size={12} />
+                </Link>
+              }
+            >
+              <IQScoreTile bestScore={bestGameScore} recentScores={gameScores.slice(0, 5)} />
+            </Section>
+          )}
 
           {/* ═══════════════════ PITCH TILE ═══════════════════ */}
           <Section title="Mijn Veld" subtitle="Jouw positie op het veld" action={
@@ -1389,6 +1423,150 @@ function EmptyHint({ text }: { text: string }) {
     }}>
       {text}
     </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   TACTICAL IQ HIGHSCORE TILE
+   ───────────────────────────────────────────────────────── */
+
+function IQScoreTile({ bestScore, recentScores }: {
+  bestScore: GameScore | undefined;
+  recentScores: GameScore[];
+}) {
+  if (!bestScore) return null;
+  const pct = (bestScore.total_score / Math.max(bestScore.max_possible, 1)) * 100;
+
+  return (
+    <Tilt3D max={8} lift={6} scale={1.01} glare>
+      <div style={{
+        position: "relative",
+        borderRadius: 24,
+        overflow: "hidden",
+        background: "linear-gradient(135deg, #fff 0%, #FAFCFE 60%, #F0F4F9 100%)",
+        border: "1px solid rgba(13,27,42,0.05)",
+        boxShadow: `
+          0 1px 3px rgba(13,27,42,0.03),
+          0 12px 32px rgba(13,27,42,0.05),
+          0 40px 80px -20px rgba(124,58,237,0.15)
+        `,
+        padding: 28,
+      }}>
+        <div style={{
+          position: "absolute", top: -60, right: -60,
+          width: 240, height: 240,
+          background: "radial-gradient(circle, rgba(124,58,237,0.14), transparent 70%)",
+          pointerEvents: "none",
+        }} />
+
+        <div className="iq-grid" style={{
+          display: "grid",
+          gridTemplateColumns: "auto 1fr",
+          gap: 32,
+          alignItems: "center",
+        }}>
+          {/* Big highscore */}
+          <div>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              fontSize: 10, fontWeight: 700, letterSpacing: "0.14em",
+              color: "#7C3AED", textTransform: "uppercase", marginBottom: 8,
+              padding: "4px 10px", borderRadius: 999,
+              background: "rgba(124,58,237,0.08)",
+              border: "1px solid rgba(124,58,237,0.18)",
+            }}>
+              <Brain size={11} /> Highscore
+            </div>
+            <div style={{
+              fontSize: 72, fontWeight: 800,
+              color: "#7C3AED",
+              letterSpacing: "-0.04em", lineHeight: 0.9,
+              fontVariantNumeric: "tabular-nums",
+            }}>
+              {bestScore.total_score}
+              <span style={{ fontSize: 22, color: "rgba(124,58,237,0.4)", fontWeight: 600 }}>
+                /{bestScore.max_possible}
+              </span>
+            </div>
+            <div style={{
+              marginTop: 8, display: "flex", alignItems: "center", gap: 8,
+            }}>
+              <span style={{
+                fontSize: 12, fontWeight: 700,
+                padding: "4px 10px", borderRadius: 999,
+                background: "rgba(124,58,237,0.1)",
+                color: "#7C3AED",
+                border: "1px solid rgba(124,58,237,0.2)",
+              }}>
+                {bestScore.iq_label ?? "Speler"}
+              </span>
+              <span style={{ fontSize: 12, color: "#6B7280" }}>
+                {Math.round(pct)}% accuracy
+              </span>
+            </div>
+          </div>
+
+          {/* Recent scores list */}
+          <div>
+            <div style={{
+              fontSize: 10, letterSpacing: "0.14em", fontWeight: 700,
+              color: "#6B7280", textTransform: "uppercase", marginBottom: 12,
+            }}>
+              Recente sessies
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {recentScores.map((s, i) => {
+                const sPct = (s.total_score / Math.max(s.max_possible, 1)) * 100;
+                const isBest = s.id === bestScore.id;
+                return (
+                  <div key={s.id} style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "7px 12px",
+                    borderRadius: 10,
+                    background: isBest ? "rgba(124,58,237,0.06)" : "rgba(13,27,42,0.025)",
+                    border: `1px solid ${isBest ? "rgba(124,58,237,0.18)" : "rgba(13,27,42,0.04)"}`,
+                  }}>
+                    <span style={{
+                      fontSize: 10, color: "#9CA3AF",
+                      width: 20, fontVariantNumeric: "tabular-nums",
+                    }}>
+                      {i + 1}.
+                    </span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: "#0D1B2A" }}>
+                        {s.iq_label ?? "Sessie"}
+                        {isBest && <span style={{ marginLeft: 6, color: "#F0A500" }}>👑</span>}
+                      </div>
+                      <div style={{ fontSize: 10, color: "#9CA3AF" }}>
+                        {new Date(s.created_at).toLocaleDateString("nl-NL", { day: "2-digit", month: "short" })} · {s.mode === "classic" ? "Klassiek" : "Oneindig"}
+                      </div>
+                    </div>
+                    <span style={{
+                      fontSize: 14, fontWeight: 700,
+                      color: isBest ? "#7C3AED" : "#0D1B2A",
+                      fontVariantNumeric: "tabular-nums",
+                    }}>
+                      {s.total_score}
+                      <span style={{ fontSize: 10, color: "#9CA3AF", fontWeight: 500 }}>/{s.max_possible}</span>
+                    </span>
+                    <span style={{
+                      width: 36, fontSize: 10, color: "#9CA3AF",
+                      textAlign: "right", fontVariantNumeric: "tabular-nums",
+                    }}>
+                      {Math.round(sPct)}%
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media (max-width: 720px) { .iq-grid { grid-template-columns: 1fr !important; gap: 20px !important; } }
+        ` }} />
+      </div>
+    </Tilt3D>
   );
 }
 

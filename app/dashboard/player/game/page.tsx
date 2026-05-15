@@ -1,7 +1,24 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { Trophy, Brain, ChevronRight, RotateCcw } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
+
+// Lazy-load Three.js scene (avoids SSR + reduces initial bundle)
+const TacticalScene3D = dynamic(
+  () => import("@/components/game/TacticalScene3D").then(m => m.TacticalScene3D),
+  { ssr: false, loading: () => (
+    <div style={{
+      height: 460, borderRadius: 16,
+      background: "linear-gradient(180deg, #1F4A2C 0%, #143320 100%)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      color: "rgba(255,255,255,0.5)", fontSize: 13,
+    }}>
+      ⚽ 3D veld laden...
+    </div>
+  )}
+)
 
 interface PlayerPos {
   id: number
@@ -1072,6 +1089,9 @@ export default function TacticalGamePage() {
   }, [gamePhase, currentIndex])
 
   const handleStart = useCallback((mode: GameMode) => {
+    if (typeof window !== "undefined") {
+      (window as Window & { __iqSaved?: boolean }).__iqSaved = false
+    }
     setGameMode(mode)
     setScores([])
     setSelectedOption(null)
@@ -1191,9 +1211,9 @@ export default function TacticalGamePage() {
             </p>
           </div>
 
-          {/* Pitch preview */}
-          <div style={{ maxWidth: "600px", margin: "0 auto 40px", opacity: 0.7 }}>
-            <PitchSVG players={defaultPlayers} ball={{ x: 0.5, y: 0.5 }} tick={tick} />
+          {/* Pitch preview — 3D */}
+          <div style={{ maxWidth: "700px", margin: "0 auto 40px", opacity: 0.9, borderRadius: 18, overflow: "hidden", boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}>
+            <TacticalScene3D players={defaultPlayers} ball={{ x: 0.5, y: 0.5 }} height={360} />
           </div>
 
           {/* Info cards */}
@@ -1286,6 +1306,29 @@ export default function TacticalGamePage() {
     const normalizedScore = maxPossible > 0 ? Math.round((totalScore / maxPossible) * 48) : 0
     const { label, color } = getIntelligenceLabel(normalizedScore)
     const pct = maxPossible > 0 ? (totalScore / maxPossible) * 100 : 0
+
+    // Save score to Supabase (once per results screen)
+    if (typeof window !== "undefined" && !(window as Window & { __iqSaved?: boolean }).__iqSaved && answeredCount > 0) {
+      (window as Window & { __iqSaved?: boolean }).__iqSaved = true
+      ;(async () => {
+        try {
+          const supabase = createClient()
+          const { data: { user } } = await supabase.auth.getUser()
+          if (!user) return
+          const { data: player } = await supabase.from("players").select("id").eq("profile_id", user.id).maybeSingle()
+          if (!player) return
+          await supabase.from("game_scores").insert({
+            player_id: player.id,
+            mode: gameMode,
+            total_score: totalScore,
+            max_possible: maxPossible,
+            scenarios_played: answeredCount,
+            accuracy_pct: Number(pct.toFixed(2)),
+            iq_label: label,
+          })
+        } catch (e) { console.error(e) }
+      })()
+    }
 
     return (
       <div
@@ -1568,9 +1611,11 @@ export default function TacticalGamePage() {
         </div>
       </div>
 
-      {/* Pitch */}
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <PitchSVG players={currentPlayers} ball={currentBall} tick={tick} />
+      {/* Pitch — 3D */}
+      <div style={{ maxWidth: "920px", margin: "0 auto" }}>
+        <div style={{ borderRadius: 18, overflow: "hidden", boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}>
+          <TacticalScene3D players={currentPlayers} ball={currentBall} height={520} />
+        </div>
 
         {/* Scenario description */}
         <div
