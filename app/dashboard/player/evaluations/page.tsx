@@ -118,7 +118,7 @@ function SubCriteriaBreakdown({
             </div>
             <div style={{
               width: 28, fontSize: 12, fontWeight: 700, textAlign: "right",
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"Inter", system-ui, sans-serif',
               color: hasReal ? sc : `${sc}88`,
             }}>
               {hasReal ? val : "—"}
@@ -261,7 +261,7 @@ function EvaluationCard({
           <div style={{ textAlign: "right" }}>
             <div style={{
               fontSize: 64, fontWeight: 700,
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"Inter", system-ui, sans-serif',
               letterSpacing: "-0.04em", lineHeight: 0.9,
               color: rColor,
               textShadow: `0 4px 24px ${rColor}50`,
@@ -500,7 +500,7 @@ function EvaluationCard({
                           <DeltaBadge delta={delta} />
                           <span style={{
                             fontSize: 14, fontWeight: 800,
-                            fontFamily: '"JetBrains Mono", monospace',
+                            fontFamily: '"Inter", system-ui, sans-serif',
                             color: catColor, letterSpacing: "-0.02em",
                             padding: "2px 8px", borderRadius: 6,
                             background: `${catColor}14`,
@@ -877,7 +877,7 @@ function StatBubble({ label, value, color, icon }: {
     }}>
       <div style={{
         fontSize: 22, fontWeight: 800,
-        fontFamily: '"JetBrains Mono", monospace',
+        fontFamily: '"Inter", system-ui, sans-serif',
         color, letterSpacing: "-0.03em", lineHeight: 1,
         display: "inline-flex", alignItems: "center", gap: 4,
       }}>

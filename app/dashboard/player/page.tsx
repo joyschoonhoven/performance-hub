@@ -579,7 +579,7 @@ function OVRRing({ rating, photoUrl, initials }: { rating: number; photoUrl: str
               position: "absolute", bottom: 18, left: 0, right: 0,
               textAlign: "center",
               fontSize: 56, fontWeight: 800,
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"Inter", system-ui, sans-serif',
               color: overallColor(rating),
               letterSpacing: "-0.04em",
             }}>
@@ -597,7 +597,7 @@ function OVRRing({ rating, photoUrl, initials }: { rating: number; photoUrl: str
           <>
             <div style={{
               fontSize: 36, fontWeight: 700,
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"Inter", system-ui, sans-serif',
               color: "rgba(27,108,168,0.18)", letterSpacing: "-0.04em",
               position: "absolute", top: 30,
             }}>
@@ -605,7 +605,7 @@ function OVRRing({ rating, photoUrl, initials }: { rating: number; photoUrl: str
             </div>
             <div style={{
               fontSize: 72, fontWeight: 800,
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"Inter", system-ui, sans-serif',
               color: overallColor(rating),
               letterSpacing: "-0.05em",
             }}>
@@ -692,7 +692,7 @@ function SkillCard({ cat, label, score, delta, series, onClick }: {
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 14 }}>
           <div style={{
             fontSize: 52, fontWeight: 700,
-            fontFamily: '"JetBrains Mono", monospace',
+            fontFamily: '"Inter", system-ui, sans-serif',
             color: hasData ? meta.color : "rgba(13,27,42,0.18)",
             letterSpacing: "-0.04em", lineHeight: 1,
           }}>
@@ -840,7 +840,7 @@ function WellbeingTile({ label, icon, value, color, emoji, inverted }: {
         <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 14 }}>
           <span style={{
             fontSize: 38, fontWeight: 700,
-            fontFamily: '"JetBrains Mono", monospace',
+            fontFamily: '"Inter", system-ui, sans-serif',
             color: displayColor,
             letterSpacing: "-0.03em", lineHeight: 0.9,
           }}>
@@ -997,7 +997,7 @@ function TimelineCard({ event, index }: {
       {isEval && event.score !== undefined && (
         <div style={{
           fontSize: 32, fontWeight: 700,
-          fontFamily: '"JetBrains Mono", monospace',
+          fontFamily: '"Inter", system-ui, sans-serif',
           color: overallColor(((event.score - 1) / 9) * 59 + 40),
           letterSpacing: "-0.03em", lineHeight: 1,
         }}>
@@ -1007,7 +1007,7 @@ function TimelineCard({ event, index }: {
       )}
 
       {!isEval && (
-        <div style={{ display: "flex", gap: 10, marginTop: 4, fontFamily: '"JetBrains Mono", monospace' }}>
+        <div style={{ display: "flex", gap: 10, marginTop: 4, fontFamily: '"Inter", system-ui, sans-serif' }}>
           {(event.data as DailyCheckin).sleep_quality && (
             <span style={{ fontSize: 11, color: "rgba(13,27,42,0.65)" }}>
               😴 {(event.data as DailyCheckin).sleep_quality}
@@ -1068,7 +1068,7 @@ function GoalCard({ goal }: { goal: { title: string; progress: number; category?
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 8 }}>
           <span style={{
             fontSize: 26, fontWeight: 700,
-            fontFamily: '"JetBrains Mono", monospace',
+            fontFamily: '"Inter", system-ui, sans-serif',
             color, letterSpacing: "-0.03em",
           }}>
             {goal.progress}<span style={{ fontSize: 13, color: "rgba(13,27,42,0.35)", fontWeight: 500 }}>%</span>
@@ -1213,7 +1213,7 @@ function SkillDetailModal({ cat, score, evaluations, onClose }: {
             </div>
             <div style={{
               fontSize: 96, fontWeight: 700,
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"Inter", system-ui, sans-serif',
               color: meta.color, letterSpacing: "-0.05em", lineHeight: 0.85,
             }}>
               {score > 0 ? score.toFixed(1) : "—"}
@@ -1243,7 +1243,7 @@ function SkillDetailModal({ cat, score, evaluations, onClose }: {
                   }}>
                     <div style={{
                       fontSize: 22, fontWeight: 700,
-                      fontFamily: '"JetBrains Mono", monospace',
+                      fontFamily: '"Inter", system-ui, sans-serif',
                       color: meta.color, letterSpacing: "-0.03em",
                       width: 52, textAlign: "right",
                     }}>
@@ -1313,7 +1313,7 @@ function HeroChip({ label, accent, icon, mono, emphasis }: {
       background: accent ? `${accent}10` : "rgba(13,27,42,0.04)",
       color: accent ? color : "rgba(13,27,42,0.7)",
       border: `1px solid ${accent ? `${accent}24` : "rgba(13,27,42,0.06)"}`,
-      fontFamily: mono ? '"JetBrains Mono", monospace' : undefined,
+      fontFamily: mono ? '"Inter", system-ui, sans-serif' : undefined,
       textTransform: emphasis ? "uppercase" : undefined,
       boxShadow: emphasis ? `0 4px 12px ${accent}1F` : "none",
     }}>
@@ -1350,7 +1350,7 @@ function DetailStat({ label, value, color }: { label: string; value: string; col
       </div>
       <div style={{
         fontSize: 20, fontWeight: 700,
-        fontFamily: '"JetBrains Mono", monospace',
+        fontFamily: '"Inter", system-ui, sans-serif',
         color, letterSpacing: "-0.02em",
       }}>
         {value}

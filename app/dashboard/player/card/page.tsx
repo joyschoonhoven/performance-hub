@@ -129,12 +129,19 @@ export default function PlayerCardPage() {
     ? evals[0].overall_score - evals[1].overall_score
     : 0;
 
-  // Attributes from latest evaluation, per category
-  const ATTRIBUTES = (["techniek","fysiek","tactiek","mentaal","teamplay"] as EvaluationCategory[]).map(cat => ({
-    label: CATEGORY_LABELS[cat],
-    value: latestEval?.scores?.find(s => s.category === cat)?.score ?? 0,
-    color: CAT_COLORS[cat],
-  }));
+  // 6 attributes for hexagonal diamond — 5 categories + Overall
+  const ATTRIBUTES = [
+    ...(["techniek","fysiek","tactiek","mentaal","teamplay"] as EvaluationCategory[]).map(cat => ({
+      label: CATEGORY_LABELS[cat],
+      value: latestEval?.scores?.find(s => s.category === cat)?.score ?? 0,
+      color: CAT_COLORS[cat],
+    })),
+    {
+      label: "Overall",
+      value: latestEval?.overall_score ?? 0,
+      color: "#F0A500",
+    },
+  ];
 
   const evolution = buildEvolution(evals);
 
@@ -258,7 +265,7 @@ export default function PlayerCardPage() {
                 fontSize: 180, fontWeight: 700,
                 letterSpacing: "-0.06em", lineHeight: 0.82,
                 color: "#F0A500",
-                fontFamily: '"JetBrains Mono", monospace',
+                fontFamily: '"Inter", system-ui, sans-serif',
                 textShadow: "0 8px 40px rgba(240,165,0,0.45)",
               }}>
                 {player.overall_rating}
@@ -307,7 +314,7 @@ export default function PlayerCardPage() {
                 fontSize: 320, fontWeight: 900,
                 letterSpacing: "-0.08em",
                 color: "rgba(77,174,229,0.04)",
-                fontFamily: '"JetBrains Mono", monospace',
+                fontFamily: '"Inter", system-ui, sans-serif',
                 pointerEvents: "none",
                 whiteSpace: "nowrap",
                 zIndex: 0,
@@ -343,7 +350,7 @@ export default function PlayerCardPage() {
                   background: "linear-gradient(180deg, #4DAEE5 0%, #1B6CA8 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
-                  fontFamily: '"JetBrains Mono", monospace',
+                  fontFamily: '"Inter", system-ui, sans-serif',
                   filter: "drop-shadow(0 12px 32px rgba(77,174,229,0.3))",
                 }}>
                   {initials}
@@ -372,7 +379,7 @@ export default function PlayerCardPage() {
               {latestEval ? (
                 <>
                   <div style={{ marginTop: 32 }}>
-                    <PentagonRadar attrs={ATTRIBUTES} rating={player.overall_rating} />
+                    <HexagonDiamond attrs={ATTRIBUTES} rating={player.overall_rating} />
                   </div>
                   <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 14 }}>
                     {ATTRIBUTES.map(a => (
@@ -438,7 +445,7 @@ export default function PlayerCardPage() {
                           border: `1px solid ${sociotype.color_hex}24`,
                         }}>
                           <div style={{
-                            fontSize: 10, fontFamily: '"JetBrains Mono", monospace',
+                            fontSize: 10, fontFamily: '"Inter", system-ui, sans-serif',
                             color: `${sociotype.color_hex}AA`, letterSpacing: "0.06em",
                             marginBottom: 6,
                           }}>
@@ -646,7 +653,7 @@ export default function PlayerCardPage() {
             <div style={{ textAlign: "right" }}>
               <div className="pc-mission-pct" style={{
                 fontSize: 84, fontWeight: 700,
-                fontFamily: '"JetBrains Mono", monospace',
+                fontFamily: '"Inter", system-ui, sans-serif',
                 color: "#4DAEE5", letterSpacing: "-0.04em", lineHeight: 1,
                 textShadow: "0 4px 24px rgba(77,174,229,0.3)",
               }}>
@@ -706,7 +713,7 @@ function SectionMark({ label, title, sub }: { label: string; title: string; sub:
     <div>
       <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 4 }}>
         <span style={{
-          fontSize: 11, fontFamily: '"JetBrains Mono", monospace',
+          fontSize: 11, fontFamily: '"Inter", system-ui, sans-serif',
           color: "rgba(255,255,255,0.3)", letterSpacing: "0.04em",
         }}>
           {label}
@@ -752,7 +759,7 @@ function AttrRow({ label, value, color }: { label: string; value: number; color:
         }} />
       </div>
       <span style={{
-        fontFamily: '"JetBrains Mono", monospace',
+        fontFamily: '"Inter", system-ui, sans-serif',
         fontSize: 15, fontWeight: 700, color,
         textAlign: "right", letterSpacing: "-0.02em",
       }}>
@@ -762,7 +769,312 @@ function AttrRow({ label, value, color }: { label: string; value: number; color:
   );
 }
 
+/**
+ * HexagonDiamond — full 360° rotating faceted radar.
+ * - 6 data points form a hexagonal polygon (data shape)
+ * - Wrapped in CSS 3D scene with perspective + continuous rotateY
+ * - Triangular facets from center to each pair of vertices
+ *   are shaded per facet to simulate cut-diamond highlights
+ * - Multiple translateZ layers stacked for real thickness
+ * - Counter-rotation on labels keeps them legible
+ */
+function HexagonDiamond({ attrs, rating }: { attrs: { label: string; value: number; color: string }[]; rating: number }) {
+  const size = 460;
+  const cx = size / 2;
+  const cy = size / 2;
+  const R = 150;
+  const n = attrs.length;
+
+  // Hexagon vertices — scaled by per-attribute value
+  const surfacePoints = attrs.map((a, i) => {
+    const ratio = Math.max(0.04, a.value / 10);
+    const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+    return {
+      x: cx + Math.cos(angle) * R * ratio,
+      y: cy + Math.sin(angle) * R * ratio,
+      angle, attr: a, ratio,
+    };
+  });
+
+  // Triangular facets — from center to each adjacent pair of vertices
+  const facets = surfacePoints.map((p, i) => {
+    const next = surfacePoints[(i + 1) % n];
+    return {
+      d: `M${cx},${cy} L${p.x.toFixed(1)},${p.y.toFixed(1)} L${next.x.toFixed(1)},${next.y.toFixed(1)} Z`,
+      // shade phase — top right facets brighter
+      shade: 0.4 + 0.6 * ((Math.sin(p.angle + 0.4) + 1) / 2),
+      // hue blend of the two vertex colors at this facet
+      colorA: p.attr.color,
+      colorB: next.attr.color,
+    };
+  });
+
+  const ringPath = (ratio: number) =>
+    Array.from({ length: n }).map((_, i) => {
+      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+      return `${i === 0 ? "M" : "L"}${cx + Math.cos(angle) * R * ratio},${cy + Math.sin(angle) * R * ratio}`;
+    }).join(" ") + " Z";
+
+  const pathOf = (pts: { x: number; y: number }[]) =>
+    pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ") + " Z";
+
+  const surfacePath = pathOf(surfacePoints);
+  const labelPoints = attrs.map((_, i) => {
+    const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+    return { x: cx + Math.cos(angle) * (R + 36), y: cy + Math.sin(angle) * (R + 36) };
+  });
+
+  return (
+    <div className="hex3d-stage" style={{
+      perspective: 1400,
+      perspectiveOrigin: "50% 50%",
+      width: "100%",
+      maxWidth: 500,
+      margin: "0 auto",
+      padding: "32px 0",
+    }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes hex3dSpin {
+          0%   { transform: rotateX(-12deg) rotateY(0deg); }
+          100% { transform: rotateX(-12deg) rotateY(360deg); }
+        }
+        @keyframes hex3dGlow {
+          0%, 100% { filter: drop-shadow(0 0 24px rgba(77,174,229,0.4)); }
+          50%      { filter: drop-shadow(0 0 44px rgba(240,165,0,0.45)); }
+        }
+        @keyframes hex3dLabelSpin {
+          0%   { transform: rotateY(0deg); }
+          100% { transform: rotateY(-360deg); }
+        }
+        .hex3d-rotor {
+          transform-style: preserve-3d;
+          animation: hex3dSpin 28s linear infinite;
+        }
+        .hex3d-layer { position: absolute; inset: 0; transform-style: preserve-3d; }
+        .hex3d-glow { animation: hex3dGlow 6s ease-in-out infinite; }
+        /* Counter-rotating labels stay readable */
+        .hex3d-labels { animation: hex3dLabelSpin 28s linear infinite; transform-style: preserve-3d; }
+        @media (prefers-reduced-motion: reduce) {
+          .hex3d-rotor, .hex3d-labels, .hex3d-glow { animation: none !important; }
+          .hex3d-rotor { transform: rotateX(-10deg) rotateY(-20deg) !important; }
+        }
+      ` }} />
+
+      <div style={{ position: "relative", width: "100%", aspectRatio: "1 / 1" }}>
+        <div className="hex3d-rotor" style={{ position: "absolute", inset: 0 }}>
+
+          {/* ── DEPTH LAYERS — back, mid, front for diamond thickness ── */}
+          {[-16, -8, 0, 8, 16].map((z, layerIdx) => {
+            const isMain = z === 0;
+            const layerOpacity = isMain ? 1 : Math.max(0.12, 1 - Math.abs(z) / 22);
+
+            return (
+              <div key={z} className="hex3d-layer" style={{
+                transform: `translateZ(${z}px)`,
+                opacity: layerOpacity,
+              }}>
+                <svg
+                  width="100%" height="100%"
+                  viewBox={`0 0 ${size} ${size}`}
+                  style={{ overflow: "visible", display: "block" }}
+                >
+                  <defs>
+                    <radialGradient id={`hex-shine-${layerIdx}`} cx="0.4" cy="0.3" r="0.7">
+                      <stop offset="0%" stopColor="#fff" stopOpacity={isMain ? 0.55 : 0.2} />
+                      <stop offset="55%" stopColor="#fff" stopOpacity={isMain ? 0.1 : 0.05} />
+                      <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+                    </radialGradient>
+                    {isMain && (
+                      <filter id="hexBlur" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="14" />
+                      </filter>
+                    )}
+                    {/* Per-facet gradients */}
+                    {facets.map((f, i) => (
+                      <linearGradient key={i} id={`facet-${layerIdx}-${i}`} x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stopColor={f.colorA} stopOpacity={isMain ? 0.85 * f.shade : 0.35 * f.shade} />
+                        <stop offset="100%" stopColor={f.colorB} stopOpacity={isMain ? 0.55 * f.shade : 0.2 * f.shade} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+
+                  {/* MAIN LAYER — full detail (grid + spokes) */}
+                  {isMain && (
+                    <>
+                      {/* Outer pulsing glow */}
+                      <g className="hex3d-glow">
+                        <path d={surfacePath} fill="#4DAEE5" fillOpacity="0.55" filter="url(#hexBlur)" />
+                      </g>
+
+                      {/* Hex grid rings */}
+                      {[0.25, 0.5, 0.75, 1].map(ring => (
+                        <path key={ring}
+                          d={ringPath(ring)}
+                          fill="none"
+                          stroke="rgba(255,255,255,0.1)"
+                          strokeWidth={ring === 1 ? 1 : 0.5}
+                          strokeDasharray={ring === 1 ? "none" : "3 5"}
+                        />
+                      ))}
+
+                      {/* Spokes from center */}
+                      {Array.from({ length: n }).map((_, i) => {
+                        const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+                        return (
+                          <line key={i}
+                            x1={cx} y1={cy}
+                            x2={cx + Math.cos(a) * R}
+                            y2={cy + Math.sin(a) * R}
+                            stroke="rgba(255,255,255,0.06)"
+                            strokeWidth={0.6}
+                          />
+                        );
+                      })}
+                    </>
+                  )}
+
+                  {/* FACETED TRIANGLES — diamond cut effect */}
+                  {facets.map((f, i) => (
+                    <path
+                      key={i}
+                      d={f.d}
+                      fill={`url(#facet-${layerIdx}-${i})`}
+                      stroke={isMain ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.08)"}
+                      strokeWidth={isMain ? 0.8 : 0.4}
+                      strokeLinejoin="round"
+                    />
+                  ))}
+
+                  {/* OUTER EDGE — connecting all vertices */}
+                  <path
+                    d={surfacePath}
+                    fill="none"
+                    stroke={isMain ? "#7BC9F0" : "rgba(123,201,240,0.3)"}
+                    strokeWidth={isMain ? 2 : 0.8}
+                    strokeLinejoin="round"
+                  />
+
+                  {/* Specular shine overlay (main only) */}
+                  {isMain && (
+                    <path d={surfacePath} fill={`url(#hex-shine-${layerIdx})`} />
+                  )}
+
+                  {/* VERTEX SPHERES (main only) */}
+                  {isMain && surfacePoints.map((p, i) => (
+                    <g key={i}>
+                      <defs>
+                        <radialGradient id={`hex-vert-${i}`} cx="0.3" cy="0.3" r="0.75">
+                          <stop offset="0%" stopColor="#fff" stopOpacity="0.95" />
+                          <stop offset="40%" stopColor={p.attr.color} stopOpacity="1" />
+                          <stop offset="100%" stopColor={p.attr.color} stopOpacity="0.55" />
+                        </radialGradient>
+                      </defs>
+                      <circle cx={p.x} cy={p.y} r={14}
+                        fill={p.attr.color} fillOpacity={0.22}
+                        filter="url(#hexBlur)" />
+                      <circle cx={p.x} cy={p.y} r={6.5}
+                        fill={`url(#hex-vert-${i})`}
+                        stroke="rgba(13,27,42,0.7)"
+                        strokeWidth={1.2} />
+                      <circle cx={p.x - 1.8} cy={p.y - 2} r={1.6} fill="#fff" fillOpacity="0.9" />
+                    </g>
+                  ))}
+                </svg>
+              </div>
+            );
+          })}
+
+          {/* CENTER OVR — sits on top of all rotating layers, also rotates */}
+          <div style={{
+            position: "absolute",
+            top: "50%", left: "50%",
+            transform: "translate(-50%, -50%) translateZ(20px)",
+            transformStyle: "preserve-3d",
+          }}>
+            <div style={{
+              width: 76, height: 76,
+              borderRadius: "50%",
+              background: "linear-gradient(180deg, rgba(13,27,42,0.95) 0%, rgba(13,27,42,0.85) 100%)",
+              border: "1.5px solid rgba(77,174,229,0.4)",
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)",
+            }}>
+              <div style={{
+                fontSize: 28, fontWeight: 800,
+                color: "#fff",
+                letterSpacing: "-0.03em", lineHeight: 1,
+                fontVariantNumeric: "tabular-nums",
+              }}>
+                {rating}
+              </div>
+              <div style={{
+                fontSize: 8, fontWeight: 700,
+                letterSpacing: "0.22em",
+                color: "rgba(255,255,255,0.45)",
+                marginTop: 2,
+              }}>
+                OVR
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* COUNTER-ROTATING LABELS — stay readable */}
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", perspective: 1400 }}>
+          <div className="hex3d-labels" style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
+            <svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`} style={{ overflow: "visible" }}>
+              {labelPoints.map((p, i) => (
+                <g key={i}>
+                  <text
+                    x={p.x} y={p.y - 5}
+                    fontSize={11}
+                    fill="rgba(255,255,255,0.6)"
+                    textAnchor="middle"
+                    style={{ letterSpacing: "0.14em", fontWeight: 700 }}
+                  >
+                    {attrs[i].label.toUpperCase()}
+                  </text>
+                  <text
+                    x={p.x} y={p.y + 11}
+                    fontSize={18}
+                    fill={attrs[i].color}
+                    textAnchor="middle"
+                    style={{
+                      fontWeight: 700,
+                      letterSpacing: "-0.02em",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    {attrs[i].value > 0 ? attrs[i].value.toFixed(1) : "—"}
+                  </text>
+                </g>
+              ))}
+            </svg>
+          </div>
+        </div>
+
+        {/* Static ground shadow */}
+        <div style={{
+          position: "absolute",
+          left: "15%", right: "15%",
+          bottom: -8, height: 50,
+          background: "radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, transparent 70%)",
+          filter: "blur(10px)",
+          pointerEvents: "none",
+          zIndex: -1,
+        }} />
+      </div>
+    </div>
+  );
+}
+
+// Keep the old name as alias so any leftover refs still work
 function PentagonRadar({ attrs, rating }: { attrs: { label: string; value: number; color: string }[]; rating: number }) {
+  return <HexagonDiamond attrs={attrs} rating={rating} />;
+}
+// Marker — start of OLD PentagonRadar body kept as legacy below (no-op).
+function _legacyPentagonRadar({ attrs, rating }: { attrs: { label: string; value: number; color: string }[]; rating: number }) {
   const size = 440;
   const cx = size / 2;
   const cy = size / 2;
@@ -977,7 +1289,7 @@ function PentagonRadar({ attrs, rating }: { attrs: { label: string; value: numbe
                           fill={attrs[i].color}
                           textAnchor="middle"
                           style={{
-                            fontFamily: '"JetBrains Mono", monospace',
+                            fontFamily: '"Inter", system-ui, sans-serif',
                             fontWeight: 700,
                             letterSpacing: "-0.02em",
                           }}
@@ -999,7 +1311,7 @@ function PentagonRadar({ attrs, rating }: { attrs: { label: string; value: numbe
                         fontSize={28} fontWeight={800}
                         fill="#fff" textAnchor="middle"
                         style={{
-                          fontFamily: '"JetBrains Mono", monospace',
+                          fontFamily: '"Inter", system-ui, sans-serif',
                           letterSpacing: "-0.04em",
                           filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.6))",
                         }}>
@@ -1070,7 +1382,7 @@ function CoreValueCard({ label, value, color }: { label: string; value: number; 
         </div>
         <div className="pc-cv-num" style={{
           fontSize: 44, fontWeight: 700, color,
-          fontFamily: '"JetBrains Mono", monospace',
+          fontFamily: '"Inter", system-ui, sans-serif',
           letterSpacing: "-0.04em", lineHeight: 0.9,
           textShadow: `0 4px 16px ${color}40`,
         }}>
@@ -1149,7 +1461,7 @@ function EvolutionChart({ data }: { data: { label: string; value: number }[] }) 
               stroke="rgba(255,255,255,0.04)" strokeDasharray="3 4" />
             <text x={PAD.left - 8} y={ys(v) + 3} fontSize={9}
               fill="rgba(255,255,255,0.3)" textAnchor="end"
-              style={{ fontFamily: '"JetBrains Mono", monospace' }}>
+              style={{ fontFamily: '"Inter", system-ui, sans-serif' }}>
               {v}
             </text>
           </g>
@@ -1169,7 +1481,7 @@ function EvolutionChart({ data }: { data: { label: string; value: number }[] }) 
             </text>
             <text x={p.x} y={p.y - 14} fontSize={11}
               fill="rgba(255,255,255,0.8)" textAnchor="middle"
-              style={{ fontFamily: '"JetBrains Mono", monospace', fontWeight: 700, letterSpacing: "-0.02em" }}>
+              style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 700, letterSpacing: "-0.02em" }}>
               {data[i].value}
             </text>
           </g>

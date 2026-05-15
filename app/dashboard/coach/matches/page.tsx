@@ -140,7 +140,7 @@ export default function CoachMatchesPage() {
                   {m.competition ?? "—"}
                 </span>
                 <span style={{
-                  fontWeight: 700, fontFamily: '"JetBrains Mono", monospace',
+                  fontWeight: 700, fontFamily: '"Inter", system-ui, sans-serif',
                   display: "inline-flex", alignItems: "center", gap: 6,
                 }}>
                   <span style={{
@@ -152,7 +152,7 @@ export default function CoachMatchesPage() {
                   </span>
                   {m.result ?? "—"}
                 </span>
-                <span style={{ color: "var(--text-muted)", fontFamily: '"JetBrains Mono", monospace' }}>
+                <span style={{ color: "var(--text-muted)", fontFamily: '"Inter", system-ui, sans-serif' }}>
                   {playerN > 0 ? `${playerN} speler${playerN === 1 ? "" : "s"}` : "—"}
                 </span>
               </div>

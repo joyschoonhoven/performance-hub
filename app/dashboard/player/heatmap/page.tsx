@@ -149,7 +149,7 @@ export default function HeatmapPage() {
                     display: "flex", alignItems: "center", gap: 12,
                   }}>
                     <span style={{
-                      fontSize: 10, fontFamily: '"JetBrains Mono", monospace',
+                      fontSize: 10, fontFamily: '"Inter", system-ui, sans-serif',
                       color: "rgba(255,255,255,0.3)", width: 18,
                     }}>
                       0{i + 1}
@@ -362,7 +362,7 @@ function FootballField({
               {count > 1 && (
                 <span style={{
                   marginLeft: 6,
-                  fontFamily: '"JetBrains Mono", monospace',
+                  fontFamily: '"Inter", system-ui, sans-serif',
                   fontSize: 10,
                   opacity: 0.8,
                 }}>
