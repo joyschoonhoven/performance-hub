@@ -1,24 +1,8 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
-import dynamic from "next/dynamic"
 import { Trophy, Brain, ChevronRight, RotateCcw } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
-
-// Lazy-load Three.js scene (avoids SSR + reduces initial bundle)
-const TacticalScene3D = dynamic(
-  () => import("@/components/game/TacticalScene3D").then(m => m.TacticalScene3D),
-  { ssr: false, loading: () => (
-    <div style={{
-      height: 460, borderRadius: 16,
-      background: "linear-gradient(180deg, #1F4A2C 0%, #143320 100%)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      color: "rgba(255,255,255,0.5)", fontSize: 13,
-    }}>
-      ⚽ 3D veld laden...
-    </div>
-  )}
-)
 
 interface PlayerPos {
   id: number
@@ -1241,7 +1225,7 @@ export default function TacticalGamePage() {
 
           {/* Pitch preview — 3D, responsive */}
           <div className="game-3d-wrap-intro" style={{ maxWidth: "700px", margin: "0 auto 40px", opacity: 0.9, borderRadius: 18, overflow: "hidden", boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}>
-            <TacticalScene3D players={defaultPlayers} ball={{ x: 0.5, y: 0.5 }} height={360} />
+            <PitchSVG players={defaultPlayers} ball={{ x: 0.5, y: 0.5 }} tick={tick} />
           </div>
           <style dangerouslySetInnerHTML={{ __html: `
             @media (max-width: 720px) {
@@ -1627,7 +1611,7 @@ export default function TacticalGamePage() {
       {/* Pitch — 3D, responsive */}
       <div style={{ maxWidth: "920px", margin: "0 auto" }}>
         <div className="game-3d-wrap-play" style={{ borderRadius: 18, overflow: "hidden", boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}>
-          <TacticalScene3D players={currentPlayers} ball={currentBall} height={520} />
+          <PitchSVG players={currentPlayers} ball={currentBall} tick={tick} />
         </div>
         <style dangerouslySetInnerHTML={{ __html: `
           @media (max-width: 720px) {
