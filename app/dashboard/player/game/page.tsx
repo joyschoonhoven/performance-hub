@@ -1211,10 +1211,18 @@ export default function TacticalGamePage() {
             </p>
           </div>
 
-          {/* Pitch preview — 3D */}
-          <div style={{ maxWidth: "700px", margin: "0 auto 40px", opacity: 0.9, borderRadius: 18, overflow: "hidden", boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}>
+          {/* Pitch preview — 3D, responsive */}
+          <div className="game-3d-wrap-intro" style={{ maxWidth: "700px", margin: "0 auto 40px", opacity: 0.9, borderRadius: 18, overflow: "hidden", boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}>
             <TacticalScene3D players={defaultPlayers} ball={{ x: 0.5, y: 0.5 }} height={360} />
           </div>
+          <style dangerouslySetInnerHTML={{ __html: `
+            @media (max-width: 720px) {
+              .game-3d-wrap-intro > div { height: 260px !important; }
+            }
+            @media (max-width: 480px) {
+              .game-3d-wrap-intro > div { height: 220px !important; }
+            }
+          ` }} />
 
           {/* Info cards */}
           <div
@@ -1611,11 +1619,19 @@ export default function TacticalGamePage() {
         </div>
       </div>
 
-      {/* Pitch — 3D */}
+      {/* Pitch — 3D, responsive */}
       <div style={{ maxWidth: "920px", margin: "0 auto" }}>
-        <div style={{ borderRadius: 18, overflow: "hidden", boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}>
+        <div className="game-3d-wrap-play" style={{ borderRadius: 18, overflow: "hidden", boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}>
           <TacticalScene3D players={currentPlayers} ball={currentBall} height={520} />
         </div>
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media (max-width: 720px) {
+            .game-3d-wrap-play > div { height: 340px !important; }
+          }
+          @media (max-width: 480px) {
+            .game-3d-wrap-play > div { height: 260px !important; }
+          }
+        ` }} />
 
         {/* Scenario description */}
         <div

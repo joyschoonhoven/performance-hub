@@ -257,7 +257,7 @@ export default function PlayerDashboardPage() {
       <BgMesh />
       <NoiseOverlay />
 
-      <div style={{
+      <div className="dash-page" style={{
         position: "relative",
         zIndex: 1,
         margin: "-28px -28px -40px",
@@ -1906,10 +1906,18 @@ const globalCss = `
     .dash-grid-wellbeing { grid-template-columns: 1fr; }
   }
   @media (max-width: 720px) {
-    .dash-hero-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
-    .dash-hero-name { font-size: 36px !important; }
+    .dash-hero-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+    .dash-hero-name { font-size: 38px !important; }
     .dash-grid-skills { grid-template-columns: 1fr !important; }
     .dash-grid-checkin { grid-template-columns: repeat(2, 1fr); }
     .dash-ovr-wrap { width: 180px !important; height: 180px !important; }
+  }
+  @media (max-width: 480px) {
+    .dash-page { padding: 16px 12px 60px !important; margin: -28px -28px -40px !important; }
+    .dash-hero { padding: 22px !important; border-radius: 22px !important; }
+    .dash-hero-name { font-size: 30px !important; letter-spacing: -0.02em !important; }
+    .dash-hero-grid { gap: 18px !important; }
+    .dash-ovr-wrap { width: 150px !important; height: 150px !important; }
+    .dash-grid-goals { grid-template-columns: 1fr !important; }
   }
 `;

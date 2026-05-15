@@ -681,7 +681,7 @@ export default function PlayerEvaluationsPage() {
       : null;
 
   return (
-    <div style={{
+    <div className="eval-page" style={{
       margin: "-28px -28px -40px",
       minHeight: "calc(100vh - 52px)",
       background: "#0A0E14",
@@ -691,6 +691,14 @@ export default function PlayerEvaluationsPage() {
       position: "relative",
       overflow: "hidden",
     }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media (max-width: 720px) {
+          .evcard-radar-row { grid-template-columns: 1fr !important; gap: 20px !important; }
+        }
+        @media (max-width: 480px) {
+          .eval-page { padding: 20px 14px 40px !important; }
+        }
+      ` }} />
       {/* Ambient background mesh */}
       <div style={{
         position: "absolute", inset: 0,

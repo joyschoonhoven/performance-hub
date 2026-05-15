@@ -402,3 +402,21 @@
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+
+/* ─────────────────────────────────────────────────────────
+   MOBILE — DashboardShell padding reductions
+   ───────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  /* The main content area inside DashboardShell uses 28px / 8 padding.
+     Override to give pages more room on phones. */
+  main > div[style*="padding: 28px 28px 40px"],
+  main > div[style*="padding: 28px"] {
+    padding: 16px 12px 40px !important;
+  }
+}
+@media (max-width: 480px) {
+  /* Anything large-display should not block layout */
+  body { font-size: 13px; }
+  h1 { font-size: clamp(24px, 8vw, 40px); }
+  h2 { font-size: clamp(18px, 5vw, 28px); }
+}

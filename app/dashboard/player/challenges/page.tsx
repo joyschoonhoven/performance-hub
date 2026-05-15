@@ -83,7 +83,7 @@ export default function ChallengesPage() {
 
   if (loading) {
     return (
-      <div style={pageBg}>
+      <div className="ch-page-wrap" style={pageBg}>
         <PageMesh />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
           <Loader2 size={28} className="animate-spin" style={{ color: "#1B6CA8" }} />
@@ -93,7 +93,7 @@ export default function ChallengesPage() {
   }
 
   return (
-    <div style={pageBg}>
+    <div className="ch-page-wrap" style={pageBg}>
       <PageMesh />
 
       <style dangerouslySetInnerHTML={{ __html: pageCss }} />
@@ -913,12 +913,20 @@ const pageBg: React.CSSProperties = {
   fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
 };
 
+// className applied via wrapper below
+const _ = "ch-page-wrap";
+
 const pageCss = `
   @media (max-width: 900px) {
-    .ch-hero-grid { grid-template-columns: 1fr 1fr !important; }
+    .ch-hero-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
   }
   @media (max-width: 540px) {
-    .ch-hero-grid { grid-template-columns: 1fr !important; }
+    .ch-hero-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
     .ch-grid { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 480px) {
+    .ch-page-wrap { padding: 20px 14px 60px !important; }
+    .ch-hero-grid { grid-template-columns: 1fr !important; }
+    .ch-hero-grid > div:first-child { grid-column: 1 / -1 !important; }
   }
 `;

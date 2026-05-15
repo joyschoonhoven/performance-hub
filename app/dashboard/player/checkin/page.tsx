@@ -173,7 +173,12 @@ export default function CheckinPage() {
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: 20, maxWidth: 1100, margin: "0 auto" }}>
+    <div className="checkin-grid" style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: 20, maxWidth: 1100, margin: "0 auto" }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media (max-width: 720px) {
+          .checkin-grid { grid-template-columns: 1fr !important; }
+        }
+      ` }} />
       {/* MAIN FORM */}
       <main style={{ display: "flex", flexDirection: "column", gap: 18 }}>
         {/* Header */}
