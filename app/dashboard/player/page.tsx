@@ -328,6 +328,25 @@ export default function PlayerDashboardPage() {
             </Section>
           </div>
 
+          {/* ═══════════════════ PITCH TILE ═══════════════════ */}
+          <Section title="Mijn Veld" subtitle="Jouw positie op het veld" action={
+            <Link href="/dashboard/player/heatmap" style={ghostBtnDark}>
+              Volledige posities <ArrowRight size={12} />
+            </Link>
+          }>
+            <PitchTile
+              primary={player.position}
+              secondary={player.secondary_position}
+              assessedCounts={(() => {
+                const counts: Record<string, number> = {};
+                evals.forEach(ev => {
+                  if (ev.assessed_position) counts[ev.assessed_position] = (counts[ev.assessed_position] ?? 0) + 1;
+                });
+                return counts;
+              })()}
+            />
+          </Section>
+
           {/* ═══════════════════ PERFORMANCE TIMELINE ═══════════════════ */}
           {timelineEvents.length > 0 && (
             <Section title="Activity Timeline" subtitle="Recente trainingen, evaluaties en check-ins">
@@ -1370,6 +1389,208 @@ function EmptyHint({ text }: { text: string }) {
     }}>
       {text}
     </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   PITCH TILE — Aesthetic green football field (top-down)
+   ───────────────────────────────────────────────────────── */
+
+const PITCH_ZONES: Record<string, { x: number; y: number; label: string }> = {
+  GK:  { x: 50, y: 92, label: "Keeper" },
+  CB:  { x: 50, y: 76, label: "CB" },
+  LB:  { x: 18, y: 72, label: "LB" },
+  RB:  { x: 82, y: 72, label: "RB" },
+  CDM: { x: 50, y: 60, label: "CDM" },
+  CM:  { x: 50, y: 48, label: "CM" },
+  CAM: { x: 50, y: 34, label: "CAM" },
+  LW:  { x: 18, y: 26, label: "LW" },
+  RW:  { x: 82, y: 26, label: "RW" },
+  ST:  { x: 50, y: 14, label: "ST" },
+  SS:  { x: 50, y: 22, label: "SS" },
+};
+
+function PitchTile({ primary, secondary, assessedCounts }: {
+  primary: string;
+  secondary?: string;
+  assessedCounts: Record<string, number>;
+}) {
+  // Combine assessed counts with player's primary/secondary
+  const allCounts = { ...assessedCounts };
+  allCounts[primary] = (allCounts[primary] ?? 0) + 5;
+  if (secondary) allCounts[secondary] = (allCounts[secondary] ?? 0) + 2;
+  const maxCount = Math.max(...Object.values(allCounts), 1);
+
+  return (
+    <Tilt3D max={6} lift={6} scale={1.01} glare={false}>
+      <div style={{
+        position: "relative",
+        borderRadius: 24,
+        overflow: "hidden",
+        // Aesthetic muted green — deep forest/sage not bright fluorescent
+        background: "linear-gradient(180deg, #2A4D33 0%, #1E3B26 40%, #16301E 100%)",
+        boxShadow: `
+          0 4px 12px rgba(13,27,42,0.08),
+          0 24px 56px rgba(13,27,42,0.15),
+          0 1px 0 rgba(255,255,255,0.1) inset
+        `,
+        aspectRatio: "1.6 / 1",
+        maxHeight: 380,
+      }}>
+        {/* Aesthetic vertical mowing stripes (alternating slightly lighter/darker green) */}
+        <div style={{ position: "absolute", inset: 0 }}>
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                left: `${i * 10}%`,
+                top: 0,
+                width: "10%",
+                height: "100%",
+                background: i % 2 === 0
+                  ? "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.015))"
+                  : "linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.08))",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Subtle radial vignette */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.3) 100%)",
+          pointerEvents: "none",
+        }} />
+
+        {/* Pitch lines */}
+        <svg
+          viewBox="0 0 100 62"
+          preserveAspectRatio="none"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+        >
+          <defs>
+            <linearGradient id="pitchLine" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.5)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0.3)" />
+            </linearGradient>
+          </defs>
+          {/* outer line */}
+          <rect x={2} y={2} width={96} height={58} fill="none"
+            stroke="url(#pitchLine)" strokeWidth={0.3} />
+          {/* halfway */}
+          <line x1={2} y1={31} x2={98} y2={31}
+            stroke="rgba(255,255,255,0.4)" strokeWidth={0.3} />
+          {/* center circle */}
+          <circle cx={50} cy={31} r={6.5} fill="none"
+            stroke="rgba(255,255,255,0.4)" strokeWidth={0.3} />
+          <circle cx={50} cy={31} r={0.6} fill="rgba(255,255,255,0.5)" />
+          {/* top penalty area */}
+          <rect x={26} y={2} width={48} height={11} fill="none"
+            stroke="rgba(255,255,255,0.4)" strokeWidth={0.3} />
+          <rect x={38} y={2} width={24} height={4.5} fill="none"
+            stroke="rgba(255,255,255,0.4)" strokeWidth={0.3} />
+          <circle cx={50} cy={9} r={0.6} fill="rgba(255,255,255,0.5)" />
+          {/* bottom penalty area */}
+          <rect x={26} y={49} width={48} height={11} fill="none"
+            stroke="rgba(255,255,255,0.4)" strokeWidth={0.3} />
+          <rect x={38} y={55.5} width={24} height={4.5} fill="none"
+            stroke="rgba(255,255,255,0.4)" strokeWidth={0.3} />
+          <circle cx={50} cy={53} r={0.6} fill="rgba(255,255,255,0.5)" />
+        </svg>
+
+        {/* Position markers */}
+        {(Object.entries(allCounts) as [string, number][]).map(([pos, count]) => {
+          const zone = PITCH_ZONES[pos];
+          if (!zone) return null;
+          const intensity = count / maxCount;
+          const isPrimary = pos === primary;
+          const isSecondary = pos === secondary;
+          const color = isPrimary ? "#F0A500" : isSecondary ? "#4DAEE5" : "#4DAEE5";
+
+          return (
+            <div
+              key={pos}
+              style={{
+                position: "absolute",
+                left: `${zone.x}%`,
+                top: `${zone.y}%`,
+                transform: "translate(-50%, -50%)",
+                pointerEvents: "none",
+              }}
+            >
+              {/* Heat glow */}
+              <div style={{
+                position: "absolute", top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 80, height: 80,
+                background: `radial-gradient(circle, ${color}${Math.round(intensity * 60).toString(16).padStart(2, "0")} 0%, transparent 70%)`,
+                filter: `blur(${(1 - intensity) * 6}px)`,
+                pointerEvents: "none",
+              }} />
+              {/* Position dot */}
+              <div style={{
+                position: "relative",
+                padding: isPrimary ? "5px 11px" : "4px 9px",
+                borderRadius: 999,
+                background: isPrimary
+                  ? "linear-gradient(135deg, #F0A500, #B07700)"
+                  : "rgba(13,27,42,0.85)",
+                backdropFilter: "blur(4px)",
+                border: `1px solid ${isPrimary ? "#FFC04C" : `${color}50`}`,
+                fontSize: 10, fontWeight: 800,
+                letterSpacing: "0.06em",
+                color: isPrimary ? "#0D1B2A" : "#fff",
+                whiteSpace: "nowrap",
+                boxShadow: `0 4px 12px rgba(0,0,0,0.4), 0 0 16px ${color}50`,
+              }}>
+                {pos}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Bottom label overlay */}
+        <div style={{
+          position: "absolute",
+          bottom: 14, left: 14,
+          padding: "6px 12px",
+          borderRadius: 999,
+          background: "rgba(13,27,42,0.6)",
+          backdropFilter: "blur(8px)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
+          color: "rgba(255,255,255,0.8)",
+          textTransform: "uppercase",
+        }}>
+          ⚽ Posities
+        </div>
+
+        {/* Legend top-right */}
+        <div style={{
+          position: "absolute", top: 14, right: 14,
+          display: "flex", gap: 8,
+          padding: "6px 12px", borderRadius: 999,
+          background: "rgba(13,27,42,0.55)",
+          backdropFilter: "blur(8px)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          fontSize: 9, fontWeight: 700, letterSpacing: "0.08em",
+          color: "rgba(255,255,255,0.85)",
+          textTransform: "uppercase",
+        }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#F0A500" }} />
+            Primair
+          </span>
+          {secondary && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4DAEE5" }} />
+              Secundair
+            </span>
+          )}
+        </div>
+      </div>
+    </Tilt3D>
   );
 }
 
