@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
-import { StadiumBoard } from "./StadiumBoard";
+import { useEffect, useState, useCallback } from "react";
+import { QuestDashboard } from "./QuestDashboard";
 import { AgreementModal } from "./AgreementModal";
 import {
   addAgreement,
-  computeStats,
   listAgreements,
   removeAgreement,
   setStatus,
@@ -20,7 +19,6 @@ import {
 import { addNotification } from "@/lib/notifications";
 import type { ChatMessage } from "@/lib/plan-chat";
 import { createClient } from "@/lib/supabase/client";
-import { Trophy, Target, Flame, CheckCircle2 } from "lucide-react";
 
 interface Props {
   playerId: string;
@@ -37,6 +35,7 @@ export function PlanView({ playerId, playerFirstName, viewerRole, viewerName }: 
   const [activeAgreement, setActiveAgreement] = useState<PlanAgreement | null>(null);
   const [initialCategory, setInitialCategory] = useState<PlanCategory | undefined>(undefined);
   const [viewerId, setViewerId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"all" | PlanCategory>("all");
 
   useEffect(() => {
     let cancelled = false;
@@ -62,12 +61,14 @@ export function PlanView({ playerId, playerFirstName, viewerRole, viewerName }: 
     return subscribe(playerId, () => { void refresh(); });
   }, [playerId, refresh]);
 
-  const stats = useMemo(() => computeStats(agreements), [agreements]);
-
-  function openCreate(category: PlanCategory) {
+  function openCreate(category?: PlanCategory) {
     setInitialCategory(category);
     setActiveAgreement(null);
     setModalMode("create");
+  }
+
+  async function handleQuickComplete(id: string) {
+    await handleSetStatus(id, "completed");
   }
 
   function openDetail(a: PlanAgreement) {
@@ -146,75 +147,15 @@ export function PlanView({ playerId, playerFirstName, viewerRole, viewerName }: 
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {/* Stats strip */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: 10,
-        }}
-      >
-        <StatCard
-          icon={<Target size={16} />}
-          color="#4DAEE5"
-          label="Open afspraken"
-          value={stats.open + stats.inProgress}
-          hint={`${stats.total} totaal`}
-        />
-        <StatCard
-          icon={<CheckCircle2 size={16} />}
-          color="#16A34A"
-          label="Behaald"
-          value={stats.completed}
-          hint={`${stats.completionRate}% behaald`}
-        />
-        <StatCard
-          icon={<Flame size={16} />}
-          color="#F0A500"
-          label="XP verdiend"
-          value={stats.xpEarned}
-          hint="game-progressie"
-        />
-        <StatCard
-          icon={<Trophy size={16} />}
-          color="#A855F7"
-          label="Beste zone"
-          value={(() => {
-            const entries = Object.entries(stats.byCategory);
-            const best = entries.sort((a, b) => b[1].completed - a[1].completed)[0];
-            if (!best || best[1].total === 0) return "—";
-            return CATEGORY_META[best[0] as PlanCategory].label.split(" ")[0];
-          })()}
-          hint="meest voltooid"
-        />
-      </div>
-
-      {/* Stadium board */}
-      <StadiumBoard
+      <QuestDashboard
         agreements={agreements}
         canEdit={canEdit}
+        filter={filter}
+        onFilterChange={setFilter}
         onAdd={openCreate}
         onSelect={openDetail}
+        onQuickComplete={viewerRole === "player" || canEdit ? handleQuickComplete : undefined}
       />
-
-      {/* Helper hint for empty state */}
-      {agreements.length === 0 && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "10px 14px",
-            fontSize: 12,
-            color: "var(--text-dim)",
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: 10,
-          }}
-        >
-          {canEdit
-            ? `Plaats afspraken op het veld${playerFirstName ? ` voor ${playerFirstName}` : ""}. Klik de + bij een zone.`
-            : "Je coach heeft nog geen afspraken op je bord gezet."}
-        </div>
-      )}
 
       {modalMode && (
         <AgreementModal
@@ -238,34 +179,3 @@ export function PlanView({ playerId, playerFirstName, viewerRole, viewerName }: 
   );
 }
 
-function StatCard({
-  icon, color, label, value, hint,
-}: {
-  icon: React.ReactNode;
-  color: string;
-  label: string;
-  value: number | string;
-  hint: string;
-}) {
-  return (
-    <div
-      style={{
-        padding: "12px 14px",
-        background: "var(--surface)",
-        border: "1px solid var(--border)",
-        borderRadius: 12,
-        display: "flex",
-        flexDirection: "column",
-        gap: 4,
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 6, color, fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase" }}>
-        {icon} {label}
-      </div>
-      <div style={{ fontSize: 22, fontWeight: 900, color: "var(--text-2)", fontFamily: "Outfit, sans-serif" }}>
-        {value}
-      </div>
-      <div style={{ fontSize: 10, color: "var(--text-dim)" }}>{hint}</div>
-    </div>
-  );
-}

@@ -76,7 +76,7 @@ export default function CoachPlayerPlanPage() {
             {player.first_name} {player.last_name}
           </div>
           <div style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 2, display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <MapIcon size={12} /> Verdedigingszone = mentaal · Middenveld = voetbalinhoudelijk · Aanvalszone = tactisch
+            <MapIcon size={12} /> Quest-paneel · drie missie-categorieën: mentaal, voetbalinhoudelijk en tactisch
           </div>
         </div>
       </div>

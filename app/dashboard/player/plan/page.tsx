@@ -65,7 +65,7 @@ export default function PlayerPlanPage() {
           Het bord van {player.first_name}
         </div>
         <div style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 2, display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <MapIcon size={12} /> Speel je afspraken af op het veld: mentaal achterin · techniek op het middenveld · tactisch in de aanval
+          <MapIcon size={12} /> Verdien XP, bouw streaks op, klim levels — vink je missies af.
         </div>
       </div>
 
