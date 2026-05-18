@@ -48,9 +48,9 @@ export default function CoachPlayerPlanPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+    <div className="flex flex-col gap-3 sm:gap-4">
       {/* Back + header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <Link
           href={`/dashboard/coach/players/${player.id}`}
           style={{
@@ -64,18 +64,19 @@ export default function CoachPlayerPlanPage() {
             color: "var(--text-2)",
             fontSize: 12,
             textDecoration: "none",
+            flexShrink: 0,
           }}
         >
-          <ArrowLeft size={13} /> Terug naar profiel
+          <ArrowLeft size={13} /> <span className="hidden sm:inline">Terug naar profiel</span><span className="sm:hidden">Terug</span>
         </Link>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", color: "var(--sfa-blue)", textTransform: "uppercase" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--sfa-blue)", textTransform: "uppercase" }}>
             Persoonlijk plan
           </div>
-          <div style={{ fontSize: 22, fontWeight: 900, color: "var(--text-2)", fontFamily: "Outfit, sans-serif", letterSpacing: "-0.01em" }}>
+          <div className="text-lg sm:text-2xl truncate" style={{ fontWeight: 900, color: "var(--text-2)", fontFamily: "Outfit, sans-serif", letterSpacing: "-0.01em" }}>
             {player.first_name} {player.last_name}
           </div>
-          <div style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 2, display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <div className="hidden sm:flex text-xs" style={{ color: "var(--text-dim)", marginTop: 2, alignItems: "center", gap: 6 }}>
             <MapIcon size={12} /> Quest-paneel · drie missie-categorieën: mentaal, voetbalinhoudelijk en tactisch
           </div>
         </div>

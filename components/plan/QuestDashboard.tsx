@@ -81,12 +81,12 @@ function MissionCard({ a, canEdit, onClick, onQuickComplete }: MissionCardProps)
     <div
       onClick={onClick}
       role={onClick ? "button" : undefined}
+      className="py-2.5 px-2.5 sm:py-3 sm:px-3.5"
       style={{
         position: "relative",
         display: "flex",
         alignItems: "center",
-        gap: 12,
-        padding: "12px 14px",
+        gap: 10,
         borderRadius: 12,
         background: done
           ? "linear-gradient(90deg, rgba(22,163,74,0.16), rgba(22,163,74,0.04))"
@@ -123,9 +123,8 @@ function MissionCard({ a, canEdit, onClick, onQuickComplete }: MissionCardProps)
 
       {/* Category icon chip */}
       <div
+        className="w-8 h-8 sm:w-9 sm:h-9"
         style={{
-          width: 36,
-          height: 36,
           borderRadius: 10,
           flexShrink: 0,
           background: done ? "rgba(22,163,74,0.16)" : meta.accent,
@@ -134,7 +133,7 @@ function MissionCard({ a, canEdit, onClick, onQuickComplete }: MissionCardProps)
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 18,
+          fontSize: 16,
         }}
       >
         {done ? <CheckCircle2 size={18} /> : <span>{meta.icon}</span>}
@@ -171,6 +170,7 @@ function MissionCard({ a, canEdit, onClick, onQuickComplete }: MissionCardProps)
           }}
         >
           <span
+            className="hidden sm:inline"
             style={{
               color: meta.color,
               fontWeight: 700,
@@ -360,9 +360,9 @@ export function QuestDashboard({
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
       {/* ───────── HERO ───────── */}
       <div
+        className="p-3 sm:p-5"
         style={{
           position: "relative",
-          padding: "18px 20px",
           borderRadius: 16,
           background: `linear-gradient(135deg, ${tier.color}1c 0%, var(--surface) 60%)`,
           border: `1px solid ${tier.color}55`,
@@ -384,13 +384,12 @@ export function QuestDashboard({
           }}
         />
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16, position: "relative", zIndex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative", zIndex: 1, flexWrap: "wrap" }}>
           {/* Level badge */}
           <div
+            className="w-12 h-12 sm:w-[60px] sm:h-[60px]"
             style={{
-              width: 60,
-              height: 60,
-              borderRadius: 14,
+              borderRadius: 12,
               background: tier.color,
               color: "#0D1B2A",
               display: "flex",
@@ -403,10 +402,10 @@ export function QuestDashboard({
             }}
           >
             <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.08em", opacity: 0.7 }}>LV</div>
-            <div style={{ fontSize: 24, fontWeight: 900, lineHeight: 0.9 }}>{level}</div>
+            <div className="text-xl sm:text-2xl" style={{ fontWeight: 900, lineHeight: 0.9 }}>{level}</div>
           </div>
 
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ flex: "1 1 180px", minWidth: 160 }}>
             <div
               style={{
                 fontSize: 10,
@@ -418,7 +417,7 @@ export function QuestDashboard({
             >
               {tier.title}
             </div>
-            <div style={{ fontSize: 16, fontWeight: 900, color: "var(--text-2)", marginTop: 2, fontFamily: "Outfit, sans-serif" }}>
+            <div className="text-sm sm:text-base" style={{ fontWeight: 900, color: "var(--text-2)", marginTop: 2, fontFamily: "Outfit, sans-serif" }}>
               {xpEarned} XP <span style={{ color: "var(--text-dim)", fontWeight: 500 }}>totaal</span>
             </div>
 
@@ -448,7 +447,7 @@ export function QuestDashboard({
             </div>
           </div>
 
-          {/* Stats column (desktop) */}
+          {/* Stats column (desktop only) */}
           <div
             className="hidden sm:flex"
             style={{ flexDirection: "column", gap: 6, alignItems: "flex-end", flexShrink: 0, minWidth: 110 }}
@@ -458,44 +457,65 @@ export function QuestDashboard({
             <HeroStat icon={<Trophy size={11} />} value={agreements.length} label="missies" color="#4DAEE5" />
           </div>
         </div>
+
+        {/* Stats row (mobile only) — compact horizontal chips below the XP bar */}
+        <div
+          className="flex sm:hidden"
+          style={{ gap: 6, marginTop: 10, position: "relative", zIndex: 1, flexWrap: "wrap" }}
+        >
+          <HeroStat icon={<Flame size={11} />} value={maxStreak} label="streak" color="#F0A500" />
+          <HeroStat icon={<CheckCircle2 size={11} />} value={completedCount} label="behaald" color="#16A34A" />
+          <HeroStat icon={<Trophy size={11} />} value={agreements.length} label="missies" color="#4DAEE5" />
+        </div>
       </div>
 
       {/* ───────── FILTERS + ADD ───────── */}
-      <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-        <FilterPill
-          active={filter === "all"}
-          color="#4DAEE5"
-          label="Alles"
-          count={agreements.length}
-          onClick={() => onFilterChange("all")}
-        />
-        {(Object.keys(CATEGORY_META) as PlanCategory[]).map((c) => {
-          const meta = CATEGORY_META[c];
-          const count = agreements.filter((a) => a.category === c).length;
-          return (
-            <FilterPill
-              key={c}
-              active={filter === c}
-              color={meta.color}
-              label={meta.label}
-              icon={meta.icon}
-              count={count}
-              onClick={() => onFilterChange(c)}
-            />
-          );
-        })}
-
-        <div style={{ flex: 1 }} />
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        {/* Pills row: horizontaal scrollbaar op mobile zodat alles binnen één regel past */}
+        <div
+          style={{
+            display: "flex",
+            gap: 6,
+            overflowX: "auto",
+            flex: 1,
+            minWidth: 0,
+            paddingBottom: 2,
+            scrollbarWidth: "none",
+          }}
+        >
+          <FilterPill
+            active={filter === "all"}
+            color="#4DAEE5"
+            label="Alles"
+            count={agreements.length}
+            onClick={() => onFilterChange("all")}
+          />
+          {(Object.keys(CATEGORY_META) as PlanCategory[]).map((c) => {
+            const meta = CATEGORY_META[c];
+            const count = agreements.filter((a) => a.category === c).length;
+            return (
+              <FilterPill
+                key={c}
+                active={filter === c}
+                color={meta.color}
+                label={meta.label}
+                icon={meta.icon}
+                count={count}
+                onClick={() => onFilterChange(c)}
+              />
+            );
+          })}
+        </div>
 
         {canEdit && onAdd && (
           <button
             type="button"
             onClick={() => onAdd(filter === "all" ? undefined : filter)}
+            className="px-3 py-2 sm:px-4"
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
-              padding: "8px 14px",
               borderRadius: 999,
               background: "#16A34A",
               border: "none",
@@ -504,9 +524,11 @@ export function QuestDashboard({
               fontWeight: 800,
               cursor: "pointer",
               boxShadow: "0 0 0 4px rgba(22,163,74,0.18)",
+              flexShrink: 0,
+              whiteSpace: "nowrap",
             }}
           >
-            <Plus size={13} /> Nieuwe missie
+            <Plus size={13} /> <span className="hidden sm:inline">Nieuwe missie</span><span className="sm:hidden">Nieuw</span>
           </button>
         )}
       </div>

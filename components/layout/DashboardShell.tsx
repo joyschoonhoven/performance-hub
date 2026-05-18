@@ -216,8 +216,9 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
               >
                 {initials}
               </div>
-              <span style={{ fontSize: 12, fontWeight: 500, color: "var(--text-2)" }}>{firstName}</span>
+              <span className="hidden sm:inline" style={{ fontSize: 12, fontWeight: 500, color: "var(--text-2)" }}>{firstName}</span>
               <span
+                className="hidden sm:inline"
                 style={{
                   fontSize: 9,
                   fontWeight: 700,
@@ -267,7 +268,7 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
 
         {/* Scrollable content */}
         <div style={{ flex: 1, overflowY: "auto" }}>
-          <div style={{ padding: "28px 28px 40px", minHeight: "100%" }}>
+          <div className="px-3 pt-4 pb-10 sm:px-5 lg:px-7 lg:pt-7" style={{ minHeight: "100%" }}>
             {children}
           </div>
         </div>

@@ -95,6 +95,7 @@ export function AgreementModal({
 
   return (
     <div
+      className="p-2 sm:p-4"
       style={{
         position: "fixed",
         inset: 0,
@@ -104,7 +105,6 @@ export function AgreementModal({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: 16,
       }}
       onClick={onClose}
     >
@@ -113,7 +113,7 @@ export function AgreementModal({
         style={{
           width: "100%",
           maxWidth: 520,
-          maxHeight: "90vh",
+          maxHeight: "94vh",
           overflowY: "auto",
           background: "linear-gradient(180deg, #0D1B2A 0%, #07101A 100%)",
           border: `1px solid ${meta.color}55`,
@@ -170,7 +170,7 @@ export function AgreementModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ padding: 18, display: "flex", flexDirection: "column", gap: 14 }}>
+        <form onSubmit={handleSubmit} className="p-3 sm:p-4 gap-3 sm:gap-4" style={{ display: "flex", flexDirection: "column" }}>
           {/* Quick status switch (when viewing/editing existing) */}
           {agreement && (
             <div>

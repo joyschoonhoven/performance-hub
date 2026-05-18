@@ -56,16 +56,16 @@ export default function PlayerPlanPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+    <div className="flex flex-col gap-3 sm:gap-4">
       <div>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", color: "var(--sfa-blue)", textTransform: "uppercase" }}>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--sfa-blue)", textTransform: "uppercase" }}>
           Jouw persoonlijk plan
         </div>
-        <div style={{ fontSize: 22, fontWeight: 900, color: "var(--text-2)", fontFamily: "Outfit, sans-serif", letterSpacing: "-0.01em" }}>
+        <div className="text-lg sm:text-2xl" style={{ fontWeight: 900, color: "var(--text-2)", fontFamily: "Outfit, sans-serif", letterSpacing: "-0.01em" }}>
           Het bord van {player.first_name}
         </div>
-        <div style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 2, display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <MapIcon size={12} /> Verdien XP, bouw streaks op, klim levels — vink je missies af.
+        <div className="text-[11px] sm:text-xs" style={{ color: "var(--text-dim)", marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
+          <MapIcon size={11} className="shrink-0" /> <span>Verdien XP, bouw streaks op, klim levels — vink je missies af.</span>
         </div>
       </div>
 
