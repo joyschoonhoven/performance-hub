@@ -11,6 +11,7 @@ import {
   LayoutDashboard, Users, ClipboardList, Brain,
   Trophy, BarChart3, Settings, LogOut,
   Shield, Star, Target, UserCircle, Gamepad2, Map, Swords, HeartPulse,
+  Flag,
 } from "lucide-react";
 
 interface NavItem {
@@ -35,6 +36,7 @@ function getNavItems(role: UserRole): NavItem[] {
     { label: "Dashboard",    href: "/dashboard/player",             icon: <LayoutDashboard size={16} /> },
     { label: "Check-in",     href: "/dashboard/player/checkin",     icon: <HeartPulse size={16} />, badge: "NEW" },
     { label: "Player Card",  href: "/dashboard/player/card",        icon: <Star size={16} /> },
+    { label: "Mijn Plan",    href: "/dashboard/player/plan",        icon: <Flag size={16} />, badge: "NEW" },
     { label: "Evaluaties",   href: "/dashboard/player/evaluations", icon: <ClipboardList size={16} /> },
     { label: "Challenges",   href: "/dashboard/player/challenges",  icon: <Trophy size={16} /> },
     { label: "Analytics",    href: "/dashboard/player/analytics",   icon: <BarChart3 size={16} /> },
@@ -122,7 +124,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
       <div style={{ width: 32, height: 1, background: "rgba(255,255,255,0.08)", margin: "12px 0" }} />
 
       {/* ── Nav items ── */}
-      <nav style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: "100%", padding: "0 8px" }}>
+      <nav style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: "100%", padding: "0 8px", overflowY: "auto", minHeight: 0 }}>
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||

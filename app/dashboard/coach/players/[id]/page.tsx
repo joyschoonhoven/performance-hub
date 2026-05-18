@@ -14,7 +14,7 @@ import type { Evaluation, PlayerWithDetails } from "@/lib/types";
 import Image from "next/image";
 import {
   ArrowLeft, Brain, Zap, Star, Trophy, TrendingUp, TrendingDown,
-  Minus, Plus, Calendar, Target, Loader2, Sparkles, UserCircle, ChevronDown, ChevronUp, Swords,
+  Minus, Plus, Calendar, Target, Loader2, Sparkles, UserCircle, ChevronDown, ChevronUp, Swords, Flag,
 } from "lucide-react";
 import { EVALUATION_SCHEMA } from "@/lib/types";
 import {
@@ -247,6 +247,13 @@ export default function PlayerDetailPage() {
                 onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = `${rColor}20`; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = `${rColor}10`; }}>
                 <Plus size={13} /> Evaluatie aanmaken
+              </Link>
+              <Link href={`/dashboard/coach/players/${player.id}/plan`}
+                className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all"
+                style={{ background: "rgba(22,163,74,0.08)", color: "#16A34A", border: "1px solid rgba(22,163,74,0.25)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(22,163,74,0.14)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(22,163,74,0.08)"; }}>
+                <Flag size={13} /> Persoonlijk plan
               </Link>
               <Link href={`/dashboard/coach/ai`}
                 className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all"

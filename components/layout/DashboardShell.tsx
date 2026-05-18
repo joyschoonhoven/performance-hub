@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
+import { NotificationBell } from "./NotificationBell";
 import type { UserRole } from "@/lib/types";
 import { Menu, X, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -18,6 +19,7 @@ const ROUTE_LABELS: Record<string, string> = {
   "/dashboard/player":             "Dashboard",
   "/dashboard/player/checkin":     "Dagelijkse Check-in",
   "/dashboard/player/card":        "Player Card",
+  "/dashboard/player/plan":        "Mijn Plan",
   "/dashboard/player/evaluations": "Evaluaties",
   "/dashboard/player/challenges":  "Challenges",
   "/dashboard/player/analytics":   "Analytics",
@@ -27,6 +29,7 @@ const ROUTE_LABELS: Record<string, string> = {
   "/dashboard/coach":              "Dashboard",
   "/dashboard/coach/profile":      "Mijn Profiel",
   "/dashboard/coach/players":      "Spelers",
+  "/dashboard/coach/plans":        "Persoonlijke Plannen",
   "/dashboard/coach/matches":      "Wedstrijden",
   "/dashboard/coach/evaluations":  "Evaluaties",
   "/dashboard/coach/ai":           "AI Scouting",
@@ -41,9 +44,27 @@ const ROUTE_LABELS: Record<string, string> = {
 
 export function DashboardShell({ role, userName, userEmail, children }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [playerId, setPlayerId] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
+
+  useEffect(() => {
+    if (role !== "player") { setPlayerId(null); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { if (!cancelled) setPlayerId("p1"); return; }
+        const { data } = await supabase
+          .from("players").select("id").eq("profile_id", user.id).maybeSingle();
+        if (!cancelled) setPlayerId(data?.id ?? "p1");
+      } catch {
+        if (!cancelled) setPlayerId("p1");
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [role, supabase]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -161,8 +182,11 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
             </div>
           </div>
 
-          {/* Right: user chip + logout */}
+          {/* Right: notifications + user chip + logout */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {role === "player" && playerId && (
+              <NotificationBell playerId={playerId} />
+            )}
             <div
               style={{
                 display: "flex",

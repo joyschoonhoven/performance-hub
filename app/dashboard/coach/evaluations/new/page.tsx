@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { getAllPlayers } from "@/lib/supabase/queries";
+import { addNotification } from "@/lib/notifications";
 import {
   EVALUATION_SCHEMA, POTENTIAL_LEVELS, OBSERVATION_CONTEXTS, ARCHETYPES, SOCIOTYPES, POSITION_LABELS,
   type EvaluationCategory, type ArchetypeType, type SociotypeName, type PositionType,
@@ -273,6 +274,24 @@ function NewEvaluationPageInner() {
 
     // Update player overall rating
     await supabase.from("players").update({ overall_rating: fifaRating }).eq("id", selectedPlayerId);
+
+    // In-app notification for the player (works in demo mode too)
+    if (selectedPlayer) {
+      const firstName = selectedPlayer.first_name;
+      await addNotification({
+        player_id: selectedPlayerId,
+        type: "evaluation",
+        title: `Nieuwe beoordeling van ${coachName}`,
+        body: `Je hebt een ${overallAvg.toFixed(1)} gemiddeld gescoord op ${EVALUATION_SCHEMA.length} categorieën. Bekijk je rapport voor de details, ${firstName}.`,
+        href: "/dashboard/player/evaluations",
+        meta: {
+          coach_name: coachName,
+          evaluation_id: evalData.id,
+          overall_score: parseFloat(overallAvg.toFixed(2)),
+          evaluation_date: evaluationDate,
+        },
+      });
+    }
 
     // Email notification to player
     if (selectedPlayer?.profile_id) {
