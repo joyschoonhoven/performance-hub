@@ -18,6 +18,8 @@ import {
   type PlanStatus,
 } from "@/lib/personal-plan";
 import { addNotification } from "@/lib/notifications";
+import type { ChatMessage } from "@/lib/plan-chat";
+import { createClient } from "@/lib/supabase/client";
 import { Trophy, Target, Flame, CheckCircle2 } from "lucide-react";
 
 interface Props {
@@ -34,6 +36,21 @@ export function PlanView({ playerId, playerFirstName, viewerRole, viewerName }: 
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view" | null>(null);
   const [activeAgreement, setActiveAgreement] = useState<PlanAgreement | null>(null);
   const [initialCategory, setInitialCategory] = useState<PlanCategory | undefined>(undefined);
+  const [viewerId, setViewerId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!cancelled) setViewerId(user?.id ?? null);
+      } catch {
+        if (!cancelled) setViewerId(null);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const refresh = useCallback(async () => {
     const next = await listAgreements(playerId);
@@ -108,6 +125,23 @@ export function PlanView({ playerId, playerFirstName, viewerRole, viewerName }: 
     setModalMode(null);
     setActiveAgreement(null);
     setInitialCategory(undefined);
+  }
+
+  async function handleChatSent(msg: ChatMessage) {
+    // Coach sends → notify the player via the in-app bell.
+    // Player sends → no notification yet (coach overview in Fase 4 will surface it).
+    if (msg.author_role === "coach") {
+      const snippet = msg.body.length > 80 ? msg.body.slice(0, 80) + "…" : msg.body;
+      const agreementTitle = activeAgreement?.title ?? "een afspraak";
+      await addNotification({
+        player_id: playerId,
+        type: "chat_message",
+        title: `${msg.author_name ?? "Je coach"} reageerde op "${agreementTitle}"`,
+        body: snippet,
+        href: "/dashboard/player/plan",
+        meta: { agreement_id: msg.agreement_id, message_id: msg.id },
+      });
+    }
   }
 
   return (
@@ -188,11 +222,16 @@ export function PlanView({ playerId, playerFirstName, viewerRole, viewerName }: 
           canEdit={canEdit}
           initialCategory={initialCategory}
           agreement={activeAgreement ?? undefined}
+          playerId={playerId}
+          viewerId={viewerId}
+          viewerRole={viewerRole}
+          viewerName={viewerName ?? (viewerRole === "coach" ? "Coach" : "Speler")}
           onClose={closeModal}
           onSave={handleSave}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
           onSetStatus={handleSetStatus}
+          onChatMessageSent={handleChatSent}
         />
       )}
     </div>

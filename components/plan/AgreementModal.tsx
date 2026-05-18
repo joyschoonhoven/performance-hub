@@ -9,17 +9,25 @@ import {
   type PlanCategory,
   type PlanStatus,
 } from "@/lib/personal-plan";
+import { AgreementChat } from "./AgreementChat";
+import type { ChatAuthorRole, ChatMessage } from "@/lib/plan-chat";
 
 interface Props {
   mode: "create" | "edit" | "view";
   canEdit: boolean;
   initialCategory?: PlanCategory;
   agreement?: PlanAgreement;
+  // Chat context — required to render the per-agreement chat thread.
+  playerId: string;
+  viewerId: string | null;
+  viewerRole: ChatAuthorRole;
+  viewerName: string;
   onClose: () => void;
   onSave?: (input: AgreementInput) => void;
   onUpdate?: (id: string, patch: Partial<PlanAgreement>) => void;
   onDelete?: (id: string) => void;
   onSetStatus?: (id: string, status: PlanStatus) => void;
+  onChatMessageSent?: (msg: ChatMessage) => void;
 }
 
 const STATUS_OPTIONS: { value: PlanStatus; label: string; color: string; icon: typeof CheckCircle2 }[] = [
@@ -30,7 +38,9 @@ const STATUS_OPTIONS: { value: PlanStatus; label: string; color: string; icon: t
 ];
 
 export function AgreementModal({
-  mode, canEdit, initialCategory, agreement, onClose, onSave, onUpdate, onDelete, onSetStatus,
+  mode, canEdit, initialCategory, agreement,
+  playerId, viewerId, viewerRole, viewerName,
+  onClose, onSave, onUpdate, onDelete, onSetStatus, onChatMessageSent,
 }: Props) {
   const [category, setCategory] = useState<PlanCategory>(
     agreement?.category ?? initialCategory ?? "technical",
@@ -344,6 +354,18 @@ export function AgreementModal({
                 </div>
               )}
             </div>
+          )}
+
+          {/* Chat thread (only for existing agreements) */}
+          {agreement && (
+            <AgreementChat
+              playerId={playerId}
+              agreementId={agreement.id}
+              viewerId={viewerId}
+              viewerRole={viewerRole}
+              viewerName={viewerName}
+              onMessageSent={onChatMessageSent}
+            />
           )}
 
           {/* Actions */}
