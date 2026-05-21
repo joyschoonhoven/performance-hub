@@ -96,6 +96,63 @@ function lsWrite(playerId: string, items: PlanAgreement[]) {
 
 // ── Public API (all async) ───────────────────────────────────────────
 
+export interface PlayerLite {
+  id: string;
+  first_name: string;
+  last_name: string;
+  position?: string;
+  team_name?: string;
+  avatar_url?: string;
+  photo_url?: string;
+}
+
+export interface AgreementWithPlayer extends PlanAgreement {
+  player: PlayerLite;
+}
+
+/** Coach-only view: every agreement across every player the coach can see. */
+export async function listAllAgreementsForCoach(): Promise<AgreementWithPlayer[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const supabase = createClient();
+    const [agreementsRes, playersRes] = await Promise.all([
+      supabase.from("plan_agreements").select("*").order("updated_at", { ascending: false }),
+      supabase.from("players").select("id, first_name, last_name, position, team_name, avatar_url, photo_url"),
+    ]);
+    const agreements = (agreementsRes.data ?? []) as PlanAgreement[];
+    const players = (playersRes.data ?? []) as PlayerLite[];
+    const byId = new Map(players.map((p) => [p.id, p]));
+    return agreements
+      .map((a) => {
+        const player = byId.get(a.player_id);
+        if (!player) return null;
+        return { ...a, player } as AgreementWithPlayer;
+      })
+      .filter((x): x is AgreementWithPlayer => x !== null);
+  } catch {
+    return [];
+  }
+}
+
+/** Realtime subscription that fires when any plan_agreement row changes. */
+export function subscribeAllAgreements(listener: () => void): () => void {
+  if (typeof window === "undefined" || !isSupabaseConfigured()) return () => {};
+  try {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("plan_agreements:all")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "plan_agreements" },
+        () => listener(),
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  } catch {
+    return () => {};
+  }
+}
+
 export async function listAgreements(playerId: string): Promise<PlanAgreement[]> {
   if (isSupabaseConfigured()) {
     try {
