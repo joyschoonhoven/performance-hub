@@ -273,10 +273,13 @@ export default function PlayerDashboardPage() {
       <div className="dash-page" style={{
         position: "relative",
         zIndex: 1,
+        // Bleed: zit op de desktop-padding van de shell. CSS-regels hieronder
+        // overschrijven dit voor smallere schermen waar de shell-padding kleiner is.
         margin: "-28px -28px -40px",
         padding: "32px 24px 80px",
         minHeight: "calc(100vh - 52px)",
-        maxWidth: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
       }}>
         <style dangerouslySetInnerHTML={{ __html: globalCss }} />
 
@@ -584,8 +587,8 @@ function OVRRing({ rating, photoUrl, initials }: { rating: number; photoUrl: str
   const color = overallColor(rating);
 
   return (
-    <div style={{ position: "relative", width: size, height: size }} className="dash-ovr-wrap">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: "absolute", inset: 0 }}>
+    <div style={{ position: "relative", width: size, height: size, maxWidth: "100%" }} className="dash-ovr-wrap">
+      <svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`} style={{ position: "absolute", inset: 0 }} preserveAspectRatio="xMidYMid meet">
         <defs>
           <linearGradient id="ovrRing" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor={color} />
@@ -642,9 +645,11 @@ function OVRRing({ rating, photoUrl, initials }: { rating: number; photoUrl: str
               background: "linear-gradient(180deg, transparent 30%, rgba(255,255,255,0.96) 95%)",
             }} />
             <div style={{
-              position: "absolute", bottom: 18, left: 0, right: 0,
+              position: "absolute", bottom: "12%", left: 0, right: 0,
               textAlign: "center",
-              fontSize: 56, fontWeight: 800,
+              fontSize: "clamp(32px, 28%, 56px)",
+              fontWeight: 800,
+              lineHeight: 1,
               fontFamily: '"Inter", system-ui, sans-serif',
               color: overallColor(rating),
               letterSpacing: "-0.04em",
@@ -1918,19 +1923,30 @@ const globalCss = `
     .dash-grid-skills { grid-template-columns: repeat(2, 1fr); }
     .dash-grid-wellbeing { grid-template-columns: 1fr; }
   }
+  @media (max-width: 1023px) {
+    /* Shell-padding op sm = 20px (px-5), dus bleed corrigeren naar -20px */
+    .dash-page { margin: -16px -20px -40px !important; padding: 24px 18px 60px !important; }
+  }
   @media (max-width: 720px) {
-    .dash-hero-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
-    .dash-hero-name { font-size: 38px !important; }
+    .dash-hero-grid { grid-template-columns: 1fr !important; gap: 18px !important; }
+    .dash-hero-name { font-size: 36px !important; }
+    .dash-hero { padding: 22px !important; }
     .dash-grid-skills { grid-template-columns: 1fr !important; }
     .dash-grid-checkin { grid-template-columns: repeat(2, 1fr); }
-    .dash-ovr-wrap { width: 180px !important; height: 180px !important; }
+    .dash-ovr-wrap { width: 170px !important; height: 170px !important; }
   }
-  @media (max-width: 480px) {
-    .dash-page { padding: 16px 12px 60px !important; margin: -28px -28px -40px !important; }
-    .dash-hero { padding: 22px !important; border-radius: 22px !important; }
-    .dash-hero-name { font-size: 30px !important; letter-spacing: -0.02em !important; }
-    .dash-hero-grid { gap: 18px !important; }
+  @media (max-width: 640px) {
+    /* Shell-padding op mobile = 12px (px-3). Bleed UIT: alles binnen de shell-padding. */
+    .dash-page { margin: 0 !important; padding: 12px 0 60px !important; max-width: 100% !important; }
+    .dash-hero { padding: 18px 16px !important; border-radius: 20px !important; }
+    .dash-hero-name { font-size: 28px !important; letter-spacing: -0.02em !important; }
+    .dash-hero-grid { gap: 16px !important; }
     .dash-ovr-wrap { width: 150px !important; height: 150px !important; }
     .dash-grid-goals { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 380px) {
+    .dash-hero { padding: 16px 14px !important; }
+    .dash-hero-name { font-size: 24px !important; }
+    .dash-ovr-wrap { width: 130px !important; height: 130px !important; }
   }
 `;
