@@ -600,12 +600,12 @@ export default function HeatmapPage() {
       fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
     }}>
       <style dangerouslySetInnerHTML={{ __html: `
-        @media (max-width: 1050px) {
-          .hm-grid { grid-template-columns: 1fr !important; }
-          .hm-sidebar { display: none !important; }
+        @media (max-width: 1200px) {
+          .hm-grid { grid-template-columns: 1fr 260px !important; }
+          .hm-sidebar { grid-column: 1 / -1 !important; display: block !important; }
         }
-        @media (max-width: 900px) {
-          .hm-main-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+        @media (max-width: 700px) {
+          .hm-grid { grid-template-columns: 1fr !important; }
         }
       ` }} />
 
@@ -726,7 +726,7 @@ export default function HeatmapPage() {
           </aside>
 
           {/* ── INSIGHTS PANEL ── */}
-          <aside className="hm-sidebar">
+          <aside className="hm-sidebar" style={{ display: "block" }}>
             <SidebarHeader
               title={`${player.position} · Inzichten`}
               sub={`${POSITION_LABELS[player.position]} — sociotype & tips`}
