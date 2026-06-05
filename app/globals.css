@@ -409,19 +409,55 @@
 }
 
 /* ─────────────────────────────────────────────────────────
-   MOBILE — DashboardShell padding reductions
+   MOBILE — Professional responsive layout
    ───────────────────────────────────────────────────────── */
-@media (max-width: 720px) {
-  /* The main content area inside DashboardShell uses 28px / 8 padding.
-     Override to give pages more room on phones. */
-  main > div[style*="padding: 28px 28px 40px"],
-  main > div[style*="padding: 28px"] {
-    padding: 16px 12px 40px !important;
-  }
+
+/* Safe area support for notches & home indicators */
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bottom-nav-h: 64px;
 }
-@media (max-width: 480px) {
-  /* Anything large-display should not block layout */
+
+/* Prevent layout breaks from long strings */
+.hub-card, .card, .card-lg {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Mobile: smooth tap targets */
+@media (max-width: 1024px) {
+  button, a { -webkit-tap-highlight-color: transparent; }
+
+  /* Cards: slightly less padding on mobile */
+  .hub-card.p-6, .hub-card.p-5 { padding: 16px !important; }
+  .hub-card.p-4 { padding: 12px !important; }
+
+  /* Tables & grids that overflow: allow scroll */
+  .hub-card table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+@media (max-width: 640px) {
   body { font-size: 13px; }
-  h1 { font-size: clamp(24px, 8vw, 40px); }
-  h2 { font-size: clamp(18px, 5vw, 28px); }
+
+  /* Typography scale down */
+  h1 { font-size: clamp(22px, 7vw, 40px) !important; }
+  h2 { font-size: clamp(17px, 5vw, 28px) !important; }
+
+  /* Grid: force single column on small screens unless explicitly overridden */
+  .grid.grid-cols-2:not(.sm\:grid-cols-2),
+  .grid.grid-cols-3:not(.sm\:grid-cols-3),
+  .grid.grid-cols-4:not(.sm\:grid-cols-4) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Coach/Admin hub-card grids */
+  .hub-card { border-radius: 14px !important; }
+
+  /* Prevent any page from creating horizontal overflow */
+  .space-y-6, .space-y-8, .space-y-4 { overflow-x: hidden; }
+}
+
+@media (max-width: 400px) {
+  body { font-size: 12.5px; }
+  .hub-card.p-6, .hub-card.p-5, .hub-card.p-4 { padding: 12px !important; }
 }

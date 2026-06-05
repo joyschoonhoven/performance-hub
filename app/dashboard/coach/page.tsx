@@ -118,9 +118,23 @@ export default function CoachDashboardPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        .coach-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .coach-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .coach-header-actions { display: flex; align-items: center; gap: 8px; }
+        @media (max-width: 1023px) {
+          .coach-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+          .coach-main-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+          .coach-header-actions .btn-ghost:not(.btn-ghost-primary) { display: none; }
+          .coach-title { font-size: 22px !important; }
+        }
+      ` }} />
+
       {/* ═════════════════════ HEADER ═════════════════════ */}
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
-        <div>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+        <div style={{ minWidth: 0 }}>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 6,
             fontSize: 10, fontWeight: 700, letterSpacing: "0.14em",
@@ -130,40 +144,29 @@ export default function CoachDashboardPage() {
           }}>
             <Sparkles size={11} /> Coach Dashboard
           </div>
-          <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text)" }}>
-            Goedemorgen{coachName ? `, ${coachName.split(" ")[0]}` : ""}
+          <h1 className="coach-title" style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--text)" }}>
+            {coachName ? `Hallo, ${coachName.split(" ")[0]}` : "Dashboard"}
           </h1>
-          <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>
-            Schoonhoven Sports · Performance overzicht van je squad
+          <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>
+            Performance overzicht van je squad
           </p>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button
-            className="btn-ghost"
-            style={{ padding: "7px 10px" }}
-            title="Download"
-          >
+        <div className="coach-header-actions" style={{ flexShrink: 0 }}>
+          <button className="btn-ghost" style={{ padding: "7px 10px" }} title="Download">
             <Download size={13} />
           </button>
-          <button
-            className="btn-ghost"
-            style={{ padding: "7px 10px" }}
-            title="Share"
-          >
+          <button className="btn-ghost" style={{ padding: "7px 10px" }} title="Share">
             <Share2 size={13} />
           </button>
-          <Link href="/dashboard/coach/players" className="btn-ghost">
-            <Plus size={13} /> Speler
-          </Link>
-          <Link href="/dashboard/coach/evaluations" className="btn-primary">
-            <ClipboardList size={13} /> Evaluatie
+          <Link href="/dashboard/coach/evaluations/new" className="btn-primary" style={{ whiteSpace: "nowrap" }}>
+            <Plus size={13} /> <span className="hidden sm:inline">Evaluatie</span>
           </Link>
         </div>
       </div>
 
       {/* ═════════════════════ KPI ROW ═════════════════════ */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
+      <div className="coach-kpi-grid">
         <KpiTile
           label="Spelers"
           value={String(players.length)}
@@ -248,7 +251,7 @@ export default function CoachDashboardPage() {
       </div>
 
       {/* ═════════════════════ MAIN GRID ═════════════════════ */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+      <div className="coach-main-grid">
         {/* ── TEAM PERFORMANCE RADAR ── */}
         <div className="card-lg" style={{ padding: 20 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
