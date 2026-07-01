@@ -3,1554 +3,394 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Quote, Trophy, TrendingUp, TrendingDown, Minus, Sparkles, Loader2,
-} from "lucide-react";
+import { Loader2, Star, ChevronRight } from "lucide-react";
 import { getMyPlayerData } from "@/lib/supabase/queries";
-import {
-  ARCHETYPES, SOCIOTYPES, POSITION_LABELS, CATEGORY_LABELS,
-} from "@/lib/types";
-import { getRatingLabel, formatDate } from "@/lib/utils";
-import type { Evaluation, EvaluationCategory, PlayerWithDetails } from "@/lib/types";
+import { ARCHETYPES, SOCIOTYPES, CATEGORY_LABELS } from "@/lib/types";
+import { getRatingLabel } from "@/lib/utils";
+import type { EvaluationCategory, PlayerWithDetails } from "@/lib/types";
 
-/* ───────────────────────────────────────────────────────── */
-/*  Helpers                                                  */
-/* ───────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   SFA TOKENS
+═══════════════════════════════════════════════ */
+const T = {
+  bg:      "#071426",
+  panel:   "rgba(13,30,54,0.72)",
+  line:    "rgba(120,175,225,0.14)",
+  ink:     "#EAF2FB",
+  sub:     "#8FA8C6",
+  dim:     "#4E688A",
+  blue:    "#1B6CA8",
+  sky:     "#4DAEE5",
+  gold:    "#F0A500",
+  red:     "#D64045",
+  green:   "#33C481",
+} as const;
 
-function calculateAge(dob?: string): number | null {
-  if (!dob) return null;
-  const d = new Date(dob);
-  const now = new Date();
-  let age = now.getFullYear() - d.getFullYear();
-  if (now < new Date(now.getFullYear(), d.getMonth(), d.getDate())) age--;
-  return age;
+const ATTR_ORDER: EvaluationCategory[] = ["techniek","fysiek","tactiek","mentaal","teamplay"];
+
+/* value colour (0-99) — SFA scaled */
+function valColor(v: number): string {
+  if (v >= 85) return T.sky;
+  if (v >= 75) return T.green;
+  if (v >= 65) return T.gold;
+  if (v >= 50) return "#E08A3C";
+  return T.red;
 }
 
-function coreValueLevel(value: number): { levelLabel: string; desc: string } {
-  if (value <= 4) {
-    return { levelLabel: "Ontwikkelend", desc: "Nog ruimte om hierin te groeien — focus van de coach." };
-  }
-  if (value <= 6.5) {
-    return { levelLabel: "Gezonde balans", desc: "Je voelt het wanneer nodig, maar blijft vrij." };
-  }
-  if (value <= 8) {
-    return { levelLabel: "Sterke driver", desc: "Een duidelijk kenmerk van je spel — anderen merken het." };
-  }
-  return { levelLabel: "Onorthodox", desc: "Een uitgesproken signatuur — onvoorspelbaar voor tegenstanders." };
-}
-
-function sociotypeImpact(id: string): string {
-  const impacts: Record<string, string> = {
-    leider:       "Je trekt het team mee in lastige momenten. Coach communiceert direct met jou over teamtaken. Verwachting: jij bent de stem op het veld in cruciale fases.",
-    strijder:     "Je tempo zakt nooit. Je wordt ingezet in duels die mentaal en fysiek pijn doen. Jouw onverzadigbaarheid drukt het ritme van de tegenstander.",
-    denker:       "Je krijgt vrijheid om posities te kiezen. Verwachting: jij dicteert het tempo in de opbouwfase en bepaalt wanneer het team druk moet zetten.",
-    kunstenaar:   "Je beslissingen zijn moeilijk te lezen voor verdedigers. Coach geeft je de ruimte om risico te nemen — fouten horen bij creatieve waarde.",
-    professional: "Je presteert constant op een hoog gemiddelde. Je bent betrouwbaar in elke wedstrijd — geen pieken nodig, geen dalen geaccepteerd.",
-    rustbrenger:  "Je houdt het team kalm onder druk. Jij bent de speler die de bal vraagt als anderen panikeren. Coach rekent op jouw stabiliteit.",
-    joker:        "Je houdt de groep mentaal lichtvoetig. In zware fases bouw jij de spanning af — essentieel voor lange-termijn teamcohesie.",
-    killer:       "Je kunt afsluiten als het moment er is. Coach plaatst jou waar afronding telt, omdat jouw mentaliteit niet inzakt onder kansen.",
-  };
-  return impacts[id] ?? "";
-}
-
-function buildEvolution(evals: Evaluation[]) {
-  return [...evals]
-    .sort((a, b) => new Date(a.evaluation_date).getTime() - new Date(b.evaluation_date).getTime())
-    .map(ev => ({
-      label: new Date(ev.evaluation_date).toLocaleDateString("nl-NL", { month: "short" }),
-      value: Math.round((ev.overall_score ?? 7) * 10),
-      date: ev.evaluation_date,
-    }))
-    .slice(-7);
-}
-
-const CAT_COLORS: Record<EvaluationCategory, string> = {
-  techniek: "#4DAEE5",
-  fysiek:   "#7DC4EE",
-  tactiek:  "#F0A500",
-  mentaal:  "#D64045",
-  teamplay: "#16A34A",
-};
-
-/* ───────────────────────────────────────────────────────── */
-/*  Page                                                     */
-/* ───────────────────────────────────────────────────────── */
-
+/* ═══════════════════════════════════════════════
+   PAGE
+═══════════════════════════════════════════════ */
 export default function PlayerCardPage() {
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
-      const data = await getMyPlayerData();
-      setPlayer(data);
-      setLoading(false);
-    }
-    load();
+    (async () => {
+      try { setPlayer(await getMyPlayerData()); }
+      catch(e){ console.error(e); }
+      finally { setLoading(false); }
+    })();
   }, []);
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: "calc(100vh - 52px)", background: "#0A0E14", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <Loader2 size={28} className="animate-spin" style={{ color: "#4DAEE5" }} />
+  if (loading) return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: CSS }}/>
+      <div className="fc-root" style={{display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <Loader2 size={26} className="animate-spin" style={{color:T.sky}}/>
       </div>
-    );
-  }
+    </>
+  );
 
-  if (!player) {
-    return (
-      <div style={{ minHeight: "calc(100vh - 52px)", background: "#0A0E14", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: 40 }}>
-        <div style={{ maxWidth: 420, textAlign: "center" }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>Geen spelersgegevens</h2>
-          <p style={{ color: "rgba(255,255,255,0.6)", marginBottom: 20 }}>Vul eerst je profiel aan.</p>
-          <Link href="/onboarding" style={{
-            display: "inline-block", padding: "10px 24px",
-            background: "#1B6CA8", color: "#fff", borderRadius: 8,
-            fontWeight: 600, fontSize: 13, textDecoration: "none",
-          }}>
-            Naar onboarding
-          </Link>
+  if (!player) return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: CSS }}/>
+      <div className="fc-root" style={{display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <div style={{textAlign:"center"}}>
+          <h2 style={{fontSize:20,fontWeight:800,color:T.ink,marginBottom:8}}>Geen spelerskaart</h2>
+          <p style={{fontSize:13,color:T.sub,marginBottom:20}}>Vul je profiel in om je kaart te maken.</p>
+          <Link href="/onboarding" style={btn}>Profiel aanvullen <ChevronRight size={13}/></Link>
         </div>
       </div>
-    );
-  }
+    </>
+  );
 
-  // ── Derived data ─────────────────────────────────────────
-  const evals = player.evaluations ?? [];
-  const latestEval = evals[0];
+  /* derived */
+  const ovr    = player.overall_rating;
+  const latest = player.evaluations?.[0];
+  const attrs = ATTR_ORDER.map(cat => ({
+    cat, label: CATEGORY_LABELS[cat],
+    val: Math.round((latest?.scores?.find(s=>s.category===cat)?.score ?? 0) * 10),
+  }));
+  const photo = player.photo_url ?? player.avatar_url ?? null;
+  const age = calcAge(player.date_of_birth);
+  const foot = player.dominant_foot === "left" ? "L" : player.dominant_foot === "both" ? "L/R" : "R";
   const archetype = player.identity?.primary_archetype ? ARCHETYPES[player.identity.primary_archetype] : null;
   const sociotype = player.identity?.primary_sociotype ? SOCIOTYPES[player.identity.primary_sociotype] : null;
-  const age = calculateAge(player.date_of_birth);
-
-  const initials = `${player.first_name?.[0] ?? ""}${player.last_name?.[0] ?? ""}`;
-  const photoUrl = player.photo_url ?? player.avatar_url ?? null;
-
-  const trendDelta = evals.length >= 2 && evals[0].overall_score && evals[1].overall_score
-    ? evals[0].overall_score - evals[1].overall_score
-    : 0;
-
-  // 6 attributes for hexagonal diamond — 5 categories + Overall
-  const ATTRIBUTES = [
-    ...(["techniek","fysiek","tactiek","mentaal","teamplay"] as EvaluationCategory[]).map(cat => ({
-      label: CATEGORY_LABELS[cat],
-      value: latestEval?.scores?.find(s => s.category === cat)?.score ?? 0,
-      color: CAT_COLORS[cat],
-    })),
-    {
-      label: "Overall",
-      value: latestEval?.overall_score ?? 0,
-      color: "#F0A500",
-    },
-  ];
-
-  const evolution = buildEvolution(evals);
-
-  // Active mission
-  const activeMission = player.challenges?.find(c => c.status === "in_progress") ?? null;
+  const technique = latest?.scores?.find(s=>s.category==="techniek")?.score ?? 0;
+  const skillMoves = Math.max(1, Math.min(5, Math.round(technique/2)));
+  const posCount = 1 + (player.secondary_position?1:0);
+  const evalCount = player.evaluations?.length ?? 0;
+  const doneCh = player.challenges?.filter(c=>c.status==="completed").length ?? 0;
+  const playstyles = [...(archetype?.traits ?? []), ...(sociotype?.traits ?? [])].slice(0,6);
 
   return (
-    <div
-      className="pc-page"
-      style={{
-        margin: "-28px -28px -40px",
-        minHeight: "calc(100vh - 52px)",
-        background: "#0A0E14",
-        color: "#fff",
-        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
-      <ResponsiveStyles />
+    <>
+      <style dangerouslySetInnerHTML={{ __html: CSS }}/>
+      <div className="fc-root">
+        <div className="fc-streak fc-streak-1"/>
+        <div className="fc-streak fc-streak-2"/>
 
-      {/* Ambient background mesh */}
-      <div style={{
-        position: "absolute", inset: 0,
-        background: `
-          radial-gradient(ellipse at 15% 0%, rgba(27,108,168,0.15), transparent 50%),
-          radial-gradient(ellipse at 85% 30%, rgba(240,165,0,0.08), transparent 50%),
-          radial-gradient(ellipse at 50% 100%, rgba(77,174,229,0.06), transparent 60%)
-        `,
-        pointerEvents: "none",
-      }} />
-
-      {/* ═══════════════════════════════════════════════════════════
-          HERO
-          ═══════════════════════════════════════════════════════════ */}
-      <section className="pc-hero" style={{
-        position: "relative",
-        padding: "60px 40px 0",
-        maxWidth: 1280,
-        margin: "0 auto",
-      }}>
-        <div className="pc-hero-grid" style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 420px",
-          gap: 60,
-          alignItems: "start",
-        }}>
-          {/* LEFT: name + identity */}
-          <div style={{ paddingTop: 40 }}>
-            {player.badge && (
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                padding: "5px 10px", borderRadius: 999,
-                background: "rgba(240,165,0,0.08)",
-                border: "1px solid rgba(240,165,0,0.25)",
-                fontSize: 10, fontWeight: 700,
-                letterSpacing: "0.14em", color: "#F0A500",
-                textTransform: "uppercase", marginBottom: 28,
-              }}>
-                <Sparkles size={11} /> {player.badge}
+        <div className="fc-stage">
+          {/* ══ PANEL ══ */}
+          <div className="fc-panel">
+            {/* header */}
+            <div className="fc-head">
+              <div>
+                <div className="fc-ovrline">
+                  <span className="fc-ovr" style={{color: valColor(ovr)}}>{ovr}</span>
+                  <span className="fc-bar">|</span>
+                  <span className="fc-pos">{player.position}</span>
+                  {player.secondary_position && <span className="fc-pos fc-pos2">{player.secondary_position}</span>}
+                </div>
+                <div className="fc-first">{player.first_name}</div>
+                <div className="fc-last">
+                  <span className="fc-flag">{flag(player.nationality)}</span>
+                  {player.last_name}
+                </div>
               </div>
-            )}
-
-            <div style={{
-              fontSize: 11, letterSpacing: "0.22em", fontWeight: 600,
-              color: "rgba(77,174,229,0.7)", marginBottom: 18,
-              textTransform: "uppercase",
-            }}>
-              {player.jersey_number ? `N° ${player.jersey_number} · ` : ""}{player.position} · {POSITION_LABELS[player.position]}
-            </div>
-
-            <h1 className="pc-firstname" style={{
-              fontSize: 96, fontWeight: 200, letterSpacing: "-0.04em",
-              lineHeight: 0.95, color: "rgba(255,255,255,0.95)", marginBottom: 6,
-            }}>
-              {player.first_name}
-            </h1>
-            <h1 className="pc-lastname" style={{
-              fontSize: 96, fontWeight: 800, letterSpacing: "-0.05em",
-              lineHeight: 0.95, color: "#fff", marginBottom: 32,
-            }}>
-              {player.last_name}.
-            </h1>
-
-            <div className="pc-stats-row" style={{
-              display: "flex", gap: 40, marginTop: 36,
-              paddingTop: 32,
-              borderTop: "1px solid rgba(255,255,255,0.08)",
-              flexWrap: "wrap",
-            }}>
-              {age && <Stat label="AGE" value={`${age}`} />}
-              {player.height_cm && <Stat label="HEIGHT" value={`${(player.height_cm / 100).toFixed(2)} m`} />}
-              {player.dominant_foot && <Stat label="FOOT" value={player.dominant_foot === "left" ? "Links" : player.dominant_foot === "right" ? "Rechts" : "Beide"} />}
-              <Stat label="CLUB" value={player.team_name ?? player.club ?? "SFA"} />
-              <Stat label="JOINED" value={new Date(player.created_at).toLocaleDateString("nl-NL", { month: "short", year: "numeric" })} />
-            </div>
-          </div>
-
-          {/* RIGHT: rating + free-floating cutout photo */}
-          <div className="pc-photo-zone" style={{ position: "relative", paddingTop: 8, minHeight: 580 }}>
-            {/* Ambient golden glow behind photo */}
-            <div style={{
-              position: "absolute",
-              top: 40, right: -40,
-              width: 480, height: 480,
-              background: "radial-gradient(circle, rgba(240,165,0,0.18) 0%, transparent 60%)",
-              pointerEvents: "none",
-              zIndex: 0,
-            }} />
-
-            {/* Big OVR display floating top-right */}
-            <div className="pc-ovr-block" style={{
-              position: "relative",
-              display: "flex",
-              alignItems: "flex-end",
-              gap: 18,
-              marginBottom: 24,
-              zIndex: 2,
-            }}>
-              <div className="pc-overall" style={{
-                fontSize: 180, fontWeight: 700,
-                letterSpacing: "-0.06em", lineHeight: 0.82,
-                color: "#F0A500",
-                fontFamily: '"Inter", system-ui, sans-serif',
-                textShadow: "0 8px 40px rgba(240,165,0,0.45)",
-              }}>
-                {player.overall_rating}
-              </div>
-              <div style={{ paddingBottom: 22 }}>
-                <div style={{
-                  fontSize: 10, letterSpacing: "0.18em",
-                  color: "rgba(255,255,255,0.4)",
-                  fontWeight: 600, textTransform: "uppercase",
-                  marginBottom: 6,
-                }}>
-                  Overall
+              <div className="fc-club">
+                <div className="fc-club-badge">
+                  <Image src="/logo.png" alt="" width={30} height={30} style={{objectFit:"contain"}}/>
                 </div>
-                <div style={{
-                  fontSize: 16, fontWeight: 700, color: "#F0A500",
-                  letterSpacing: "-0.01em", marginBottom: 6,
-                }}>
-                  {getRatingLabel(player.overall_rating)}
-                </div>
-                <div style={{
-                  display: "inline-flex", alignItems: "center", gap: 4,
-                  fontSize: 12, fontWeight: 600,
-                  color: trendDelta > 0 ? "#16A34A" : trendDelta < 0 ? "#D64045" : "rgba(255,255,255,0.5)",
-                }}>
-                  {trendDelta > 0 ? <TrendingUp size={12} /> : trendDelta < 0 ? <TrendingDown size={12} /> : <Minus size={12} />}
-                  {trendDelta > 0 ? "+" : ""}{trendDelta.toFixed(1)} vs vorige
-                </div>
+                <span className="fc-club-name">{clubAbbr(player.team_name || player.club)}</span>
               </div>
             </div>
 
-            {/* FREE-FLOATING CUTOUT PHOTO — no border, bleeds into bg */}
-            <div className="pc-photo-wrap" style={{
-              position: "relative",
-              width: "100%",
-              minHeight: 440,
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-              zIndex: 1,
-            }}>
-              {/* Subtle huge initials watermark behind */}
-              <div className="pc-watermark" style={{
-                position: "absolute",
-                top: "50%", left: "50%",
-                transform: "translate(-50%, -50%) scale(1.4)",
-                fontSize: 320, fontWeight: 900,
-                letterSpacing: "-0.08em",
-                color: "rgba(77,174,229,0.04)",
-                fontFamily: '"Inter", system-ui, sans-serif',
-                pointerEvents: "none",
-                whiteSpace: "nowrap",
-                zIndex: 0,
-              }}>
-                {initials}
-              </div>
-
-              {photoUrl ? (
-                <div className="pc-photo-inner" style={{
-                  position: "relative",
-                  width: "100%",
-                  maxWidth: 460,
-                  height: 540,
-                  zIndex: 2,
-                }}>
-                  <Image
-                    src={photoUrl}
-                    alt={`${player.first_name} ${player.last_name}`}
-                    fill
-                    style={{
-                      objectFit: "contain",
-                      objectPosition: "bottom center",
-                      filter: "drop-shadow(0 24px 32px rgba(0,0,0,0.5))",
-                    }}
-                    unoptimized
-                  />
-                </div>
-              ) : (
-                <div style={{
-                  position: "relative", zIndex: 2,
-                  fontSize: 220, fontWeight: 700,
-                  letterSpacing: "-0.06em",
-                  background: "linear-gradient(180deg, #4DAEE5 0%, #1B6CA8 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  fontFamily: '"Inter", system-ui, sans-serif',
-                  filter: "drop-shadow(0 12px 32px rgba(77,174,229,0.3))",
-                }}>
-                  {initials}
-                </div>
-              )}
+            {/* meta line */}
+            <div className="fc-meta">
+              <span>Leeftijd: <b>{age ?? "—"}</b></span>
+              <span className="fc-dot">|</span>
+              <span>Lengte <b>{player.height_cm?`${player.height_cm} cm`:"—"}</b></span>
+              <span className="fc-dot">|</span>
+              <span>Voet <b>{foot}</b></span>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          ATTRIBUTES + SOCIOTYPE
-          ═══════════════════════════════════════════════════════════ */}
-      {(latestEval || sociotype) && (
-        <section style={{
-          maxWidth: 1280, margin: "120px auto 0", padding: "0 40px",
-        }}>
-          <div className="pc-attr-soc" style={{
-            display: "grid",
-            gridTemplateColumns: "440px 1fr",
-            gap: 60,
-          }}>
-            {/* Attributes */}
-            <div>
-              <SectionMark label="01" title="Attributes" sub={latestEval ? `Per ${formatDate(latestEval.evaluation_date)}` : "Nog geen evaluatie"} />
-              {latestEval ? (
-                <>
-                  <div style={{ marginTop: 32 }}>
-                    <HexagonDiamond attrs={ATTRIBUTES} rating={player.overall_rating} />
+            {/* SUMMARY */}
+            <div className="fc-section-label">Samenvatting</div>
+            <div className="fc-summary">
+              {/* left attributes */}
+              <div className="fc-attrs">
+                {attrs.map(a=>(
+                  <div className="fc-attr" key={a.cat}>
+                    <span className="fc-attr-k">{a.label}</span>
+                    <span className="fc-attr-v" style={{color: a.val>0?valColor(a.val):T.dim}}>
+                      {a.val>0?a.val:"–"}
+                    </span>
                   </div>
-                  <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 14 }}>
-                    {ATTRIBUTES.map(a => (
-                      <AttrRow key={a.label} {...a} />
-                    ))}
+                ))}
+              </div>
+
+              {/* right meta */}
+              <div className="fc-rmeta">
+                <div className="fc-rrow">
+                  <span className="fc-attr-k">Posities</span>
+                  <span className="fc-rval">{posCount}</span>
+                </div>
+                <div className="fc-rrow">
+                  <span className="fc-attr-k">Skill Moves</span>
+                  <Stars n={skillMoves}/>
+                </div>
+                {archetype && (
+                  <div className="fc-rrow">
+                    <span className="fc-attr-k">Archetype</span>
+                    <span className="fc-rtag" style={{color:archetype.color}}>
+                      <span>{archetype.icon}</span>{archetype.label}
+                    </span>
                   </div>
-                </>
-              ) : (
-                <EmptyHint text="Zodra je coach een evaluatie heeft toegevoegd, verschijnen hier je attributes." />
-              )}
-            </div>
-
-            {/* Sociotype */}
-            <div>
-              <SectionMark label="02" title="Sociotype" sub={archetype ? `Speltype: ${archetype.label}` : "Behavioral profile"} />
-              <div style={{ marginTop: 32 }}>
-                {sociotype ? (
-                  <>
-                    <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
-                      <div style={{
-                        width: 68, height: 68, borderRadius: 16,
-                        background: `linear-gradient(135deg, ${sociotype.color_hex}1F, ${sociotype.color_hex}06)`,
-                        border: `1px solid ${sociotype.color_hex}40`,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 32,
-                      }}>
-                        {sociotype.icon}
-                      </div>
-                      <div>
-                        <div style={{
-                          fontSize: 10, letterSpacing: "0.18em",
-                          color: "rgba(255,255,255,0.4)", marginBottom: 4,
-                          textTransform: "uppercase", fontWeight: 600,
-                        }}>
-                          Primary type
-                        </div>
-                        <h2 className="pc-socio-name" style={{
-                          fontSize: 36, fontWeight: 700,
-                          letterSpacing: "-0.03em", lineHeight: 1,
-                          color: sociotype.color_hex,
-                        }}>
-                          {sociotype.label}
-                        </h2>
-                      </div>
-                    </div>
-
-                    <p style={{
-                      fontSize: 16, lineHeight: 1.65,
-                      color: "rgba(255,255,255,0.75)", marginBottom: 32,
-                      maxWidth: 520,
-                    }}>
-                      {sociotype.description}
-                    </p>
-
-                    <div className="pc-traits" style={{
-                      display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-                      gap: 12, marginBottom: 32,
-                    }}>
-                      {sociotype.traits.map((t, i) => (
-                        <div key={t} style={{
-                          padding: "16px 14px", borderRadius: 10,
-                          background: `${sociotype.color_hex}0A`,
-                          border: `1px solid ${sociotype.color_hex}24`,
-                        }}>
-                          <div style={{
-                            fontSize: 10, fontFamily: '"Inter", system-ui, sans-serif',
-                            color: `${sociotype.color_hex}AA`, letterSpacing: "0.06em",
-                            marginBottom: 6,
-                          }}>
-                            0{i + 1}
-                          </div>
-                          <div style={{
-                            fontSize: 14, fontWeight: 700,
-                            color: "rgba(255,255,255,0.92)",
-                            letterSpacing: "-0.01em",
-                          }}>
-                            {t}
-                          </div>
-                        </div>
+                )}
+                {sociotype && (
+                  <div className="fc-rrow">
+                    <span className="fc-attr-k">Sociotype</span>
+                    <span className="fc-rtag" style={{color:sociotype.color_hex}}>
+                      <span>{sociotype.icon}</span>{sociotype.label}
+                    </span>
+                  </div>
+                )}
+                {playstyles.length>0 && (
+                  <div className="fc-rrow fc-rrow-ps">
+                    <span className="fc-attr-k">PlayStyles</span>
+                    <div className="fc-ps">
+                      {playstyles.map((p,i)=>(
+                        <span className="fc-diamond" key={i} title={p}>
+                          <span>{p[0]?.toUpperCase()}</span>
+                        </span>
                       ))}
                     </div>
-
-                    <div style={{
-                      padding: 22, borderRadius: 12,
-                      background: `${sociotype.color_hex}08`,
-                      borderLeft: `3px solid ${sociotype.color_hex}`,
-                    }}>
-                      <div style={{
-                        fontSize: 10, letterSpacing: "0.16em", fontWeight: 600,
-                        color: `${sociotype.color_hex}BB`, marginBottom: 10,
-                        textTransform: "uppercase",
-                      }}>
-                        Wat dit betekent voor jouw spel
-                      </div>
-                      <p style={{
-                        fontSize: 14, lineHeight: 1.65,
-                        color: "rgba(255,255,255,0.85)",
-                      }}>
-                        {sociotypeImpact(sociotype.id)}
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <EmptyHint text="Sociotype wordt door je coach bepaald op basis van meerdere evaluaties." />
+                  </div>
                 )}
               </div>
             </div>
-          </div>
-        </section>
-      )}
 
-      {/* ═══════════════════════════════════════════════════════════
-          CORE VALUES
-          ═══════════════════════════════════════════════════════════ */}
-      {player.identity && (
-        player.identity.core_noodzaak !== undefined ||
-        player.identity.core_creativiteit !== undefined ||
-        player.identity.core_vertrouwen !== undefined
-      ) && (
-        <section style={{
-          maxWidth: 1280, margin: "120px auto 0", padding: "0 40px",
-        }}>
-          <SectionMark label="03" title="Core values" sub="Drivers behind your game" />
-          <div className="pc-core-grid" style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 20, marginTop: 40,
-          }}>
-            <CoreValueCard
-              label="Noodzaak"
-              value={player.identity.core_noodzaak ?? 0}
-              color="#D64045"
-            />
-            <CoreValueCard
-              label="Creativiteit"
-              value={player.identity.core_creativiteit ?? 0}
-              color="#7C3AED"
-            />
-            <CoreValueCard
-              label="Vertrouwen"
-              value={player.identity.core_vertrouwen ?? 0}
-              color="#16A34A"
-            />
-          </div>
-        </section>
-      )}
+            {/* DEVELOPMENT */}
+            <div className="fc-divider"/>
+            <div className="fc-section-label">Ontwikkeling</div>
+            <div className="fc-fin">
+              <div className="fc-finrow"><span>Status</span><b style={{color:valColor(ovr)}}>{getRatingLabel(ovr)}</b></div>
+              <div className="fc-finrow"><span>Evaluaties</span><b>{evalCount}</b></div>
+              <div className="fc-finrow"><span>Challenges voltooid</span><b>{doneCh}</b></div>
+            </div>
 
-      {/* ═══════════════════════════════════════════════════════════
-          EVOLUTION + COACH NOTE
-          ═══════════════════════════════════════════════════════════ */}
-      {(evolution.length > 1 || latestEval?.notes) && (
-        <section style={{
-          maxWidth: 1280, margin: "120px auto 0", padding: "0 40px",
-        }}>
-          <div className="pc-evo-grid" style={{
-            display: "grid",
-            gridTemplateColumns: evolution.length > 1 && latestEval?.notes ? "1.6fr 1fr" : "1fr",
-            gap: 60,
-          }}>
-            {evolution.length > 1 && (
-              <div>
-                <SectionMark label="04" title="Evolution" sub={`${evolution.length}-puntig verloop`} />
-                <EvolutionChart data={evolution} />
+            {/* dots */}
+            <div className="fc-dots">
+              {[0,1,2,3,4,5].map(i=><span key={i} className={i===0?"on":""}/>)}
+            </div>
+          </div>
+
+          {/* ══ RENDER ══ */}
+          <div className="fc-render">
+            {photo ? (
+              <div className="fc-photo">
+                <Image src={photo} alt="" fill unoptimized
+                  style={{objectFit:"cover",objectPosition:"top center"}}/>
+                <div className="fc-photo-fade"/>
               </div>
-            )}
-
-            {latestEval?.notes && (
-              <div>
-                <SectionMark label="05" title="Coach view" sub="Latest assessment" />
-                <div style={{
-                  marginTop: 32, padding: 32, borderRadius: 14,
-                  background: "linear-gradient(180deg, rgba(240,165,0,0.05) 0%, transparent 100%)",
-                  border: "1px solid rgba(240,165,0,0.15)",
-                  position: "relative", overflow: "hidden",
-                }}>
-                  <Quote size={28} style={{
-                    color: "rgba(240,165,0,0.25)",
-                    position: "absolute", top: 18, right: 18,
-                  }} />
-                  <p style={{
-                    fontSize: 17, lineHeight: 1.6,
-                    color: "rgba(255,255,255,0.88)", marginBottom: 28,
-                    letterSpacing: "-0.005em",
-                  }}>
-                    &ldquo;{latestEval.notes}&rdquo;
-                  </p>
-                  <div style={{
-                    display: "flex", alignItems: "center", gap: 12,
-                    paddingTop: 20,
-                    borderTop: "1px solid rgba(255,255,255,0.06)",
-                  }}>
-                    <div style={{
-                      width: 36, height: 36, borderRadius: "50%",
-                      background: "linear-gradient(135deg, #F0A500, #B07700)",
-                      color: "#0D1B2A",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 13, fontWeight: 700, letterSpacing: "-0.02em",
-                    }}>
-                      {(latestEval.coach_name ?? "C").split(" ").map(n => n[0]).join("").slice(0, 2)}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.9)" }}>
-                        {latestEval.coach_name ?? "Coach"}
-                      </div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 1 }}>
-                        {formatDate(latestEval.evaluation_date)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            ) : (
+              <div className="fc-nophoto">
+                <span className="fc-nophoto-num">{player.jersey_number ?? player.position}</span>
               </div>
             )}
           </div>
-        </section>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════
-          ACTIVE MISSION
-          ═══════════════════════════════════════════════════════════ */}
-      {activeMission && (
-        <section style={{
-          maxWidth: 1280, margin: "120px auto 0", padding: "0 40px 120px",
-        }}>
-          <SectionMark label="06" title="Active mission" sub="What you're building toward" />
-
-          <div className="pc-mission" style={{
-            marginTop: 40, padding: "40px 44px", borderRadius: 16,
-            background: "linear-gradient(135deg, rgba(77,174,229,0.06) 0%, rgba(13,27,42,0.4) 100%)",
-            border: "1px solid rgba(77,174,229,0.18)",
-            display: "grid",
-            gridTemplateColumns: "1fr 200px",
-            gap: 60, alignItems: "center",
-          }}>
-            <div>
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                padding: "5px 11px", borderRadius: 999,
-                background: "rgba(77,174,229,0.1)",
-                border: "1px solid rgba(77,174,229,0.25)",
-                fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
-                color: "#4DAEE5", textTransform: "uppercase", marginBottom: 18,
-              }}>
-                <Trophy size={11} /> {activeMission.category ? CATEGORY_LABELS[activeMission.category as EvaluationCategory] : "Challenge"}
-              </div>
-              <h3 style={{
-                fontSize: 36, fontWeight: 700,
-                letterSpacing: "-0.03em", marginBottom: 8, color: "#fff",
-              }}>
-                {activeMission.title}
-              </h3>
-              {activeMission.description && (
-                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", marginBottom: 28 }}>
-                  {activeMission.description}
-                </p>
-              )}
-
-              <div style={{
-                position: "relative", height: 6, borderRadius: 3,
-                background: "rgba(255,255,255,0.06)", overflow: "hidden",
-              }}>
-                <div style={{
-                  position: "absolute", left: 0, top: 0, bottom: 0,
-                  width: `${activeMission.progress}%`,
-                  background: "linear-gradient(90deg, #4DAEE5, #1B6CA8)",
-                  borderRadius: 3,
-                  boxShadow: "0 0 16px rgba(77,174,229,0.5)",
-                }} />
-              </div>
-            </div>
-
-            <div style={{ textAlign: "right" }}>
-              <div className="pc-mission-pct" style={{
-                fontSize: 84, fontWeight: 700,
-                fontFamily: '"Inter", system-ui, sans-serif',
-                color: "#4DAEE5", letterSpacing: "-0.04em", lineHeight: 1,
-                textShadow: "0 4px 24px rgba(77,174,229,0.3)",
-              }}>
-                {activeMission.progress}<span style={{ fontSize: 28, color: "rgba(77,174,229,0.5)" }}>%</span>
-              </div>
-              <div style={{
-                fontSize: 11, letterSpacing: "0.14em",
-                color: "rgba(255,255,255,0.4)", marginTop: 6,
-                textTransform: "uppercase", fontWeight: 600,
-              }}>
-                Completion
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Bottom marker */}
-      <div style={{
-        textAlign: "center", padding: "60px 0",
-        fontSize: 10, letterSpacing: "0.2em",
-        color: "rgba(255,255,255,0.2)",
-        textTransform: "uppercase", fontWeight: 600,
-      }}>
-        SFA Performance Hub · {player.first_name} {player.last_name}
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────
-   COMPONENTS
-   ───────────────────────────────────────────────────────── */
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div style={{
-        fontSize: 10, letterSpacing: "0.16em",
-        color: "rgba(255,255,255,0.35)", marginBottom: 6,
-        textTransform: "uppercase", fontWeight: 600,
-      }}>
-        {label}
-      </div>
-      <div style={{
-        fontSize: 16, fontWeight: 600,
-        color: "rgba(255,255,255,0.92)", letterSpacing: "-0.01em",
-      }}>
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function SectionMark({ label, title, sub }: { label: string; title: string; sub: string }) {
-  return (
-    <div>
-      <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 4 }}>
-        <span style={{
-          fontSize: 11, fontFamily: '"Inter", system-ui, sans-serif',
-          color: "rgba(255,255,255,0.3)", letterSpacing: "0.04em",
-        }}>
-          {label}
-        </span>
-        <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
-      </div>
-      <h2 className="pc-section-title" style={{
-        fontSize: 42, fontWeight: 700, letterSpacing: "-0.04em",
-        lineHeight: 1.05, color: "#fff", marginBottom: 4,
-      }}>
-        {title}
-      </h2>
-      <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", letterSpacing: "0.01em" }}>
-        {sub}
-      </div>
-    </div>
-  );
-}
-
-function AttrRow({ label, value, color }: { label: string; value: number; color: string }) {
-  return (
-    <div style={{
-      display: "grid", gridTemplateColumns: "100px 1fr 60px",
-      gap: 14, alignItems: "center",
-    }}>
-      <span style={{
-        fontSize: 11, letterSpacing: "0.1em",
-        color: "rgba(255,255,255,0.5)",
-        textTransform: "uppercase", fontWeight: 600,
-      }}>
-        {label.toUpperCase()}
-      </span>
-      <div style={{
-        height: 4, borderRadius: 2,
-        background: "rgba(255,255,255,0.05)",
-        overflow: "hidden", position: "relative",
-      }}>
-        <div style={{
-          height: "100%", width: `${value * 10}%`,
-          background: `linear-gradient(90deg, ${color}, ${color}88)`,
-          borderRadius: 2,
-          boxShadow: `0 0 12px ${color}80`,
-        }} />
-      </div>
-      <span style={{
-        fontFamily: '"Inter", system-ui, sans-serif',
-        fontSize: 15, fontWeight: 700, color,
-        textAlign: "right", letterSpacing: "-0.02em",
-      }}>
-        {value > 0 ? value.toFixed(1) : "—"}
-      </span>
-    </div>
-  );
-}
-
-/**
- * HexagonDiamond — full 360° rotating faceted radar.
- * - 6 data points form a hexagonal polygon (data shape)
- * - Wrapped in CSS 3D scene with perspective + continuous rotateY
- * - Triangular facets from center to each pair of vertices
- *   are shaded per facet to simulate cut-diamond highlights
- * - Multiple translateZ layers stacked for real thickness
- * - Counter-rotation on labels keeps them legible
- */
-function HexagonDiamond({ attrs, rating }: { attrs: { label: string; value: number; color: string }[]; rating: number }) {
-  const size = 460;
-  const cx = size / 2;
-  const cy = size / 2;
-  const R = 150;
-  const n = attrs.length;
-
-  // Hexagon vertices — scaled by per-attribute value
-  const surfacePoints = attrs.map((a, i) => {
-    const ratio = Math.max(0.04, a.value / 10);
-    const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-    return {
-      x: cx + Math.cos(angle) * R * ratio,
-      y: cy + Math.sin(angle) * R * ratio,
-      angle, attr: a, ratio,
-    };
-  });
-
-  // Triangular facets — from center to each adjacent pair of vertices
-  const facets = surfacePoints.map((p, i) => {
-    const next = surfacePoints[(i + 1) % n];
-    return {
-      d: `M${cx},${cy} L${p.x.toFixed(1)},${p.y.toFixed(1)} L${next.x.toFixed(1)},${next.y.toFixed(1)} Z`,
-      // shade phase — top right facets brighter
-      shade: 0.4 + 0.6 * ((Math.sin(p.angle + 0.4) + 1) / 2),
-      // hue blend of the two vertex colors at this facet
-      colorA: p.attr.color,
-      colorB: next.attr.color,
-    };
-  });
-
-  const ringPath = (ratio: number) =>
-    Array.from({ length: n }).map((_, i) => {
-      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-      return `${i === 0 ? "M" : "L"}${cx + Math.cos(angle) * R * ratio},${cy + Math.sin(angle) * R * ratio}`;
-    }).join(" ") + " Z";
-
-  const pathOf = (pts: { x: number; y: number }[]) =>
-    pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ") + " Z";
-
-  const surfacePath = pathOf(surfacePoints);
-  const labelPoints = attrs.map((_, i) => {
-    const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-    return { x: cx + Math.cos(angle) * (R + 36), y: cy + Math.sin(angle) * (R + 36) };
-  });
-
-  return (
-    <div className="hex3d-stage" style={{
-      perspective: 1400,
-      perspectiveOrigin: "50% 50%",
-      width: "100%",
-      maxWidth: 500,
-      margin: "0 auto",
-      padding: "32px 0",
-    }}>
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes hex3dSpin {
-          0%   { transform: rotateX(-12deg) rotateY(0deg); }
-          100% { transform: rotateX(-12deg) rotateY(360deg); }
-        }
-        @keyframes hex3dGlow {
-          0%, 100% { filter: drop-shadow(0 0 24px rgba(77,174,229,0.4)); }
-          50%      { filter: drop-shadow(0 0 44px rgba(240,165,0,0.45)); }
-        }
-        @keyframes hex3dLabelSpin {
-          0%   { transform: rotateY(0deg); }
-          100% { transform: rotateY(-360deg); }
-        }
-        .hex3d-rotor {
-          transform-style: preserve-3d;
-          animation: hex3dSpin 28s linear infinite;
-        }
-        .hex3d-layer { position: absolute; inset: 0; transform-style: preserve-3d; }
-        .hex3d-glow { animation: hex3dGlow 6s ease-in-out infinite; }
-        /* Counter-rotating labels stay readable */
-        .hex3d-labels { animation: hex3dLabelSpin 28s linear infinite; transform-style: preserve-3d; }
-        @media (prefers-reduced-motion: reduce) {
-          .hex3d-rotor, .hex3d-labels, .hex3d-glow { animation: none !important; }
-          .hex3d-rotor { transform: rotateX(-10deg) rotateY(-20deg) !important; }
-        }
-      ` }} />
-
-      <div style={{ position: "relative", width: "100%", aspectRatio: "1 / 1" }}>
-        <div className="hex3d-rotor" style={{ position: "absolute", inset: 0 }}>
-
-          {/* ── DEPTH LAYERS — back, mid, front for diamond thickness ── */}
-          {[-16, -8, 0, 8, 16].map((z, layerIdx) => {
-            const isMain = z === 0;
-            const layerOpacity = isMain ? 1 : Math.max(0.12, 1 - Math.abs(z) / 22);
-
-            return (
-              <div key={z} className="hex3d-layer" style={{
-                transform: `translateZ(${z}px)`,
-                opacity: layerOpacity,
-              }}>
-                <svg
-                  width="100%" height="100%"
-                  viewBox={`0 0 ${size} ${size}`}
-                  style={{ overflow: "visible", display: "block" }}
-                >
-                  <defs>
-                    <radialGradient id={`hex-shine-${layerIdx}`} cx="0.4" cy="0.3" r="0.7">
-                      <stop offset="0%" stopColor="#fff" stopOpacity={isMain ? 0.55 : 0.2} />
-                      <stop offset="55%" stopColor="#fff" stopOpacity={isMain ? 0.1 : 0.05} />
-                      <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-                    </radialGradient>
-                    {isMain && (
-                      <filter id="hexBlur" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="14" />
-                      </filter>
-                    )}
-                    {/* Per-facet gradients */}
-                    {facets.map((f, i) => (
-                      <linearGradient key={i} id={`facet-${layerIdx}-${i}`} x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stopColor={f.colorA} stopOpacity={isMain ? 0.85 * f.shade : 0.35 * f.shade} />
-                        <stop offset="100%" stopColor={f.colorB} stopOpacity={isMain ? 0.55 * f.shade : 0.2 * f.shade} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-
-                  {/* MAIN LAYER — full detail (grid + spokes) */}
-                  {isMain && (
-                    <>
-                      {/* Outer pulsing glow */}
-                      <g className="hex3d-glow">
-                        <path d={surfacePath} fill="#4DAEE5" fillOpacity="0.55" filter="url(#hexBlur)" />
-                      </g>
-
-                      {/* Hex grid rings */}
-                      {[0.25, 0.5, 0.75, 1].map(ring => (
-                        <path key={ring}
-                          d={ringPath(ring)}
-                          fill="none"
-                          stroke="rgba(255,255,255,0.1)"
-                          strokeWidth={ring === 1 ? 1 : 0.5}
-                          strokeDasharray={ring === 1 ? "none" : "3 5"}
-                        />
-                      ))}
-
-                      {/* Spokes from center */}
-                      {Array.from({ length: n }).map((_, i) => {
-                        const a = (i / n) * Math.PI * 2 - Math.PI / 2;
-                        return (
-                          <line key={i}
-                            x1={cx} y1={cy}
-                            x2={cx + Math.cos(a) * R}
-                            y2={cy + Math.sin(a) * R}
-                            stroke="rgba(255,255,255,0.06)"
-                            strokeWidth={0.6}
-                          />
-                        );
-                      })}
-                    </>
-                  )}
-
-                  {/* FACETED TRIANGLES — diamond cut effect */}
-                  {facets.map((f, i) => (
-                    <path
-                      key={i}
-                      d={f.d}
-                      fill={`url(#facet-${layerIdx}-${i})`}
-                      stroke={isMain ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.08)"}
-                      strokeWidth={isMain ? 0.8 : 0.4}
-                      strokeLinejoin="round"
-                    />
-                  ))}
-
-                  {/* OUTER EDGE — connecting all vertices */}
-                  <path
-                    d={surfacePath}
-                    fill="none"
-                    stroke={isMain ? "#7BC9F0" : "rgba(123,201,240,0.3)"}
-                    strokeWidth={isMain ? 2 : 0.8}
-                    strokeLinejoin="round"
-                  />
-
-                  {/* Specular shine overlay (main only) */}
-                  {isMain && (
-                    <path d={surfacePath} fill={`url(#hex-shine-${layerIdx})`} />
-                  )}
-
-                  {/* VERTEX SPHERES (main only) */}
-                  {isMain && surfacePoints.map((p, i) => (
-                    <g key={i}>
-                      <defs>
-                        <radialGradient id={`hex-vert-${i}`} cx="0.3" cy="0.3" r="0.75">
-                          <stop offset="0%" stopColor="#fff" stopOpacity="0.95" />
-                          <stop offset="40%" stopColor={p.attr.color} stopOpacity="1" />
-                          <stop offset="100%" stopColor={p.attr.color} stopOpacity="0.55" />
-                        </radialGradient>
-                      </defs>
-                      <circle cx={p.x} cy={p.y} r={14}
-                        fill={p.attr.color} fillOpacity={0.22}
-                        filter="url(#hexBlur)" />
-                      <circle cx={p.x} cy={p.y} r={6.5}
-                        fill={`url(#hex-vert-${i})`}
-                        stroke="rgba(13,27,42,0.7)"
-                        strokeWidth={1.2} />
-                      <circle cx={p.x - 1.8} cy={p.y - 2} r={1.6} fill="#fff" fillOpacity="0.9" />
-                    </g>
-                  ))}
-                </svg>
-              </div>
-            );
-          })}
-
-          {/* CENTER OVR — sits on top of all rotating layers, also rotates */}
-          <div style={{
-            position: "absolute",
-            top: "50%", left: "50%",
-            transform: "translate(-50%, -50%) translateZ(20px)",
-            transformStyle: "preserve-3d",
-          }}>
-            <div style={{
-              width: 76, height: 76,
-              borderRadius: "50%",
-              background: "linear-gradient(180deg, rgba(13,27,42,0.95) 0%, rgba(13,27,42,0.85) 100%)",
-              border: "1.5px solid rgba(77,174,229,0.4)",
-              display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)",
-            }}>
-              <div style={{
-                fontSize: 28, fontWeight: 800,
-                color: "#fff",
-                letterSpacing: "-0.03em", lineHeight: 1,
-                fontVariantNumeric: "tabular-nums",
-              }}>
-                {rating}
-              </div>
-              <div style={{
-                fontSize: 8, fontWeight: 700,
-                letterSpacing: "0.22em",
-                color: "rgba(255,255,255,0.45)",
-                marginTop: 2,
-              }}>
-                OVR
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* COUNTER-ROTATING LABELS — stay readable */}
-        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", perspective: 1400 }}>
-          <div className="hex3d-labels" style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`} style={{ overflow: "visible" }}>
-              {labelPoints.map((p, i) => (
-                <g key={i}>
-                  <text
-                    x={p.x} y={p.y - 5}
-                    fontSize={11}
-                    fill="rgba(255,255,255,0.6)"
-                    textAnchor="middle"
-                    style={{ letterSpacing: "0.14em", fontWeight: 700 }}
-                  >
-                    {attrs[i].label.toUpperCase()}
-                  </text>
-                  <text
-                    x={p.x} y={p.y + 11}
-                    fontSize={18}
-                    fill={attrs[i].color}
-                    textAnchor="middle"
-                    style={{
-                      fontWeight: 700,
-                      letterSpacing: "-0.02em",
-                      fontVariantNumeric: "tabular-nums",
-                    }}
-                  >
-                    {attrs[i].value > 0 ? attrs[i].value.toFixed(1) : "—"}
-                  </text>
-                </g>
-              ))}
-            </svg>
-          </div>
-        </div>
-
-        {/* Static ground shadow */}
-        <div style={{
-          position: "absolute",
-          left: "15%", right: "15%",
-          bottom: -8, height: 50,
-          background: "radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, transparent 70%)",
-          filter: "blur(10px)",
-          pointerEvents: "none",
-          zIndex: -1,
-        }} />
-      </div>
-    </div>
-  );
-}
-
-// Keep the old name as alias so any leftover refs still work
-function PentagonRadar({ attrs, rating }: { attrs: { label: string; value: number; color: string }[]; rating: number }) {
-  return <HexagonDiamond attrs={attrs} rating={rating} />;
-}
-// Marker — start of OLD PentagonRadar body kept as legacy below (no-op).
-function _legacyPentagonRadar({ attrs, rating }: { attrs: { label: string; value: number; color: string }[]; rating: number }) {
-  const size = 440;
-  const cx = size / 2;
-  const cy = size / 2;
-  const R = 150;
-  const n = attrs.length;
-
-  // ── Pentagon points (upright, no tilt) ──────────────────
-  const surfacePoints = attrs.map((a, i) => {
-    const ratio = Math.max(0, a.value / 10);
-    const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-    return {
-      x: cx + Math.cos(angle) * R * ratio,
-      y: cy + Math.sin(angle) * R * ratio,
-      angle,
-      attr: a,
-    };
-  });
-
-  const ringPoints = (ratio: number) =>
-    Array.from({ length: n }).map((_, i) => {
-      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-      return {
-        x: cx + Math.cos(angle) * R * ratio,
-        y: cy + Math.sin(angle) * R * ratio,
-      };
-    });
-
-  const labelPoints = attrs.map((_, i) => {
-    const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-    return {
-      x: cx + Math.cos(angle) * (R + 32),
-      y: cy + Math.sin(angle) * (R + 32),
-    };
-  });
-
-  const pathOf = (pts: { x: number; y: number }[]) =>
-    pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ") + " Z";
-
-  const surfacePath = pathOf(surfacePoints);
-
-  return (
-    <div className="radar3d-stage" style={{
-      perspective: 1200,
-      perspectiveOrigin: "50% 45%",
-      width: "100%",
-      maxWidth: 480,
-      margin: "0 auto",
-      padding: "20px 0",
-    }}>
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes radar3dSpin {
-          0%   { transform: rotateY(-28deg) rotateX(-8deg); }
-          50%  { transform: rotateY(28deg)  rotateX(-8deg); }
-          100% { transform: rotateY(-28deg) rotateX(-8deg); }
-        }
-        @keyframes radar3dGlow {
-          0%, 100% { filter: drop-shadow(0 0 20px rgba(77,174,229,0.35)); }
-          50%      { filter: drop-shadow(0 0 36px rgba(77,174,229,0.6)); }
-        }
-        .radar3d-rotor {
-          transform-style: preserve-3d;
-          animation: radar3dSpin 16s ease-in-out infinite;
-          transform-origin: 50% 50%;
-        }
-        .radar3d-layer {
-          position: absolute;
-          inset: 0;
-          transform-style: preserve-3d;
-        }
-        .radar3d-glow {
-          animation: radar3dGlow 5s ease-in-out infinite;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .radar3d-rotor { animation: none !important; transform: rotateY(-10deg) rotateX(-6deg) !important; }
-          .radar3d-glow { animation: none !important; }
-        }
-      ` }} />
-
-      <div style={{
-        position: "relative",
-        width: "100%",
-        aspectRatio: "1 / 1",
-      }}>
-        <div className="radar3d-rotor" style={{
-          position: "absolute",
-          inset: 0,
-        }}>
-          {/* ── DEPTH LAYERS — stacked back-to-front for thickness ── */}
-          {[-12, -6, 0, 6, 12].map((z, layerIdx) => {
-            const isMain = z === 0;
-            const layerOpacity = isMain ? 1 : Math.max(0.12, 1 - Math.abs(z) / 14);
-            return (
-              <div key={z} className="radar3d-layer" style={{
-                transform: `translateZ(${z}px)`,
-                opacity: layerOpacity,
-              }}>
-                <svg
-                  width="100%" height="100%"
-                  viewBox={`0 0 ${size} ${size}`}
-                  style={{ overflow: "visible", display: "block" }}
-                >
-                  <defs>
-                    <linearGradient id={`radarTop-${layerIdx}`} x1="0.5" y1="0" x2="0.5" y2="1">
-                      <stop offset="0%" stopColor="#7BC9F0" stopOpacity={isMain ? 0.95 : 0.5} />
-                      <stop offset="55%" stopColor="#4DAEE5" stopOpacity={isMain ? 0.85 : 0.4} />
-                      <stop offset="100%" stopColor="#1B6CA8" stopOpacity={isMain ? 0.7 : 0.3} />
-                    </linearGradient>
-                    <radialGradient id={`radarHL-${layerIdx}`} cx="0.4" cy="0.25" r="0.65">
-                      <stop offset="0%" stopColor="#fff" stopOpacity="0.55" />
-                      <stop offset="50%" stopColor="#fff" stopOpacity="0.1" />
-                      <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-                    </radialGradient>
-                    {isMain && (
-                      <filter id="radarBlur" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="14" />
-                      </filter>
-                    )}
-                  </defs>
-
-                  {/* MAIN LAYER ONLY — full detail */}
-                  {isMain && (
-                    <>
-                      {/* Outer glow under the polygon */}
-                      <g className="radar3d-glow">
-                        <path d={surfacePath} fill="#4DAEE5" fillOpacity="0.6" filter="url(#radarBlur)" />
-                      </g>
-
-                      {/* Grid rings (concentric pentagons) */}
-                      {[0.25, 0.5, 0.75, 1].map(ring => {
-                        const pts = ringPoints(ring);
-                        return (
-                          <path key={ring}
-                            d={pathOf(pts)}
-                            fill="none"
-                            stroke="rgba(255,255,255,0.12)"
-                            strokeWidth={ring === 1 ? 1 : 0.6}
-                            strokeDasharray={ring === 1 ? "none" : "3 5"}
-                          />
-                        );
-                      })}
-
-                      {/* Spokes */}
-                      {Array.from({ length: n }).map((_, i) => {
-                        const a = (i / n) * Math.PI * 2 - Math.PI / 2;
-                        return (
-                          <line key={i}
-                            x1={cx} y1={cy}
-                            x2={cx + Math.cos(a) * R}
-                            y2={cy + Math.sin(a) * R}
-                            stroke="rgba(255,255,255,0.08)"
-                            strokeWidth={0.7}
-                          />
-                        );
-                      })}
-                    </>
-                  )}
-
-                  {/* Polygon — every layer */}
-                  <path
-                    d={surfacePath}
-                    fill={`url(#radarTop-${layerIdx})`}
-                    stroke={isMain ? "#7BC9F0" : "rgba(123,201,240,0.3)"}
-                    strokeWidth={isMain ? 2 : 0.8}
-                    strokeLinejoin="round"
-                  />
-
-                  {/* Specular highlight (main only) */}
-                  {isMain && (
-                    <path d={surfacePath} fill={`url(#radarHL-${layerIdx})`} />
-                  )}
-
-                  {/* VERTEX SPHERES (main layer only) */}
-                  {isMain && surfacePoints.map((p, i) => (
-                    <g key={i}>
-                      <defs>
-                        <radialGradient id={`vertex-${i}`} cx="0.35" cy="0.3" r="0.7">
-                          <stop offset="0%" stopColor="#fff" stopOpacity="0.95" />
-                          <stop offset="40%" stopColor={p.attr.color} stopOpacity="1" />
-                          <stop offset="100%" stopColor={p.attr.color} stopOpacity="0.6" />
-                        </radialGradient>
-                      </defs>
-                      <circle cx={p.x} cy={p.y} r={14}
-                        fill={p.attr.color} fillOpacity={0.2}
-                        filter="url(#radarBlur)" />
-                      <circle cx={p.x} cy={p.y} r={7.5}
-                        fill={`url(#vertex-${i})`}
-                        stroke="#0A0E14"
-                        strokeWidth={1.5} />
-                      <circle cx={p.x - 2} cy={p.y - 2.2} r={1.8} fill="#fff" fillOpacity="0.85" />
-                    </g>
-                  ))}
-
-                  {/* LABELS (main only, counter-rotated to stay legible — see below) */}
-                  {isMain && labelPoints.map((p, i) => {
-                    const isTop = p.y < cy - 30;
-                    return (
-                      <g key={i}>
-                        <text
-                          x={p.x}
-                          y={p.y + (isTop ? -8 : 12)}
-                          fontSize={11}
-                          fill="rgba(255,255,255,0.55)"
-                          textAnchor="middle"
-                          style={{ letterSpacing: "0.14em", fontWeight: 700 }}
-                        >
-                          {attrs[i].label.toUpperCase()}
-                        </text>
-                        <text
-                          x={p.x}
-                          y={p.y + (isTop ? 6 : 28)}
-                          fontSize={18}
-                          fill={attrs[i].color}
-                          textAnchor="middle"
-                          style={{
-                            fontFamily: '"Inter", system-ui, sans-serif',
-                            fontWeight: 700,
-                            letterSpacing: "-0.02em",
-                          }}
-                        >
-                          {attrs[i].value > 0 ? attrs[i].value.toFixed(1) : "—"}
-                        </text>
-                      </g>
-                    );
-                  })}
-
-                  {/* CENTER OVR */}
-                  {isMain && (
-                    <g>
-                      <circle cx={cx} cy={cy} r={32}
-                        fill="rgba(13,27,42,0.9)"
-                        stroke="rgba(77,174,229,0.4)"
-                        strokeWidth={1} />
-                      <text x={cx} y={cy + 3}
-                        fontSize={28} fontWeight={800}
-                        fill="#fff" textAnchor="middle"
-                        style={{
-                          fontFamily: '"Inter", system-ui, sans-serif',
-                          letterSpacing: "-0.04em",
-                          filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.6))",
-                        }}>
-                        {rating}
-                      </text>
-                      <text x={cx} y={cy + 18}
-                        fontSize={8}
-                        fill="rgba(255,255,255,0.45)"
-                        textAnchor="middle"
-                        style={{ letterSpacing: "0.22em", fontWeight: 700 }}>
-                        OVR
-                      </text>
-                    </g>
-                  )}
-                </svg>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Static ground shadow — outside the rotor so it doesn't rotate with the polygon */}
-        <div style={{
-          position: "absolute",
-          left: "10%", right: "10%",
-          bottom: -10,
-          height: 60,
-          background: "radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 70%)",
-          filter: "blur(8px)",
-          pointerEvents: "none",
-          zIndex: -1,
-        }} />
-      </div>
-    </div>
-  );
-}
-
-function CoreValueCard({ label, value, color }: { label: string; value: number; color: string }) {
-  const { levelLabel, desc } = coreValueLevel(value);
-  return (
-    <div style={{
-      padding: 28, borderRadius: 14,
-      background: "rgba(255,255,255,0.02)",
-      border: "1px solid rgba(255,255,255,0.06)",
-      position: "relative", overflow: "hidden",
-    }}>
-      <div style={{
-        position: "absolute", top: 0, right: 0,
-        width: 100, height: 100,
-        background: `radial-gradient(circle at top right, ${color}25, transparent 70%)`,
-        pointerEvents: "none",
-      }} />
-
-      <div style={{
-        display: "flex", alignItems: "flex-start",
-        justifyContent: "space-between", marginBottom: 16,
-      }}>
-        <div>
-          <div style={{
-            fontSize: 10, letterSpacing: "0.14em",
-            color: "rgba(255,255,255,0.4)", fontWeight: 600,
-            marginBottom: 4, textTransform: "uppercase",
-          }}>
-            {label}
-          </div>
-          <div style={{ fontSize: 16, fontWeight: 700, color, letterSpacing: "-0.01em" }}>
-            {levelLabel}
-          </div>
-        </div>
-        <div className="pc-cv-num" style={{
-          fontSize: 44, fontWeight: 700, color,
-          fontFamily: '"Inter", system-ui, sans-serif',
-          letterSpacing: "-0.04em", lineHeight: 0.9,
-          textShadow: `0 4px 16px ${color}40`,
-        }}>
-          {value.toFixed(1)}
         </div>
       </div>
-
-      <div style={{
-        height: 3, borderRadius: 999,
-        background: "rgba(255,255,255,0.04)",
-        overflow: "hidden", marginBottom: 16,
-      }}>
-        <div style={{
-          height: "100%", width: `${value * 10}%`,
-          background: `linear-gradient(90deg, ${color}, ${color}aa)`,
-          borderRadius: 999,
-          boxShadow: `0 0 10px ${color}80`,
-        }} />
-      </div>
-
-      <p style={{
-        fontSize: 13, lineHeight: 1.55,
-        color: "rgba(255,255,255,0.55)",
-      }}>
-        {desc}
-      </p>
-    </div>
+    </>
   );
 }
 
-function EvolutionChart({ data }: { data: { label: string; value: number }[] }) {
-  const W = 700;
-  const H = 240;
-  const PAD = { top: 28, right: 32, bottom: 32, left: 32 };
+/* ═══════════════════════════════════════════════
+   BITS
+═══════════════════════════════════════════════ */
+function Stars({ n }: { n:number }) {
+  return (
+    <span style={{display:"inline-flex",gap:1}}>
+      {[1,2,3,4,5].map(i=>(
+        <Star key={i} size={13}
+          style={{color: i<=n ? T.gold : "rgba(143,168,198,0.3)"}}
+          fill={i<=n ? T.gold : "transparent"} strokeWidth={1.5}/>
+      ))}
+    </span>
+  );
+}
 
-  const values = data.map(d => d.value);
-  const min = Math.max(0, Math.min(...values) - 5);
-  const max = Math.min(100, Math.max(...values) + 5);
-  const range = max - min || 1;
+/* ═══════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════ */
+function calcAge(dob?: string): number | null {
+  if (!dob) return null;
+  const d = new Date(dob); if (isNaN(d.getTime())) return null;
+  const now = new Date();
+  let a = now.getFullYear()-d.getFullYear();
+  const m = now.getMonth()-d.getMonth();
+  if (m<0 || (m===0 && now.getDate()<d.getDate())) a--;
+  return a;
+}
+function clubAbbr(name?: string): string {
+  if (!name) return "SFA";
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) return words[0].slice(0,3).toUpperCase();
+  return words.map(w=>w[0]).join("").slice(0,3).toUpperCase();
+}
+function flag(nat?: string): string {
+  const m: Record<string,string> = {
+    nederland:"🇳🇱",netherlands:"🇳🇱",nl:"🇳🇱",dutch:"🇳🇱",
+    belgië:"🇧🇪",belgium:"🇧🇪",be:"🇧🇪",duitsland:"🇩🇪",germany:"🇩🇪",
+    frankrijk:"🇫🇷",france:"🇫🇷",spanje:"🇪🇸",spain:"🇪🇸",portugal:"🇵🇹",
+    italië:"🇮🇹",italy:"🇮🇹",brazilië:"🇧🇷",brazil:"🇧🇷",marokko:"🇲🇦",
+    morocco:"🇲🇦",turkije:"🇹🇷",turkey:"🇹🇷",suriname:"🇸🇷",
+  };
+  return m[(nat??"").toLowerCase().trim()] ?? "🏳️";
+}
 
-  const xs = (i: number) => PAD.left + (i / Math.max(data.length - 1, 1)) * (W - PAD.left - PAD.right);
-  const ys = (v: number) => H - PAD.bottom - ((v - min) / range) * (H - PAD.top - PAD.bottom);
+const btn: React.CSSProperties = {
+  display:"inline-flex",alignItems:"center",gap:6,padding:"10px 22px",borderRadius:10,
+  background:`linear-gradient(135deg,${T.sky},${T.blue})`,color:"#fff",fontSize:13,fontWeight:700,textDecoration:"none",
+};
 
-  const points = data.map((d, i) => ({ x: xs(i), y: ys(d.value) }));
-  let path = `M${points[0].x},${points[0].y}`;
-  for (let i = 0; i < points.length - 1; i++) {
-    const p0 = points[Math.max(i - 1, 0)];
-    const p1 = points[i];
-    const p2 = points[i + 1];
-    const p3 = points[Math.min(i + 2, points.length - 1)];
-    const cp1x = p1.x + (p2.x - p0.x) / 6;
-    const cp1y = p1.y + (p2.y - p0.y) / 6;
-    const cp2x = p2.x - (p3.x - p1.x) / 6;
-    const cp2y = p2.y - (p3.y - p1.y) / 6;
-    path += ` C${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
+/* ═══════════════════════════════════════════════
+   CSS
+═══════════════════════════════════════════════ */
+const CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Narrow:wght@600;700&display=swap');
+
+  .fc-root {
+    position:relative; overflow:hidden;
+    font-family:'Archivo',system-ui,sans-serif;
+    color:${T.ink};
+    min-height: calc(100dvh - 56px);
+    margin:-16px -12px -16px;
+    padding:0;
+    background:
+      radial-gradient(ellipse 90% 60% at 78% 40%, rgba(27,108,168,0.22), transparent 60%),
+      linear-gradient(120deg, #050F1D 0%, ${T.bg} 45%, #0A1E3A 100%);
   }
-  const fillPath = `${path} L${points[points.length - 1].x},${H - PAD.bottom} L${points[0].x},${H - PAD.bottom} Z`;
+  @media (min-width:1024px){ .fc-root{ margin:-28px -28px -40px; } }
+  @media (min-width:641px) and (max-width:1023px){ .fc-root{ margin:-16px -20px -16px; } }
 
-  return (
-    <div style={{ marginTop: 32 }}>
-      <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
-        <defs>
-          <linearGradient id="evoFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#F0A500" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#F0A500" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="evoStroke" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#4DAEE5" />
-            <stop offset="100%" stopColor="#F0A500" />
-          </linearGradient>
-        </defs>
+  .fc-streak { position:absolute; top:-20%; height:150%; width:34%;
+    transform:skewX(-14deg); pointer-events:none; }
+  .fc-streak-1 { left:52%; background:linear-gradient(90deg, transparent, rgba(120,175,225,0.05), transparent); }
+  .fc-streak-2 { left:70%; background:linear-gradient(90deg, transparent, rgba(120,175,225,0.07), transparent); }
 
-        {[60, 70, 80, 90].filter(v => v >= min && v <= max).map(v => (
-          <g key={v}>
-            <line x1={PAD.left} x2={W - PAD.right} y1={ys(v)} y2={ys(v)}
-              stroke="rgba(255,255,255,0.04)" strokeDasharray="3 4" />
-            <text x={PAD.left - 8} y={ys(v) + 3} fontSize={9}
-              fill="rgba(255,255,255,0.3)" textAnchor="end"
-              style={{ fontFamily: '"Inter", system-ui, sans-serif' }}>
-              {v}
-            </text>
-          </g>
-        ))}
+  .fc-stage {
+    position:relative; z-index:1;
+    display:flex; align-items:stretch; justify-content:center;
+    min-height: calc(100dvh - 56px);
+    max-width:1100px; margin:0 auto;
+  }
 
-        <path d={fillPath} fill="url(#evoFill)" />
-        <path d={path} fill="none" stroke="url(#evoStroke)"
-          strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+  .fc-panel {
+    position:relative; z-index:2;
+    width:min(540px, 92vw);
+    align-self:center;
+    margin:28px 0 28px 24px;
+    padding:26px 28px;
+    background:${T.panel};
+    border:1px solid ${T.line};
+    border-radius:16px;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 30px 80px -30px rgba(0,0,0,0.7);
+  }
 
-        {points.map((p, i) => (
-          <g key={i}>
-            <circle cx={p.x} cy={p.y} r={5} fill="#0A0E14" stroke="#F0A500" strokeWidth={2} />
-            <text x={p.x} y={H - 8} fontSize={10}
-              fill="rgba(255,255,255,0.4)" textAnchor="middle"
-              style={{ letterSpacing: "0.08em", fontWeight: 600 }}>
-              {data[i].label.toUpperCase()}
-            </text>
-            <text x={p.x} y={p.y - 14} fontSize={11}
-              fill="rgba(255,255,255,0.8)" textAnchor="middle"
-              style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 700, letterSpacing: "-0.02em" }}>
-              {data[i].value}
-            </text>
-          </g>
-        ))}
-      </svg>
-    </div>
-  );
-}
+  .fc-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+  .fc-ovrline { display:flex; align-items:center; gap:9px; }
+  .fc-ovr { font-family:'Archivo Narrow',sans-serif; font-size:30px; font-weight:700; line-height:1; }
+  .fc-bar { color:${T.dim}; font-weight:300; font-size:22px; }
+  .fc-pos { font-size:15px; font-weight:700; color:${T.ink}; letter-spacing:0.02em; }
+  .fc-pos2 { color:${T.sub}; }
+  .fc-first { font-size:15px; color:${T.sub}; font-weight:500; margin-top:10px; line-height:1; }
+  .fc-last { font-size:34px; font-weight:900; color:${T.ink}; letter-spacing:-0.02em; line-height:1.05; margin-top:2px;
+    display:flex; align-items:center; gap:9px; }
+  .fc-flag { font-size:22px; }
 
-function EmptyHint({ text }: { text: string }) {
-  return (
-    <div style={{
-      marginTop: 32, padding: "32px 24px",
-      border: "1px dashed rgba(255,255,255,0.12)",
-      borderRadius: 12, textAlign: "center",
-      color: "rgba(255,255,255,0.5)", fontSize: 13,
-      lineHeight: 1.55,
-    }}>
-      {text}
-    </div>
-  );
-}
+  .fc-club { display:flex; flex-direction:column; align-items:center; gap:5px; flex-shrink:0; }
+  .fc-club-badge { width:46px; height:46px; border-radius:50%;
+    background:rgba(255,255,255,0.06); border:1px solid ${T.line};
+    display:flex; align-items:center; justify-content:center; }
+  .fc-club-name { font-size:11px; font-weight:700; letter-spacing:0.1em; color:${T.sub}; }
 
-function ResponsiveStyles() {
-  return (
-    <style dangerouslySetInnerHTML={{ __html: `
-      @media (max-width: 900px) {
-        .pc-hero { padding: 40px 24px 0 !important; }
-        .pc-hero-grid {
-          grid-template-columns: 1fr !important;
-          gap: 36px !important;
-        }
-        .pc-firstname, .pc-lastname { font-size: 56px !important; }
-        .pc-stats-row { gap: 20px !important; padding-top: 24px !important; margin-top: 24px !important; }
-        .pc-overall { font-size: 130px !important; }
-        .pc-photo-zone { min-height: 460px !important; }
-        .pc-photo-wrap { min-height: 380px !important; }
-        .pc-photo-inner { max-width: 360px !important; height: 440px !important; }
-        .pc-watermark { font-size: 220px !important; }
-        .pc-attr-soc {
-          grid-template-columns: 1fr !important;
-          gap: 60px !important;
-        }
-        .pc-section-title { font-size: 32px !important; }
-        .pc-socio-name { font-size: 28px !important; }
-        .pc-core-grid { grid-template-columns: 1fr !important; }
-        .pc-evo-grid {
-          grid-template-columns: 1fr !important;
-          gap: 60px !important;
-        }
-        .pc-mission {
-          grid-template-columns: 1fr !important;
-          gap: 24px !important;
-          padding: 28px !important;
-        }
-        .pc-mission-pct { font-size: 64px !important; text-align: left !important; }
-        .pc-traits { grid-template-columns: 1fr 1fr !important; }
-      }
-      @media (max-width: 480px) {
-        .pc-hero { padding: 24px 16px 0 !important; }
-        .pc-firstname, .pc-lastname { font-size: 40px !important; }
-        .pc-overall { font-size: 96px !important; }
-        .pc-photo-inner { max-width: 280px !important; height: 340px !important; }
-        .pc-watermark { font-size: 160px !important; }
-        .pc-section-title { font-size: 24px !important; }
-        .pc-socio-name { font-size: 22px !important; }
-        .pc-cv-num { font-size: 34px !important; }
-        .pc-traits { grid-template-columns: 1fr !important; }
-      }
-    ` }} />
-  );
-}
+  .fc-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    margin-top:16px; padding-bottom:16px; border-bottom:1px solid ${T.line};
+    font-size:13px; color:${T.sub}; }
+  .fc-meta b { color:${T.ink}; font-weight:700; }
+  .fc-dot { color:${T.dim}; }
+
+  .fc-section-label { font-size:13px; font-weight:700; color:${T.sub}; margin:18px 0 12px; }
+
+  .fc-summary { display:grid; grid-template-columns:1fr 1fr; gap:8px 28px; }
+  .fc-attrs, .fc-rmeta { display:flex; flex-direction:column; gap:11px; }
+
+  .fc-attr, .fc-rrow { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .fc-attr-k { font-size:14px; color:${T.sub}; font-weight:500; }
+  .fc-attr-v { font-family:'Archivo Narrow',sans-serif; font-size:19px; font-weight:700; }
+  .fc-rval { font-family:'Archivo Narrow',sans-serif; font-size:17px; font-weight:700; color:${T.ink}; }
+  .fc-rtag { display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:700; text-align:right; max-width:130px; }
+  .fc-rrow-ps { align-items:flex-start; }
+  .fc-ps { display:flex; flex-wrap:wrap; gap:7px; justify-content:flex-end; max-width:150px; }
+  .fc-diamond { width:24px; height:24px; transform:rotate(45deg); border-radius:5px;
+    background:linear-gradient(135deg, rgba(77,174,229,0.22), rgba(27,108,168,0.28));
+    border:1px solid ${T.line}; display:flex; align-items:center; justify-content:center; }
+  .fc-diamond span { transform:rotate(-45deg); font-size:11px; font-weight:800; color:${T.sky}; }
+
+  .fc-divider { height:1px; background:${T.line}; margin:20px 0 0; }
+
+  .fc-fin { display:flex; flex-direction:column; gap:11px; }
+  .fc-finrow { display:flex; align-items:center; justify-content:space-between; font-size:14px; color:${T.sub}; }
+  .fc-finrow b { font-family:'Archivo Narrow',sans-serif; font-size:17px; color:${T.ink}; font-weight:700; }
+
+  .fc-dots { display:flex; gap:7px; justify-content:center; margin-top:22px; }
+  .fc-dots span { width:6px; height:6px; border-radius:50%; background:rgba(143,168,198,0.3); }
+  .fc-dots span.on { background:${T.sky}; width:16px; border-radius:3px; }
+
+  .fc-render { position:relative; flex:1; align-self:stretch; min-width:0;
+    display:flex; align-items:flex-end; justify-content:center; }
+  .fc-photo { position:absolute; right:0; bottom:0; top:6%; width:min(460px, 46vw); }
+  .fc-photo-fade { position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 72%, ${T.bg} 99%),
+              linear-gradient(90deg, rgba(7,20,38,0.35), transparent 25%); }
+  .fc-nophoto { align-self:center; }
+  .fc-nophoto-num { font-family:'Archivo Narrow',sans-serif; font-size:180px; font-weight:700;
+    color:rgba(120,175,225,0.08); letter-spacing:-0.04em; }
+
+  @media (max-width: 860px) {
+    .fc-stage { flex-direction:column; }
+    .fc-panel { width:auto; margin:20px 16px; align-self:auto; order:2; }
+    .fc-render { order:1; min-height:300px; align-self:stretch; }
+    .fc-photo { position:relative; right:auto; top:auto; width:240px; height:300px; margin:0 auto; }
+    .fc-photo-fade { display:none; }
+    .fc-streak { display:none; }
+  }
+  @media (max-width: 480px) {
+    .fc-summary { grid-template-columns:1fr; gap:16px; }
+    .fc-ps { justify-content:flex-start; }
+    .fc-rtag { max-width:none; }
+  }
+`;
