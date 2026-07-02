@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Loader2, ChevronRight } from "lucide-react";
 import { getMyPlayerData } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/client";
+import { AmbientField } from "@/components/ui/AmbientField";
 import { SORENESS_LOCATION_LABELS } from "@/lib/types";
 import type { PlayerWithDetails, DailyCheckin, SorenessLocation } from "@/lib/types";
 
@@ -107,50 +108,74 @@ export default function PlayerDashboardPage() {
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }}/>
       <div className="sfa-root">
+        <AmbientField tint="#4DAEE5" tint2="#1B6CA8" twinkle="#2B8AC7" intensity={0.9} />
 
-        {/* ═══ HEADER ═══ */}
-        <header className="sfa-header">
-          <div className="sfa-wordmark">
-            <div className="sfa-mark-line"/>
-            <div>
-              <div className="sfa-mark-name">SCHOONHOVEN</div>
-              <div className="sfa-mark-sub">FOOTBALL&nbsp;ACADEMY</div>
+        <div className="sfa-layer">
+          {/* ═══ HEADER ═══ */}
+          <motion.header className="sfa-header"
+            initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16,1,0.3,1] }}>
+            <div className="sfa-wordmark">
+              <div className="sfa-mark-line"/>
+              <div>
+                <div className="sfa-mark-name">SCHOONHOVEN</div>
+                <div className="sfa-mark-sub">FOOTBALL&nbsp;ACADEMY</div>
+              </div>
             </div>
-          </div>
-          <div className="sfa-header-meta">
-            <span><b>Performance Hub</b> · Herstelrapport</span>
-            <span className="sfa-sep">|</span>
-            <span>Bijgewerkt {lastDate ? lastDate.toLocaleDateString("nl-NL",{day:"2-digit",month:"short",year:"2-digit"}) : "—"}</span>
-          </div>
-        </header>
-
-        {/* ═══ PROFILE BAR ═══ */}
-        <ProfileBar player={player}/>
-
-        {/* ═══ REPORT ═══ */}
-        <main className="sfa-report">
-          <div className="sfa-report-head">
-            <h1><span className="beta">[BETA]</span> HERSTELRAPPORT</h1>
-            <Link href="/dashboard/player/checkin" className="sfa-guide">Check-in invullen →</Link>
-          </div>
-          <p className="sfa-report-sub">
-            Dagelijks gemeten. Percentages tonen de afwijking t.o.v. de eigen normaalwaarden per metriek.
-          </p>
-
-          {checkins.length === 0 ? (
-            <EmptyReport/>
-          ) : (
-            <div className="sfa-grid">
-              <OverallCard pct={overallPct} chrono={chrono}/>
-              {METRICS.map((m, i) => (
-                <MetricCard key={m.key} def={m} chrono={chrono} latest={latest} index={i}/>
-              ))}
-              <SorenessCard locations={soreLoc}/>
+            <div className="sfa-header-meta">
+              <span><b>Performance Hub</b> · Herstelrapport</span>
+              <span className="sfa-sep">|</span>
+              <span>Bijgewerkt {lastDate ? lastDate.toLocaleDateString("nl-NL",{day:"2-digit",month:"short",year:"2-digit"}) : "—"}</span>
             </div>
-          )}
-        </main>
+          </motion.header>
+
+          {/* ═══ PROFILE BAR ═══ */}
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.1, ease: [0.16,1,0.3,1] }}>
+            <ProfileBar player={player}/>
+          </motion.div>
+
+          {/* ═══ REPORT ═══ */}
+          <main className="sfa-report">
+            <motion.div className="sfa-report-head"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
+              <h1><span className="beta">[BETA]</span> HERSTELRAPPORT</h1>
+              <Link href="/dashboard/player/checkin" className="sfa-guide">Check-in invullen →</Link>
+            </motion.div>
+            <p className="sfa-report-sub">
+              Dagelijks gemeten. Percentages tonen de afwijking t.o.v. de eigen normaalwaarden per metriek.
+            </p>
+
+            {checkins.length === 0 ? (
+              <EmptyReport/>
+            ) : (
+              <motion.div className="sfa-grid"
+                initial="hidden" animate="show"
+                variants={{ show: { transition: { staggerChildren: 0.07, delayChildren: 0.28 } } }}>
+                <Reveal><OverallCard pct={overallPct} chrono={chrono}/></Reveal>
+                {METRICS.map((m) => (
+                  <Reveal key={m.key}><MetricCard def={m} chrono={chrono} latest={latest}/></Reveal>
+                ))}
+                <Reveal><SorenessCard locations={soreLoc}/></Reveal>
+              </motion.div>
+            )}
+          </main>
+        </div>
       </div>
     </>
+  );
+}
+
+/* staggered fade-up wrapper */
+function Reveal({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, y: 20 },
+        show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16,1,0.3,1] } },
+      }}>
+      {children}
+    </motion.div>
   );
 }
 
@@ -204,7 +229,7 @@ function ProfileBar({ player }: { player: PlayerWithDetails }) {
 function OverallCard({ pct, chrono }: { pct: number; chrono: DailyCheckin[] }) {
   const good = pct >= 0;
   return (
-    <div className="sfa-card notch">
+    <div className="sfa-card notch sfa-card-hover sfa-card-glow">
       <div className="sfa-card-title">Algeheel herstel</div>
       <div className="sfa-card-note">Samengesteld uit alle metrieken</div>
 
@@ -238,7 +263,10 @@ function RecoveryRadar({ chrono }: { chrono: DailyCheckin[] }) {
   const dataPath = dataPts.map((p,i)=>`${i===0?"M":"L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ")+"Z";
 
   return (
-    <svg width="100%" height={size} viewBox={`0 0 ${size} ${size}`} style={{overflow:"visible",display:"block",marginTop:10}}>
+    <motion.svg width="100%" height={size} viewBox={`0 0 ${size} ${size}`}
+      style={{overflow:"visible",display:"block",marginTop:10}}
+      animate={{ y: [0, -5, 0] }}
+      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
       <defs>
         <linearGradient id="rad-fill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={S.sky} stopOpacity="0.34"/>
@@ -256,15 +284,15 @@ function RecoveryRadar({ chrono }: { chrono: DailyCheckin[] }) {
         return <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle"
           fontSize={8.5} fontWeight={700} fill={S.sub} style={{fontFamily:"var(--sans)",letterSpacing:"0.03em"}}>{lab}</text>;
       })}
-    </svg>
+    </motion.svg>
   );
 }
 
 /* ═══════════════════════════════════════════════
    METRIC CARD
 ═══════════════════════════════════════════════ */
-function MetricCard({ def, chrono, latest, index }: {
-  def: MetricDef; chrono: DailyCheckin[]; latest: DailyCheckin | undefined; index: number;
+function MetricCard({ def, chrono, latest }: {
+  def: MetricDef; chrono: DailyCheckin[]; latest: DailyCheckin | undefined;
 }) {
   const series = chrono.map(c => c[def.key] as number|undefined).filter(v=>v!=null) as number[];
   const recentVal = latest?.[def.key] as number|undefined;
@@ -281,8 +309,7 @@ function MetricCard({ def, chrono, latest, index }: {
   const warn = recentVal!=null && (def.invert ? recentVal >= 6 : recentVal <= 4);
 
   return (
-    <motion.div className="sfa-card notch"
-      initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:0.08+index*0.05,duration:0.4}}>
+    <div className="sfa-card notch sfa-card-hover">
       <div className="sfa-card-title">
         {def.label}
         {warn && <span className="sfa-warn-dot" title="Onder normaalwaarde"/>}
@@ -305,7 +332,7 @@ function MetricCard({ def, chrono, latest, index }: {
           <b style={{color:isGood(dev(avg30))?S.good:S.warn}}>{fmtPct(dev(avg30))}</b>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -342,7 +369,7 @@ function SorenessCard({ locations }: { locations: SorenessLocation[] }) {
   const set = new Set(locations);
   const names = locations.map(l => SORENESS_LOCATION_LABELS[l]);
   return (
-    <div className="sfa-card notch">
+    <div className="sfa-card notch sfa-card-hover">
       <div className="sfa-card-title">Spierpijn locatie</div>
       <div className="sfa-card-note">Laatste melding</div>
 
@@ -471,6 +498,8 @@ const CSS = `
   :root { --sans:'Archivo',system-ui,sans-serif; --num:'Archivo Narrow','Archivo',sans-serif; }
 
   .sfa-root {
+    position: relative;
+    overflow: hidden;
     font-family: var(--sans);
     background: ${S.page};
     color: ${S.ink};
@@ -478,6 +507,7 @@ const CSS = `
     margin: -16px -12px -16px;
     padding: 0 0 90px;
   }
+  .sfa-layer { position: relative; z-index: 1; }
   @media (min-width: 1024px) { .sfa-root { margin: -28px -28px -40px !important; } }
   @media (min-width: 641px) and (max-width: 1023px) { .sfa-root { margin: -16px -20px -16px !important; } }
 
@@ -537,6 +567,18 @@ const CSS = `
     padding:18px 18px 20px; box-shadow: 0 1px 2px rgba(13,27,42,0.04);
   }
   .sfa-card.notch { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%); }
+  .sfa-card-hover { transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s ease; will-change: transform; }
+  .sfa-card-hover:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(27,108,168,0.14); }
+  .sfa-card-glow { position: relative; }
+  .sfa-card-glow::before {
+    content: ""; position: absolute; inset: -1px; border-radius: 12px; pointer-events: none;
+    background: radial-gradient(120% 80% at 50% 0%, rgba(77,174,229,0.10), transparent 60%);
+    opacity: 0; transition: opacity 0.4s ease;
+  }
+  .sfa-card-glow:hover::before { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .sfa-card-hover, .sfa-card-hover:hover { transition: none; transform: none; }
+  }
   .sfa-card-title { font-size:16px; font-weight:800; color:${S.ink}; letter-spacing:-0.01em;
     display:flex; align-items:center; gap:7px; }
   .sfa-card-note { font-size:11px; color:${S.dim}; margin-top:2px; }
