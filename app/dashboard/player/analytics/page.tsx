@@ -1,232 +1,104 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { getMyPlayerData } from "@/lib/supabase/queries";
+import { createClient } from "@/lib/supabase/client";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { getRatingColor, getScoreColor } from "@/lib/utils";
 import { ProgressLineChart } from "@/components/charts/ProgressLine";
 import { PlayerRadarChart } from "@/components/charts/RadarChart";
-import { PerformanceIndexCard } from "@/components/PerformanceIndexCard";
+import type { PlayerWithDetails, DailyCheckin, EvaluationCategory } from "@/lib/types";
 import {
-  getPlayerMatchStats, aggregateSeasonStats,
-  getIndexLabel, calculatePlayerIndex,
-  type MatchStat,
-} from "@/lib/match-stats";
-import type { PlayerWithDetails } from "@/lib/types";
-import {
-  Activity, TrendingUp, Loader2, Target, Shield,
-  Footprints, Swords, ChevronRight, Calendar,
+  Activity, TrendingUp, TrendingDown, Loader2, Award, HeartPulse,
+  Star, ClipboardList, ChevronRight,
 } from "lucide-react";
 
-// ── Percentile bar ───────────────────────────────────────────
-function PercentileBar({
-  label, value, max, format, color, icon,
-}: {
-  label: string; value: number; max: number; format?: string; color: string;
-  icon?: React.ReactNode;
-}) {
-  const pct = Math.min((value / max) * 100, 100);
-  return (
-    <div className="flex items-center gap-3">
-      <div className="w-5 flex-shrink-0" style={{ color }}>{icon}</div>
-      <div className="w-28 flex-shrink-0">
-        <span className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>{label}</span>
-      </div>
-      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'var(--color-border)' }}>
-        <div
-          className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${color}80, ${color})` }}
-        />
-      </div>
-      <div className="w-14 text-right text-xs font-black tabular-nums" style={{ color, fontFamily: "Outfit, sans-serif" }}>
-        {value}{format ?? ""}
-      </div>
-    </div>
-  );
-}
+/* ── check-in metrics (fillable, no device needed) ── */
+type CKey = "sleep_quality" | "perceived_recovery" | "energy_level" | "mood" | "motivation" | "soreness";
+const CK_METRICS: { key: CKey; label: string; color: string; invert?: boolean }[] = [
+  { key: "sleep_quality",      label: "Slaap",     color: "#8b5cf6" },
+  { key: "perceived_recovery", label: "Herstel",   color: "#16A34A" },
+  { key: "energy_level",       label: "Energie",   color: "#4FA9E6" },
+  { key: "mood",               label: "Stemming",  color: "#f59e0b" },
+  { key: "motivation",         label: "Motivatie", color: "#6366f1" },
+  { key: "soreness",           label: "Spierpijn", color: "#ef4444", invert: true },
+];
 
-// ── Match row ────────────────────────────────────────────────
-function MatchRow({ stat }: { stat: MatchStat }) {
-  const myGoals = stat.home_away === "home"
-    ? parseInt(stat.result.split("-")[0])
-    : parseInt(stat.result.split("-")[1]);
-  const theirGoals = stat.home_away === "home"
-    ? parseInt(stat.result.split("-")[1])
-    : parseInt(stat.result.split("-")[0]);
-  const outcome = myGoals > theirGoals ? "W" : myGoals === theirGoals ? "G" : "V";
-  const outcomeColor = outcome === "W" ? "#4FA9E6" : outcome === "G" ? "#f59e0b" : "#ef4444";
-  const { color: idxColor } = getIndexLabel(stat.player_index ?? 0);
-
-  return (
-    <div className="flex items-center gap-3 py-2.5 px-3 rounded-xl transition-colors"
-      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(79,169,230,0.04)")}
-      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-    >
-      {/* Date */}
-      <div className="w-14 flex-shrink-0">
-        <div className="text-[11px] font-bold" style={{ color: 'var(--color-text-primary)' }}>
-          {new Date(stat.match_date).toLocaleDateString("nl-NL", { day: "2-digit", month: "short" })}
-        </div>
-      </div>
-      {/* Result badge */}
-      <span className="w-6 h-6 flex items-center justify-center text-[10px] font-black rounded flex-shrink-0"
-        style={{ background: `${outcomeColor}20`, color: outcomeColor }}>
-        {outcome}
-      </span>
-      {/* Opponent */}
-      <div className="flex-1 min-w-0">
-        <div className="text-xs font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{stat.opponent}</div>
-        <div className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>{stat.competition} · {stat.result}</div>
-      </div>
-      {/* Quick stats */}
-      <div className="flex items-center gap-3 flex-shrink-0">
-        <div className="text-center w-6">
-          <div className="text-xs font-black tabular-nums"
-            style={{ color: stat.goals > 0 ? "#4FA9E6" : "var(--color-text-muted)" }}>
-            {stat.goals}G
-          </div>
-        </div>
-        <div className="text-center w-6">
-          <div className="text-xs font-black tabular-nums"
-            style={{ color: stat.assists > 0 ? "#f59e0b" : "var(--color-text-muted)" }}>
-            {stat.assists}A
-          </div>
-        </div>
-        <div className="text-center w-10">
-          <div className="text-[11px] tabular-nums" style={{ color: 'var(--color-text-muted)' }}>{stat.pass_accuracy}%</div>
-        </div>
-        {/* Rating */}
-        <div className="text-center w-8">
-          <span className="text-sm font-black tabular-nums"
-            style={{
-              color: stat.match_rating >= 8 ? "#4FA9E6" : stat.match_rating >= 6.5 ? "#f59e0b" : "#ef4444",
-              fontFamily: "Outfit, sans-serif",
-            }}>
-            {stat.match_rating.toFixed(1)}
-          </span>
-        </div>
-        {/* Index */}
-        <div className="w-9 h-6 flex items-center justify-center rounded-md text-[11px] font-black"
-          style={{ background: `${idxColor}18`, color: idxColor }}>
-          {stat.player_index}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Index trend chart (simple SVG sparkline) ─────────────────
-function IndexSparkline({ stats }: { stats: MatchStat[] }) {
-  const indices = [...stats].reverse().map((s) => s.player_index ?? 0);
-  if (indices.length < 2) return null;
-
-  const W = 300, H = 60;
-  const pad = 8;
-  const min = Math.max(0, Math.min(...indices) - 5);
-  const max = Math.min(100, Math.max(...indices) + 5);
-  const range = max - min || 1;
-
-  const pts = indices.map((v, i) => {
-    const x = pad + (i / (indices.length - 1)) * (W - pad * 2);
-    const y = H - pad - ((v - min) / range) * (H - pad * 2);
-    return `${x},${y}`;
-  });
-
-  const pathD = pts.map((p, i) => (i === 0 ? `M${p}` : `L${p}`)).join(" ");
-  const fillD = `${pathD} L${pts[pts.length - 1].split(",")[0]},${H} L${pts[0].split(",")[0]},${H} Z`;
-
-  const lastIndex = indices[indices.length - 1];
-  const { color } = getIndexLabel(lastIndex);
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 60 }}>
-      <defs>
-        <linearGradient id="idx-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={fillD} fill="url(#idx-fill)" />
-      <path d={pathD} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      {indices.map((v, i) => {
-        const x = pad + (i / (indices.length - 1)) * (W - pad * 2);
-        const y = H - pad - ((v - min) / range) * (H - pad * 2);
-        return <circle key={i} cx={x} cy={y} r={3} fill={color} />;
-      })}
-    </svg>
-  );
-}
-
-// ────────────────────────────────────────────────────────────
 export default function PlayerAnalyticsPage() {
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
+  const [checkins, setCheckins] = useState<DailyCheckin[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"season" | "matches" | "radar">("radar");
-  const [matchStats, setMatchStats] = useState<MatchStat[]>([]);
 
   useEffect(() => {
-    async function load() {
-      const p = await getMyPlayerData();
-      setPlayer(p);
-      if (p?.id) {
-        const stats = await getPlayerMatchStats(p.id);
-        setMatchStats(stats);
-      }
-      setLoading(false);
-    }
-    load();
+    (async () => {
+      try {
+        const p = await getMyPlayerData();
+        setPlayer(p);
+        if (p?.id) {
+          const sb = createClient();
+          const { data } = await sb.from("daily_checkins").select("*")
+            .eq("player_id", p.id).order("checkin_date", { ascending: false }).limit(30);
+          setCheckins((data ?? []) as DailyCheckin[]);
+        }
+      } catch (e) { console.error(e); }
+      finally { setLoading(false); }
+    })();
   }, []);
 
-  const season = useMemo(() => aggregateSeasonStats(matchStats), [matchStats]);
-  const { color: idxColor } = getIndexLabel(season.season_index);
-
   const evaluations = player?.evaluations ?? [];
-  const progressData = [...evaluations]
+  const latestEval = evaluations[0];
+  const prevEval = evaluations[1];
+
+  const progressData = useMemo(() => [...evaluations]
     .sort((a, b) => new Date(a.evaluation_date).getTime() - new Date(b.evaluation_date).getTime())
     .map((ev) => {
-      const scoreMap: Record<string, number> = {};
-      ev.scores?.forEach((s) => { scoreMap[s.category] = s.score; });
-      return { date: ev.evaluation_date, overall: ev.overall_score ?? 7, ...scoreMap };
-    });
+      const m: Record<string, number> = {};
+      ev.scores?.forEach((s) => { m[s.category] = s.score; });
+      return { date: ev.evaluation_date, overall: ev.overall_score ?? 7, ...m };
+    }), [evaluations]);
 
-  const latestEval = evaluations[0];
-
-  // Build radar from latest evaluation — fallback to recent_scores (the 5 training scores always present)
-  const SCORE_LABEL_MAP: Record<string, string> = {
-    techniek: "Techniek",
-    fysiek: "Fysiek",
-    tactiek: "Tactiek",
-    mentaal: "Mentaal",
-    teamplay: "Teamplay",
-  };
-
-  const radarData: { subject: string; value: number; fullMark: number }[] =
-    latestEval?.scores?.length
-      ? latestEval.scores.map((s) => ({
-          subject: CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS] ?? s.category,
-          value: s.score,
-          fullMark: 10,
-        }))
-      : player?.recent_scores
-      ? Object.entries(player.recent_scores).map(([cat, score]) => ({
-          subject: SCORE_LABEL_MAP[cat] ?? cat,
-          value: score as number,
-          fullMark: 10,
-        }))
-      : [];
-
-  const rColor = getRatingColor(player?.overall_rating ?? 65);
-
-  // Previous index (3 matches ago)
-  const prevIndex = matchStats.length >= 4
-    ? (matchStats[3].player_index ?? calculatePlayerIndex(matchStats[3]))
-    : undefined;
+  const radarData = useMemo(() => {
+    if (latestEval?.scores?.length) {
+      return latestEval.scores.map((s) => ({
+        subject: CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS] ?? s.category,
+        value: s.score, fullMark: 10,
+      }));
+    }
+    if (player?.recent_scores) {
+      return Object.entries(player.recent_scores).map(([cat, score]) => ({
+        subject: CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS] ?? cat,
+        value: score as number, fullMark: 10,
+      }));
+    }
+    return [];
+  }, [latestEval, player]);
 
   if (loading) return (
     <div className="flex items-center justify-center py-32">
-      <Loader2 size={32} className="animate-spin text-hub-teal" />
+      <Loader2 size={32} className="animate-spin" style={{ color: "#4FA9E6" }} />
     </div>
   );
+
+  /* KPIs — all from fillable data */
+  const overall = player?.overall_rating ?? 0;
+  const rColor = getRatingColor(overall);
+  const avgScore = evaluations.length
+    ? evaluations.reduce((a, e) => a + (e.overall_score ?? 0), 0) / evaluations.filter(e => e.overall_score != null).length || 0
+    : 0;
+  const streak = calcStreak(checkins);
+
+  // best / weakest category from latest eval
+  const catScores = (latestEval?.scores ?? []).map(s => ({
+    cat: s.category as EvaluationCategory, label: CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS], score: s.score,
+  }));
+  const bestCat = catScores.length ? [...catScores].sort((a,b)=>b.score-a.score)[0] : null;
+
+  // overall delta vs previous eval
+  const delta = latestEval?.overall_score != null && prevEval?.overall_score != null
+    ? latestEval.overall_score - prevEval.overall_score : null;
+
+  const noData = evaluations.length === 0 && checkins.length === 0;
 
   return (
     <div className="space-y-6">
@@ -240,209 +112,194 @@ export default function PlayerAnalyticsPage() {
           </div>
           Performance Analytics
         </h1>
-        <p className="text-sm mt-1 ml-12" style={{ color: 'var(--color-text-muted)' }}>
-          Seizoen 2024/25 · {season.matches} wedstrijden · {season.minutes} minuten
+        <p className="text-sm mt-1 ml-12" style={{ color: "var(--color-text-muted)" }}>
+          {evaluations.length} evaluaties · {checkins.length} check-ins · gebaseerd op coach- en check-in data
         </p>
       </div>
 
-      {/* Hero strip: Index + key stats */}
-      <div className="relative hub-card overflow-hidden p-6">
-        <div className="absolute top-0 left-0 right-0 h-[3px]"
-          style={{ background: `linear-gradient(90deg, transparent, ${idxColor}, #4FA9E6, transparent)` }} />
-
-        <div className="flex items-start gap-8">
-          {/* Index ring */}
-          <div className="flex-shrink-0">
-            <PerformanceIndexCard
-              index={season.season_index}
-              previousIndex={prevIndex}
-              matches={season.matches}
-              position={player?.position}
-              size="lg"
-            />
+      {noData ? (
+        <div className="hub-card p-10 text-center">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+            style={{ background: "rgba(79,169,230,0.1)" }}>
+            <ClipboardList size={24} style={{ color: "#4FA9E6" }} />
           </div>
-
-          {/* Season stats grid */}
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { label: "Doelpunten", value: season.goals, sub: `${season.goals_per_90}/90'`, color: "#4FA9E6", icon: <Target size={13} /> },
-              { label: "Assists", value: season.assists, sub: `${season.assists_per_90}/90'`, color: "#f59e0b", icon: <TrendingUp size={13} /> },
-              { label: "Rating", value: season.avg_rating, sub: "gemiddeld", color: "#8b5cf6", icon: <Activity size={13} />, suffix: "/10" },
-              { label: "Pass%", value: `${season.avg_pass_accuracy}%`, sub: "nauwkeurigheid", color: "#4FA9E6", icon: <Footprints size={13} /> },
-              { label: "Key passes", value: season.key_passes, sub: "kansen gecreëerd", color: "#6366f1", icon: <ChevronRight size={13} /> },
-              { label: "Duel%", value: `${season.duel_success_pct}%`, sub: "gewonnen", color: "#ef4444", icon: <Swords size={13} /> },
-              { label: "Tackles", value: season.tackles, sub: "totaal", color: "#64748b", icon: <Shield size={13} /> },
-              { label: "Wedstrijden", value: season.matches, sub: `${season.minutes}'`, color: "#4FA9E6", icon: <Calendar size={13} /> },
-            ].map((s) => (
-              <div key={s.label} className="rounded-xl p-3 hub-surface">
-                <div className="flex items-center gap-1.5 mb-1.5" style={{ color: s.color }}>
-                  {s.icon}
-                  <span className="hub-label text-[10px]">{s.label}</span>
-                </div>
-                <div className="text-2xl font-black tabular-nums leading-none"
-                  style={{ color: s.color, fontFamily: "Outfit, sans-serif" }}>
-                  {s.value}{(s as { suffix?: string }).suffix ?? ""}
-                </div>
-                <div className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{s.sub}</div>
-              </div>
-            ))}
-          </div>
+          <h3 className="text-lg font-bold mb-2" style={{ color: "var(--color-text-primary)" }}>Nog geen data</h3>
+          <p className="text-sm mb-5" style={{ color: "var(--color-text-muted)" }}>
+            Analytics vult zich met jouw <b>coach-evaluaties</b> en dagelijkse <b>check-ins</b> — geen meetapparatuur nodig.
+          </p>
+          <Link href="/dashboard/player/checkin"
+            className="inline-flex items-center gap-1.5 text-sm font-bold px-5 py-2.5 rounded-lg"
+            style={{ background: "linear-gradient(135deg,#4FA9E6,#1B6CA8)", color: "#fff" }}>
+            Check-in invullen <ChevronRight size={14} />
+          </Link>
         </div>
-
-        {/* Index sparkline */}
-        {matchStats.length >= 3 && (
-          <div className="mt-5 pt-4 border-t border-hub-border">
-            <div className="hub-label text-[10px] mb-2">Performance Index verloop</div>
-            <IndexSparkline stats={matchStats} />
-          </div>
-        )}
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-1.5 p-1 rounded-xl w-fit"
-        style={{ background: 'var(--color-surface)' }}>
-        {([
-          { key: "season", label: "Seizoen Stats" },
-          { key: "matches", label: "Wedstrijden" },
-          { key: "radar", label: "Evaluatie Radar" },
-        ] as const).map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className="text-xs font-semibold px-4 py-2 rounded-lg transition-all"
-            style={tab === t.key
-              ? { background: 'var(--color-surface-3)', color: 'var(--color-gold)', boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }
-              : { color: 'var(--color-text-muted)' }}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Season tab */}
-      {tab === "season" && (
-        <div className="space-y-4">
-          {/* Attacking */}
-          <div className="hub-card p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Target size={14} className="text-hub-teal" />
-              <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Aanval</span>
-            </div>
-            <div className="space-y-3.5">
-              <PercentileBar label="Doelpunten" value={season.goals} max={15} color="#4FA9E6" icon={<Target size={12} />} />
-              <PercentileBar label="Assists" value={season.assists} max={15} color="#f59e0b" icon={<TrendingUp size={12} />} />
-              <PercentileBar label="Schoten" value={season.shots} max={50} color="#6366f1" icon={<Activity size={12} />} />
-              <PercentileBar label="Schoten op doel" value={season.shots_on_target} max={30} color="#8b5cf6" icon={<Target size={12} />} />
-              <PercentileBar label="Key passes" value={season.key_passes} max={40} color="#4FA9E6" icon={<ChevronRight size={12} />} />
+      ) : (
+        <>
+          {/* Hero KPIs */}
+          <div className="relative hub-card overflow-hidden p-6">
+            <div className="absolute top-0 left-0 right-0 h-[3px]"
+              style={{ background: `linear-gradient(90deg, transparent, ${rColor}, #4FA9E6, transparent)` }} />
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              <Kpi label="Overall" value={overall || "—"} color={rColor} icon={<Award size={13} />}
+                sub={delta != null ? `${delta>0?"+":""}${delta.toFixed(1)} vs vorige` : "coach-rating"}
+                deltaUp={delta != null ? delta >= 0 : undefined} />
+              <Kpi label="Gem. score" value={avgScore ? avgScore.toFixed(1) : "—"} color="#8b5cf6"
+                icon={<Activity size={13} />} sub={`${evaluations.length} evaluaties`} />
+              <Kpi label="Beste categorie" value={bestCat ? bestCat.score.toFixed(1) : "—"} color="#16A34A"
+                icon={<Star size={13} />} sub={bestCat?.label ?? "—"} />
+              <Kpi label="Check-ins" value={checkins.length} color="#4FA9E6"
+                icon={<HeartPulse size={13} />} sub="ingevuld" />
+              <Kpi label="Streak" value={streak} color="#f59e0b"
+                icon={<TrendingUp size={13} />} sub={streak === 1 ? "dag" : "dagen"} />
             </div>
           </div>
 
-          {/* Passing */}
-          <div className="hub-card p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Footprints size={14} className="text-hub-teal" />
-              <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Passing & Techniek</span>
+          {/* Radar + category scores */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="hub-card p-5">
+              <div className="text-sm font-bold mb-4" style={{ color: "var(--color-text-primary)" }}>Evaluatie Radar</div>
+              {radarData.length > 0 ? (
+                <PlayerRadarChart data={radarData} color={rColor} size={260} />
+              ) : (
+                <EmptyBox text="Nog geen evaluatie ontvangen" />
+              )}
             </div>
-            <div className="space-y-3.5">
-              <PercentileBar label="Pass%" value={season.avg_pass_accuracy} max={100} color="#4FA9E6" format="%" icon={<Footprints size={12} />} />
-              <PercentileBar label="Dribble%" value={season.dribble_success_pct} max={100} color="#f59e0b" format="%" icon={<Activity size={12} />} />
-              <PercentileBar label="Gem. rating" value={season.avg_rating} max={10} color="#4FA9E6" icon={<Activity size={12} />} />
+            <div className="hub-card p-5">
+              <div className="text-sm font-bold mb-4" style={{ color: "var(--color-text-primary)" }}>Categorie Scores</div>
+              {catScores.length > 0 ? (
+                <div className="space-y-4">
+                  {catScores.map((c) => {
+                    const sc = getScoreColor(c.score);
+                    return (
+                      <div key={c.cat}>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>{c.label}</span>
+                          <span className="text-sm font-black tabular-nums" style={{ color: sc }}>{c.score.toFixed(1)}</span>
+                        </div>
+                        <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--color-border)" }}>
+                          <div className="h-full rounded-full transition-all duration-700"
+                            style={{ width: `${c.score * 10}%`, backgroundColor: sc }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <EmptyBox text="Nog geen score data" />
+              )}
             </div>
           </div>
 
-          {/* Defensive */}
-          <div className="hub-card p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Shield size={14} className="text-hub-teal" />
-              <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Defensief & Duels</span>
-            </div>
-            <div className="space-y-3.5">
-              <PercentileBar label="Duel%" value={season.duel_success_pct} max={100} color="#ef4444" format="%" icon={<Swords size={12} />} />
-              <PercentileBar label="Tackles" value={season.tackles} max={50} color="#64748b" icon={<Shield size={12} />} />
-              <PercentileBar label="Intercepties" value={season.interceptions} max={30} color="#8b5cf6" icon={<Shield size={12} />} />
-            </div>
-          </div>
-
-          {/* Progression chart */}
+          {/* Evaluation progression */}
           {progressData.length > 1 && (
             <div className="hub-card p-5">
               <div className="flex items-center gap-2 mb-4">
-                <TrendingUp size={14} className="text-hub-teal" />
-                <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Evaluatie Progressie</span>
+                <TrendingUp size={14} style={{ color: "#4FA9E6" }} />
+                <span className="text-sm font-bold" style={{ color: "var(--color-text-primary)" }}>Evaluatie Progressie</span>
               </div>
-              <ProgressLineChart data={progressData} showCategories height={200} />
+              <ProgressLineChart data={progressData} showCategories height={220} />
             </div>
           )}
-        </div>
-      )}
 
-      {/* Matches tab */}
-      {tab === "matches" && (
-        <div className="hub-card overflow-hidden">
-          {/* Header row */}
-          <div className="flex items-center gap-3 px-3 py-2 border-b border-hub-border"
-            style={{ background: 'var(--color-surface)' }}>
-            <div className="w-14 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Datum</div>
-            <div className="w-6" />
-            <div className="flex-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Tegenstander</div>
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <span className="w-6 text-[10px] font-bold text-center" style={{ color: 'var(--color-text-muted)' }}>G</span>
-              <span className="w-6 text-[10px] font-bold text-center" style={{ color: 'var(--color-text-muted)' }}>A</span>
-              <span className="w-10 text-[10px] font-bold text-center" style={{ color: 'var(--color-text-muted)' }}>Pass%</span>
-              <span className="w-8 text-[10px] font-bold text-center" style={{ color: 'var(--color-text-muted)' }}>Rtg</span>
-              <span className="w-9 text-[10px] font-bold text-center" style={{ color: 'var(--color-text-muted)' }}>Idx</span>
+          {/* Wellbeing trends from check-ins */}
+          {checkins.length > 0 && (
+            <div className="hub-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <HeartPulse size={14} style={{ color: "#4FA9E6" }} />
+                <span className="text-sm font-bold" style={{ color: "var(--color-text-primary)" }}>Welzijn trends</span>
+                <span className="text-[11px] ml-auto" style={{ color: "var(--color-text-muted)" }}>laatste {Math.min(checkins.length, 14)} check-ins</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
+                {CK_METRICS.map((m) => (
+                  <WellbeingTrend key={m.key} metric={m} checkins={checkins} />
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="divide-y divide-hub-border/50 p-1">
-            {matchStats.map((s) => <MatchRow key={s.id} stat={s} />)}
-          </div>
-        </div>
+          )}
+        </>
       )}
+    </div>
+  );
+}
 
-      {/* Radar tab */}
-      {tab === "radar" && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="hub-card p-5">
-            <div className="text-sm font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Performance Radar</div>
-            {radarData.length > 0 ? (
-              <PlayerRadarChart data={radarData} color={rColor} size={260} />
-            ) : (
-              <div className="h-48 flex items-center justify-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                Nog geen evaluatiedata
-              </div>
-            )}
-          </div>
-          <div className="hub-card p-5">
-            <div className="text-sm font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Categorie Scores</div>
-            {player?.recent_scores ? (
-              <div className="space-y-4">
-                {Object.entries(player.recent_scores).map(([cat, score]) => {
-                  const sc = getScoreColor(score as number);
-                  const label = CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS];
-                  return (
-                    <div key={cat}>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{label}</span>
-                        <span className="text-sm font-black tabular-nums" style={{ color: sc }}>
-                          {(score as number).toFixed(1)}
-                        </span>
-                      </div>
-                      <div className="h-2 bg-hub-border rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all duration-700"
-                          style={{ width: `${(score as number) * 10}%`, backgroundColor: sc }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-48 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                Nog geen score data
-              </div>
-            )}
-          </div>
+/* ── KPI card ── */
+function Kpi({ label, value, sub, color, icon, deltaUp }: {
+  label: string; value: string | number; sub?: string; color: string;
+  icon?: React.ReactNode; deltaUp?: boolean;
+}) {
+  return (
+    <div className="rounded-xl p-3 hub-surface">
+      <div className="flex items-center gap-1.5 mb-1.5" style={{ color }}>
+        {icon}
+        <span className="hub-label text-[10px]">{label}</span>
+      </div>
+      <div className="text-2xl font-black tabular-nums leading-none"
+        style={{ color, fontFamily: "Outfit, sans-serif" }}>{value}</div>
+      {sub && (
+        <div className="text-[10px] mt-1 flex items-center gap-1" style={{ color: "var(--color-text-muted)" }}>
+          {deltaUp !== undefined && (deltaUp ? <TrendingUp size={10} style={{color:"#16A34A"}}/> : <TrendingDown size={10} style={{color:"#ef4444"}}/>)}
+          {sub}
         </div>
       )}
     </div>
   );
+}
+
+/* ── Wellbeing trend row: mini bars + avg ── */
+function WellbeingTrend({ metric, checkins }: {
+  metric: { key: CKey; label: string; color: string; invert?: boolean };
+  checkins: DailyCheckin[];
+}) {
+  // chronological last 14
+  const series = [...checkins].reverse().slice(-14)
+    .map(c => c[metric.key] as number | undefined)
+    .filter(v => v != null) as number[];
+  const avg = series.length ? series.reduce((a,b)=>a+b,0)/series.length : null;
+  const latest = series[series.length-1];
+  const W = 200, H = 44;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-xs font-semibold" style={{ color: "var(--color-text-primary)" }}>{metric.label}</span>
+        <span className="text-xs font-black tabular-nums" style={{ color: metric.color, fontFamily: "Outfit, sans-serif" }}>
+          {avg != null ? avg.toFixed(1) : "—"}<span className="text-[9px]" style={{ color: "var(--color-text-muted)" }}> gem</span>
+        </span>
+      </div>
+      {series.length >= 1 ? (
+        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: "100%", height: H, display: "block" }}>
+          {series.map((v, i) => {
+            const bw = (W / Math.max(series.length, 1)) * 0.62;
+            const gap = (W / Math.max(series.length, 1)) - bw;
+            const x = i * (bw + gap) + gap / 2;
+            const h = Math.max((v / 10) * (H - 4), 2);
+            const isLast = i === series.length - 1;
+            return <rect key={i} x={x} y={H - h} width={bw} height={h} rx={1.5}
+              fill={metric.color} opacity={isLast ? 1 : 0.35} />;
+          })}
+        </svg>
+      ) : (
+        <div className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>Geen data</div>
+      )}
+    </div>
+  );
+}
+
+function EmptyBox({ text }: { text: string }) {
+  return (
+    <div className="h-48 flex items-center justify-center text-sm" style={{ color: "var(--color-text-muted)" }}>
+      {text}
+    </div>
+  );
+}
+
+/* consecutive check-in streak */
+function calcStreak(checkins: DailyCheckin[]): number {
+  if (!checkins.length) return 0;
+  const dates = new Set(checkins.map(c => c.checkin_date.slice(0, 10)));
+  let streak = 0;
+  const d = new Date();
+  if (!dates.has(d.toISOString().slice(0, 10))) d.setDate(d.getDate() - 1);
+  while (dates.has(d.toISOString().slice(0, 10))) { streak++; d.setDate(d.getDate() - 1); }
+  return streak;
 }
