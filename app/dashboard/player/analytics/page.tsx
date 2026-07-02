@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { getMyPlayerData } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/client";
@@ -101,7 +102,9 @@ export default function PlayerAnalyticsPage() {
   const noData = evaluations.length === 0 && checkins.length === 0;
 
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6"
+      initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.16,1,0.3,1] }}>
       {/* Header */}
       <div>
         <h1 className="text-2xl font-black flex items-center gap-3"
@@ -218,7 +221,7 @@ export default function PlayerAnalyticsPage() {
           )}
         </>
       )}
-    </div>
+    </motion.div>
   );
 }
 

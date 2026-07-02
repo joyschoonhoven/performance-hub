@@ -10,6 +10,7 @@ import {
   Shield,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { AmbientField } from "@/components/ui/AmbientField";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -267,9 +268,10 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
         <div style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
           <div
             className="shell-content lg:pb-10"
-            style={{ minHeight: "100%", paddingBottom: "calc(72px + env(safe-area-inset-bottom, 0px))" }}
+            style={{ position: "relative", minHeight: "100%", paddingBottom: "calc(72px + env(safe-area-inset-bottom, 0px))" }}
           >
-            <div className="px-3 pt-4 sm:px-5 lg:px-7 lg:pt-7">
+            {role === "player" && <AmbientField tint="#4DAEE5" tint2="#1B6CA8" twinkle="#2B8AC7" intensity={0.7} />}
+            <div className="px-3 pt-4 sm:px-5 lg:px-7 lg:pt-7" style={{ position: "relative", zIndex: 1 }}>
               {children}
             </div>
           </div>

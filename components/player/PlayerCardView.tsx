@@ -240,8 +240,13 @@ const CSS = `
 
   .fc-streak { position:absolute; top:-20%; height:150%; width:34%;
     transform:skewX(-14deg); pointer-events:none; }
-  .fc-streak-1 { left:52%; background:linear-gradient(90deg, transparent, rgba(120,175,225,0.05), transparent); }
-  .fc-streak-2 { left:70%; background:linear-gradient(90deg, transparent, rgba(120,175,225,0.07), transparent); }
+  .fc-streak-1 { left:52%; background:linear-gradient(90deg, transparent, rgba(120,175,225,0.05), transparent);
+    animation: fcDrift1 15s ease-in-out infinite; }
+  .fc-streak-2 { left:70%; background:linear-gradient(90deg, transparent, rgba(120,175,225,0.07), transparent);
+    animation: fcDrift2 19s ease-in-out infinite; }
+  @keyframes fcDrift1 { 0%,100%{ transform:skewX(-14deg) translateX(0); } 50%{ transform:skewX(-14deg) translateX(26px); } }
+  @keyframes fcDrift2 { 0%,100%{ transform:skewX(-14deg) translateX(0); } 50%{ transform:skewX(-14deg) translateX(-22px); } }
+  @media (prefers-reduced-motion: reduce) { .fc-streak-1, .fc-streak-2 { animation: none; } }
 
   .fc-stage {
     position:relative; z-index:1;
