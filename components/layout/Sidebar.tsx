@@ -10,7 +10,7 @@ import type { UserRole } from "@/lib/types";
 import {
   LayoutDashboard, Users, ClipboardList, Brain,
   Trophy, BarChart3, Settings, LogOut,
-  Shield, Star, Target, UserCircle, Gamepad2, Map, Swords, HeartPulse,
+  Shield, Star, Target, UserCircle, Gamepad2, Map, HeartPulse,
   Flag,
 } from "lucide-react";
 
@@ -27,7 +27,6 @@ function getNavItems(role: UserRole): NavItem[] {
     { label: "Profiel",      href: "/dashboard/coach/profile",     icon: <UserCircle size={16} /> },
     { label: "Spelers",      href: "/dashboard/coach/players",     icon: <Users size={16} /> },
     { label: "Plannen",      href: "/dashboard/coach/plans",       icon: <Flag size={16} />, badge: "NEW" },
-    { label: "Wedstrijden",  href: "/dashboard/coach/matches",     icon: <Swords size={16} />, badge: "NEW" },
     { label: "Evaluaties",   href: "/dashboard/coach/evaluations", icon: <ClipboardList size={16} /> },
     { label: "AI Scouting",  href: "/dashboard/coach/ai",          icon: <Brain size={16} />, badge: "AI" },
     { label: "Analytics",    href: "/dashboard/coach/analytics",   icon: <BarChart3 size={16} /> },

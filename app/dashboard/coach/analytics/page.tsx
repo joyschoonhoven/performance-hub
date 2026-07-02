@@ -9,15 +9,8 @@ import { ProgressLineChart } from "@/components/charts/ProgressLine";
 import { PlayerRadarChart } from "@/components/charts/RadarChart";
 import { PlayerComparisonChart } from "@/components/charts/PlayerComparisonChart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { BarChart3, TrendingUp, Users, GitCompare, LayoutGrid, Loader2, Activity } from "lucide-react";
+import { BarChart3, TrendingUp, GitCompare, LayoutGrid, Loader2 } from "lucide-react";
 import type { Evaluation, PlayerWithDetails } from "@/lib/types";
-import {
-  getAllMatchStats,
-  aggregateSeasonStats, getIndexLabel,
-  type MatchStat,
-} from "@/lib/match-stats";
-import { IndexBadge } from "@/components/PerformanceIndexCard";
-import Link from "next/link";
 
 function buildProgressData(evaluations: Evaluation[]) {
   return [...evaluations]
@@ -29,7 +22,7 @@ function buildProgressData(evaluations: Evaluation[]) {
     });
 }
 
-type TabType = "overview" | "compare" | "ranking" | "index";
+type TabType = "overview" | "compare" | "ranking";
 
 export default function AnalyticsPage() {
   const [players, setPlayers] = useState<PlayerWithDetails[]>([]);
@@ -37,13 +30,11 @@ export default function AnalyticsPage() {
   const [compareA, setCompareA] = useState("");
   const [compareB, setCompareB] = useState("");
   const [tab, setTab] = useState<TabType>("overview");
-  const [matchStats, setMatchStats] = useState<MatchStat[]>([]);
 
   useEffect(() => {
     async function load() {
-      const [p, stats] = await Promise.all([getAllPlayers(), getAllMatchStats()]);
+      const p = await getAllPlayers();
       setPlayers(p);
-      setMatchStats(stats);
       if (p.length > 0) setCompareA(p[0].id);
       if (p.length > 1) setCompareB(p[1].id);
       setLoading(false);
@@ -109,26 +100,9 @@ export default function AnalyticsPage() {
 
   const tabs = [
     { id: "overview" as const, label: "Team Overzicht", icon: <LayoutGrid size={14} /> },
-    { id: "index" as const, label: "Performance Index", icon: <Activity size={14} /> },
     { id: "ranking" as const, label: "Ranglijst", icon: <BarChart3 size={14} /> },
     { id: "compare" as const, label: "1v1 Vergelijken", icon: <GitCompare size={14} /> },
   ];
-
-  // Build index leaderboard from real match stats (per player)
-  const playersWithStats: { id: string; name: string; position: string }[] = [];
-  const seenPlayerIds = new Set<string>();
-  matchStats.forEach(s => {
-    if (!seenPlayerIds.has(s.player_id)) {
-      seenPlayerIds.add(s.player_id);
-      playersWithStats.push({ id: s.player_id, name: s.player_name, position: s.position });
-    }
-  });
-  const indexPlayers = playersWithStats.map((p) => {
-    const stats = matchStats.filter((s) => s.player_id === p.id);
-    const season = aggregateSeasonStats(stats);
-    const { color, label } = getIndexLabel(season.season_index);
-    return { ...p, season, color, indexLabel: label };
-  }).sort((a, b) => b.season.season_index - a.season.season_index);
 
   return (
     <div className="space-y-6">
@@ -251,122 +225,6 @@ export default function AnalyticsPage() {
               </div>
             </div>
           )}
-        </div>
-      )}
-
-      {/* ── PERFORMANCE INDEX ── */}
-      {tab === "index" && (
-        <div className="space-y-5">
-          {/* Top index banner */}
-          {indexPlayers[0] && (() => {
-            const top = indexPlayers[0];
-            const { color } = getIndexLabel(top.season.season_index);
-            return (
-              <div className="relative hub-card overflow-hidden p-6">
-                <div className="absolute top-0 left-0 right-0 h-[3px]"
-                  style={{ background: `linear-gradient(90deg, transparent, ${color}, #4FA9E6, transparent)` }} />
-                <div className="flex items-center gap-6">
-                  <div className="flex flex-col items-center flex-shrink-0">
-                    <div className="text-6xl font-black tabular-nums leading-none"
-                      style={{ color, fontFamily: "Outfit, sans-serif" }}>
-                      {top.season.season_index}
-                    </div>
-                    <div className="hub-label text-[10px] mt-1">Index #1</div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="hub-label text-[10px] mb-1" style={{ color }}>Beste Performance</div>
-                    <div className="text-2xl font-black" style={{ fontFamily: "Outfit, sans-serif", color: 'var(--color-text-primary)' }}>
-                      {top.name}
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-[10px] font-bold px-2 py-1 rounded-full"
-                        style={{ background: `${color}15`, color }}>{top.indexLabel}</span>
-                      <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{top.position} · {top.season.matches} wedstrijden</span>
-                    </div>
-                    <div className="flex gap-4 mt-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                      <span><span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{top.season.goals}</span> G</span>
-                      <span><span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{top.season.assists}</span> A</span>
-                      <span><span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{top.season.avg_rating}</span> Rtg</span>
-                      <span><span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{top.season.avg_pass_accuracy}%</span> Pass</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Leaderboard */}
-          <div className="hub-card overflow-hidden">
-            <div className="px-5 py-4 border-b border-hub-border flex items-center justify-between">
-              <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Performance Index Ranglijst</span>
-              <Link href="/dashboard/coach/matches"
-                className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-                style={{ background: "rgba(79,169,230,0.08)", color: "#4FA9E6" }}>
-                Wedstrijdlog →
-              </Link>
-            </div>
-            <div className="divide-y divide-hub-border/50">
-              {indexPlayers.map((p, rank) => {
-                const maxIdx = indexPlayers[0]?.season.season_index ?? 100;
-                const barPct = (p.season.season_index / maxIdx) * 100;
-                return (
-                  <div key={p.id} className="px-5 py-4 flex items-center gap-4 transition-colors"
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(79,169,230,0.04)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                  >
-                    {/* Rank */}
-                    <div className="w-7 text-center flex-shrink-0">
-                      {rank === 0 ? (
-                        <span className="text-lg font-black" style={{ color: "#f59e0b" }}>🥇</span>
-                      ) : rank === 1 ? (
-                        <span className="text-lg font-black" style={{ color: "#94a3b8" }}>🥈</span>
-                      ) : rank === 2 ? (
-                        <span className="text-lg font-black" style={{ color: "#d97706" }}>🥉</span>
-                      ) : (
-                        <span className="text-sm font-black text-slate-400">#{rank + 1}</span>
-                      )}
-                    </div>
-
-                    {/* Name + position */}
-                    <div className="w-40 flex-shrink-0">
-                      <div className="text-sm font-bold" style={{ color: "#0D1117" }}>{p.name.split(" ")[0]} {p.name.split(" ").slice(1).join(" ")}</div>
-                      <div className="text-[10px] text-slate-400" style={{ color: "#6C7589" }}>{p.position} · {p.season.matches} wedstrijden</div>
-                    </div>
-
-                    {/* Index bar */}
-                    <div className="flex-1 hidden sm:block">
-                      <div className="h-2 rounded-full overflow-hidden" style={{ background: "#E2E5EC" }}>
-                        <div className="h-full rounded-full transition-all duration-700"
-                          style={{ width: `${barPct}%`, background: `linear-gradient(90deg, ${p.color}60, ${p.color})` }} />
-                      </div>
-                    </div>
-
-                    {/* Quick stats */}
-                    <div className="hidden md:flex items-center gap-4 text-xs flex-shrink-0" style={{ color: "#6C7589" }}>
-                      <span className="tabular-nums"><span className="font-bold" style={{ color: "#0D1117" }}>{p.season.goals}</span> G</span>
-                      <span className="tabular-nums"><span className="font-bold" style={{ color: "#0D1117" }}>{p.season.assists}</span> A</span>
-                      <span className="tabular-nums"><span className="font-bold" style={{ color: "#0D1117" }}>{p.season.avg_rating}</span> Rtg</span>
-                      <span className="tabular-nums"><span className="font-bold" style={{ color: "#0D1117" }}>{p.season.avg_pass_accuracy}%</span> Pass</span>
-                    </div>
-
-                    {/* Index badge */}
-                    <div className="flex-shrink-0 ml-2">
-                      <IndexBadge index={p.season.season_index} />
-                    </div>
-                  </div>
-                );
-              })}
-
-              {indexPlayers.length === 0 && (
-                <div className="py-12 text-center text-[#6C7589] text-sm">
-                  Nog geen wedstrijddata beschikbaar.
-                  <Link href="/dashboard/coach/matches/new" className="ml-2 text-hub-teal hover:underline">
-                    Log een wedstrijd →
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       )}
 

@@ -36,7 +36,6 @@ const ROUTE_LABELS: Record<string, string> = {
   "/dashboard/coach/profile":      "Mijn Profiel",
   "/dashboard/coach/players":      "Spelers",
   "/dashboard/coach/plans":        "Plannen",
-  "/dashboard/coach/matches":      "Wedstrijden",
   "/dashboard/coach/evaluations":  "Evaluaties",
   "/dashboard/coach/ai":           "AI Scouting",
   "/dashboard/coach/analytics":    "Analytics",
