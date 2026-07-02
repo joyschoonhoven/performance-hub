@@ -29,7 +29,6 @@ const ROUTE_LABELS: Record<string, string> = {
   "/dashboard/player/plan":        "Mijn Plan",
   "/dashboard/player/evaluations": "Evaluaties",
   "/dashboard/player/challenges":  "Challenges",
-  "/dashboard/player/analytics":   "Analytics",
   "/dashboard/player/game":        "Tactisch IQ",
   "/dashboard/player/heatmap":     "Posities",
   "/dashboard/player/settings":    "Instellingen",

@@ -39,7 +39,6 @@ function getNavItems(role: UserRole): NavItem[] {
     { label: "Mijn Plan",    href: "/dashboard/player/plan",        icon: <Flag size={16} />, badge: "NEW" },
     { label: "Evaluaties",   href: "/dashboard/player/evaluations", icon: <ClipboardList size={16} /> },
     { label: "Challenges",   href: "/dashboard/player/challenges",  icon: <Trophy size={16} /> },
-    { label: "Analytics",    href: "/dashboard/player/analytics",   icon: <BarChart3 size={16} /> },
     { label: "Tactisch IQ",  href: "/dashboard/player/game",        icon: <Gamepad2 size={16} /> },
     { label: "Posities",     href: "/dashboard/player/heatmap",     icon: <Map size={16} /> },
   ];

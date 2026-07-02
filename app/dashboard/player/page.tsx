@@ -8,8 +8,9 @@ import { Loader2, ChevronRight } from "lucide-react";
 import { getMyPlayerData } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/client";
 import { AmbientField } from "@/components/ui/AmbientField";
-import { SORENESS_LOCATION_LABELS } from "@/lib/types";
-import type { PlayerWithDetails, DailyCheckin, SorenessLocation } from "@/lib/types";
+import { SORENESS_LOCATION_LABELS, CATEGORY_LABELS } from "@/lib/types";
+import { getRatingLabel } from "@/lib/utils";
+import type { PlayerWithDetails, DailyCheckin, SorenessLocation, EvaluationCategory } from "@/lib/types";
 
 /* ═══════════════════════════════════════════════
    SFA BRAND TOKENS — light
@@ -41,6 +42,18 @@ const METRICS: MetricDef[] = [
 ];
 const RADAR_KEYS: MetricKey[] = ["sleep_quality","perceived_recovery","energy_level","mood","motivation","soreness"];
 const RADAR_LABELS = ["Slaap","Herstel","Energie","Stemming","Motivatie","Spierpijn"];
+
+/* evaluation categories shown on the dashboard */
+const PERF_ORDER: EvaluationCategory[] = ["techniek","fysiek","tactiek","mentaal","teamplay"];
+const CAT_COLOR: Record<EvaluationCategory,string> = {
+  techniek:"#1B6CA8", fysiek:"#2E9E6B", tactiek:"#C77A0A", mentaal:"#D64045", teamplay:"#7C5CD6",
+};
+function ratingColor(r:number):string {
+  if (r>=85) return "#C77A0A"; if (r>=75) return "#1B6CA8"; if (r>=65) return "#2E9E6B"; if (r>=55) return "#7C5CD6"; return "#8FA8C6";
+}
+function scoreColor(s:number):string {
+  if (s>=8) return "#2E9E6B"; if (s>=6.5) return "#1B6CA8"; if (s>=5) return "#C77A0A"; return "#D64045";
+}
 
 /* ═══════════════════════════════════════════════
    PAGE
@@ -104,6 +117,27 @@ export default function PlayerDashboardPage() {
   const overallPct = computeOverallPct(chrono);
   const soreLoc = (checkins.find(c => (c.soreness_locations?.length ?? 0) > 0)?.soreness_locations ?? []) as SorenessLocation[];
 
+  /* ── performance (evaluatie) data ── */
+  const evals      = player.evaluations ?? [];
+  const latestEval = evals[0];
+  const prevEval   = evals[1];
+  const catScores  = PERF_ORDER.map(cat => ({
+    cat, label: CATEGORY_LABELS[cat],
+    score: latestEval?.scores?.find(s => s.category === cat)?.score ?? 0,
+  }));
+  const avgScore = evals.length
+    ? evals.reduce((a,e)=> a + (e.overall_score ?? 0), 0) / (evals.filter(e=>e.overall_score!=null).length || 1)
+    : 0;
+  const formSeries = [...evals]
+    .filter(e => e.overall_score != null)
+    .sort((a,b)=> new Date(a.evaluation_date).getTime()-new Date(b.evaluation_date).getTime())
+    .map(e => e.overall_score as number);
+  const evalDelta = latestEval?.overall_score != null && prevEval?.overall_score != null
+    ? latestEval.overall_score - prevEval.overall_score : null;
+  const bestCat = catScores.filter(c=>c.score>0).sort((a,b)=>b.score-a.score)[0] ?? null;
+  const streak  = calcStreak(checkins);
+  const doneCh  = player.challenges?.filter(c=>c.status==="completed").length ?? 0;
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }}/>
@@ -135,10 +169,30 @@ export default function PlayerDashboardPage() {
             <ProfileBar player={player}/>
           </motion.div>
 
-          {/* ═══ REPORT ═══ */}
+          {/* ═══ PRESTATIES ═══ */}
           <main className="sfa-report">
             <motion.div className="sfa-report-head"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.18, duration: 0.5 }}>
+              <h1>PRESTATIES</h1>
+              <Link href="/dashboard/player/evaluations" className="sfa-guide">Alle evaluaties →</Link>
+            </motion.div>
+            <p className="sfa-report-sub">
+              {latestEval ? `Laatste coach-evaluatie · ${latestEval.evaluation_date ? new Date(latestEval.evaluation_date).toLocaleDateString("nl-NL",{day:"2-digit",month:"long"}) : ""}` : "Nog geen evaluatie ontvangen van je coach."}
+            </p>
+
+            <motion.div className="sfa-grid"
+              initial="hidden" animate="show"
+              variants={{ show: { transition: { staggerChildren: 0.07, delayChildren: 0.24 } } }}>
+              <Reveal><OverallRatingCard rating={player.overall_rating} avgScore={avgScore} delta={evalDelta}/></Reveal>
+              <Reveal><CategoryScoresCard scores={catScores}/></Reveal>
+              <Reveal><FormCard series={formSeries}/></Reveal>
+              <Reveal><KerncijfersCard evalCount={evals.length} bestCat={bestCat} doneCh={doneCh} streak={streak}/></Reveal>
+            </motion.div>
+
+            {/* ═══ HERSTELRAPPORT ═══ */}
+            <div style={{ height: 28 }} />
+            <motion.div className="sfa-report-head"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.22, duration: 0.5 }}>
               <h1><span className="beta">[BETA]</span> HERSTELRAPPORT</h1>
               <Link href="/dashboard/player/checkin" className="sfa-guide">Check-in invullen →</Link>
             </motion.div>
@@ -216,6 +270,140 @@ function ProfileBar({ player }: { player: PlayerWithDetails }) {
           <div className="sfa-pstat" key={i}>
             <span className="sfa-pstat-k">{k}</span>
             <span className="sfa-pstat-v">{v}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   PERFORMANCE CARDS (evaluatie)
+═══════════════════════════════════════════════ */
+function OverallRatingCard({ rating, avgScore, delta }: { rating:number; avgScore:number; delta:number|null }) {
+  const col = ratingColor(rating);
+  return (
+    <div className="sfa-card notch sfa-card-hover sfa-card-glow">
+      <div className="sfa-card-title">Overall</div>
+      <div className="sfa-card-note">Coach-rating</div>
+      <div style={{display:"flex",alignItems:"baseline",gap:10,margin:"14px 0 6px"}}>
+        <span style={{fontFamily:"var(--num)",fontSize:44,fontWeight:700,color:col,lineHeight:1}}>{rating||"—"}</span>
+        <span style={{fontSize:10.5,fontWeight:700,color:col,background:`${col}14`,border:`1px solid ${col}30`,
+          padding:"3px 9px",borderRadius:999,letterSpacing:"0.06em",textTransform:"uppercase"}}>
+          {getRatingLabel(rating)}
+        </span>
+      </div>
+      <div className="sfa-avgs">
+        <div className="sfa-avg"><span>Gem. evaluatiescore</span>
+          <b style={{color:S.ink}}>{avgScore?avgScore.toFixed(1):"—"}</b></div>
+        {delta!=null && (
+          <div className="sfa-avg"><span>Vs vorige</span>
+            <b style={{color: delta>=0?S.good:S.warn}}>{delta>=0?"+":""}{delta.toFixed(1)}</b></div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CategoryScoresCard({ scores }: { scores: {cat:EvaluationCategory; label:string; score:number}[] }) {
+  const has = scores.some(s=>s.score>0);
+  return (
+    <div className="sfa-card notch sfa-card-hover">
+      <div className="sfa-card-title">Categorieën</div>
+      <div className="sfa-card-note">Laatste evaluatie</div>
+      {!has ? (
+        <div style={{fontSize:11.5,color:S.dim,marginTop:14}}>Nog geen scores</div>
+      ) : (
+        <div style={{display:"flex",flexDirection:"column",gap:11,marginTop:14}}>
+          {scores.map(c=>{
+            const col = c.score>0?scoreColor(c.score):S.dim;
+            return (
+              <div key={c.cat}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+                  <span style={{fontSize:12.5,color:S.ink,fontWeight:600}}>{c.label}</span>
+                  <span style={{fontFamily:"var(--num)",fontSize:15,fontWeight:700,color:col}}>{c.score>0?c.score.toFixed(1):"–"}</span>
+                </div>
+                <div style={{height:5,borderRadius:999,background:S.track,overflow:"hidden"}}>
+                  <motion.div initial={{width:0}} animate={{width:`${(c.score/10)*100}%`}}
+                    transition={{duration:0.8,delay:0.3,ease:[0.16,1,0.3,1]}}
+                    style={{height:"100%",borderRadius:999,background:`linear-gradient(90deg,${CAT_COLOR[c.cat]}bb,${CAT_COLOR[c.cat]})`}}/>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FormCard({ series }: { series:number[] }) {
+  const has = series.length>=2;
+  const last = series[series.length-1] ?? 0;
+  const trend = has ? last - series[0] : 0;
+  const W=230,H=64,PAD=3;
+  let path="",area="",lastPt={x:0,y:0};
+  if (has) {
+    const max=Math.max(...series),min=Math.min(...series),range=max-min||1;
+    const xs=(i:number)=>PAD+(i/(series.length-1))*(W-2*PAD);
+    const ys=(v:number)=>H-PAD-((v-min)/range)*(H-2*PAD);
+    const pts=series.map((v,i)=>({x:xs(i),y:ys(v)}));
+    path=`M${pts[0].x},${pts[0].y}`;
+    for(let i=0;i<pts.length-1;i++){const p0=pts[Math.max(i-1,0)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(i+2,pts.length-1)];
+      const c1x=p1.x+(p2.x-p0.x)/6,c1y=p1.y+(p2.y-p0.y)/6,c2x=p2.x-(p3.x-p1.x)/6,c2y=p2.y-(p3.y-p1.y)/6;
+      path+=` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;}
+    area=`${path} L${pts[pts.length-1].x},${H} L${pts[0].x},${H} Z`;
+    lastPt=pts[pts.length-1];
+  }
+  return (
+    <div className="sfa-card notch sfa-card-hover">
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
+        <div className="sfa-card-title">Vorm</div>
+        {has && <span style={{fontSize:12,fontWeight:700,color:trend>=0?S.good:S.warn}}>{trend>=0?"+":""}{trend.toFixed(1)}</span>}
+      </div>
+      <div className="sfa-card-note">Overall per evaluatie</div>
+      {!has ? (
+        <div style={{fontSize:11.5,color:S.dim,marginTop:14}}>Verschijnt na 2+ evaluaties</div>
+      ) : (
+        <>
+          <div style={{fontFamily:"var(--num)",fontSize:30,fontWeight:700,color:S.ink,margin:"12px 0 4px",lineHeight:1}}>
+            {last.toFixed(1)}<span style={{fontSize:12,color:S.sub}}> laatste</span>
+          </div>
+          <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{display:"block"}}>
+            <defs><linearGradient id="form-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={S.blue} stopOpacity="0.28"/><stop offset="100%" stopColor={S.blue} stopOpacity="0"/>
+            </linearGradient></defs>
+            <path d={area} fill="url(#form-fill)"/>
+            <motion.path d={path} fill="none" stroke={S.blue} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"
+              initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration:1,delay:0.4,ease:"easeOut"}}/>
+            <circle cx={lastPt.x} cy={lastPt.y} r={3.5} fill={S.blue} stroke={S.card} strokeWidth={2}/>
+          </svg>
+        </>
+      )}
+    </div>
+  );
+}
+
+function KerncijfersCard({ evalCount, bestCat, doneCh, streak }: {
+  evalCount:number; bestCat:{label:string;score:number}|null; doneCh:number; streak:number;
+}) {
+  const items = [
+    { label:"Evaluaties", value:String(evalCount) },
+    { label:"Challenges", value:`${doneCh}`, sub:"voltooid" },
+    { label:"Streak", value:`${streak}`, sub:streak===1?"dag":"dagen" },
+    { label:"Sterkste", value:bestCat?bestCat.label:"—", small:true },
+  ];
+  return (
+    <div className="sfa-card notch sfa-card-hover">
+      <div className="sfa-card-title">Kerncijfers</div>
+      <div className="sfa-card-note">Jouw ontwikkeling</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:14}}>
+        {items.map(it=>(
+          <div key={it.label} style={{padding:"10px 12px",borderRadius:10,background:S.page,border:`1px solid ${S.line}`}}>
+            <div style={{fontSize:9,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:S.dim,marginBottom:5}}>{it.label}</div>
+            <div style={{fontFamily:"var(--num)",fontSize:it.small?14:20,fontWeight:700,color:S.ink,lineHeight:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+              {it.value}{it.sub && <span style={{fontSize:9,color:S.sub,fontWeight:500,marginLeft:3}}>{it.sub}</span>}
+            </div>
           </div>
         ))}
       </div>
@@ -466,6 +654,15 @@ function calcAge(dob?: string): number | null {
 function fmtPct(p: number): string {
   const r = Math.round(p*10)/10;
   return `${r>0?"+":""}${r.toFixed(1)}%`;
+}
+function calcStreak(checkins: DailyCheckin[]): number {
+  if (!checkins.length) return 0;
+  const dates = new Set(checkins.map(c => c.checkin_date.slice(0,10)));
+  let streak = 0;
+  const d = new Date();
+  if (!dates.has(d.toISOString().slice(0,10))) d.setDate(d.getDate()-1);
+  while (dates.has(d.toISOString().slice(0,10))) { streak++; d.setDate(d.getDate()-1); }
+  return streak;
 }
 function computeOverallPct(chrono: DailyCheckin[]): number {
   if (!chrono.length) return 0;
