@@ -150,6 +150,7 @@ export function PlanView({ playerId, playerFirstName, viewerRole, viewerName }: 
       <QuestDashboard
         agreements={agreements}
         canEdit={canEdit}
+        canCreate={!canEdit}
         filter={filter}
         onFilterChange={setFilter}
         onAdd={openCreate}

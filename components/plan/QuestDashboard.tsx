@@ -15,6 +15,8 @@ import {
 interface Props {
   agreements: PlanAgreement[];
   canEdit?: boolean;
+  /** Player can add their own items (create only, no edit/delete of coach items). */
+  canCreate?: boolean;
   /** Active category filter ("all" or one of the three categories) */
   filter: "all" | PlanCategory;
   onFilterChange: (f: "all" | PlanCategory) => void;
@@ -300,8 +302,9 @@ function GroupHeader({
 }
 
 export function QuestDashboard({
-  agreements, canEdit, filter, onFilterChange, onAdd, onSelect, onQuickComplete,
+  agreements, canEdit, canCreate, filter, onFilterChange, onAdd, onSelect, onQuickComplete,
 }: Props) {
+  const showAdd = canEdit || canCreate;
   // Apply category filter (but always compute hero from all agreements).
   const visible = useMemo(() => {
     if (filter === "all") return agreements;
@@ -507,7 +510,7 @@ export function QuestDashboard({
           })}
         </div>
 
-        {canEdit && onAdd && (
+        {showAdd && onAdd && (
           <button
             type="button"
             onClick={() => onAdd(filter === "all" ? undefined : filter)}
@@ -535,7 +538,7 @@ export function QuestDashboard({
 
       {/* ───────── MISSION GROUPS ───────── */}
       {!hasAnyVisible ? (
-        <EmptyState canEdit={canEdit} onAdd={() => onAdd?.(filter === "all" ? undefined : filter)} />
+        <EmptyState canEdit={showAdd} onAdd={() => onAdd?.(filter === "all" ? undefined : filter)} />
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {groupOrder.map((group) => {

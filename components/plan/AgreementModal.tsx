@@ -64,7 +64,9 @@ export function AgreementModal({
   const meta = CATEGORY_META[category];
   const isCreate = mode === "create";
   const isEdit = mode === "edit";
-  const editable = canEdit && (isCreate || isEdit);
+  // Coach can create + edit any item; a player can create their OWN items
+  // (but not edit/delete coach-made ones).
+  const editable = (canEdit && (isCreate || isEdit)) || (isCreate && viewerRole === "player");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -77,7 +79,7 @@ export function AgreementModal({
         deadline: deadline || undefined,
         recurring,
         xp,
-        created_by: "coach",
+        created_by: viewerRole === "coach" ? "coach" : "player",
       });
       onClose();
     } else if (isEdit && agreement && onUpdate) {
