@@ -309,66 +309,81 @@ function TrainingForm({ training, defaultDate, isCoach, onClose, onSave, onDelet
   if (!mounted) return null;
 
   return createPortal(
-    <>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={onClose}
-        style={{ position: "fixed", inset: 0, zIndex: 2000, background: "rgba(3,8,15,0.7)", backdropFilter: "blur(6px)" }} />
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 2000,
+        background: "rgba(3,8,15,0.7)", backdropFilter: "blur(6px)",
+        display: "flex", flexDirection: "column", justifyContent: "flex-end",
+      }}>
       <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        onClick={(e) => e.stopPropagation()}
         style={{
-          position: "fixed", left: "50%", bottom: 0, transform: "translateX(-50%)", zIndex: 2001,
-          width: "min(520px, 100%)", maxHeight: "88dvh",
-          overflowY: "auto", WebkitOverflowScrolling: "touch", overscrollBehaviorY: "contain", touchAction: "pan-y",
+          width: "min(520px, 100%)", margin: "0 auto", maxHeight: "92dvh",
+          display: "flex", flexDirection: "column",
           background: `linear-gradient(180deg, ${T.panel}, ${T.bg})`,
           borderTop: `1px solid ${T.lineHi}`, borderRadius: "20px 20px 0 0",
           boxShadow: "0 -24px 60px rgba(0,0,0,0.6)",
-          padding: "20px 22px calc(28px + env(safe-area-inset-bottom, 0px))",
           fontFamily: "'Archivo', system-ui, sans-serif",
         }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        {/* header (fixed) */}
+        <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 22px 12px" }}>
           <h3 style={{ fontSize: 17, fontWeight: 800, color: T.ink }}>{training ? "Training bewerken" : "Nieuwe training"}</h3>
           <button className="tc-nav" onClick={onClose} aria-label="Sluiten"><X size={16} /></button>
         </div>
 
-        {/* type chips */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 16 }}>
-          {(Object.keys(TRAINING_META) as TrainingType[]).map((tt) => {
-            const m = TRAINING_META[tt]; const on = type === tt;
-            return (
-              <button key={tt} onClick={() => setType(tt)} style={{
-                display: "inline-flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: 999,
-                fontSize: 12, fontWeight: 700, cursor: "pointer",
-                background: on ? `${m.color}22` : "transparent",
-                border: `1px solid ${on ? m.color : T.line}`,
-                color: on ? m.color : T.sub,
-              }}>
-                <span>{m.icon}</span>{m.label}
-              </button>
-            );
-          })}
+        {/* scrollable body */}
+        <div style={{
+          flex: 1, minHeight: 0, overflowY: "auto",
+          WebkitOverflowScrolling: "touch", overscrollBehaviorY: "contain", touchAction: "pan-y",
+          padding: "4px 22px 12px",
+        }}>
+          {/* type chips */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 16 }}>
+            {(Object.keys(TRAINING_META) as TrainingType[]).map((tt) => {
+              const m = TRAINING_META[tt]; const on = type === tt;
+              return (
+                <button key={tt} onClick={() => setType(tt)} style={{
+                  display: "inline-flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: 999,
+                  fontSize: 12, fontWeight: 700, cursor: "pointer",
+                  background: on ? `${m.color}22` : "transparent",
+                  border: `1px solid ${on ? m.color : T.line}`,
+                  color: on ? m.color : T.sub,
+                }}>
+                  <span>{m.icon}</span>{m.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <Field label="Datum">
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="tc-input" />
+          </Field>
+          <Field label="Titel (optioneel)">
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="bv. Afronden onder druk" className="tc-input" />
+          </Field>
+
+          <Field label={<><Target size={12} style={{ verticalAlign: "-2px", color: T.sky }} /> Trainingsdoel — coach</>}>
+            <textarea value={coachGoal} onChange={(e) => setCoachGoal(e.target.value)} rows={2}
+              disabled={!isCoach}
+              placeholder={isCoach ? "Wat wil je dat de speler leert?" : "Wordt door je coach ingevuld"}
+              className="tc-input" style={{ resize: "vertical", opacity: isCoach ? 1 : 0.7 }} />
+          </Field>
+          <Field label={<><User size={12} style={{ verticalAlign: "-2px", color: "#2EC4A8" }} /> Mijn doel — speler</>}>
+            <textarea value={playerGoal} onChange={(e) => setPlayerGoal(e.target.value)} rows={2}
+              disabled={isCoach}
+              placeholder={isCoach ? "Wordt door de speler ingevuld" : "Waar wil jij deze training aan werken?"}
+              className="tc-input" style={{ resize: "vertical", opacity: isCoach ? 0.7 : 1 }} />
+          </Field>
         </div>
 
-        <Field label="Datum">
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="tc-input" />
-        </Field>
-        <Field label="Titel (optioneel)">
-          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="bv. Afronden onder druk" className="tc-input" />
-        </Field>
-
-        <Field label={<><Target size={12} style={{ verticalAlign: "-2px", color: T.sky }} /> Trainingsdoel — coach</>}>
-          <textarea value={coachGoal} onChange={(e) => setCoachGoal(e.target.value)} rows={2}
-            disabled={!isCoach}
-            placeholder={isCoach ? "Wat wil je dat de speler leert?" : "Wordt door je coach ingevuld"}
-            className="tc-input" style={{ resize: "vertical", opacity: isCoach ? 1 : 0.7 }} />
-        </Field>
-        <Field label={<><User size={12} style={{ verticalAlign: "-2px", color: "#2EC4A8" }} /> Mijn doel — speler</>}>
-          <textarea value={playerGoal} onChange={(e) => setPlayerGoal(e.target.value)} rows={2}
-            disabled={isCoach}
-            placeholder={isCoach ? "Wordt door de speler ingevuld" : "Waar wil jij deze training aan werken?"}
-            className="tc-input" style={{ resize: "vertical", opacity: isCoach ? 0.7 : 1 }} />
-        </Field>
-
-        <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
+        {/* footer (fixed) */}
+        <div style={{
+          flexShrink: 0, display: "flex", gap: 10,
+          padding: "14px 22px calc(16px + env(safe-area-inset-bottom, 0px))",
+          borderTop: `1px solid ${T.line}`,
+        }}>
           {onDelete && (
             <button onClick={onDelete} className="tc-btn-ghost" aria-label="Verwijderen"><Trash2 size={15} /></button>
           )}
@@ -377,7 +392,7 @@ function TrainingForm({ training, defaultDate, isCoach, onClose, onSave, onDelet
           </button>
         </div>
       </motion.div>
-    </>,
+    </motion.div>,
     document.body,
   );
 }
