@@ -54,6 +54,8 @@ function lsWrite(playerId: string, rows: Training[]) {
 
 /* ── CRUD ── */
 export async function listTrainings(playerId: string): Promise<Training[]> {
+  const local = lsRead(playerId);
+
   if (isSupabaseConfigured()) {
     try {
       const supabase = createClient();
@@ -62,10 +64,17 @@ export async function listTrainings(playerId: string): Promise<Training[]> {
         .select("*")
         .eq("player_id", playerId)
         .order("date", { ascending: true });
-      if (!error && data) return data as Training[];
+      if (!error && data) {
+        // Merge DB rows with any that only reached localStorage (e.g. a write
+        // that failed RLS) so a booked training never silently disappears.
+        const merged = new Map<string, Training>();
+        for (const t of local) merged.set(t.id, t);
+        for (const t of data as Training[]) merged.set(t.id, t);
+        return Array.from(merged.values()).sort((a, b) => a.date.localeCompare(b.date));
+      }
     } catch { /* fall through */ }
   }
-  return lsRead(playerId).sort((a, b) => a.date.localeCompare(b.date));
+  return local.sort((a, b) => a.date.localeCompare(b.date));
 }
 
 export async function addTraining(playerId: string, input: TrainingInput): Promise<Training | null> {
