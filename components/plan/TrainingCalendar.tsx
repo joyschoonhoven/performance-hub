@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Plus, X, Target, User, Trash2, Loader2 } from "lucide-react";
 import {
@@ -290,25 +291,38 @@ function TrainingForm({ training, defaultDate, isCoach, onClose, onSave, onDelet
   const [coachGoal, setCoachGoal] = useState(training?.coach_goal ?? "");
   const [playerGoal, setPlayerGoal] = useState(training?.player_goal ?? "");
   const [saving, setSaving] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // lock background scroll while the sheet is open
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
 
   const submit = () => {
     setSaving(true);
     onSave({ date, type, title: title.trim() || undefined, coach_goal: coachGoal.trim() || undefined, player_goal: playerGoal.trim() || undefined }, training ?? undefined);
   };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        style={{ position: "fixed", inset: 0, zIndex: 60, background: "rgba(3,8,15,0.7)", backdropFilter: "blur(6px)" }} />
+        style={{ position: "fixed", inset: 0, zIndex: 2000, background: "rgba(3,8,15,0.7)", backdropFilter: "blur(6px)" }} />
       <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          position: "fixed", left: "50%", bottom: 0, transform: "translateX(-50%)", zIndex: 61,
-          width: "min(520px, 100%)", maxHeight: "88dvh", overflow: "auto",
+          position: "fixed", left: "50%", bottom: 0, transform: "translateX(-50%)", zIndex: 2001,
+          width: "min(520px, 100%)", maxHeight: "88dvh",
+          overflowY: "auto", WebkitOverflowScrolling: "touch", overscrollBehaviorY: "contain", touchAction: "pan-y",
           background: `linear-gradient(180deg, ${T.panel}, ${T.bg})`,
           borderTop: `1px solid ${T.lineHi}`, borderRadius: "20px 20px 0 0",
-          boxShadow: "0 -24px 60px rgba(0,0,0,0.6)", padding: "20px 22px 28px",
+          boxShadow: "0 -24px 60px rgba(0,0,0,0.6)",
+          padding: "20px 22px calc(28px + env(safe-area-inset-bottom, 0px))",
           fontFamily: "'Archivo', system-ui, sans-serif",
         }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
@@ -363,7 +377,8 @@ function TrainingForm({ training, defaultDate, isCoach, onClose, onSave, onDelet
           </button>
         </div>
       </motion.div>
-    </>
+    </>,
+    document.body,
   );
 }
 
