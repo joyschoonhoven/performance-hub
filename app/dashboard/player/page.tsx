@@ -193,7 +193,7 @@ export default function PlayerDashboardPage() {
             <div style={{ height: 28 }} />
             <motion.div className="sfa-report-head"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.22, duration: 0.5 }}>
-              <h1><span className="beta">[BETA]</span> HERSTELRAPPORT</h1>
+              <h1>HERSTELRAPPORT</h1>
               <Link href="/dashboard/player/checkin" className="sfa-guide">Check-in invullen →</Link>
             </motion.div>
             <p className="sfa-report-sub">
