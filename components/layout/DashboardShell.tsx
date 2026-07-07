@@ -270,7 +270,11 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
             style={{ position: "relative", minHeight: "100%", paddingBottom: "calc(72px + env(safe-area-inset-bottom, 0px))" }}
           >
             {role === "player" && <AmbientField tint="#4DAEE5" tint2="#1B6CA8" twinkle="#2B8AC7" intensity={0.7} />}
-            <div className="px-3 pt-4 sm:px-5 lg:px-7 lg:pt-7" style={{ position: "relative", zIndex: 1 }}>
+            {/* Only the player role has the ambient layer behind content, so only
+                there do we lift content above it. Adding z-index for other roles
+                would trap fixed bars (e.g. the evaluation save bar) below the
+                mobile bottom nav. */}
+            <div className="px-3 pt-4 sm:px-5 lg:px-7 lg:pt-7" style={role === "player" ? { position: "relative", zIndex: 1 } : undefined}>
               {children}
             </div>
           </div>
