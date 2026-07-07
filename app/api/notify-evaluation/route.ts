@@ -105,7 +105,7 @@ export async function POST(request: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Performance Hub <noreply@schoonhovensports.com>",
+        from: process.env.NOTIFY_FROM || "Schoonhoven FA <noreply@schoonhovenfootballacademy.com>",
         to: [playerEmail],
         subject: `Nieuwe evaluatie van je coach, ${firstName}!`,
         html: `

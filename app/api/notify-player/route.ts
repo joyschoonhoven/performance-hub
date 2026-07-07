@@ -62,7 +62,7 @@ export async function POST(req: Request) {
         method: "POST",
         headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          from: process.env.NOTIFY_FROM || "Schoonhoven FA <noreply@schoonhovensports.com>",
+          from: process.env.NOTIFY_FROM || "Schoonhoven FA <noreply@schoonhovenfootballacademy.com>",
           to: [email],
           subject,
           html: emailHtml({ playerName, subject, message, coachName: me.full_name ?? "Je coach", href }),
