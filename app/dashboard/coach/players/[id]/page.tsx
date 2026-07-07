@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { EVALUATION_SCHEMA } from "@/lib/types";
 import { PlayerPhotoUpload } from "@/components/ui/PlayerPhotoUpload";
+import { sendCoachUpdate } from "@/lib/coach-notify";
+import { Mail, Send } from "lucide-react";
 
 function parseSubScores(subNotes?: string): Record<string, number> | null {
   if (!subNotes) return null;
@@ -91,7 +93,23 @@ export default function PlayerDetailPage() {
   const [showDelete, setShowDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [showAnnounce, setShowAnnounce] = useState(false);
+  const [annSubject, setAnnSubject] = useState("");
+  const [annMessage, setAnnMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [annResult, setAnnResult] = useState<string | null>(null);
   const router = useRouter();
+
+  async function handleSendAnnouncement() {
+    if (!player || !annSubject.trim() || !annMessage.trim()) return;
+    setSending(true); setAnnResult(null);
+    const r = await sendCoachUpdate({ playerId: player.id, subject: annSubject.trim(), message: annMessage.trim(), type: "reminder" });
+    setSending(false);
+    if (!r.ok) { setAnnResult(`Mislukt: ${r.error}`); return; }
+    setAnnResult(r.emailed ? "Verstuurd — melding + e-mail" : `Melding geplaatst (e-mail niet verzonden: ${r.emailError ?? "onbekend"})`);
+    setAnnSubject(""); setAnnMessage("");
+    setTimeout(() => { setShowAnnounce(false); setAnnResult(null); }, 2200);
+  }
 
   function toggleScore(key: string) {
     setExpandedScores((prev) => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n; });
@@ -213,6 +231,43 @@ export default function PlayerDetailPage() {
         </div>
       )}
 
+      {/* Announcement modal */}
+      {showAnnounce && (
+        <div onClick={() => !sending && setShowAnnounce(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(13,27,42,0.55)", backdropFilter: "blur(6px)",
+            display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ width: "min(460px,100%)", background: "#fff", borderRadius: 18, border: "1px solid rgba(13,27,42,0.08)",
+              boxShadow: "0 24px 64px rgba(13,27,42,0.25)", padding: 24, fontFamily: "'Archivo',system-ui,sans-serif" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(27,108,168,0.1)", border: "1px solid rgba(27,108,168,0.25)",
+                  display: "flex", alignItems: "center", justifyContent: "center", color: "#1B6CA8" }}><Mail size={17} /></div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0D1B2A" }}>Mededeling aan {player.first_name}</h3>
+              </div>
+              <button onClick={() => !sending && setShowAnnounce(false)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#9BAABB" }}><X size={18} /></button>
+            </div>
+            <p style={{ fontSize: 12, color: "#9BAABB", marginBottom: 16 }}>Speler krijgt een melding op het dashboard én een e-mail op zijn eigen adres.</p>
+            <input value={annSubject} onChange={(e) => setAnnSubject(e.target.value)} placeholder="Onderwerp" disabled={sending}
+              style={{ width: "100%", boxSizing: "border-box", padding: "11px 13px", borderRadius: 10, fontSize: 14, marginBottom: 10,
+                border: "1px solid rgba(13,27,42,0.12)", color: "#0D1B2A", outline: "none" }} />
+            <textarea value={annMessage} onChange={(e) => setAnnMessage(e.target.value)} placeholder="Je bericht…" rows={4} disabled={sending}
+              style={{ width: "100%", boxSizing: "border-box", padding: "11px 13px", borderRadius: 10, fontSize: 14, resize: "vertical",
+                border: "1px solid rgba(13,27,42,0.12)", color: "#0D1B2A", outline: "none", fontFamily: "inherit", lineHeight: 1.5 }} />
+            {annResult && <p style={{ fontSize: 12, color: annResult.startsWith("Mislukt") ? "#D64045" : "#2E9E6B", marginTop: 10 }}>{annResult}</p>}
+            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+              <button onClick={() => setShowAnnounce(false)} disabled={sending}
+                style={{ flex: 1, height: 44, borderRadius: 11, border: "1px solid rgba(13,27,42,0.12)", background: "#fff", color: "#5A6B80", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>Annuleren</button>
+              <button onClick={handleSendAnnouncement} disabled={sending || !annSubject.trim() || !annMessage.trim()}
+                style={{ flex: 1, height: 44, borderRadius: 11, border: "none", background: "#1B6CA8", color: "#fff", fontSize: 14, fontWeight: 800, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: (sending || !annSubject.trim() || !annMessage.trim()) ? 0.6 : 1 }}>
+                {sending ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />} Versturen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Back button */}
       <Link href="/dashboard/coach/players" className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition-colors">
         <ArrowLeft size={16} /> Terug naar spelers
@@ -301,6 +356,13 @@ export default function PlayerDetailPage() {
                 onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(79,169,230,0.08)"; }}>
                 <Brain size={13} /> AI Analyse
               </Link>
+              <button onClick={() => setShowAnnounce(true)}
+                className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all"
+                style={{ background: "rgba(27,108,168,0.08)", color: "#1B6CA8", border: "1px solid rgba(27,108,168,0.25)", cursor: "pointer" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(27,108,168,0.15)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(27,108,168,0.08)"; }}>
+                <Mail size={13} /> Mededeling sturen
+              </button>
               <button onClick={() => setShowDelete(true)}
                 className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all"
                 style={{ background: "rgba(214,64,69,0.08)", color: "#D64045", border: "1px solid rgba(214,64,69,0.25)", cursor: "pointer" }}
