@@ -122,9 +122,13 @@ export default function CoachDashboardPage() {
         .coach-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .coach-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .coach-header-actions { display: flex; align-items: center; gap: 8px; }
+        .coach-row3 { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 14px; }
+        .coach-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .coach-table-inner { min-width: 720px; }
         @media (max-width: 1023px) {
           .coach-kpi-grid { grid-template-columns: repeat(2, 1fr); }
           .coach-main-grid { grid-template-columns: 1fr; }
+          .coach-row3 { grid-template-columns: 1fr; }
         }
         @media (max-width: 640px) {
           .coach-header-actions .btn-ghost:not(.btn-ghost-primary) { display: none; }
@@ -371,7 +375,7 @@ export default function CoachDashboardPage() {
       </div>
 
       {/* ═════════════════════ SECOND ROW ═════════════════════ */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr", gap: 14 }}>
+      <div className="coach-row3">
         {/* ── EFFECTIVENESS LINE — alleen actuele data ── */}
         <div className="card-lg" style={{ padding: 20 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
@@ -463,6 +467,9 @@ export default function CoachDashboardPage() {
           </Link>
         </div>
 
+        {/* Table (horizontal scroll on mobile so columns keep their proportions) */}
+        <div className="coach-table-scroll">
+        <div className="coach-table-inner">
         {/* Header row */}
         <div style={{
           display: "grid",
@@ -577,6 +584,8 @@ export default function CoachDashboardPage() {
             );
           })
         )}
+        </div>
+        </div>
       </div>
     </div>
   );
