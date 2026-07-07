@@ -81,7 +81,8 @@ export async function POST(req: Request) {
 function emailHtml({ playerName, subject, message, coachName, href }: {
   playerName: string; subject: string; message: string; coachName: string; href?: string;
 }): string {
-  const link = `https://performance-hub.vercel.app${href ?? "/dashboard/player"}`;
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://performance-hub-mu.vercel.app";
+  const link = `${base}${href ?? "/dashboard/player"}`;
   return `<!doctype html><html><body style="margin:0;background:#F4F7FA;font-family:Arial,Helvetica,sans-serif;">
     <div style="max-width:520px;margin:0 auto;padding:28px 20px;">
       <div style="height:4px;width:40px;background:#1B6CA8;border-radius:2px;margin-bottom:14px;"></div>
