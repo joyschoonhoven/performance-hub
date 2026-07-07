@@ -26,6 +26,17 @@ function parseSubScores(subNotes?: string): Record<string, number> | null {
   try { return JSON.parse(subNotes); } catch { return null; }
 }
 
+function lastSeenLabel(iso: string): string {
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 120) return "zojuist";
+  if (diff < 3600) return `${Math.floor(diff / 60)} min geleden`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} uur geleden`;
+  if (diff < 172800) return "gisteren";
+  const days = Math.floor(diff / 86400);
+  if (days < 14) return `${days} dagen geleden`;
+  return new Date(iso).toLocaleDateString("nl-NL", { day: "2-digit", month: "short", year: "2-digit" });
+}
+
 function SubCriteriaBreakdown({ categoryId, subNotes }: { categoryId: string; subNotes?: string }) {
   const schema = EVALUATION_SCHEMA.find((c) => c.id === categoryId);
   const subScores = parseSubScores(subNotes);
@@ -98,6 +109,7 @@ export default function PlayerDetailPage() {
   const [annMessage, setAnnMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [annResult, setAnnResult] = useState<string | null>(null);
+  const [lastSeen, setLastSeen] = useState<string | null>(null);
   const router = useRouter();
 
   async function handleSendAnnouncement() {
@@ -131,6 +143,12 @@ export default function PlayerDetailPage() {
       const p = await getPlayerById(id);
       setPlayer(p);
       setLoading(false);
+      if (p?.profile_id) {
+        try {
+          const { data: prof } = await createClient().from("profiles").select("last_seen_at").eq("id", p.profile_id).single();
+          setLastSeen(prof?.last_seen_at ?? null);
+        } catch { /* ignore */ }
+      }
     }
     load();
   }, [id]);
@@ -311,6 +329,11 @@ export default function PlayerDetailPage() {
                   {badge.label}
                 </span>
               )}
+              <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5"
+                style={{ background: lastSeen ? "rgba(46,158,107,0.1)" : "rgba(148,163,184,0.12)", color: lastSeen ? "#2E9E6B" : "#94A3B8" }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: lastSeen ? "#2E9E6B" : "#94A3B8" }} />
+                {lastSeen ? `Laatst actief ${lastSeenLabel(lastSeen)}` : "Nog niet ingelogd"}
+              </span>
               <span className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
                 player.trend === "up" ? "bg-sky-50 text-sky-600" :
                 player.trend === "down" ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-500"

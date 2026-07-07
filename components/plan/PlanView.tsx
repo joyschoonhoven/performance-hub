@@ -17,6 +17,7 @@ import {
   type PlanStatus,
 } from "@/lib/personal-plan";
 import { addNotification } from "@/lib/notifications";
+import { sendCoachUpdate } from "@/lib/coach-notify";
 import type { ChatMessage } from "@/lib/plan-chat";
 import { createClient } from "@/lib/supabase/client";
 
@@ -79,17 +80,18 @@ export function PlanView({ playerId, playerFirstName, viewerRole, viewerName }: 
   async function handleSave(input: AgreementInput) {
     const created = await addAgreement(playerId, { ...input, created_by_name: viewerName ?? input.created_by_name });
     if (!created) return;
-    // Coach added an agreement → notify the player
+    // Coach added an agreement → notify the player (in-app) + e-mail
     if (canEdit) {
       const meta = CATEGORY_META[created.category];
+      const title = `Nieuwe ${meta.label.toLowerCase()} afspraak`;
+      const body = `${viewerName ?? "Je coach"} heeft een afspraak op je bord gezet: "${created.title}"`;
       await addNotification({
-        player_id: playerId,
-        type: "plan_update",
-        title: `Nieuwe ${meta.label.toLowerCase()} afspraak`,
-        body: `${viewerName ?? "Je coach"} heeft een afspraak op je bord gezet: "${created.title}"`,
+        player_id: playerId, type: "plan_update", title, body,
         href: "/dashboard/player/plan",
         meta: { agreement_id: created.id, category: created.category },
       });
+      // e-mail only (notification already created above)
+      void sendCoachUpdate({ playerId, subject: title, message: body, href: "/dashboard/player/plan", type: "plan_update", notify: false });
     }
     void refresh();
   }

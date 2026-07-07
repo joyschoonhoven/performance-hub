@@ -12,6 +12,8 @@ export async function sendCoachUpdate(input: {
   message: string;
   href?: string;
   type?: CoachUpdateType;
+  /** false = only send the e-mail (caller already made the in-app notification) */
+  notify?: boolean;
 }): Promise<{ ok: boolean; emailed?: boolean; emailError?: string | null; error?: string }> {
   try {
     const res = await fetch("/api/notify-player", {

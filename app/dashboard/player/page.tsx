@@ -8,6 +8,7 @@ import { Loader2, ChevronRight } from "lucide-react";
 import { getMyPlayerData } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/client";
 import { AmbientField } from "@/components/ui/AmbientField";
+import { DashboardNotifications } from "@/components/player/DashboardNotifications";
 import { SORENESS_LOCATION_LABELS, CATEGORY_LABELS } from "@/lib/types";
 import { getRatingLabel } from "@/lib/utils";
 import type { PlayerWithDetails, DailyCheckin, SorenessLocation, EvaluationCategory } from "@/lib/types";
@@ -72,6 +73,8 @@ export default function PlayerDashboardPage() {
         if (user) {
           const { data: prof } = await sb.from("profiles").select("full_name").eq("id", user.id).single();
           setUserName(prof?.full_name ?? "");
+          // stamp last-active so the coach can see when the player was last online
+          sb.from("profiles").update({ last_seen_at: new Date().toISOString() }).eq("id", user.id).then(() => {}, () => {});
         }
         const p = await getMyPlayerData();
         setPlayer(p);
@@ -168,6 +171,9 @@ export default function PlayerDashboardPage() {
             transition={{ duration: 0.55, delay: 0.1, ease: [0.16,1,0.3,1] }}>
             <ProfileBar player={player}/>
           </motion.div>
+
+          {/* ═══ MELDINGEN ═══ */}
+          <DashboardNotifications playerId={player.id} />
 
           {/* ═══ PRESTATIES ═══ */}
           <main className="sfa-report">

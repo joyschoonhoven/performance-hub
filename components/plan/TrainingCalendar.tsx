@@ -8,6 +8,7 @@ import {
   listTrainings, addTraining, updateTraining, removeTraining, todayISO,
   TRAINING_META, type Training, type TrainingType,
 } from "@/lib/trainings";
+import { sendCoachUpdate } from "@/lib/coach-notify";
 
 /* ═══════════════════════════════════════════════
    TOKENS (FIFA-style dark)
@@ -93,6 +94,17 @@ export function TrainingCalendar({ playerId, viewerRole, playerFirstName }: {
       await updateTraining(playerId, existing.id, input);
     } else {
       await addTraining(playerId, input);
+      // Coach schedules a training → notify the player (in-app + e-mail)
+      if (isCoach) {
+        const label = input.title || TRAINING_META[input.type].label;
+        void sendCoachUpdate({
+          playerId,
+          subject: `Nieuwe training: ${label}`,
+          message: `Je coach heeft een training ingepland op ${input.date}${input.coach_goal ? `. Doel: ${input.coach_goal}` : "."}`,
+          href: "/dashboard/player/plan",
+          type: "plan_update",
+        });
+      }
     }
     setEditing(null); setCreating(false);
     await refresh();
