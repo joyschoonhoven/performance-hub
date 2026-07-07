@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { getPlayerById } from "@/lib/supabase/queries";
@@ -14,7 +14,7 @@ import type { Evaluation, PlayerWithDetails } from "@/lib/types";
 import Image from "next/image";
 import {
   ArrowLeft, Brain, Zap, Star, Trophy, TrendingUp, TrendingDown,
-  Minus, Plus, Calendar, Target, Loader2, Sparkles, UserCircle, ChevronDown, ChevronUp, Flag,
+  Minus, Plus, Calendar, Target, Loader2, Sparkles, UserCircle, ChevronDown, ChevronUp, Flag, Trash2, X, AlertTriangle,
 } from "lucide-react";
 import { EVALUATION_SCHEMA } from "@/lib/types";
 import { PlayerPhotoUpload } from "@/components/ui/PlayerPhotoUpload";
@@ -88,9 +88,23 @@ export default function PlayerDetailPage() {
   const [activeTab, setActiveTab] = useState<"overview" | "dna" | "evaluations" | "challenges">("overview");
   const [updatingProgress, setUpdatingProgress] = useState<string | null>(null);
   const [expandedScores, setExpandedScores] = useState<Set<string>>(new Set());
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const router = useRouter();
 
   function toggleScore(key: string) {
     setExpandedScores((prev) => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n; });
+  }
+
+  async function handleDeletePlayer() {
+    if (!player) return;
+    setDeleting(true); setDeleteError(null);
+    const supabase = createClient();
+    const { error } = await supabase.from("players").delete().eq("id", player.id);
+    if (error) { setDeleteError(error.message); setDeleting(false); return; }
+    router.push("/dashboard/coach/players");
+    router.refresh();
   }
 
   useEffect(() => {
@@ -158,6 +172,47 @@ export default function PlayerDetailPage() {
 
   return (
     <div className="space-y-6">
+      {/* Delete confirm modal */}
+      {showDelete && (
+        <div onClick={() => !deleting && setShowDelete(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(13,27,42,0.55)", backdropFilter: "blur(6px)",
+            display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ width: "min(420px,100%)", background: "#fff", borderRadius: 18, border: "1px solid rgba(13,27,42,0.08)",
+              boxShadow: "0 24px 64px rgba(13,27,42,0.25)", padding: 26, fontFamily: "'Archivo',system-ui,sans-serif" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 11, background: "rgba(214,64,69,0.1)", border: "1px solid rgba(214,64,69,0.25)",
+                  display: "flex", alignItems: "center", justifyContent: "center", color: "#D64045" }}>
+                  <AlertTriangle size={18} />
+                </div>
+                <h3 style={{ fontSize: 17, fontWeight: 800, color: "#0D1B2A" }}>Speler verwijderen?</h3>
+              </div>
+              <button onClick={() => !deleting && setShowDelete(false)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#9BAABB" }}><X size={18} /></button>
+            </div>
+            <p style={{ fontSize: 13.5, color: "#5A6B80", lineHeight: 1.55, marginBottom: 6 }}>
+              Je staat op het punt <b style={{ color: "#0D1B2A" }}>{player.first_name} {player.last_name}</b> definitief te verwijderen.
+            </p>
+            <p style={{ fontSize: 12.5, color: "#9BAABB", lineHeight: 1.5, marginBottom: 20 }}>
+              Alle evaluaties, plannen, challenges en check-ins van deze speler worden ook verwijderd. Dit kan niet ongedaan worden gemaakt.
+            </p>
+            {deleteError && <p style={{ fontSize: 12, color: "#D64045", marginBottom: 12 }}>⚠ {deleteError}</p>}
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => setShowDelete(false)} disabled={deleting}
+                style={{ flex: 1, height: 44, borderRadius: 11, border: "1px solid rgba(13,27,42,0.12)", background: "#fff",
+                  color: "#5A6B80", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                Annuleren
+              </button>
+              <button onClick={handleDeletePlayer} disabled={deleting}
+                style={{ flex: 1, height: 44, borderRadius: 11, border: "none", background: "#D64045", color: "#fff",
+                  fontSize: 14, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: deleting ? 0.7 : 1 }}>
+                {deleting ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />} Verwijderen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Back button */}
       <Link href="/dashboard/coach/players" className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition-colors">
         <ArrowLeft size={16} /> Terug naar spelers
@@ -246,6 +301,13 @@ export default function PlayerDetailPage() {
                 onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(79,169,230,0.08)"; }}>
                 <Brain size={13} /> AI Analyse
               </Link>
+              <button onClick={() => setShowDelete(true)}
+                className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all"
+                style={{ background: "rgba(214,64,69,0.08)", color: "#D64045", border: "1px solid rgba(214,64,69,0.25)", cursor: "pointer" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(214,64,69,0.15)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(214,64,69,0.08)"; }}>
+                <Trash2 size={13} /> Verwijder speler
+              </button>
             </div>
           </div>
 
