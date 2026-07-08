@@ -54,6 +54,7 @@ export async function POST(req: Request) {
   let emailed = false;
   let emailError: string | null = null;
   const resendKey = process.env.RESEND_API_KEY;
+  const fromUsed = process.env.NOTIFY_FROM || "Schoonhoven FA <noreply@schoonhovenfootballacademy.com>";
   if (!email) emailError = "geen e-mailadres bij deze speler";
   else if (!resendKey) emailError = "RESEND_API_KEY ontbreekt";
   else {
@@ -62,20 +63,23 @@ export async function POST(req: Request) {
         method: "POST",
         headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          from: process.env.NOTIFY_FROM || "Schoonhoven FA <noreply@schoonhovenfootballacademy.com>",
+          from: fromUsed,
           to: [email],
           subject,
           html: emailHtml({ playerName, subject, message, coachName: me.full_name ?? "Je coach", href }),
         }),
       });
       emailed = res.ok;
-      if (!res.ok) emailError = `Resend ${res.status}`;
+      if (!res.ok) {
+        const detail = await res.text().catch(() => "");
+        emailError = `Resend ${res.status}: ${detail.slice(0, 300)}`;
+      }
     } catch (e) {
       emailError = e instanceof Error ? e.message : "onbekende fout";
     }
   }
 
-  return NextResponse.json({ ok: true, notified: notify, emailed, emailError });
+  return NextResponse.json({ ok: true, notified: notify, emailed, emailError, fromUsed });
 }
 
 function emailHtml({ playerName, subject, message, coachName, href }: {
