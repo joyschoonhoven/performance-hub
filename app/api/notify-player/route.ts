@@ -54,7 +54,7 @@ export async function POST(req: Request) {
   let emailed = false;
   let emailError: string | null = null;
   const resendKey = process.env.RESEND_API_KEY;
-  const fromUsed = process.env.NOTIFY_FROM || "Schoonhoven FA <noreply@schoonhovenfootballacademy.com>";
+  const fromUsed = "Schoonhoven FA <noreply@schoonhovenfootballacademy.com>";
   if (!email) emailError = "geen e-mailadres bij deze speler";
   else if (!resendKey) emailError = "RESEND_API_KEY ontbreekt";
   else {

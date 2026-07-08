@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: process.env.NOTIFY_FROM || "Schoonhoven FA <noreply@schoonhovenfootballacademy.com>",
+        from: "Schoonhoven FA <noreply@schoonhovenfootballacademy.com>",
         to: ["voetbalzaken@schoonhovensports.com"],
         subject: `Nieuw account: ${name} (${roleLabel})`,
         html: `
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: process.env.NOTIFY_FROM || "Schoonhoven FA <noreply@schoonhovenfootballacademy.com>",
+        from: "Schoonhoven FA <noreply@schoonhovenfootballacademy.com>",
         to: [email],
         subject: `Welkom bij Performance Hub, ${firstName}!`,
         html: `
