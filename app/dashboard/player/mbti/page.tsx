@@ -15,7 +15,7 @@ import type { PlayerWithDetails } from "@/lib/types";
 export default function MbtiPage() {
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [answers, setAnswers] = useState<Record<string, "a" | "b">>({});
+  const [answers, setAnswers] = useState<Record<string, number>>({});
   const [result, setResult] = useState<MbtiCode | null>(null);
   const [saving, setSaving] = useState(false);
   const [retaking, setRetaking] = useState(false);
@@ -67,7 +67,7 @@ export default function MbtiPage() {
           <PremiumHeader
             eyebrow="Persoonlijkheid"
             title="Speler-DNA · MBTI"
-            subtitle={showResult ? "Jouw persoonlijkheidstype en hoe je speelt per situatie." : "Beantwoord 16 vragen — kies wat het meest bij jou past."}
+            subtitle={showResult ? "Jouw persoonlijkheidstype en hoe je speelt per situatie." : `Beantwoord ${total} vragen — kies telkens wat het meest bij jou past.`}
             action={showResult ? (
               <button className="pv-btn" style={{ height: 40, background: "transparent", color: SFA.blue, border: `1px solid ${SFA.line}`, boxShadow: "none" }}
                 onClick={() => { setRetaking(true); setAnswers({}); }}>
@@ -92,31 +92,31 @@ export default function MbtiPage() {
               {MBTI_QUESTIONS.map((q, i) => (
                 <Reveal key={q.id} i={i % 6}>
                   <div className="pv-card notch" style={{ padding: 18 }}>
-                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.1em", color: SFA.dim, textTransform: "uppercase", marginBottom: 12 }}>
-                      Vraag {i + 1}
+                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.1em", color: SFA.dim, textTransform: "uppercase", marginBottom: 10 }}>
+                      Stelling {i + 1} / {total}
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }} className="mbti-choices">
-                      {(["a", "b"] as const).map((opt) => {
-                        const on = answers[q.id] === opt;
-                        const o = q[opt];
-                        return (
-                          <button key={opt} onClick={() => setAnswers((s) => ({ ...s, [q.id]: opt }))}
-                            style={{
-                              textAlign: "left", padding: "13px 15px", borderRadius: 12, cursor: "pointer",
-                              background: on ? `${SFA.blue}0E` : SFA.card,
-                              border: `1.5px solid ${on ? SFA.blue : SFA.line}`,
-                              color: SFA.ink, fontSize: 13.5, lineHeight: 1.45, transition: "all 0.15s",
-                              display: "flex", gap: 9, alignItems: "flex-start",
-                            }}>
-                            <span style={{ width: 18, height: 18, borderRadius: "50%", flexShrink: 0, marginTop: 1,
-                              border: `1.5px solid ${on ? SFA.blue : SFA.dim}`, background: on ? SFA.blue : "transparent",
-                              display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              {on && <Check size={11} color="#fff" />}
-                            </span>
-                            {o.text}
-                          </button>
-                        );
-                      })}
+                    <div style={{ fontSize: 15, fontWeight: 700, color: SFA.ink, lineHeight: 1.4, marginBottom: 18 }}>{q.text}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: SFA.red, flexShrink: 0 }}>Oneens</span>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(6px,3vw,14px)", flex: 1 }}>
+                        {[-3, -2, -1, 0, 1, 2, 3].map((val) => {
+                          const on = answers[q.id] === val;
+                          const size = 18 + Math.abs(val) * 4; // 18..30
+                          const base = val < 0 ? SFA.red : val > 0 ? SFA.green : SFA.dim;
+                          return (
+                            <button key={val} onClick={() => setAnswers((s) => ({ ...s, [q.id]: val }))} aria-label={`Waarde ${val}`}
+                              style={{ width: size, height: size, borderRadius: "50%", cursor: "pointer", flexShrink: 0, padding: 0,
+                                background: on ? base : "transparent",
+                                border: `2px solid ${on ? base : base + "66"}`,
+                                boxShadow: on ? `0 0 0 3px ${base}22` : "none",
+                                transition: "all 0.15s", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              {on && val === 0 && <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#fff" }} />}
+                              {on && val !== 0 && <Check size={Math.min(size - 10, 16)} color="#fff" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: SFA.green, flexShrink: 0 }}>Eens</span>
                     </div>
                   </div>
                 </Reveal>

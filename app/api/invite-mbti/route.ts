@@ -30,7 +30,7 @@ export async function POST() {
     await supa.from("notifications").insert({
       player_id: p.id, type: "reminder",
       title: "Vul je persoonlijkheidstest in",
-      body: "Ontdek je speler-type (MBTI) — 16 korte vragen. Je type en tips verschijnen daarna op je dashboard.",
+      body: "Ontdek je speler-type met de persoonlijkheidstest. Je type en tips verschijnen daarna op je dashboard.",
       href: "/dashboard/player/mbti",
     });
     invited++;

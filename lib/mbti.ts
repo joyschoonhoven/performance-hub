@@ -10,53 +10,76 @@ export type MbtiCode =
   | "ISTJ" | "ISFJ" | "ESTJ" | "ESFJ"
   | "ISTP" | "ISFP" | "ESTP" | "ESFP";
 
-/* ── Vragenlijst: forced-choice, elke keuze telt voor één pool ── */
+/* ── Vragenlijst: stellingen met (on)eens-schaal (−3..+3) ──
+   Elke stelling weegt naar één pool; 'eens' telt richting die pool. ── */
 export interface MbtiQuestion {
   id: string;
   axis: Axis;
-  a: { text: string; pole: string };   // pole = één letter
-  b: { text: string; pole: string };
+  text: string;   // de stelling
+  pole: string;   // pool waar 'helemaal eens' naartoe wijst
 }
 
+/** De 'positieve' pool per as (voor scoring). */
+export const FIRST_POLE: Record<Axis, string> = { EI: "E", SN: "S", TF: "T", JP: "J" };
+export const SECOND_POLE: Record<Axis, string> = { EI: "I", SN: "N", TF: "F", JP: "P" };
+
 export const MBTI_QUESTIONS: MbtiQuestion[] = [
-  // E / I — energie
-  { id: "q1",  axis: "EI", a: { text: "Ik praat graag veel en word blij van de groep.", pole: "E" }, b: { text: "Ik ben liever rustig en houd het bij mezelf.", pole: "I" } },
-  { id: "q2",  axis: "EI", a: { text: "Ik stap zo op nieuwe mensen af.", pole: "E" }, b: { text: "Ik wacht liever tot iemand naar mij toe komt.", pole: "I" } },
-  { id: "q3",  axis: "EI", a: { text: "Na de wedstrijd wil ik lekker kletsen met het team.", pole: "E" }, b: { text: "Na de wedstrijd ben ik graag even voor mezelf.", pole: "I" } },
-  { id: "q4",  axis: "EI", a: { text: "Ik roep en stuur mijn ploeggenoten aan tijdens het spelen.", pole: "E" }, b: { text: "Ik zeg niet zoveel en laat mijn voetbal het werk doen.", pole: "I" } },
-  // S / N — hoe je kijkt
-  { id: "q5",  axis: "SN", a: { text: "Ik kijk vooral naar wat ik echt zie gebeuren.", pole: "S" }, b: { text: "Ik bedenk graag nieuwe ideeën en wat er zou kúnnen.", pole: "N" } },
-  { id: "q6",  axis: "SN", a: { text: "Ik doe dingen het liefst stap voor stap, zoals afgesproken.", pole: "S" }, b: { text: "Ik verzin ter plekke iets nieuws en verrassends.", pole: "N" } },
-  { id: "q7",  axis: "SN", a: { text: "Ik let goed op de kleine details.", pole: "S" }, b: { text: "Ik denk vooral aan het grote plaatje.", pole: "N" } },
-  { id: "q8",  axis: "SN", a: { text: "Ik onthoud goed wat er precies gebeurde.", pole: "S" }, b: { text: "Ik onthoud vooral hóe iets voelde.", pole: "N" } },
-  // T / F — hoe je kiest
-  { id: "q9",  axis: "TF", a: { text: "Ik kies met mijn verstand, wat het slimste is.", pole: "T" }, b: { text: "Ik kies met mijn gevoel, wat goed is voor iedereen.", pole: "F" } },
-  { id: "q10", axis: "TF", a: { text: "Zeg gewoon eerlijk wat ik fout deed — daar leer ik van.", pole: "T" }, b: { text: "Ik heb een complimentje en steun nodig om beter te worden.", pole: "F" } },
-  { id: "q11", axis: "TF", a: { text: "Ik blijf rustig, ook als anderen boos of verdrietig zijn.", pole: "T" }, b: { text: "Ik voel de sfeer in het team snel aan.", pole: "F" } },
-  { id: "q12", axis: "TF", a: { text: "Winnen vind ik het allerbelangrijkst.", pole: "T" }, b: { text: "Een fijne sfeer vind ik net zo belangrijk als winnen.", pole: "F" } },
-  // J / P — hoe je het aanpakt
-  { id: "q13", axis: "JP", a: { text: "Ik hou van een duidelijk plan voor de wedstrijd.", pole: "J" }, b: { text: "Ik speel liever op gevoel en zie wel wat er komt.", pole: "P" } },
-  { id: "q14", axis: "JP", a: { text: "Ik ben graag op tijd en goed voorbereid.", pole: "J" }, b: { text: "Ik beslis dingen het liefst op het laatste moment.", pole: "P" } },
-  { id: "q15", axis: "JP", a: { text: "Duidelijke afspraken geven mij rust.", pole: "J" }, b: { text: "Te veel regels vind ik vervelend — ik wil vrij zijn.", pole: "P" } },
-  { id: "q16", axis: "JP", a: { text: "Ik maak dingen graag netjes af.", pole: "J" }, b: { text: "Ik begin aan van alles en spring van het één naar het ander.", pole: "P" } },
+  // ── E / I ──
+  { id:"q1",  axis:"EI", pole:"E", text:"Ik krijg energie van drukke, sociale situaties." },
+  { id:"q2",  axis:"EI", pole:"E", text:"Ik stap makkelijk op vreemden af en begin een gesprek." },
+  { id:"q3",  axis:"EI", pole:"I", text:"Ik voel me vaak een buitenstaander die naar de wereld kijkt." },
+  { id:"q4",  axis:"EI", pole:"I", text:"Na veel sociaal contact heb ik tijd alleen nodig om op te laden." },
+  { id:"q5",  axis:"EI", pole:"E", text:"In een groep neem ik vaak als eerste het woord." },
+  { id:"q6",  axis:"EI", pole:"I", text:"Ik denk het liefst eerst in stilte na voordat ik iets zeg." },
+  { id:"q7",  axis:"EI", pole:"I", text:"Ik heb liever een paar diepe vriendschappen dan veel oppervlakkige." },
+  { id:"q8",  axis:"EI", pole:"E", text:"Op het veld ben ik de stem die stuurt en aanjaagt." },
+  // ── S / N ──
+  { id:"q9",  axis:"SN", pole:"N", text:"Ik merk fouten en tegenstrijdigheden op die anderen ontgaan." },
+  { id:"q10", axis:"SN", pole:"N", text:"Ik denk vaak na over abstracte ideeën en theorieën." },
+  { id:"q11", axis:"SN", pole:"S", text:"Ik vertrouw meer op concrete feiten dan op onderbuikgevoel." },
+  { id:"q12", axis:"SN", pole:"N", text:"Ik ben meer bezig met de toekomst en mogelijkheden dan met het hier en nu." },
+  { id:"q13", axis:"SN", pole:"S", text:"Ik hou van praktische zaken die direct bruikbaar zijn." },
+  { id:"q14", axis:"SN", pole:"N", text:"Ik zie snel verbanden en het grotere geheel." },
+  { id:"q15", axis:"SN", pole:"S", text:"Ik werk het liefst met bewezen methodes en duidelijke stappen." },
+  { id:"q16", axis:"SN", pole:"N", text:"Ik heb een levendige fantasie en verbeelding." },
+  // ── T / F ──
+  { id:"q17", axis:"TF", pole:"F", text:"Ik vind het heel bevredigend om anderen met hun persoonlijke problemen te helpen." },
+  { id:"q18", axis:"TF", pole:"T", text:"Ik neem beslissingen liever op basis van logica dan op gevoel." },
+  { id:"q19", axis:"TF", pole:"F", text:"Ik voel de emoties van anderen sterk met me mee." },
+  { id:"q20", axis:"TF", pole:"T", text:"Eerlijkheid is voor mij belangrijker dan iemands gevoelens sparen." },
+  { id:"q21", axis:"TF", pole:"F", text:"Harmonie in een groep vind ik belangrijker dan gelijk hebben." },
+  { id:"q22", axis:"TF", pole:"T", text:"Ik blijf kalm en objectief, ook in emotionele situaties." },
+  { id:"q23", axis:"TF", pole:"F", text:"Kritiek raakt me al snel persoonlijk." },
+  { id:"q24", axis:"TF", pole:"T", text:"Ik weeg beslissingen rationeel af, los van wie erbij betrokken is." },
+  // ── J / P ──
+  { id:"q25", axis:"JP", pole:"J", text:"Ik hou van orde, planning en duidelijke afspraken." },
+  { id:"q26", axis:"JP", pole:"P", text:"Ik beslis dingen het liefst op het laatste moment." },
+  { id:"q27", axis:"JP", pole:"J", text:"Ik maak een taak graag helemaal af voor ik aan iets nieuws begin." },
+  { id:"q28", axis:"JP", pole:"P", text:"Ik voel me vrij als ik mijn opties zo lang mogelijk open kan houden." },
+  { id:"q29", axis:"JP", pole:"J", text:"Een strak schema en een vaste routine geven me rust." },
+  { id:"q30", axis:"JP", pole:"P", text:"Ik pas me makkelijk aan als plannen op het laatste moment veranderen." },
+  { id:"q31", axis:"JP", pole:"J", text:"Ik ben graag ruim op tijd en goed voorbereid." },
+  { id:"q32", axis:"JP", pole:"P", text:"Ik werk in vlagen van inspiratie, niet volgens een vast ritme." },
 ];
 
-/* ── Scoring ── */
-export function scoreMbti(answers: Record<string, "a" | "b">): { code: MbtiCode; scores: Record<string, number> } {
-  const tally: Record<string, number> = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+/* ── Scoring ──
+   answers[id] = agreement van −3 (helemaal oneens) t/m +3 (helemaal eens).
+   Per as houden we een signed score bij (+ = FIRST_POLE). Een stelling die
+   naar de tweede pool wijst, keert het teken om. ── */
+export function scoreMbti(answers: Record<string, number>): { code: MbtiCode; axisScores: Record<Axis, number> } {
+  const axisScores: Record<Axis, number> = { EI: 0, SN: 0, TF: 0, JP: 0 };
   for (const q of MBTI_QUESTIONS) {
-    const choice = answers[q.id];
-    if (!choice) continue;
-    const pole = choice === "a" ? q.a.pole : q.b.pole;
-    tally[pole]++;
+    const v = answers[q.id];
+    if (v == null) continue;
+    axisScores[q.axis] += q.pole === FIRST_POLE[q.axis] ? v : -v;
   }
   const code = (
-    (tally.E >= tally.I ? "E" : "I") +
-    (tally.S >= tally.N ? "S" : "N") +
-    (tally.T >= tally.F ? "T" : "F") +
-    (tally.J >= tally.P ? "J" : "P")
+    (axisScores.EI >= 0 ? FIRST_POLE.EI : SECOND_POLE.EI) +
+    (axisScores.SN >= 0 ? FIRST_POLE.SN : SECOND_POLE.SN) +
+    (axisScores.TF >= 0 ? FIRST_POLE.TF : SECOND_POLE.TF) +
+    (axisScores.JP >= 0 ? FIRST_POLE.JP : SECOND_POLE.JP)
   ) as MbtiCode;
-  return { code, scores: tally };
+  return { code, axisScores };
 }
 
 /* ── Type-profielen (voetbal-gericht) ── */
