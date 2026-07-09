@@ -6,7 +6,7 @@ import { POSITION_LABELS, BADGE_CONFIG } from "@/lib/types";
 import { getRatingColor } from "@/lib/utils";
 import { PlayerCard } from "@/components/PlayerCard";
 import Image from "next/image";
-import { Search, Plus, TrendingUp, TrendingDown, Minus, Loader2, UserPlus } from "lucide-react";
+import { Search, Plus, TrendingUp, TrendingDown, Minus, Loader2, UserPlus, Brain } from "lucide-react";
 import type { PositionType, PlayerWithDetails } from "@/lib/types";
 import { getAllPlayers } from "@/lib/supabase/queries";
 
@@ -20,10 +20,25 @@ export default function PlayersPage() {
   const [positionFilter, setPositionFilter] = useState<FilterPosition>("all");
   const [sortKey, setSortKey] = useState<SortKey>("rating");
   const [view, setView] = useState<"cards" | "list">("cards");
+  const [inviting, setInviting] = useState(false);
+  const [inviteMsg, setInviteMsg] = useState<string | null>(null);
 
   useEffect(() => {
     getAllPlayers().then((data) => { setAllPlayers(data); setLoading(false); });
   }, []);
+
+  async function inviteMbti() {
+    setInviting(true); setInviteMsg(null);
+    try {
+      const r = await fetch("/api/invite-mbti", { method: "POST" });
+      const d = await r.json();
+      setInviteMsg(r.ok ? `${d.invited} speler(s) uitgenodigd · ${d.emailed} e-mails verstuurd` : `Mislukt: ${d.error}`);
+    } catch (e) {
+      setInviteMsg(`Fout: ${e instanceof Error ? e.message : "netwerk"}`);
+    }
+    setInviting(false);
+    setTimeout(() => setInviteMsg(null), 6000);
+  }
 
   const positions = useMemo(() => Array.from(new Set(allPlayers.map((p) => p.position))), [allPlayers]);
 
@@ -95,6 +110,17 @@ export default function PlayersPage() {
                 </span>
               ))}
             </div>
+          </div>
+          {/* MBTI invite */}
+          <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+            <button onClick={inviteMbti} disabled={inviting}
+              className="flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all"
+              style={{ background: "rgba(27,108,168,0.08)", color: "#1B6CA8", border: "1px solid rgba(27,108,168,0.25)", cursor: inviting ? "default" : "pointer", opacity: inviting ? 0.7 : 1 }}>
+              {inviting ? <Loader2 size={13} className="animate-spin" /> : <Brain size={13} />}
+              <span className="hidden sm:inline">Nodig uit voor persoonlijkheidstest</span>
+              <span className="sm:hidden">MBTI uitnodigen</span>
+            </button>
+            {inviteMsg && <span className="text-[11px] font-medium" style={{ color: inviteMsg.startsWith("Mislukt") || inviteMsg.startsWith("Fout") ? "#D64045" : "#2E9E6B" }}>{inviteMsg}</span>}
           </div>
           {/* Avatar stack */}
           <div className="hidden sm:flex items-center">

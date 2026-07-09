@@ -140,7 +140,8 @@ export default function OnboardingPage() {
       await supabase.from("profiles").update(updateData).eq("id", user.id);
     }
 
-    router.push(`/dashboard/${role}`);
+    // Nieuwe spelers meteen de persoonlijkheidstest laten doen
+    router.push(role === "player" ? "/dashboard/player/mbti?welcome=1" : `/dashboard/${role}`);
     router.refresh();
   }
 
