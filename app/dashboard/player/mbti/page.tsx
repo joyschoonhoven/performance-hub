@@ -140,7 +140,7 @@ export default function MbtiPage() {
 }
 
 /* ── Result: type + handelingen/valkuilen + situationele cues ── */
-export function MbtiResult({ code }: { code: MbtiCode }) {
+function MbtiResult({ code }: { code: MbtiCode }) {
   const p = MBTI_PROFILES[code];
   const cues = situationalCues(code);
   return (
