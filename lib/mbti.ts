@@ -19,26 +19,26 @@ export interface MbtiQuestion {
 }
 
 export const MBTI_QUESTIONS: MbtiQuestion[] = [
-  // E / I
-  { id: "q1",  axis: "EI", a: { text: "Ik krijg energie van de groep en praat veel op het veld.", pole: "E" }, b: { text: "Ik laad op in mijn eigen focus en houd het rustig.", pole: "I" } },
-  { id: "q2",  axis: "EI", a: { text: "Ik zoek meteen contact en neem het voortouw in de kleedkamer.", pole: "E" }, b: { text: "Ik kijk eerst de kat uit de boom voor ik me laat horen.", pole: "I" } },
-  { id: "q3",  axis: "EI", a: { text: "Na een wedstrijd wil ik napraten met het team.", pole: "E" }, b: { text: "Na een wedstrijd verwerk ik het liever voor mezelf.", pole: "I" } },
-  { id: "q4",  axis: "EI", a: { text: "Ik denk hardop en stuur anderen aan tijdens het spel.", pole: "E" }, b: { text: "Ik denk van binnen en leid vooral door mijn acties.", pole: "I" } },
-  // S / N
-  { id: "q5",  axis: "SN", a: { text: "Ik vertrouw op wat ik concreet zie en de vaste patronen.", pole: "S" }, b: { text: "Ik zie kansen en mogelijkheden die er nog niet zijn.", pole: "N" } },
-  { id: "q6",  axis: "SN", a: { text: "Ik werk stap voor stap en houd van duidelijke afspraken.", pole: "S" }, b: { text: "Ik improviseer graag en zoek de verrassende oplossing.", pole: "N" } },
-  { id: "q7",  axis: "SN", a: { text: "Details en uitvoering: daar draait het om.", pole: "S" }, b: { text: "Het grote plaatje en het idee erachter boeien me het meest.", pole: "N" } },
-  { id: "q8",  axis: "SN", a: { text: "Ik onthoud vooral feiten en wat er precies gebeurde.", pole: "S" }, b: { text: "Ik onthoud vooral het gevoel en de betekenis van een moment.", pole: "N" } },
-  // T / F
-  { id: "q9",  axis: "TF", a: { text: "Beslissingen neem ik koel en rationeel, op basis van logica.", pole: "T" }, b: { text: "Beslissingen neem ik op gevoel en wat goed is voor de groep.", pole: "F" } },
-  { id: "q10", axis: "TF", a: { text: "Eerlijke, directe kritiek helpt me het meest.", pole: "T" }, b: { text: "Ik heb waardering en steun nodig om te groeien.", pole: "F" } },
-  { id: "q11", axis: "TF", a: { text: "Ik blijf zakelijk, ook als het emotioneel wordt.", pole: "T" }, b: { text: "Ik voel de sfeer in het team sterk aan en pas me aan.", pole: "F" } },
-  { id: "q12", axis: "TF", a: { text: "Winnen gaat vóór aardig gevonden worden.", pole: "T" }, b: { text: "Een goede teamsfeer is voor mij net zo belangrijk als winnen.", pole: "F" } },
-  // J / P
-  { id: "q13", axis: "JP", a: { text: "Ik hou van een vast plan en structuur voor de wedstrijd.", pole: "J" }, b: { text: "Ik speel het liefst op gevoel en zie wel wat er komt.", pole: "P" } },
-  { id: "q14", axis: "JP", a: { text: "Ik ben graag op tijd en goed voorbereid.", pole: "J" }, b: { text: "Ik ben flexibel en beslis het liefst op het laatste moment.", pole: "P" } },
-  { id: "q15", axis: "JP", a: { text: "Duidelijke taken en afspraken geven me rust.", pole: "J" }, b: { text: "Te veel regels benauwen me; ik wil ruimte om te improviseren.", pole: "P" } },
-  { id: "q16", axis: "JP", a: { text: "Ik werk taken graag af en maak dingen netjes af.", pole: "J" }, b: { text: "Ik hou opties open en spring van het één naar het ander.", pole: "P" } },
+  // E / I — energie
+  { id: "q1",  axis: "EI", a: { text: "Ik praat graag veel en word blij van de groep.", pole: "E" }, b: { text: "Ik ben liever rustig en houd het bij mezelf.", pole: "I" } },
+  { id: "q2",  axis: "EI", a: { text: "Ik stap zo op nieuwe mensen af.", pole: "E" }, b: { text: "Ik wacht liever tot iemand naar mij toe komt.", pole: "I" } },
+  { id: "q3",  axis: "EI", a: { text: "Na de wedstrijd wil ik lekker kletsen met het team.", pole: "E" }, b: { text: "Na de wedstrijd ben ik graag even voor mezelf.", pole: "I" } },
+  { id: "q4",  axis: "EI", a: { text: "Ik roep en stuur mijn ploeggenoten aan tijdens het spelen.", pole: "E" }, b: { text: "Ik zeg niet zoveel en laat mijn voetbal het werk doen.", pole: "I" } },
+  // S / N — hoe je kijkt
+  { id: "q5",  axis: "SN", a: { text: "Ik kijk vooral naar wat ik echt zie gebeuren.", pole: "S" }, b: { text: "Ik bedenk graag nieuwe ideeën en wat er zou kúnnen.", pole: "N" } },
+  { id: "q6",  axis: "SN", a: { text: "Ik doe dingen het liefst stap voor stap, zoals afgesproken.", pole: "S" }, b: { text: "Ik verzin ter plekke iets nieuws en verrassends.", pole: "N" } },
+  { id: "q7",  axis: "SN", a: { text: "Ik let goed op de kleine details.", pole: "S" }, b: { text: "Ik denk vooral aan het grote plaatje.", pole: "N" } },
+  { id: "q8",  axis: "SN", a: { text: "Ik onthoud goed wat er precies gebeurde.", pole: "S" }, b: { text: "Ik onthoud vooral hóe iets voelde.", pole: "N" } },
+  // T / F — hoe je kiest
+  { id: "q9",  axis: "TF", a: { text: "Ik kies met mijn verstand, wat het slimste is.", pole: "T" }, b: { text: "Ik kies met mijn gevoel, wat goed is voor iedereen.", pole: "F" } },
+  { id: "q10", axis: "TF", a: { text: "Zeg gewoon eerlijk wat ik fout deed — daar leer ik van.", pole: "T" }, b: { text: "Ik heb een complimentje en steun nodig om beter te worden.", pole: "F" } },
+  { id: "q11", axis: "TF", a: { text: "Ik blijf rustig, ook als anderen boos of verdrietig zijn.", pole: "T" }, b: { text: "Ik voel de sfeer in het team snel aan.", pole: "F" } },
+  { id: "q12", axis: "TF", a: { text: "Winnen vind ik het allerbelangrijkst.", pole: "T" }, b: { text: "Een fijne sfeer vind ik net zo belangrijk als winnen.", pole: "F" } },
+  // J / P — hoe je het aanpakt
+  { id: "q13", axis: "JP", a: { text: "Ik hou van een duidelijk plan voor de wedstrijd.", pole: "J" }, b: { text: "Ik speel liever op gevoel en zie wel wat er komt.", pole: "P" } },
+  { id: "q14", axis: "JP", a: { text: "Ik ben graag op tijd en goed voorbereid.", pole: "J" }, b: { text: "Ik beslis dingen het liefst op het laatste moment.", pole: "P" } },
+  { id: "q15", axis: "JP", a: { text: "Duidelijke afspraken geven mij rust.", pole: "J" }, b: { text: "Te veel regels vind ik vervelend — ik wil vrij zijn.", pole: "P" } },
+  { id: "q16", axis: "JP", a: { text: "Ik maak dingen graag netjes af.", pole: "J" }, b: { text: "Ik begin aan van alles en spring van het één naar het ander.", pole: "P" } },
 ];
 
 /* ── Scoring ── */

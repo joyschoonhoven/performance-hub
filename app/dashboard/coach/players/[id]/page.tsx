@@ -19,6 +19,7 @@ import {
 import { EVALUATION_SCHEMA } from "@/lib/types";
 import { PlayerPhotoUpload } from "@/components/ui/PlayerPhotoUpload";
 import { sendCoachUpdate } from "@/lib/coach-notify";
+import { MBTI_PROFILES, situationalCues, type MbtiCode } from "@/lib/mbti";
 import { Mail, Send } from "lucide-react";
 
 function parseSubScores(subNotes?: string): Record<string, number> | null {
@@ -334,6 +335,12 @@ export default function PlayerDetailPage() {
                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: lastSeen ? "#2E9E6B" : "#94A3B8" }} />
                 {lastSeen ? `Laatst actief ${lastSeenLabel(lastSeen)}` : "Nog niet ingelogd"}
               </span>
+              {player.mbti_type && MBTI_PROFILES[player.mbti_type as MbtiCode] && (
+                <span className="text-[11px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5"
+                  style={{ background: `${MBTI_PROFILES[player.mbti_type as MbtiCode].color}18`, color: MBTI_PROFILES[player.mbti_type as MbtiCode].color }}>
+                  {MBTI_PROFILES[player.mbti_type as MbtiCode].icon} {player.mbti_type} · {MBTI_PROFILES[player.mbti_type as MbtiCode].nickname}
+                </span>
+              )}
               <span className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
                 player.trend === "up" ? "bg-sky-50 text-sky-600" :
                 player.trend === "down" ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-500"
@@ -484,6 +491,52 @@ export default function PlayerDetailPage() {
       {/* DNA TAB */}
       {activeTab === "dna" && (
         <div className="space-y-6">
+          {/* MBTI persoonlijkheidstype */}
+          {player.mbti_type && MBTI_PROFILES[player.mbti_type as MbtiCode] && (() => {
+            const mp = MBTI_PROFILES[player.mbti_type as MbtiCode];
+            const cues = situationalCues(mp.code);
+            return (
+              <div className="hub-card p-5" style={{ borderTop: `3px solid ${mp.color}` }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style={{ background: `${mp.color}16`, border: `1px solid ${mp.color}30` }}>{mp.icon}</div>
+                  <div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-lg font-black" style={{ color: mp.color, fontFamily: "Outfit, sans-serif" }}>{mp.code}</span>
+                      <span className="text-sm font-bold text-slate-900">{mp.nickname}</span>
+                    </div>
+                    <div className="text-xs text-slate-500 mt-0.5">{mp.summary}</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "#2E9E6B" }}>Kracht → handeling</div>
+                    <ul className="space-y-2.5">
+                      {mp.strengths.map((s, i) => (
+                        <li key={i} className="text-xs"><span className="font-bold text-slate-800">▲ {s.label}</span><span className="block text-slate-500 mt-0.5">→ {s.tip}</span></li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "#D64045" }}>Valkuil → handeling</div>
+                    <ul className="space-y-2.5">
+                      {mp.pitfalls.map((s, i) => (
+                        <li key={i} className="text-xs"><span className="font-bold text-slate-800">▼ {s.label}</span><span className="block text-slate-500 mt-0.5">→ {s.tip}</span></li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-hub-border">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Per situatie op het veld</div>
+                  <div className="space-y-1.5">
+                    {cues.map((c, i) => (
+                      <div key={i} className="text-xs text-slate-600"><span>{c.icon}</span> <b className="text-slate-800">{c.situation}:</b> {c.trait}</div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
           {!identity ? (
             <div className="hub-card p-12 text-center space-y-4">
               <Brain size={40} className="text-slate-700 mx-auto" />
