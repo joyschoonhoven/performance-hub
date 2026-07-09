@@ -293,6 +293,7 @@ export interface Player {
   dominant_foot?: "left" | "right" | "both";
   overall_rating: number;
   badge?: BadgeType;
+  mbti_type?: string;
   is_active: boolean;
   club?: string;
   team_name?: string;

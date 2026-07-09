@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Loader2, MapPin, ChevronLeft, ChevronRight, Sparkles, Brain, Target, Zap } from "lucide-react";
 import { getMyPlayerData } from "@/lib/supabase/queries";
 import { POSITION_LABELS } from "@/lib/types";
+import { MbtiSituations } from "@/components/player/MbtiSituations";
 import type { PlayerWithDetails, PositionType } from "@/lib/types";
 
 /* ─────────────────────────────────────────────────────────
@@ -737,6 +738,11 @@ export default function HeatmapPage() {
 
             {/* Rotating panel */}
             <RotatingInsightsPanel position={player.position} />
+
+            {/* MBTI — jouw spel per situatie (bewegend vakje) */}
+            <div style={{ marginTop: 14 }}>
+              <MbtiSituations mbtiType={player.mbti_type} />
+            </div>
 
             {/* Zone badge */}
             <div style={{

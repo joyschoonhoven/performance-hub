@@ -40,6 +40,7 @@ function getNavItems(role: UserRole): NavItem[] {
     { label: "Evaluaties",   href: "/dashboard/player/evaluations", icon: <ClipboardList size={16} /> },
     { label: "Challenges",   href: "/dashboard/player/challenges",  icon: <Trophy size={16} /> },
     { label: "Tactisch IQ",  href: "/dashboard/player/game",        icon: <Gamepad2 size={16} /> },
+    { label: "Persoonlijkheid", href: "/dashboard/player/mbti",     icon: <Brain size={16} />, badge: "NEW" },
     { label: "Posities",     href: "/dashboard/player/heatmap",     icon: <Map size={16} /> },
   ];
   return [
