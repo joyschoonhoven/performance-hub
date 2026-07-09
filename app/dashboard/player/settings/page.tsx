@@ -46,6 +46,7 @@ export default function PlayerSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"profile" | "club" | "medical">("profile");
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -103,8 +104,9 @@ export default function PlayerSettingsPage() {
   async function handleSave() {
     if (!playerId) return;
     setSaving(true);
+    setSaveError(null);
     const supabase = createClient();
-    await supabase.from("players").update({
+    const { error } = await supabase.from("players").update({
       first_name: form.first_name,
       last_name: form.last_name,
       position: form.position,
@@ -119,6 +121,7 @@ export default function PlayerSettingsPage() {
       weight_kg: form.weight_kg ? parseInt(form.weight_kg) : null,
     }).eq("id", playerId);
     setSaving(false);
+    if (error) { setSaveError(error.message); return; }
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   }
@@ -365,6 +368,13 @@ export default function PlayerSettingsPage() {
           <><Save size={15} /> Wijzigingen opslaan</>
         )}
       </button>
+
+      {saveError && (
+        <div className="text-sm font-medium px-4 py-3 rounded-xl"
+          style={{ background: "rgba(214,64,69,0.08)", color: "#D64045", border: "1px solid rgba(214,64,69,0.25)" }}>
+          Opslaan mislukt: {saveError}
+        </div>
+      )}
     </div>
   );
 }

@@ -100,8 +100,10 @@ export function DashboardNotifications({ playerId }: { playerId: string }) {
             return (
               <motion.div key={n.id} layout initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, height: 0 }}
                 style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ flex: 1, minWidth: 0, padding: "8px 10px", borderRadius: 10, background: "#F7FAFC", border: `1px solid ${S.line}` }}>
-                  {n.href ? <Link href={n.href} style={{ textDecoration: "none" }}>{inner}</Link> : inner}
+                <div style={{ flex: 1, minWidth: 0, padding: "8px 10px", borderRadius: 10, background: "#F7FAFC", border: `1px solid ${S.line}`, cursor: "pointer" }}>
+                  {n.href
+                    ? <Link href={n.href} onClick={() => dismiss(n.id)} style={{ textDecoration: "none", display: "block" }}>{inner}</Link>
+                    : <div onClick={() => dismiss(n.id)}>{inner}</div>}
                 </div>
                 <button onClick={() => dismiss(n.id)} aria-label="Markeer gelezen"
                   style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, background: "transparent", border: `1px solid ${S.line}`,
