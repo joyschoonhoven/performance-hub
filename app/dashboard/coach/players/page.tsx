@@ -111,17 +111,6 @@ export default function PlayersPage() {
               ))}
             </div>
           </div>
-          {/* MBTI invite */}
-          <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-            <button onClick={inviteMbti} disabled={inviting}
-              className="flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all"
-              style={{ background: "rgba(27,108,168,0.08)", color: "#1B6CA8", border: "1px solid rgba(27,108,168,0.25)", cursor: inviting ? "default" : "pointer", opacity: inviting ? 0.7 : 1 }}>
-              {inviting ? <Loader2 size={13} className="animate-spin" /> : <Brain size={13} />}
-              <span className="hidden sm:inline">Nodig uit voor persoonlijkheidstest</span>
-              <span className="sm:hidden">MBTI uitnodigen</span>
-            </button>
-            {inviteMsg && <span className="text-[11px] font-medium" style={{ color: inviteMsg.startsWith("Mislukt") || inviteMsg.startsWith("Fout") ? "#D64045" : "#2E9E6B" }}>{inviteMsg}</span>}
-          </div>
           {/* Avatar stack */}
           <div className="hidden sm:flex items-center">
             <div className="flex -space-x-2.5">
@@ -145,6 +134,29 @@ export default function PlayersPage() {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* MBTI invite bar */}
+      <div className="rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3"
+        style={{ background: "linear-gradient(135deg, rgba(27,108,168,0.10), rgba(77,174,229,0.06))", border: "1px solid rgba(27,108,168,0.25)" }}>
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(27,108,168,0.14)", color: "#1B6CA8" }}>
+            <Brain size={20} />
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm font-black text-slate-900">Persoonlijkheidstest (MBTI)</div>
+            <div className="text-xs text-slate-500">Nodig alle spelers zonder type uit — melding + e-mail in één klik.</div>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {inviteMsg && <span className="text-xs font-semibold" style={{ color: inviteMsg.startsWith("Mislukt") || inviteMsg.startsWith("Fout") ? "#D64045" : "#2E9E6B" }}>{inviteMsg}</span>}
+          <button onClick={inviteMbti} disabled={inviting}
+            className="flex items-center justify-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl transition-all"
+            style={{ background: "#1B6CA8", color: "#fff", cursor: inviting ? "default" : "pointer", opacity: inviting ? 0.7 : 1, boxShadow: "0 6px 18px rgba(27,108,168,0.3)" }}>
+            {inviting ? <Loader2 size={15} className="animate-spin" /> : <Brain size={15} />}
+            Nodig spelers uit
+          </button>
         </div>
       </div>
 
