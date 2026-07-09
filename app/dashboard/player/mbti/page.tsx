@@ -165,11 +165,15 @@ export function MbtiResult({ code }: { code: MbtiCode }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }} className="mbti-sp">
         <Reveal i={1}>
           <div className="pv-card notch" style={{ padding: 18, height: "100%" }}>
-            <div className="pv-label" style={{ color: SFA.green, marginBottom: 12 }}>Handelingen & kracht</div>
-            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 9 }}>
+            <div className="pv-label" style={{ color: SFA.green, marginBottom: 12 }}>Kracht → handeling</div>
+            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 13 }}>
               {p.strengths.map((s, i) => (
-                <li key={i} style={{ display: "flex", gap: 8, fontSize: 13, color: SFA.ink, lineHeight: 1.4 }}>
-                  <span style={{ color: SFA.green, flexShrink: 0 }}>▲</span>{s}
+                <li key={i} style={{ display: "flex", gap: 8, lineHeight: 1.4 }}>
+                  <span style={{ color: SFA.green, flexShrink: 0, marginTop: 1 }}>▲</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: SFA.ink }}>{s.label}</div>
+                    <div style={{ fontSize: 12, color: SFA.sub, marginTop: 2 }}>→ {s.tip}</div>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -177,11 +181,15 @@ export function MbtiResult({ code }: { code: MbtiCode }) {
         </Reveal>
         <Reveal i={2}>
           <div className="pv-card notch" style={{ padding: 18, height: "100%" }}>
-            <div className="pv-label" style={{ color: SFA.red, marginBottom: 12 }}>Valkuilen</div>
-            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 9 }}>
+            <div className="pv-label" style={{ color: SFA.red, marginBottom: 12 }}>Valkuil → handeling</div>
+            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 13 }}>
               {p.pitfalls.map((s, i) => (
-                <li key={i} style={{ display: "flex", gap: 8, fontSize: 13, color: SFA.ink, lineHeight: 1.4 }}>
-                  <span style={{ color: SFA.red, flexShrink: 0 }}>▼</span>{s}
+                <li key={i} style={{ display: "flex", gap: 8, lineHeight: 1.4 }}>
+                  <span style={{ color: SFA.red, flexShrink: 0, marginTop: 1 }}>▼</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: SFA.ink }}>{s.label}</div>
+                    <div style={{ fontSize: 12, color: SFA.sub, marginTop: 2 }}>→ {s.tip}</div>
+                  </div>
                 </li>
               ))}
             </ul>

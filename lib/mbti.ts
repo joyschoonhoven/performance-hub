@@ -60,65 +60,163 @@ export function scoreMbti(answers: Record<string, "a" | "b">): { code: MbtiCode;
 }
 
 /* ── Type-profielen (voetbal-gericht) ── */
+/** Elk punt (kracht of valkuil) heeft een gekoppelde concrete handeling/tip. */
+export interface MbtiPoint { label: string; tip: string; }
 export interface MbtiProfile {
   code: MbtiCode;
   nickname: string;
   icon: string;
   color: string;
   summary: string;
-  strengths: string[];   // handelingen / vaardigheden
-  pitfalls: string[];    // valkuilen
+  strengths: MbtiPoint[];   // kracht + hoe je 'm inzet
+  pitfalls: MbtiPoint[];    // valkuil + concrete handeling ertegen
 }
 
 export const MBTI_PROFILES: Record<MbtiCode, MbtiProfile> = {
   INTJ: { code:"INTJ", nickname:"De Strateeg", icon:"♟️", color:"#6C5CE7", summary:"Denkt in systemen en leest het spel vooruit. Zoekt de meest efficiënte weg naar de winst.",
-    strengths:["Leest patronen en anticipeert","Neemt onafhankelijk goede beslissingen","Blijft rustig en doelgericht"],
-    pitfalls:["Kan te veel in z'n hoofd zitten","Onderschat het teamgevoel","Perfectionisme remt actie"] },
+    strengths:[
+      { label:"Leest patronen en anticipeert", tip:"Wijs de ruimte aan vóór de bal komt — stuur je ploeggenoten alvast in." },
+      { label:"Neemt onafhankelijk goede beslissingen", tip:"Durf je keuze door te zetten, ook als anderen twijfelen." },
+      { label:"Blijft rustig en doelgericht", tip:"Gebruik die rust om het tempo in de opbouw te bepalen." }],
+    pitfalls:[
+      { label:"Kan te veel in z'n hoofd zitten", tip:"Speel je eerste actie op instinct — niet alles hoeft doordacht." },
+      { label:"Onderschat het teamgevoel", tip:"Zoek na een goede actie je ploeggenoot op en vier het samen." },
+      { label:"Perfectionisme remt actie", tip:"Neem de simpele pass; een goede keuze nú is beter dan de perfecte te laat." }] },
   INTP: { code:"INTP", nickname:"De Analist", icon:"🧩", color:"#5B8DEF", summary:"Nieuwsgierig en creatief in oplossingen. Wil begrijpen waaróm iets werkt.",
-    strengths:["Vindt onorthodoxe oplossingen","Blijft kalm en objectief","Leert razendsnel nieuwe patronen"],
-    pitfalls:["Twijfelt te lang bij keuzes","Verliest focus zonder uitdaging","Communiceert te weinig"] },
+    strengths:[
+      { label:"Vindt onorthodoxe oplossingen", tip:"Probeer die verrassende pass in de laatste dertig meter." },
+      { label:"Blijft kalm en objectief", tip:"Analyseer bij dood spel de linie en verplaats het spel." },
+      { label:"Leert razendsnel nieuwe patronen", tip:"Vraag de coach om nieuwe taken — je pakt ze snel op." }],
+    pitfalls:[
+      { label:"Twijfelt te lang bij keuzes", tip:"Beslis binnen twee tikken; leg de bal desnoods breed." },
+      { label:"Verliest focus zonder uitdaging", tip:"Zet jezelf per fase een klein doel om scherp te blijven." },
+      { label:"Communiceert te weinig", tip:"Coach hardop je directe ploeggenoot — één woord is genoeg." }] },
   ENTJ: { code:"ENTJ", nickname:"De Aanvoerder", icon:"👑", color:"#E17055", summary:"Geboren leider die het team stuurt en de lat hoog legt. Wil vooruit, altijd.",
-    strengths:["Neemt de leiding en stuurt aan","Beslist snel en met overtuiging","Trekt het team mee omhoog"],
-    pitfalls:["Kan te dominant worden","Weinig geduld met fouten","Vergeet te luisteren"] },
+    strengths:[
+      { label:"Neemt de leiding en stuurt aan", tip:"Organiseer de pressing: wijs aan wie jaagt en wie dichtknijpt." },
+      { label:"Beslist snel en met overtuiging", tip:"Zet je keuzes kracht bij met tempo en lichaamstaal." },
+      { label:"Trekt het team mee omhoog", tip:"Loop voorop in de duels — je energie werkt aanstekelijk." }],
+    pitfalls:[
+      { label:"Kan te dominant worden", tip:"Geef ook eens de bal en het initiatief aan een ander." },
+      { label:"Weinig geduld met fouten", tip:"Corrigeer met een schouderklop, niet met gemopper." },
+      { label:"Vergeet te luisteren", tip:"Vraag je ploeggenoot wat hij ziet vóór je stuurt." }] },
   ENTP: { code:"ENTP", nickname:"De Vernieuwer", icon:"⚡", color:"#00B894", summary:"Onvoorspelbaar en durft risico's. Zoekt constant de verrassing en de uitdaging.",
-    strengths:["Bedenkt creatieve acties","Past zich snel aan","Houdt de tegenstander bezig"],
-    pitfalls:["Neemt te veel risico","Raakt verveeld bij routine","Maakt dingen niet af"] },
+    strengths:[
+      { label:"Bedenkt creatieve acties", tip:"Zoek de 1-2 of de crosspass om de linie te openen." },
+      { label:"Past zich snel aan", tip:"Wissel van tempo en positie om onvoorspelbaar te blijven." },
+      { label:"Houdt de tegenstander bezig", tip:"Blijf bewegen tussen de linies en vraag de bal in de ruimte." }],
+    pitfalls:[
+      { label:"Neemt te veel risico", tip:"Kies in eigen helft de veilige pass; bewaar de trucs voorin." },
+      { label:"Raakt verveeld bij routine", tip:"Maak van elke herhaling een mini-wedstrijdje met jezelf." },
+      { label:"Maakt dingen niet af", tip:"Rond je actie af — druk door tot de voorzet of het schot." }] },
   INFJ: { code:"INFJ", nickname:"De Visionair", icon:"🌙", color:"#A29BFE", summary:"Rustige denker met een sterk kompas. Voelt aan wat het team nodig heeft.",
-    strengths:["Leest mensen en sfeer","Speelt met visie en overzicht","Betrouwbaar onder druk"],
-    pitfalls:["Neemt kritiek persoonlijk","Cijfert zichzelf te veel weg","Piekert over fouten"] },
+    strengths:[
+      { label:"Leest mensen en sfeer", tip:"Voel aan wanneer een ploeggenoot een peptalk nodig heeft." },
+      { label:"Speelt met visie en overzicht", tip:"Verplaats het spel naar de vrije kant als het vastloopt." },
+      { label:"Betrouwbaar onder druk", tip:"Wees het rustpunt: vraag de bal als anderen paniekeren." }],
+    pitfalls:[
+      { label:"Neemt kritiek persoonlijk", tip:"Zie feedback als info, niet als oordeel — pak er één punt uit." },
+      { label:"Cijfert zichzelf te veel weg", tip:"Eis ook eens de bal op en neem zelf de verantwoordelijkheid." },
+      { label:"Piekert over fouten", tip:"Reset met een vaste routine: diep ademen, en door." }] },
   INFP: { code:"INFP", nickname:"De Idealist", icon:"🎨", color:"#FD79A8", summary:"Speelt met hart en creativiteit. Bloeit op als het klikt en de sfeer goed is.",
-    strengths:["Technisch verfijnd en creatief","Loyaal aan het team","Speelt met passie"],
-    pitfalls:["Gevoelig voor kritiek","Wisselvallig bij tegenslag","Twijfelt aan zichzelf"] },
+    strengths:[
+      { label:"Technisch verfijnd en creatief", tip:"Gebruik je eerste balcontact om meteen ruimte te maken." },
+      { label:"Loyaal aan het team", tip:"Wees de ploeggenoot die altijd bijspringt in de omschakeling." },
+      { label:"Speelt met passie", tip:"Kanaliseer die passie in je duels en pressing." }],
+    pitfalls:[
+      { label:"Gevoelig voor kritiek", tip:"Vraag de coach om één concreet verbeterpunt per keer." },
+      { label:"Wisselvallig bij tegenslag", tip:"Zet na balverlies meteen een simpele, geslaagde actie neer." },
+      { label:"Twijfelt aan zichzelf", tip:"Begin met veilige acties om vertrouwen te tanken." }] },
   ENFJ: { code:"ENFJ", nickname:"De Verbinder", icon:"🤝", color:"#0984E3", summary:"Het sociale hart van het team. Tilt anderen op en houdt de groep samen.",
-    strengths:["Motiveert en verbindt","Communiceert helder","Voelt de groep haarfijn aan"],
-    pitfalls:["Vergeet zichzelf","Neemt te veel op zich","Vermijdt confrontatie"] },
+    strengths:[
+      { label:"Motiveert en verbindt", tip:"Coach je linie: geef complimenten en stuur bij." },
+      { label:"Communiceert helder", tip:"Roep vroeg en duidelijk waar de ruimte ligt in de opbouw." },
+      { label:"Voelt de groep haarfijn aan", tip:"Til een stille ploeggenoot op met een aanmoediging." }],
+    pitfalls:[
+      { label:"Vergeet zichzelf", tip:"Neem ook je eigen kans — jij mag scoren." },
+      { label:"Neemt te veel op zich", tip:"Verdeel taken; je hoeft niet elk gat te dichten." },
+      { label:"Vermijdt confrontatie", tip:"Durf een ploeggenoot direct aan te spreken als het moet." }] },
   ENFP: { code:"ENFP", nickname:"De Aanjager", icon:"🔥", color:"#E84393", summary:"Bruisende energie en spontaniteit. Zet het team en de wedstrijd in vuur en vlam.",
-    strengths:["Aanstekelijke energie","Creatief en spontaan","Motiveert het hele team"],
-    pitfalls:["Verliest focus","Wisselende vorm","Moeite met routine en discipline"] },
+    strengths:[
+      { label:"Aanstekelijke energie", tip:"Zet de toon in de eerste minuten met fel druk zetten." },
+      { label:"Creatief en spontaan", tip:"Zoek de dribbel of de diepe loop op het juiste moment." },
+      { label:"Motiveert het hele team", tip:"Vier elke goede actie luid — het team veert mee." }],
+    pitfalls:[
+      { label:"Verliest focus", tip:"Herpak je concentratie bij elk dood spelmoment." },
+      { label:"Wisselende vorm", tip:"Begin met eenvoudige acties tot je in de wedstrijd zit." },
+      { label:"Moeite met routine en discipline", tip:"Houd je aan je positionele taak, ook zonder bal." }] },
   ISTJ: { code:"ISTJ", nickname:"De Betrouwbare", icon:"🛡️", color:"#636E72", summary:"Consistent, gedisciplineerd en altijd op z'n post. Op wie je kunt bouwen.",
-    strengths:["Uiterst consistent","Gedisciplineerd en positioneel","Doet altijd z'n taak"],
-    pitfalls:["Star bij verandering","Weinig improvisatie","Toont weinig emotie"] },
+    strengths:[
+      { label:"Uiterst consistent", tip:"Wees het baken: doe je taak, wedstrijd na wedstrijd." },
+      { label:"Gedisciplineerd en positioneel", tip:"Houd de linie strak; laat je niet uit positie lokken." },
+      { label:"Doet altijd z'n taak", tip:"Neem de rustige, veilige pass om het spel te laten lopen." }],
+    pitfalls:[
+      { label:"Star bij verandering", tip:"Oefen bewust één nieuwe actie per training." },
+      { label:"Weinig improvisatie", tip:"Durf in de laatste zone eens af te wijken van het boekje." },
+      { label:"Toont weinig emotie", tip:"Moedig je ploeggenoten hardop aan — ook jij mag sturen." }] },
   ISFJ: { code:"ISFJ", nickname:"De Beschermer", icon:"🧱", color:"#00CEC9", summary:"Onbaatzuchtige teamspeler die de boel afdekt. Werkt hard, zonder show.",
-    strengths:["Onvermoeibare werker","Dekt ploeggenoten af","Betrouwbaar en loyaal"],
-    pitfalls:["Cijfert zichzelf weg","Vermijdt de spotlight","Kropt frustratie op"] },
+    strengths:[
+      { label:"Onvermoeibare werker", tip:"Blijf de loopacties maken die de ploeg laten draaien." },
+      { label:"Dekt ploeggenoten af", tip:"Schuif automatisch bij als je maat naar voren gaat." },
+      { label:"Betrouwbaar en loyaal", tip:"Wees het aanspeelpunt dat de bal veilig rondtikt." }],
+    pitfalls:[
+      { label:"Cijfert zichzelf weg", tip:"Vraag ook eens zelf de bal in de aanval." },
+      { label:"Vermijdt de spotlight", tip:"Durf de kans te nemen als je 'm krijgt." },
+      { label:"Kropt frustratie op", tip:"Zeg het meteen als iets niet lekker loopt." }] },
   ESTJ: { code:"ESTJ", nickname:"De Organisator", icon:"📋", color:"#D63031", summary:"Structuur en discipline. Houdt de linie op orde en zegt waar het op staat.",
-    strengths:["Organiseert de ploeg","Neemt verantwoordelijkheid","Duidelijk en direct"],
-    pitfalls:["Kan te streng zijn","Weinig flexibel","Ongeduldig met chaos"] },
+    strengths:[
+      { label:"Organiseert de ploeg", tip:"Zet de defensie op de juiste lijn bij standaardsituaties." },
+      { label:"Neemt verantwoordelijkheid", tip:"Wees de speler die de bal opeist in lastige fases." },
+      { label:"Duidelijk en direct", tip:"Geef korte, heldere commando's in de opbouw." }],
+    pitfalls:[
+      { label:"Kan te streng zijn", tip:"Corrigeer met een aanmoediging erbij, niet alleen kritiek." },
+      { label:"Weinig flexibel", tip:"Sta open voor een creatieve oplossing van een ploeggenoot." },
+      { label:"Ongeduldig met chaos", tip:"Adem, vertraag het spel en herpak de structuur." }] },
   ESFJ: { code:"ESFJ", nickname:"De Teamspeler", icon:"💛", color:"#FDCB6E", summary:"Warm en betrokken, de lijm van de groep. Zorgt dat iedereen erbij hoort.",
-    strengths:["Bindende factor","Harde werker voor het team","Positieve sfeermaker"],
-    pitfalls:["Te afhankelijk van waardering","Vermijdt conflict","Gevoelig voor kritiek"] },
+    strengths:[
+      { label:"Bindende factor", tip:"Houd de groep scherp met positieve energie." },
+      { label:"Harde werker voor het team", tip:"Loop de gaten dicht in de omschakeling." },
+      { label:"Positieve sfeermaker", tip:"Til een ploeggenoot op na een foutje." }],
+    pitfalls:[
+      { label:"Te afhankelijk van waardering", tip:"Speel je eigen spel, ook zonder complimenten." },
+      { label:"Vermijdt conflict", tip:"Spreek je uit als een afspraak niet wordt nagekomen." },
+      { label:"Gevoelig voor kritiek", tip:"Pak uit feedback één ding om aan te werken." }] },
   ISTP: { code:"ISTP", nickname:"De Vakman", icon:"🔧", color:"#2D3436", summary:"Koel, technisch en effectief. Lost het op het moment zelf op, zonder poespas.",
-    strengths:["IJzig kalm onder druk","Technisch en efficiënt","Reageert snel en pragmatisch"],
-    pitfalls:["Communiceert weinig","Kan afhaken bij routine","Neemt soms te veel risico"] },
+    strengths:[
+      { label:"IJzig kalm onder druk", tip:"Gebruik je rust om de bal uit de druk te dribbelen." },
+      { label:"Technisch en efficiënt", tip:"Kies de effectieve actie: één tik, klaar." },
+      { label:"Reageert snel en pragmatisch", tip:"Anticipeer op de tweede bal — jij bent er als eerste." }],
+    pitfalls:[
+      { label:"Communiceert weinig", tip:"Roep kort naar je maat: 'los', 'man', 'tijd'." },
+      { label:"Kan afhaken bij routine", tip:"Daag jezelf uit met een doel per oefening." },
+      { label:"Neemt soms te veel risico", tip:"In eigen zestien: veiligheid eerst, geen trucs." }] },
   ISFP: { code:"ISFP", nickname:"De Kunstenaar", icon:"🎭", color:"#FF7675", summary:"Speelt op gevoel en intuïtie. Verrast met techniek en flair als hij vrij is.",
-    strengths:["Creatief en technisch","Intuïtief spelinzicht","Kalm en bescheiden"],
-    pitfalls:["Wisselvallig","Vermijdt de leiding","Gevoelig voor sfeer"] },
+    strengths:[
+      { label:"Creatief en technisch", tip:"Gebruik je dribbel om de 1-tegen-1 te winnen." },
+      { label:"Intuïtief spelinzicht", tip:"Vertrouw op je gevoel voor de juiste loopactie." },
+      { label:"Kalm en bescheiden", tip:"Blijf rustig aan de bal, ook onder druk." }],
+    pitfalls:[
+      { label:"Wisselvallig", tip:"Bouw je wedstrijd op met simpele, geslaagde acties." },
+      { label:"Vermijdt de leiding", tip:"Neem in de aanval zelf het initiatief." },
+      { label:"Gevoelig voor sfeer", tip:"Focus op je eigen taak, los van de omgeving." }] },
   ESTP: { code:"ESTP", nickname:"De Durfal", icon:"🎯", color:"#FDCB6E", summary:"Lef, actie en instinct. Bloeit op in het heetst van de strijd en pakt z'n moment.",
-    strengths:["Koelbloedig in de beslissende actie","Reageert razendsnel","Durft en pakt risico"],
-    pitfalls:["Te impulsief","Ongeduldig","Moeite met discipline"] },
+    strengths:[
+      { label:"Koelbloedig in de beslissende actie", tip:"Blijf kalm voor de goal en kies bewust je hoek." },
+      { label:"Reageert razendsnel", tip:"Anticipeer op balverlies en schakel meteen om." },
+      { label:"Durft en pakt risico", tip:"Ga de dribbel aan in de laatste dertig meter." }],
+    pitfalls:[
+      { label:"Te impulsief", tip:"Speel de bal ook eens rustig achteruit om het spel te vertragen." },
+      { label:"Ongeduldig", tip:"Wacht op het juiste moment i.p.v. de actie te forceren." },
+      { label:"Moeite met discipline", tip:"Houd je aan je defensieve taak, ook als het saai is." }] },
   ESFP: { code:"ESFP", nickname:"De Entertainer", icon:"✨", color:"#E84393", summary:"Show, energie en plezier. Speelt vrij en steekt het publiek en team aan.",
-    strengths:["Speelt vrij en met flair","Aanstekelijke energie","Presteert op grote momenten"],
-    pitfalls:["Verliest concentratie","Houdt niet van kritiek","Wisselende inzet"] },
+    strengths:[
+      { label:"Speelt vrij en met flair", tip:"Gebruik je techniek om de 1-tegen-1 te zoeken." },
+      { label:"Aanstekelijke energie", tip:"Zet de toon met fel druk zetten vanaf de eerste minuut." },
+      { label:"Presteert op grote momenten", tip:"Zoek de bal op als het spannend wordt." }],
+    pitfalls:[
+      { label:"Verliest concentratie", tip:"Herpak je focus bij elk dood spelmoment." },
+      { label:"Houdt niet van kritiek", tip:"Zie feedback als hulp om nog beter te worden." },
+      { label:"Wisselende inzet", tip:"Houd je defensieve loopacties vol, ook zonder bal." }] },
 };
 
 /* ── Situationele cues — afgeleid van de 4 letters ── */
