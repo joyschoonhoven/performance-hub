@@ -68,14 +68,16 @@ function MiniPitch({ primary, secondary }: { primary: PositionType; secondary?: 
   );
 }
 
-/* Eén attribuutrij: label + gekleurd cijfer */
+/* Eén attribuutrij: label + score-chip (FM-stijl) */
 function AttrRow({ label, value, real }: { label: string; value: number; real: boolean }) {
+  const c = real ? scoreColor(value) : DIM;
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "5px 0", borderBottom: `1px solid ${LINE}` }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 0", borderBottom: `1px solid ${LINE}` }}>
       <span style={{ fontSize: 12, color: SUB, lineHeight: 1.25 }}>{label}</span>
       <span className="display-font" style={{
-        fontSize: 14.5, fontWeight: 600, minWidth: 26, textAlign: "right",
-        color: real ? scoreColor(value) : DIM,
+        fontSize: 13.5, fontWeight: 600, minWidth: 34, textAlign: "center",
+        color: c, background: `${c}14`, padding: "1px 6px",
+        clipPath: "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
         fontFeatureSettings: '"tnum" 1',
       }}>
         {value > 0 ? value.toFixed(value % 1 ? 1 : 0) : "—"}
@@ -83,6 +85,31 @@ function AttrRow({ label, value, real }: { label: string; value: number; real: b
     </div>
   );
 }
+
+/* Sterren voor rolgeschiktheid */
+function Stars({ n }: { n: number }) {
+  return (
+    <span style={{ fontSize: 12, letterSpacing: 1, color: "#C9A227", whiteSpace: "nowrap" }}>
+      {"★".repeat(n)}<span style={{ color: LINE }}>{"★".repeat(5 - n)}</span>
+    </span>
+  );
+}
+
+/* Rollen per positie — geschiktheid berekend uit categoriescores */
+type CatScores = Record<EvaluationCategory, number>;
+const ROLE_DEFS: Partial<Record<PositionType, { name: string; calc: (c: CatScores) => number }[]>> = {
+  GK:  [{ name: "Sweeper-keeper", calc: c => (c.tactiek + c.techniek) / 2 }, { name: "Lijnkeeper", calc: c => (c.mentaal + c.fysiek) / 2 }],
+  CB:  [{ name: "Opbouwende verdediger", calc: c => (c.techniek + c.tactiek) / 2 }, { name: "Stopper", calc: c => (c.fysiek + c.mentaal) / 2 }, { name: "Libero", calc: c => (c.tactiek + c.teamplay) / 2 }],
+  LB:  [{ name: "Vleugelverdediger", calc: c => (c.fysiek + c.techniek) / 2 }, { name: "Controlerende back", calc: c => (c.tactiek + c.teamplay) / 2 }],
+  RB:  [{ name: "Vleugelverdediger", calc: c => (c.fysiek + c.techniek) / 2 }, { name: "Controlerende back", calc: c => (c.tactiek + c.teamplay) / 2 }],
+  CDM: [{ name: "Controleur", calc: c => (c.tactiek + c.teamplay) / 2 }, { name: "Balafpakker", calc: c => (c.fysiek + c.mentaal) / 2 }, { name: "Diepe spelmaker", calc: c => (c.techniek + c.tactiek) / 2 }],
+  CM:  [{ name: "Box-to-box", calc: c => (c.fysiek + c.teamplay) / 2 }, { name: "Spelmaker", calc: c => (c.techniek + c.tactiek) / 2 }, { name: "Aanjager", calc: c => (c.mentaal + c.teamplay) / 2 }],
+  CAM: [{ name: "Schaduwspits", calc: c => (c.techniek + c.tactiek) / 2 }, { name: "Spelmaker", calc: c => (c.techniek + c.teamplay) / 2 }, { name: "Vrije rol", calc: c => (c.techniek + c.mentaal) / 2 }],
+  LW:  [{ name: "Buitenspeler", calc: c => (c.techniek + c.fysiek) / 2 }, { name: "Omgekeerde vleugel", calc: c => (c.techniek + c.tactiek) / 2 }],
+  RW:  [{ name: "Buitenspeler", calc: c => (c.techniek + c.fysiek) / 2 }, { name: "Omgekeerde vleugel", calc: c => (c.techniek + c.tactiek) / 2 }],
+  ST:  [{ name: "Diepe spits", calc: c => (c.fysiek + c.tactiek) / 2 }, { name: "Targetspits", calc: c => (c.fysiek + c.mentaal) / 2 }, { name: "Afmaker", calc: c => (c.techniek + c.mentaal) / 2 }],
+  SS:  [{ name: "Schaduwspits", calc: c => (c.techniek + c.tactiek) / 2 }, { name: "Tweede spits", calc: c => (c.teamplay + c.mentaal) / 2 }],
+};
 
 /* Kolomkop */
 function ColHead({ children }: { children: React.ReactNode }) {
@@ -256,6 +283,31 @@ export function PlayerCardView({ player }: { player: PlayerWithDetails }) {
                     <div style={{ fontSize: 12.5, fontWeight: 700, color: INK }}>{archetype.label}</div>
                   </div>
                 )}
+                {(() => {
+                  const roles = ROLE_DEFS[player.position];
+                  if (!roles) return null;
+                  const cs: CatScores = {
+                    techniek: catScore("techniek"), fysiek: catScore("fysiek"), tactiek: catScore("tactiek"),
+                    mentaal: catScore("mentaal"), teamplay: catScore("teamplay"),
+                  };
+                  return (
+                    <div style={{ marginTop: 14 }}>
+                      <div className="display-font" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", color: DIM, marginBottom: 6 }}>ROLLEN</div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                        {roles.map((r) => {
+                          const v = r.calc(cs);
+                          const stars = Math.max(1, Math.min(5, Math.round(v / 2)));
+                          return (
+                            <div key={r.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                              <span style={{ fontSize: 11.5, color: SUB }}>{r.name}</span>
+                              <Stars n={stars} />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
