@@ -10,6 +10,7 @@ import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Tilt3D } from "@/components/ui/Tilt3D";
+import { ChallengeBadges } from "@/components/player/ChallengeBadges";
 import type { Challenge, ChallengeStatus, EvaluationCategory } from "@/lib/types";
 
 const STATUS_CONFIG: Record<ChallengeStatus, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
@@ -21,6 +22,7 @@ const STATUS_CONFIG: Record<ChallengeStatus, { label: string; color: string; bg:
 
 export default function ChallengesPage() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [mbtiType, setMbtiType] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<ChallengeStatus | "all">("all");
   const [categoryFilter, setCategoryFilter] = useState<EvaluationCategory | "all">("all");
@@ -33,8 +35,9 @@ export default function ChallengesPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoading(false); return; }
       const { data: player } = await supabase
-        .from("players").select("id").eq("profile_id", user.id).maybeSingle();
+        .from("players").select("id, mbti_type").eq("profile_id", user.id).maybeSingle();
       if (!player) { setLoading(false); return; }
+      setMbtiType(player.mbti_type ?? null);
       const { data } = await supabase
         .from("challenges").select("*")
         .eq("player_id", player.id)
@@ -159,6 +162,16 @@ export default function ChallengesPage() {
             </Tilt3D>
           </motion.div>
         )}
+
+        {/* Badgemuur — clubstijl schilden */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.12 }}
+          style={{ marginBottom: 28 }}
+        >
+          <ChallengeBadges challenges={challenges} mbtiType={mbtiType} />
+        </motion.div>
 
         {/* Filter chips */}
         {challenges.length > 0 && (

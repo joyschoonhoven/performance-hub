@@ -20,6 +20,7 @@ import { EVALUATION_SCHEMA } from "@/lib/types";
 import { PlayerPhotoUpload } from "@/components/ui/PlayerPhotoUpload";
 import { sendCoachUpdate } from "@/lib/coach-notify";
 import { MBTI_PROFILES, situationalCues, personalityRadar, type MbtiCode, type Axis } from "@/lib/mbti";
+import { MbtiShield } from "@/components/ui/ShieldBadge";
 import { Mail, Send } from "lucide-react";
 
 function parseSubScores(subNotes?: string): Record<string, number> | null {
@@ -336,9 +337,10 @@ export default function PlayerDetailPage() {
                 {lastSeen ? `Laatst actief ${lastSeenLabel(lastSeen)}` : "Nog niet ingelogd"}
               </span>
               {player.mbti_type && MBTI_PROFILES[player.mbti_type as MbtiCode] && (
-                <span className="text-[11px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5"
-                  style={{ background: `${MBTI_PROFILES[player.mbti_type as MbtiCode].color}18`, color: MBTI_PROFILES[player.mbti_type as MbtiCode].color }}>
-                  {MBTI_PROFILES[player.mbti_type as MbtiCode].icon} {player.mbti_type} · {MBTI_PROFILES[player.mbti_type as MbtiCode].nickname}
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold pr-2.5 py-0.5 rounded-full"
+                  style={{ background: `${MBTI_PROFILES[player.mbti_type as MbtiCode].color}14`, color: MBTI_PROFILES[player.mbti_type as MbtiCode].color }}>
+                  <MbtiShield code={player.mbti_type} size={26} />
+                  {player.mbti_type} · {MBTI_PROFILES[player.mbti_type as MbtiCode].nickname}
                 </span>
               )}
               <span className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
@@ -396,8 +398,11 @@ export default function PlayerDetailPage() {
             </div>
           </div>
 
-          {/* Big rating — desktop */}
-          <div className="hidden sm:flex flex-col items-end gap-3 flex-shrink-0">
+          {/* Big rating + type-badge — desktop */}
+          <div className="hidden sm:flex items-center gap-5 flex-shrink-0">
+            {player.mbti_type && MBTI_PROFILES[player.mbti_type as MbtiCode] && (
+              <MbtiShield code={player.mbti_type} size={64} />
+            )}
             <div className="text-right">
               <div className="font-black tabular-nums leading-none" style={{ color: rColor, fontSize: "4.5rem", fontFamily: "Outfit, sans-serif" }}>{player.overall_rating}</div>
               <div className="text-xs text-slate-400 uppercase tracking-widest -mt-1" style={{ fontFamily: "Outfit, sans-serif" }}>Rating</div>
@@ -517,7 +522,7 @@ export default function PlayerDetailPage() {
             return (
               <div className="hub-card p-5" style={{ borderTop: `3px solid ${mp.color}` }}>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style={{ background: `${mp.color}16`, border: `1px solid ${mp.color}30` }}>{mp.icon}</div>
+                  <MbtiShield code={mp.code} size={48} />
                   <div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-lg font-black" style={{ color: mp.color, fontFamily: "Outfit, sans-serif" }}>{mp.code}</span>

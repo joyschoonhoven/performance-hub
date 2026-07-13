@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Brain, ChevronRight } from "lucide-react";
 import { MBTI_PROFILES, type MbtiCode } from "@/lib/mbti";
+import { ShieldBadge } from "@/components/ui/ShieldBadge";
 
 const S = { card:"#FFFFFF", ink:"#0D1B2A", sub:"#5A6B80", dim:"#9BAABB", line:"rgba(13,27,42,0.09)", blue:"#1B6CA8", sky:"#4DAEE5" } as const;
 
@@ -48,8 +49,7 @@ export function MbtiBadge({ mbtiType }: { mbtiType?: string | null }) {
           padding: "14px 18px", borderRadius: 14, background: S.card, border: `1px solid ${S.line}`,
           boxShadow: "0 1px 2px rgba(13,27,42,0.04)",
         }}>
-        <div style={{ width: 46, height: 46, borderRadius: 13, flexShrink: 0, background: `${p.color}16`, border: `1px solid ${p.color}30`,
-          display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>{p.icon}</div>
+        <ShieldBadge color={p.color} icon={p.icon} label={p.code} size={52} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
             <span style={{ fontFamily: "'Archivo Narrow',sans-serif", fontSize: 19, fontWeight: 700, color: p.color, letterSpacing: "0.03em" }}>{p.code}</span>

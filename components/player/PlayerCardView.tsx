@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { ARCHETYPES, SOCIOTYPES, CATEGORY_LABELS } from "@/lib/types";
 import { getRatingLabel } from "@/lib/utils";
+import { MbtiShield } from "@/components/ui/ShieldBadge";
 import type { EvaluationCategory, PlayerWithDetails } from "@/lib/types";
 
 /* ═══════════════════════════════════════════════
@@ -84,6 +85,11 @@ export function PlayerCardView({ player }: { player: PlayerWithDetails }) {
                   <Image src="/logo.png" alt="" width={30} height={30} style={{objectFit:"contain"}}/>
                 </div>
                 <span className="fc-club-name">{clubAbbr(player.team_name || player.club)}</span>
+                {player.mbti_type && (
+                  <div style={{ marginTop: 8 }} title="Jouw speler-type">
+                    <MbtiShield code={player.mbti_type} size={40} />
+                  </div>
+                )}
               </div>
             </div>
 

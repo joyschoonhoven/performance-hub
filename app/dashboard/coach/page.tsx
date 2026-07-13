@@ -10,6 +10,7 @@ import { POSITION_LABELS } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import type { PlayerWithDetails } from "@/lib/types";
 import { PlayerAvatar } from "@/components/ui/PlayerAvatar";
+import { MbtiShield } from "@/components/ui/ShieldBadge";
 
 const ACCENT = "#5A90BA";
 
@@ -199,6 +200,7 @@ export default function CoachDashboardPage() {
                 <div className="hidden sm:block" style={{ fontSize: 11.5, color: "var(--text-muted)", width: 110, textAlign: "right" }}>
                   {lastEval ? formatDate(lastEval) : "Nog geen evaluatie"}
                 </div>
+                {p.mbti_type && <MbtiShield code={p.mbti_type} size={22} />}
                 <span style={{ width: 20, display: "flex", justifyContent: "center" }}>
                   {trend === "up" ? <TrendingUp size={14} style={{ color: "var(--green)" }} />
                     : trend === "down" ? <TrendingDown size={14} style={{ color: "var(--red)" }} />

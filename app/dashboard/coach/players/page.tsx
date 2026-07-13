@@ -7,6 +7,7 @@ import { POSITION_LABELS } from "@/lib/types";
 import { Search, TrendingUp, TrendingDown, Minus, Loader2, UserPlus, Mail } from "lucide-react";
 import type { PositionType, PlayerWithDetails } from "@/lib/types";
 import { getAllPlayers } from "@/lib/supabase/queries";
+import { MbtiShield } from "@/components/ui/ShieldBadge";
 
 const ACCENT = "#5A90BA";
 
@@ -206,8 +207,9 @@ export default function PlayersPage() {
                       </div>
                     </div>
 
-                    {/* Trend + rating */}
+                    {/* Type-badge + trend + rating */}
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                      {p.mbti_type && <MbtiShield code={p.mbti_type} size={24} />}
                       {trend === "up" ? <TrendingUp size={13} style={{ color: "var(--green)" }} />
                         : trend === "down" ? <TrendingDown size={13} style={{ color: "var(--red)" }} />
                         : <Minus size={13} style={{ color: "var(--text-dim)" }} />}

@@ -10,6 +10,7 @@ import { SFA, PREMIUM_CSS, PremiumHeader, Reveal } from "@/components/ui/premium
 import {
   MBTI_QUESTIONS, MBTI_PROFILES, scoreMbti, situationalCues, type MbtiCode,
 } from "@/lib/mbti";
+import { ShieldBadge } from "@/components/ui/ShieldBadge";
 import type { PlayerWithDetails } from "@/lib/types";
 
 export default function MbtiPage() {
@@ -158,9 +159,8 @@ function MbtiResult({ code }: { code: MbtiCode }) {
       <Reveal>
         <div className="pv-card notch" style={{ padding: 0, overflow: "hidden" }}>
           <div style={{ height: 4, background: `linear-gradient(90deg, ${p.color}, ${p.color}80)` }} />
-          <div style={{ padding: 22, display: "flex", alignItems: "center", gap: 16 }}>
-            <div style={{ width: 62, height: 62, borderRadius: 16, flexShrink: 0, background: `${p.color}16`, border: `1px solid ${p.color}30`,
-              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30 }}>{p.icon}</div>
+          <div style={{ padding: 22, display: "flex", alignItems: "center", gap: 18 }}>
+            <ShieldBadge color={p.color} icon={p.icon} label={p.code} size={72} />
             <div>
               <div className="pv-num" style={{ fontSize: 26, fontWeight: 700, color: p.color, letterSpacing: "0.04em", lineHeight: 1 }}>{p.code}</div>
               <div style={{ fontSize: 17, fontWeight: 800, color: SFA.ink }}>{p.nickname}</div>
