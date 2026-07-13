@@ -87,18 +87,18 @@ export default function CoachDashboardPage() {
       {/* ── Header ── */}
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text)" }}>
+          <h1 className="display-font" style={{ fontSize: 26, fontWeight: 600, color: "var(--text)", lineHeight: 1.1 }}>
             {coachName ? `Welkom, ${coachName.split(" ")[0]}` : "Dashboard"}
           </h1>
           <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 3 }}>
             {new Date().toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" })}
           </p>
         </div>
-        <Link href="/dashboard/coach/evaluations/new" style={{
+        <Link href="/dashboard/coach/evaluations/new" className="cut-btn display-font" style={{
           display: "inline-flex", alignItems: "center", gap: 7,
-          height: 38, padding: "0 16px", borderRadius: 9,
+          height: 40, padding: "0 24px",
           background: ACCENT, color: "#fff",
-          fontSize: 13, fontWeight: 600, textDecoration: "none",
+          fontSize: 13.5, fontWeight: 600, textDecoration: "none",
         }}>
           <Plus size={14} /> Nieuwe evaluatie
         </Link>
@@ -117,15 +117,15 @@ export default function CoachDashboardPage() {
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: 20 }}>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 16 }}>
             <div>
-              <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>Teamscore per evaluatie</h2>
-              <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>Gemiddelde van de laatste {series.length} evaluaties</p>
+              <h2 className="club-h" style={{ fontSize: 14, color: "var(--text)" }}>Teamscore</h2>
+              <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>Gemiddelde van de laatste {series.length} evaluaties</p>
             </div>
           </div>
           <TrendChart series={series} />
         </div>
 
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: 20, display: "flex", flexDirection: "column" }}>
-          <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", marginBottom: 14 }}>Aandachtspunten</h2>
+          <h2 className="club-h" style={{ fontSize: 14, color: "var(--text)", marginBottom: 14 }}>Aandachtspunten</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
             <AttentionRow
               value={needsAttention}
@@ -159,7 +159,7 @@ export default function CoachDashboardPage() {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "14px 20px", borderBottom: "1px solid var(--border)",
         }}>
-          <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>Selectie</h2>
+          <h2 className="club-h" style={{ fontSize: 14, color: "var(--text)" }}>Selectie</h2>
           <Link href="/dashboard/coach/players" style={{
             fontSize: 12.5, fontWeight: 600, color: ACCENT, textDecoration: "none",
             display: "inline-flex", alignItems: "center", gap: 5,
@@ -204,8 +204,8 @@ export default function CoachDashboardPage() {
                     : trend === "down" ? <TrendingDown size={14} style={{ color: "var(--red)" }} />
                     : <Minus size={14} style={{ color: "var(--text-dim)" }} />}
                 </span>
-                <span style={{
-                  fontSize: 15, fontWeight: 700, color: "var(--text)",
+                <span className="display-font" style={{
+                  fontSize: 17, fontWeight: 600, color: "var(--text)",
                   fontFeatureSettings: '"tnum" 1', width: 34, textAlign: "right",
                 }}>
                   {p.overall_rating}
@@ -223,15 +223,15 @@ export default function CoachDashboardPage() {
 function Kpi({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div style={{ background: "var(--surface)", padding: "18px 20px" }}>
-      <div style={{
-        fontSize: 11, fontWeight: 600, letterSpacing: "0.04em",
+      <div className="display-font" style={{
+        fontSize: 11, fontWeight: 500, letterSpacing: "0.08em",
         color: "var(--text-muted)", marginBottom: 8,
       }}>
         {label}
       </div>
       <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-        <span style={{
-          fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em",
+        <span className="display-font" style={{
+          fontSize: 30, fontWeight: 600,
           color: "var(--text)", lineHeight: 1, fontFeatureSettings: '"tnum" 1',
         }}>
           {value}

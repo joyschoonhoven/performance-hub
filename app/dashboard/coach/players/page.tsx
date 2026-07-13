@@ -79,7 +79,7 @@ export default function PlayersPage() {
       {/* ── Header ── */}
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text)" }}>Spelers</h1>
+          <h1 className="display-font" style={{ fontSize: 26, fontWeight: 600, color: "var(--text)", lineHeight: 1.1 }}>Spelers</h1>
           <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 3 }}>
             {allPlayers.length} speler{allPlayers.length !== 1 ? "s" : ""} in de selectie
           </p>
@@ -90,11 +90,11 @@ export default function PlayersPage() {
               {inviteMsg}
             </span>
           )}
-          <button onClick={inviteMbti} disabled={inviting} style={{
+          <button onClick={inviteMbti} disabled={inviting} className="cut-btn display-font" style={{
             display: "inline-flex", alignItems: "center", gap: 7,
-            height: 38, padding: "0 14px", borderRadius: 9,
-            background: "transparent", border: "1px solid var(--border-strong)",
-            color: "var(--text-2)", fontSize: 13, fontWeight: 600,
+            height: 40, padding: "0 22px",
+            background: "var(--surface-2)", border: "1px solid var(--border-strong)",
+            color: "var(--text-2)", fontSize: 12.5, fontWeight: 600,
             cursor: inviting ? "default" : "pointer", opacity: inviting ? 0.6 : 1,
           }}>
             {inviting ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
@@ -211,8 +211,8 @@ export default function PlayersPage() {
                       {trend === "up" ? <TrendingUp size={13} style={{ color: "var(--green)" }} />
                         : trend === "down" ? <TrendingDown size={13} style={{ color: "var(--red)" }} />
                         : <Minus size={13} style={{ color: "var(--text-dim)" }} />}
-                      <span style={{
-                        fontSize: 17, fontWeight: 700, color: "var(--text)",
+                      <span className="display-font" style={{
+                        fontSize: 19, fontWeight: 600, color: "var(--text)",
                         fontFeatureSettings: '"tnum" 1',
                       }}>
                         {p.overall_rating}
@@ -232,10 +232,10 @@ export default function PlayersPage() {
 /* ── Positiefilter-knop ── */
 function PosPill({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="pl-pill" style={{
-      height: 30, padding: "0 12px", borderRadius: 7,
-      fontSize: 12, fontWeight: 600, cursor: "pointer",
-      background: active ? ACCENT : "transparent",
+    <button onClick={onClick} className="pl-pill cut-sm display-font" style={{
+      height: 30, padding: "0 14px",
+      fontSize: 11.5, fontWeight: 600, cursor: "pointer",
+      background: active ? ACCENT : "var(--surface-2)",
       border: `1px solid ${active ? ACCENT : "var(--border)"}`,
       color: active ? "#fff" : "var(--text-2)",
     }}>

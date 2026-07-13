@@ -45,7 +45,7 @@ export function SlotBooking({ playerId }: { playerId: string }) {
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
         <CalendarDays size={16} style={{ color: "#4DAEE5" }} />
-        <span style={{ fontSize: 14, fontWeight: 800, color: "#fff", letterSpacing: "-0.01em" }}>
+        <span className="display-font" style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>
           Train met de trainer
         </span>
       </div>
@@ -81,9 +81,10 @@ export function SlotBooking({ playerId }: { playerId: string }) {
               <button
                 onClick={() => toggle(s, mine)}
                 disabled={full || isBusy}
+                className="cut-sm display-font"
                 style={{
-                  height: 32, padding: "0 14px", borderRadius: 9, flexShrink: 0,
-                  fontSize: 12, fontWeight: 700, cursor: full || isBusy ? "default" : "pointer",
+                  height: 32, padding: "0 16px", flexShrink: 0,
+                  fontSize: 11.5, fontWeight: 600, cursor: full || isBusy ? "default" : "pointer",
                   background: mine ? "rgba(51,196,129,0.18)" : full ? "rgba(255,255,255,0.08)" : "linear-gradient(135deg, #4DAEE5, #1B6CA8)",
                   color: mine ? "#33C481" : full ? "rgba(255,255,255,0.35)" : "#fff",
                   border: mine ? "1px solid rgba(51,196,129,0.4)" : "none",

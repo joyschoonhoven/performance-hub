@@ -97,13 +97,13 @@ export function CoachAgenda() {
       {/* ── Kop ── */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", borderBottom: "1px solid var(--border)", flexWrap: "wrap", gap: 10 }}>
         <div>
-          <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>Agenda</h2>
-          <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>Trainingen van spelers en jouw beschikbaarheid</p>
+          <h2 className="club-h" style={{ fontSize: 14, color: "var(--text)" }}>Agenda</h2>
+          <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>Trainingen van spelers en jouw beschikbaarheid</p>
         </div>
-        <button onClick={() => { setShowForm((v) => !v); setFDate(selected >= today ? selected : today); }} style={{
-          display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px",
-          borderRadius: 8, background: ACCENT, color: "#fff", border: "none",
-          fontSize: 12.5, fontWeight: 600, cursor: "pointer",
+        <button onClick={() => { setShowForm((v) => !v); setFDate(selected >= today ? selected : today); }} className="cut-btn display-font" style={{
+          display: "inline-flex", alignItems: "center", gap: 6, height: 36, padding: "0 20px",
+          background: ACCENT, color: "#fff", border: "none",
+          fontSize: 12, fontWeight: 600, cursor: "pointer",
         }}>
           <Plus size={13} /> Tijdslot toevoegen
         </button>
@@ -122,9 +122,9 @@ export function CoachAgenda() {
             <Field label="Tot"><input type="time" value={fEnd} onChange={(e) => setFEnd(e.target.value)} style={inputStyle} /></Field>
             <Field label="Plekken"><input type="number" min={1} max={30} value={fCap} onChange={(e) => setFCap(Math.max(1, Number(e.target.value)))} style={{ ...inputStyle, width: 70 }} /></Field>
             <Field label="Notitie (optioneel)" grow><input value={fNote} onChange={(e) => setFNote(e.target.value)} placeholder="Bijv. techniektraining, veld 2" style={{ ...inputStyle, width: "100%" }} /></Field>
-            <button onClick={submitSlot} disabled={saving} style={{
-              height: 36, padding: "0 16px", borderRadius: 8, background: ACCENT, color: "#fff",
-              border: "none", fontSize: 12.5, fontWeight: 600, cursor: saving ? "default" : "pointer", opacity: saving ? 0.7 : 1,
+            <button onClick={submitSlot} disabled={saving} className="cut-btn display-font" style={{
+              height: 36, padding: "0 20px", background: ACCENT, color: "#fff",
+              border: "none", fontSize: 12, fontWeight: 600, cursor: saving ? "default" : "pointer", opacity: saving ? 0.7 : 1,
             }}>
               {saving ? <Loader2 size={13} className="animate-spin" /> : "Opslaan"}
             </button>

@@ -24,7 +24,7 @@ export default function CoachPlansPage() {
   return (
     <div className="flex flex-col gap-4" style={{ maxWidth: 1080, margin: "0 auto", width: "100%" }}>
       <div>
-        <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text)" }}>Plannen</h1>
+        <h1 className="display-font" style={{ fontSize: 26, fontWeight: 600, color: "var(--text)", lineHeight: 1.1 }}>Plannen</h1>
         <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 3, display: "flex", alignItems: "center", gap: 6 }}>
           <Flag size={12} className="shrink-0" />
           <span>Agenda, beschikbaarheid en persoonlijke plannen van je spelers.</span>
