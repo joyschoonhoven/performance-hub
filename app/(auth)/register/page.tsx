@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, UserCheck, Trophy } from "lucide-react";
 import type { UserRole } from "@/lib/types";
+
+const ACCENT = "#5A90BA";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -43,117 +44,110 @@ export default function RegisterPage() {
   }
 
   const roles = [
-    { value: "coach" as UserRole, label: "Coach", desc: "Beheer spelers & evaluaties", icon: <Trophy size={14} /> },
-    { value: "player" as UserRole, label: "Speler", desc: "Bekijk jouw stats & progressie", icon: <UserCheck size={14} /> },
+    { value: "coach" as UserRole, label: "Trainer", desc: "Beheer spelers & evaluaties", icon: <Trophy size={14} /> },
+    { value: "player" as UserRole, label: "Speler", desc: "Volg jouw ontwikkeling", icon: <UserCheck size={14} /> },
   ];
 
-  function inputStyle(field: string) {
+  function inputStyle(field: string): React.CSSProperties {
     const isFocused = focused === field;
     return {
-      background: isFocused ? "rgba(79,169,230,0.08)" : "rgba(255,255,255,0.06)",
-      border: `1px solid ${isFocused ? "rgba(79,169,230,0.5)" : "rgba(255,255,255,0.12)"}`,
-      boxShadow: isFocused ? "0 0 0 3px rgba(79,169,230,0.08)" : "none",
-      color: "#ffffff",
+      background: "#FFFFFF",
+      border: `1px solid ${isFocused ? ACCENT : "#E5E7EB"}`,
+      boxShadow: isFocused ? `0 0 0 3px ${ACCENT}22` : "none",
+      color: "#1F2937",
+      caretColor: ACCENT,
+      borderRadius: 10,
     };
   }
 
+  const labelStyle: React.CSSProperties = {
+    color: "#6B7280", letterSpacing: "0.08em",
+    fontFamily: "'Oswald', sans-serif", fontWeight: 500, textTransform: "uppercase",
+  };
+
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl overflow-hidden mb-1"
-          style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>
-          <Image src="/logo.png" alt="Schoonhoven Sports" width={52} height={52} className="object-contain w-full h-full" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-black text-white tracking-tight" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
-            Account aanmaken
-          </h1>
-          <p className="text-slate-400 text-sm mt-1">Schoonhoven Sports Performance Hub</p>
-        </div>
+      {/* Kop */}
+      <div className="space-y-1 mb-8">
+        <div style={{ width: 40, height: 4, background: ACCENT, transform: "skewX(-12deg)", marginBottom: 16 }} />
+        <h1 className="display-font" style={{ fontSize: 32, fontWeight: 600, color: "#1F2937", lineHeight: 1.05 }}>
+          Account aanmaken
+        </h1>
+        <p className="text-sm" style={{ color: "#6B7280" }}>Schoonhoven Football Academy</p>
       </div>
 
-      <form onSubmit={handleRegister} className="space-y-4">
-        {/* Role selector */}
-        <div>
-          <label className="block text-[10px] font-semibold text-slate-400 mb-2 uppercase tracking-widest">
-            Ik ben een
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {roles.map((r) => (
-              <button
-                key={r.value}
-                type="button"
-                onClick={() => setRole(r.value)}
-                className="p-3 rounded-xl text-left transition-all"
-                style={role === r.value ? {
-                  background: "rgba(79,169,230,0.15)",
-                  border: "1px solid rgba(79,169,230,0.4)",
-                } : {
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                }}
-              >
-                <div className="flex items-center gap-1.5 mb-0.5" style={{ color: role === r.value ? "#4FA9E6" : "#94A3B8" }}>
-                  {r.icon}
-                  <span className="text-xs font-bold">{r.label}</span>
-                </div>
-                <div className="text-[10px] text-slate-500">{r.desc}</div>
-              </button>
-            ))}
+      <div className="p-6 space-y-4" style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 14 }}>
+        <form onSubmit={handleRegister} className="space-y-4">
+          {/* Rolkeuze */}
+          <div>
+            <label className="block text-xs mb-2" style={labelStyle}>Ik ben een</label>
+            <div className="grid grid-cols-2 gap-2">
+              {roles.map((r) => (
+                <button
+                  key={r.value}
+                  type="button"
+                  onClick={() => setRole(r.value)}
+                  className="p-3 text-left transition-all"
+                  style={{
+                    background: role === r.value ? `${ACCENT}10` : "#F7F8FA",
+                    border: `1px solid ${role === r.value ? ACCENT : "#E5E7EB"}`,
+                    borderRadius: 10, cursor: "pointer",
+                  }}
+                >
+                  <div className="flex items-center gap-1.5 mb-0.5" style={{ color: role === r.value ? ACCENT : "#6B7280" }}>
+                    {r.icon}
+                    <span className="text-xs font-bold">{r.label}</span>
+                  </div>
+                  <div className="text-[10px]" style={{ color: "#9CA3AF" }}>{r.desc}</div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Fields */}
-        {[
-          { id: "fullName", label: "Volledige naam", type: "text", value: fullName, onChange: setFullName, placeholder: "Jan de Vries" },
-          { id: "email", label: "E-mail", type: "email", value: email, onChange: setEmail, placeholder: "jan@club.nl" },
-          { id: "password", label: "Wachtwoord", type: "password", value: password, onChange: setPassword, placeholder: "Minimaal 6 tekens", minLength: 6 },
-        ].map((field) => (
-          <div key={field.id}>
-            <label className="block text-[10px] font-semibold text-slate-400 mb-1.5 uppercase tracking-widest">
-              {field.label}
-            </label>
-            <input
-              type={field.type}
-              value={field.value}
-              onChange={(e) => field.onChange(e.target.value)}
-              required
-              minLength={field.minLength}
-              placeholder={field.placeholder}
-              className="w-full rounded-xl px-4 py-3 text-sm placeholder:text-slate-500 focus:outline-none transition-all"
-              style={inputStyle(field.id)}
-              onFocus={() => setFocused(field.id)}
-              onBlur={() => setFocused(null)}
-            />
-          </div>
-        ))}
+          {/* Velden */}
+          {[
+            { id: "fullName", label: "Volledige naam", type: "text", value: fullName, onChange: setFullName, placeholder: "Jan de Vries" },
+            { id: "email", label: "E-mail", type: "email", value: email, onChange: setEmail, placeholder: "jan@club.nl" },
+            { id: "password", label: "Wachtwoord", type: "password", value: password, onChange: setPassword, placeholder: "Minimaal 6 tekens", minLength: 6 },
+          ].map((field) => (
+            <div key={field.id}>
+              <label className="block text-xs mb-1.5" style={labelStyle}>{field.label}</label>
+              <input
+                type={field.type}
+                value={field.value}
+                onChange={(e) => field.onChange(e.target.value)}
+                required
+                minLength={field.minLength}
+                placeholder={field.placeholder}
+                className="w-full px-4 py-3 text-sm focus:outline-none transition-all"
+                style={inputStyle(field.id)}
+                onFocus={() => setFocused(field.id)}
+                onBlur={() => setFocused(null)}
+              />
+            </div>
+          ))}
 
-        {error && (
-          <div className="rounded-xl px-4 py-3 text-red-400 text-sm"
-            style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)" }}>
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="px-4 py-3 text-sm" style={{ background: "rgba(180,83,74,0.07)", border: "1px solid rgba(180,83,74,0.25)", color: "#B4534A", borderRadius: 10 }}>
+              {error}
+            </div>
+          )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm text-white hover:brightness-110 active:scale-[0.98]"
-          style={{
-            background: loading ? "rgba(79,169,230,0.7)" : "#4FA9E6",
-            boxShadow: "0 4px 16px rgba(79,169,230,0.3)",
-            fontFamily: "Outfit, sans-serif",
-          }}
-        >
-          {loading ? <Loader2 size={16} className="animate-spin" /> : null}
-          Account aanmaken
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="cut-btn display-font w-full py-3.5 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm active:scale-[0.99]"
+            style={{ background: ACCENT, color: "#fff", fontWeight: 600, border: "none", cursor: "pointer" }}
+          >
+            {loading ? <Loader2 size={16} className="animate-spin" /> : null}
+            Account aanmaken
+          </button>
+        </form>
+      </div>
 
-      <p className="text-center text-xs text-slate-500">
+      <p className="text-center text-xs" style={{ color: "#9CA3AF" }}>
         Al een account?{" "}
-        <Link href="/login" className="font-semibold transition-colors" style={{ color: "#4FA9E6" }}>
+        <Link href="/login" className="font-semibold hover:underline" style={{ color: ACCENT }}>
           Inloggen
         </Link>
       </p>

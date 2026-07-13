@@ -101,8 +101,9 @@ export default function MbtiPage() {
 
               {MBTI_QUESTIONS.map((q, i) => (
                 <Reveal key={q.id} i={i % 6}>
-                  <div className="pv-card notch" style={{ padding: 18 }}>
-                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.1em", color: SFA.dim, textTransform: "uppercase", marginBottom: 10 }}>
+                  <div className="pv-card" style={{ padding: 18 }}>
+                    <div className="display-font" style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.12em", color: "#5A90BA", marginBottom: 10, display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ width: 3, height: 12, background: "#5A90BA", transform: "skewX(-12deg)" }} />
                       Stelling {i + 1} / {total}
                     </div>
                     <div style={{ fontSize: 15, fontWeight: 700, color: SFA.ink, lineHeight: 1.4, marginBottom: 18 }}>{q.text}</div>
@@ -132,8 +133,12 @@ export default function MbtiPage() {
                 </Reveal>
               ))}
 
-              <button onClick={finish} disabled={!complete || saving} className="pv-btn"
-                style={{ opacity: (!complete || saving) ? 0.5 : 1, cursor: (!complete || saving) ? "default" : "pointer" }}>
+              <button onClick={finish} disabled={!complete || saving} className="cut-btn display-font"
+                style={{
+                  height: 46, padding: "0 26px", background: "#5A90BA", color: "#fff", border: "none",
+                  fontSize: 14, fontWeight: 600, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  opacity: (!complete || saving) ? 0.5 : 1, cursor: (!complete || saving) ? "default" : "pointer",
+                }}>
                 {saving ? <Loader2 size={15} className="animate-spin" /> : <ChevronRight size={15} />}
                 {complete ? "Bekijk mijn type" : `Nog ${total - answered} vragen`}
               </button>
@@ -157,7 +162,7 @@ function MbtiResult({ code }: { code: MbtiCode }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       {/* type header */}
       <Reveal>
-        <div className="pv-card notch" style={{ padding: 0, overflow: "hidden" }}>
+        <div className="pv-card" style={{ padding: 0, overflow: "hidden" }}>
           <div style={{ height: 4, background: `linear-gradient(90deg, ${p.color}, ${p.color}80)` }} />
           <div style={{ padding: 22, display: "flex", alignItems: "center", gap: 18 }}>
             <ShieldBadge color={p.color} icon={p.icon} label={p.code} size={72} />
@@ -173,7 +178,7 @@ function MbtiResult({ code }: { code: MbtiCode }) {
       {/* strengths + pitfalls */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }} className="mbti-sp">
         <Reveal i={1}>
-          <div className="pv-card notch" style={{ padding: 18, height: "100%" }}>
+          <div className="pv-card" style={{ padding: 18, height: "100%" }}>
             <div className="pv-label" style={{ color: SFA.green, marginBottom: 12 }}>Kracht → handeling</div>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 13 }}>
               {p.strengths.map((s, i) => (
@@ -189,7 +194,7 @@ function MbtiResult({ code }: { code: MbtiCode }) {
           </div>
         </Reveal>
         <Reveal i={2}>
-          <div className="pv-card notch" style={{ padding: 18, height: "100%" }}>
+          <div className="pv-card" style={{ padding: 18, height: "100%" }}>
             <div className="pv-label" style={{ color: SFA.red, marginBottom: 12 }}>Valkuil → handeling</div>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 13 }}>
               {p.pitfalls.map((s, i) => (
@@ -208,7 +213,7 @@ function MbtiResult({ code }: { code: MbtiCode }) {
 
       {/* situational cues */}
       <Reveal i={3}>
-        <div className="pv-card notch" style={{ padding: 18 }}>
+        <div className="pv-card" style={{ padding: 18 }}>
           <div className="pv-label" style={{ marginBottom: 14 }}>Per situatie op het veld</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {cues.map((c, i) => (

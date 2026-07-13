@@ -81,7 +81,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
   }
 
   const initials = userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
-  const biz = role === "coach";
+  const biz = true; // witte, compacte clubstijl voor alle rollen
 
   return (
     <aside

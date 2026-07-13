@@ -10,7 +10,6 @@ import {
   Shield, Moon, Sun,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { AmbientField } from "@/components/ui/AmbientField";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -86,7 +85,6 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
   const supabase = createClient();
 
   useEffect(() => {
-    if (role !== "coach") return;
     setDarkMode(localStorage.getItem("coach-dark-mode") === "1");
   }, [role]);
 
@@ -128,7 +126,7 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
 
   return (
     <div
-      className={role === "coach" ? `coach-theme${darkMode ? " dark" : ""}` : undefined}
+      className={`coach-theme${darkMode ? " dark" : ""}`}
       style={{ display: "flex", height: "100dvh", overflow: "hidden", background: "var(--bg)" }}
     >
 
@@ -196,20 +194,22 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
               </Link>
             </div>
 
-            {/* Page title */}
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span className="hidden lg:inline" style={{
-                fontSize: 11, color: "var(--text-dim)",
-                letterSpacing: "0.04em", fontWeight: 500,
-              }}>
-                Performance Hub
+            {/* Wordmark + page title */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span className="hidden lg:flex" style={{ flexDirection: "column", lineHeight: 1 }}>
+                <span className="display-font" style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", letterSpacing: "0.14em" }}>
+                  SCHOONHOVEN
+                </span>
+                <span style={{ fontSize: 7, fontWeight: 700, letterSpacing: "0.42em", color: "#5A90BA", marginTop: 2 }}>
+                  FOOTBALL ACADEMY
+                </span>
               </span>
               {pageLabel && (
                 <>
-                  <span className="hidden lg:inline" style={{ color: "var(--border-strong)", fontSize: 12 }}>/</span>
-                  <span style={{
-                    fontSize: 13, fontWeight: 700,
-                    color: "var(--text)", letterSpacing: "-0.01em",
+                  <span className="hidden lg:inline" style={{ width: 1, height: 22, background: "var(--border-strong)", transform: "skewX(-12deg)" }} />
+                  <span className="display-font" style={{
+                    fontSize: 13, fontWeight: 600,
+                    color: "var(--text-2)",
                   }}>
                     {pageLabel}
                   </span>
@@ -224,20 +224,18 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
               <NotificationBell playerId={playerId} />
             )}
 
-            {role === "coach" && (
-              <button
-                onClick={toggleDarkMode}
-                title={darkMode ? "Lichte modus" : "Donkere modus"}
-                style={{
-                  width: 34, height: 34, borderRadius: 8,
-                  border: "1px solid var(--border)", background: "transparent",
-                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "var(--text-dim)",
-                }}
-              >
-                {darkMode ? <Sun size={14} /> : <Moon size={14} />}
-              </button>
-            )}
+            <button
+              onClick={toggleDarkMode}
+              title={darkMode ? "Lichte modus" : "Donkere modus"}
+              style={{
+                width: 34, height: 34, borderRadius: 8,
+                border: "1px solid var(--border)", background: "transparent",
+                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                color: "var(--text-dim)",
+              }}
+            >
+              {darkMode ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
 
             {/* User chip */}
             <div style={{
@@ -301,12 +299,7 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
             className="shell-content lg:pb-10"
             style={{ position: "relative", minHeight: "100%", paddingBottom: "calc(72px + env(safe-area-inset-bottom, 0px))" }}
           >
-            {role === "player" && <AmbientField tint="#4DAEE5" tint2="#1B6CA8" twinkle="#2B8AC7" intensity={0.7} />}
-            {/* Only the player role has the ambient layer behind content, so only
-                there do we lift content above it. Adding z-index for other roles
-                would trap fixed bars (e.g. the evaluation save bar) below the
-                mobile bottom nav. */}
-            <div className="px-3 pt-4 sm:px-5 lg:px-7 lg:pt-7" style={role === "player" ? { position: "relative", zIndex: 1 } : undefined}>
+            <div className="px-3 pt-4 sm:px-5 lg:px-7 lg:pt-7">
               {children}
             </div>
           </div>

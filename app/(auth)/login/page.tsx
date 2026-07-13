@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
+
+const ACCENT = "#5A90BA";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,51 +42,46 @@ export default function LoginPage() {
     router.refresh();
   }
 
-  function inputStyle(field: string) {
+  function inputStyle(field: string): React.CSSProperties {
     const isFocused = focused === field;
     return {
-      background: isFocused ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.05)",
-      border: `1px solid ${isFocused ? "rgba(79,169,230,0.5)" : "rgba(255,255,255,0.1)"}`,
-      color: "#F4F5F7",
-      caretColor: "#4FA9E6",
+      background: "#FFFFFF",
+      border: `1px solid ${isFocused ? ACCENT : "#E5E7EB"}`,
+      boxShadow: isFocused ? `0 0 0 3px ${ACCENT}22` : "none",
+      color: "#1F2937",
+      caretColor: ACCENT,
+      borderRadius: 10,
     };
   }
 
+  const labelStyle: React.CSSProperties = {
+    color: "#6B7280", letterSpacing: "0.08em",
+    fontFamily: "'Oswald', sans-serif", fontWeight: 500, textTransform: "uppercase",
+  };
+
   return (
     <div className="space-y-5">
-      {/* Header */}
+      {/* Kop */}
       <div className="space-y-1 mb-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0"
-            style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <Image src="/logo.png" alt="Logo" width={40} height={40} className="object-contain w-full h-full" />
-          </div>
-          <span className="text-xs uppercase tracking-widest font-semibold" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "Outfit, sans-serif" }}>
-            Performance Hub
-          </span>
-        </div>
-        <h1 className="text-3xl font-black text-white" style={{ fontFamily: "Outfit, sans-serif", letterSpacing: "-0.02em" }}>
+        <div style={{ width: 40, height: 4, background: ACCENT, transform: "skewX(-12deg)", marginBottom: 16 }} />
+        <h1 className="display-font" style={{ fontSize: 32, fontWeight: 600, color: "#1F2937", lineHeight: 1.05 }}>
           Welkom terug
         </h1>
-        <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>Log in op jouw dashboard</p>
+        <p className="text-sm" style={{ color: "#6B7280" }}>Log in op jouw omgeving</p>
       </div>
 
-      {/* Form card */}
-      <div className="rounded-2xl p-6 space-y-4"
-        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      {/* Formulier */}
+      <div className="p-6 space-y-4" style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 14 }}>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold mb-2 uppercase tracking-widest"
-              style={{ color: "rgba(255,255,255,0.35)", fontFamily: "Outfit, sans-serif" }}>
-              E-mailadres
-            </label>
+            <label className="block text-xs mb-2" style={labelStyle}>E-mailadres</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="naam@club.nl"
-              className="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all"
+              className="w-full px-4 py-3 text-sm focus:outline-none transition-all"
               style={inputStyle("email")}
               onFocus={() => setFocused("email")}
               onBlur={() => setFocused(null)}
@@ -93,10 +89,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-2 uppercase tracking-widest"
-              style={{ color: "rgba(255,255,255,0.35)", fontFamily: "Outfit, sans-serif" }}>
-              Wachtwoord
-            </label>
+            <label className="block text-xs mb-2" style={labelStyle}>Wachtwoord</label>
             <div className="relative">
               <input
                 type={showPass ? "text" : "password"}
@@ -104,58 +97,55 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full rounded-xl px-4 py-3 pr-12 text-sm focus:outline-none transition-all"
+                className="w-full px-4 py-3 pr-12 text-sm focus:outline-none transition-all"
                 style={inputStyle("password")}
                 onFocus={() => setFocused("password")}
                 onBlur={() => setFocused(null)}
               />
               <button type="button" onClick={() => setShowPass(!showPass)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
-                style={{ color: "rgba(255,255,255,0.3)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.6)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.3)"; }}>
+                style={{ color: "#9CA3AF" }}>
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
 
           {error && (
-            <div className="rounded-xl px-4 py-3 text-sm flex items-start gap-2"
-              style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#fca5a5" }}>
+            <div className="px-4 py-3 text-sm" style={{ background: "rgba(180,83,74,0.07)", border: "1px solid rgba(180,83,74,0.25)", color: "#B4534A", borderRadius: 10 }}>
               {error}
             </div>
           )}
 
           <button type="submit" disabled={loading}
-            className="w-full font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 hover:brightness-110 active:scale-[0.98]"
-            style={{ background: "#4FA9E6", color: "#fff", boxShadow: "0 4px 16px rgba(79,169,230,0.3)", fontFamily: "Outfit, sans-serif" }}>
+            className="cut-btn display-font w-full py-3.5 transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-[0.99]"
+            style={{ background: ACCENT, color: "#fff", fontWeight: 600, border: "none", cursor: "pointer" }}>
             {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Inloggen</span><ArrowRight size={15} /></>}
           </button>
         </form>
 
         <div className="relative my-2">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }} />
+            <div className="w-full" style={{ borderTop: "1px solid #E5E7EB" }} />
           </div>
           <div className="relative flex justify-center">
-            <span className="px-3 text-xs" style={{ background: "transparent", color: "rgba(255,255,255,0.2)" }}>of probeer een demo</span>
+            <span className="px-3 text-xs" style={{ background: "#FFFFFF", color: "#9CA3AF" }}>of probeer een demo</span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-2">
           {(["coach", "player"] as const).map((role) => (
             <button key={role} onClick={() => demoLogin(role)} disabled={loading}
-              className="rounded-xl py-2.5 text-xs font-semibold transition-all disabled:opacity-40 capitalize hover:bg-[rgba(79,169,230,0.1)] hover:border-[rgba(79,169,230,0.3)] hover:text-[#4FA9E6]"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.45)", fontFamily: "Outfit, sans-serif" }}>
-              {role === "coach" ? "👔 Coach" : "⚽ Speler"}
+              className="cut-sm display-font py-2.5 text-xs transition-all disabled:opacity-40"
+              style={{ background: "#F7F8FA", border: "1px solid #E5E7EB", color: "#374151", fontWeight: 600, cursor: "pointer" }}>
+              {role === "coach" ? "Trainer" : "Speler"}
             </button>
           ))}
         </div>
       </div>
 
-      <p className="text-center text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
+      <p className="text-center text-xs" style={{ color: "#9CA3AF" }}>
         Geen account?{" "}
-        <Link href="/register" className="font-semibold hover:underline" style={{ color: "#4FA9E6" }}>
+        <Link href="/register" className="font-semibold hover:underline" style={{ color: ACCENT }}>
           Aanmelden
         </Link>
       </p>

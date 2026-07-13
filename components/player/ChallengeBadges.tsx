@@ -5,25 +5,33 @@
 //  voortgang), verdiend door challenges te voltooien.
 // ============================================================
 
-import { ShieldBadge } from "@/components/ui/ShieldBadge";
+import { ShieldBadge, type CrestPattern } from "@/components/ui/ShieldBadge";
 import { MBTI_PROFILES, type MbtiCode } from "@/lib/mbti";
 import { CATEGORY_LABELS } from "@/lib/types";
 import type { Challenge, EvaluationCategory } from "@/lib/types";
 
+/* Huisstijl-palet voor emblemen */
+const NAVY = "#0D1B2A";
+const BLUE = "#5A90BA";
 const GOLD = "#C9A227";
-const NAVY = "#1B6CA8";
 
 interface BadgeDef {
   id: string;
   name: string;
-  icon: string;
+  label: string;              // korte code in het schild
+  crest: CrestPattern;        // heraldisch embleem
   color: string;
   goal: number;
   current: number;
 }
 
-const CATEGORY_ICONS: Record<EvaluationCategory, string> = {
-  techniek: "⚽", fysiek: "💪", tactiek: "🧠", mentaal: "🔥", teamplay: "🤝",
+/** Embleem per categorie — elk een eigen wapenschild. */
+export const CATEGORY_BADGE: Record<EvaluationCategory, { label: string; crest: CrestPattern }> = {
+  techniek: { label: "TEC", crest: "star" },
+  fysiek:   { label: "FYS", crest: "stripes" },
+  tactiek:  { label: "TAC", crest: "chevron" },
+  mentaal:  { label: "MEN", crest: "rays" },
+  teamplay: { label: "TEA", crest: "laurel" },
 };
 
 export function ChallengeBadges({ challenges, mbtiType }: {
@@ -34,17 +42,18 @@ export function ChallengeBadges({ challenges, mbtiType }: {
   const doneInCat = (cat: EvaluationCategory) => done.filter((c) => c.category === cat).length;
 
   const milestones: BadgeDef[] = [
-    { id: "first", name: "Eerste stap",    icon: "🏁", color: GOLD, goal: 1,  current: done.length },
-    { id: "c5",    name: "Op dreef",       icon: "⭐", color: NAVY, goal: 5,  current: done.length },
-    { id: "c10",   name: "Doorzetter",     icon: "🚀", color: "#6C5CE7", goal: 10, current: done.length },
-    { id: "c25",   name: "Onverzadigbaar", icon: "🏆", color: "#E17055", goal: 25, current: done.length },
+    { id: "first", name: "Eerste stap",    label: "1",  crest: "chevron", color: BLUE, goal: 1,  current: done.length },
+    { id: "c5",    name: "Op dreef",       label: "5",  crest: "stripes", color: NAVY, goal: 5,  current: done.length },
+    { id: "c10",   name: "Doorzetter",     label: "10", crest: "rays",    color: BLUE, goal: 10, current: done.length },
+    { id: "c25",   name: "Onverzadigbaar", label: "25", crest: "laurel",  color: GOLD, goal: 25, current: done.length },
   ];
 
   const categories: BadgeDef[] = (Object.keys(CATEGORY_LABELS) as EvaluationCategory[]).map((cat) => ({
     id: `cat-${cat}`,
     name: CATEGORY_LABELS[cat],
-    icon: CATEGORY_ICONS[cat],
-    color: "#2E9E6B",
+    label: CATEGORY_BADGE[cat].label,
+    crest: CATEGORY_BADGE[cat].crest,
+    color: NAVY,
     goal: 3,
     current: doneInCat(cat),
   }));
@@ -56,8 +65,9 @@ export function ChallengeBadges({ challenges, mbtiType }: {
     {
       id: "dna",
       name: mbtiProfile ? mbtiProfile.nickname : "Speler-DNA",
-      icon: mbtiProfile ? mbtiProfile.icon : "🧬",
-      color: mbtiProfile ? mbtiProfile.color : NAVY,
+      label: mbtiProfile ? mbtiProfile.code : "DNA",
+      crest: "star",
+      color: mbtiProfile ? mbtiProfile.color : BLUE,
       goal: 1,
       current: mbtiProfile ? 1 : 0,
       mbti: true,
@@ -86,8 +96,9 @@ export function ChallengeBadges({ challenges, mbtiType }: {
             }}>
               <ShieldBadge
                 color={b.color}
-                icon={b.icon}
-                label={b.mbti && mbtiProfile ? mbtiProfile.code : undefined}
+                icon={b.mbti && mbtiProfile ? mbtiProfile.icon : undefined}
+                label={b.label}
+                crest={b.crest}
                 size={56}
                 earned={earned}
               />

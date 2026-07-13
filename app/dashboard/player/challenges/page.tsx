@@ -10,7 +10,8 @@ import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Tilt3D } from "@/components/ui/Tilt3D";
-import { ChallengeBadges } from "@/components/player/ChallengeBadges";
+import { ChallengeBadges, CATEGORY_BADGE } from "@/components/player/ChallengeBadges";
+import { ShieldBadge } from "@/components/ui/ShieldBadge";
 import type { Challenge, ChallengeStatus, EvaluationCategory } from "@/lib/types";
 
 const STATUS_CONFIG: Record<ChallengeStatus, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
@@ -517,6 +518,18 @@ function ChallengeCard({ challenge: ch, onSelect, onQuickProgress }: {
             border: `1px solid ${catColor}25`,
           }}>
             {CATEGORY_LABELS[ch.category as EvaluationCategory]}
+          </span>
+        )}
+        {/* Badge waar deze challenge voor meetelt */}
+        {ch.category && (
+          <span title={`Telt mee voor de ${CATEGORY_LABELS[ch.category as EvaluationCategory]}-badge`}
+            style={{ marginLeft: "auto", display: "inline-flex" }}>
+            <ShieldBadge
+              color="#0D1B2A"
+              label={CATEGORY_BADGE[ch.category as EvaluationCategory].label}
+              crest={CATEGORY_BADGE[ch.category as EvaluationCategory].crest}
+              size={22}
+            />
           </span>
         )}
       </div>

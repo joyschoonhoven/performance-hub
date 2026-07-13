@@ -171,12 +171,12 @@ export default function CheckinPage() {
                   {SORENESS_KEYS.map(loc => {
                     const active = form.soreness_locations.includes(loc);
                     return (
-                      <button key={loc} type="button" onClick={() => toggleLocation(loc)}
+                      <button key={loc} type="button" onClick={() => toggleLocation(loc)} className="cut-sm"
                         style={{
-                          fontSize: 12, fontWeight: 700, padding: "7px 13px", borderRadius: 999, cursor: "pointer",
-                          border: `1px solid ${active ? SFA.red : SFA.line}`,
-                          background: active ? `${SFA.red}12` : SFA.card,
-                          color: active ? SFA.red : SFA.sub, transition: "all 0.15s",
+                          fontSize: 12, fontWeight: 600, padding: "7px 14px", cursor: "pointer",
+                          border: `1px solid ${active ? "#5A90BA" : SFA.line}`,
+                          background: active ? "#5A90BA" : SFA.card,
+                          color: active ? "#fff" : SFA.sub, transition: "all 0.15s",
                         }}>
                         {SORENESS_LOCATION_LABELS[loc]}
                       </button>
@@ -212,7 +212,12 @@ export default function CheckinPage() {
                   : todayId ? "Wijzigingen worden opgeslagen bij Bijwerken"
                   : "Vul in en klik op Opslaan"}
               </div>
-              <button onClick={handleSave} disabled={saving} className="pv-btn" style={{ minWidth: 130 }}>
+              <button onClick={handleSave} disabled={saving} className="cut-btn display-font" style={{
+                minWidth: 140, height: 42, padding: "0 22px", background: "#5A90BA", color: "#fff",
+                border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer",
+                display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 7,
+                opacity: saving ? 0.7 : 1,
+              }}>
                 {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
                 {todayId ? "Bijwerken" : "Opslaan"}
               </button>
@@ -236,10 +241,10 @@ export default function CheckinPage() {
                         <span style={{ color: h.checkin_date === today ? SFA.blue : SFA.sub, fontWeight: h.checkin_date === today ? 800 : 600 }}>
                           {new Date(h.checkin_date).toLocaleDateString("nl-NL", { day: "2-digit", month: "short" })}
                         </span>
-                        <div style={{ display: "flex", gap: 9 }} className="pv-num">
-                          <span style={{ color: SFA.sub }}>💤 {h.sleep_quality ?? "—"}</span>
-                          <span style={{ color: SFA.sub }}>⚡ {h.perceived_recovery ?? "—"}</span>
-                          <span style={{ color: SFA.sub }}>😊 {h.mood ?? "—"}</span>
+                        <div style={{ display: "flex", gap: 10 }} className="pv-num">
+                          <span style={{ color: SFA.sub }} title="Slaap">S {h.sleep_quality ?? "—"}</span>
+                          <span style={{ color: SFA.sub }} title="Herstel">H {h.perceived_recovery ?? "—"}</span>
+                          <span style={{ color: SFA.sub }} title="Stemming">M {h.mood ?? "—"}</span>
                         </div>
                       </div>
                     ))}
@@ -273,20 +278,19 @@ export default function CheckinPage() {
 /* ═══════════════════════════════════════════════
    SUB-COMPONENTS
 ═══════════════════════════════════════════════ */
-function Section({ icon, color, title, subtitle, children }: {
-  icon: React.ReactNode; color: string; title: string; subtitle?: string; children: React.ReactNode;
+const ACCENT = "#5A90BA";
+
+function Section({ icon, title, subtitle, children }: {
+  icon: React.ReactNode; color?: string; title: string; subtitle?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="pv-card notch pv-hover" style={{ padding: 22 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 11, marginBottom: 18 }}>
-        <div style={{
-          width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-          background: `${color}14`, border: `1px solid ${color}26`,
-          display: "flex", alignItems: "center", justifyContent: "center", color,
-        }}>{icon}</div>
+    <div className="pv-card" style={{ padding: 22, borderRadius: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+        <span style={{ width: 4, height: 18, background: ACCENT, transform: "skewX(-12deg)", flexShrink: 0 }} />
+        <span style={{ color: ACCENT, display: "flex", flexShrink: 0 }}>{icon}</span>
         <div>
-          <h3 style={{ fontSize: 16, fontWeight: 800, letterSpacing: "-0.01em", color: SFA.ink }}>{title}</h3>
-          {subtitle && <p style={{ fontSize: 12, color: SFA.dim, marginTop: 1 }}>{subtitle}</p>}
+          <h3 className="display-font" style={{ fontSize: 15, fontWeight: 600, color: SFA.ink }}>{title}</h3>
+          {subtitle && <p style={{ fontSize: 12, color: SFA.dim, marginTop: 1, textTransform: "none" }}>{subtitle}</p>}
         </div>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>{children}</div>
@@ -294,37 +298,31 @@ function Section({ icon, color, title, subtitle, children }: {
   );
 }
 
-function Scale({ label, value, onChange, lowLabel, highLabel, inverted }: {
+function Scale({ label, value, onChange, lowLabel, highLabel }: {
   label: string; value: number; onChange: (v: number) => void; lowLabel: string; highLabel: string; inverted?: boolean;
 }) {
-  const good = SFA.green, ok = SFA.gold, bad = SFA.red;
-  const valueColor = inverted
-    ? (value <= 3 ? good : value <= 6 ? ok : bad)
-    : (value >= 7 ? good : value >= 4 ? ok : bad);
-
   return (
     <div>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 9 }}>
-        <label style={{ fontSize: 13.5, fontWeight: 700, color: SFA.ink }}>{label}</label>
-        <span className="pv-num" style={{ fontSize: 24, fontWeight: 700, color: valueColor, letterSpacing: "0.01em", lineHeight: 1 }}>
+        <label style={{ fontSize: 13.5, fontWeight: 600, color: SFA.ink }}>{label}</label>
+        <span className="display-font" style={{ fontSize: 22, fontWeight: 600, color: ACCENT, lineHeight: 1 }}>
           {value}<span style={{ fontSize: 12, color: SFA.dim, fontWeight: 500 }}>/10</span>
         </span>
       </div>
-      <div style={{ display: "flex", gap: 4 }}>
+      <div style={{ display: "flex", gap: 3 }}>
         {Array.from({ length: 10 }, (_, i) => i + 1).map(n => {
           const active = n <= value;
-          let seg: string = SFA.track;
-          if (active) seg = inverted ? (n <= 3 ? good : n <= 6 ? ok : bad) : (n <= 3 ? bad : n <= 6 ? ok : good);
           return (
-            <motion.button key={n} type="button" onClick={() => onChange(n)} whileTap={{ scale: 0.88 }}
+            <motion.button key={n} type="button" onClick={() => onChange(n)} whileTap={{ scale: 0.92 }}
               style={{
-                flex: 1, height: 30, borderRadius: 6, border: "none", background: seg, cursor: "pointer",
-                fontSize: 10, fontWeight: 800, color: active ? "#fff" : SFA.dim,
-                fontFamily: "var(--pv-num)", transition: "background 0.15s",
+                flex: 1, height: 24, border: "none", cursor: "pointer",
+                background: active ? ACCENT : "rgba(31,41,55,0.08)",
+                opacity: active ? 0.35 + (n / 10) * 0.65 : 1,
+                clipPath: "polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%)",
+                transition: "background 0.15s",
               }}
-              aria-label={`${label}: ${n}`}>
-              {n}
-            </motion.button>
+              aria-label={`${label}: ${n}`}
+            />
           );
         })}
       </div>

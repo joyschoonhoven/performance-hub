@@ -162,9 +162,6 @@ export function PlayerCardView({ player }: { player: PlayerWithDetails }) {
               <div className="fc-finrow"><span>Challenges voltooid</span><b>{doneCh}</b></div>
             </div>
 
-            <div className="fc-dots">
-              {[0,1,2,3,4,5].map(i=><span key={i} className={i===0?"on":""}/>)}
-            </div>
           </div>
 
           {/* ══ RENDER ══ */}
@@ -320,9 +317,6 @@ const CSS = `
   .fc-finrow { display:flex; align-items:center; justify-content:space-between; font-size:14px; color:${T.sub}; }
   .fc-finrow b { font-family:'Archivo Narrow',sans-serif; font-size:17px; color:${T.ink}; font-weight:700; }
 
-  .fc-dots { display:flex; gap:7px; justify-content:center; margin-top:22px; }
-  .fc-dots span { width:6px; height:6px; border-radius:50%; background:rgba(143,168,198,0.3); }
-  .fc-dots span.on { background:${T.sky}; width:16px; border-radius:3px; }
 
   .fc-render { position:relative; flex:1; align-self:stretch; min-width:0;
     display:flex; align-items:flex-end; justify-content:center; }

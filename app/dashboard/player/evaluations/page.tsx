@@ -81,11 +81,11 @@ function SubCriteriaBreakdown({
   return (
     <div style={{
       padding: "14px 16px 4px",
-      borderTop: "1px solid rgba(255,255,255,0.06)",
+      borderTop: "1px solid rgba(13,27,42,0.08)",
       display: "flex", flexDirection: "column", gap: 10,
     }}>
       {!hasReal && (
-        <p style={{ fontSize: 10.5, fontStyle: "italic", color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>
+        <p style={{ fontSize: 10.5, fontStyle: "italic", color: "#94A3B8", marginBottom: 4 }}>
           Individuele subcriteria beschikbaar in nieuwe evaluaties
         </p>
       )}
@@ -96,13 +96,13 @@ function SubCriteriaBreakdown({
           <div key={sub.id} style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{
               width: 132, fontSize: 11, fontWeight: 500, lineHeight: 1.3,
-              color: "rgba(255,255,255,0.55)", flexShrink: 0,
+              color: "#64748B", flexShrink: 0,
             }}>
               {sub.label}
             </div>
             <div style={{
               flex: 1, height: 4, borderRadius: 999,
-              background: "rgba(255,255,255,0.05)", overflow: "hidden",
+              background: "rgba(13,27,42,0.05)", overflow: "hidden",
             }}>
               <div
                 style={{
@@ -197,19 +197,19 @@ function EvaluationCard({
       position: "relative",
       borderRadius: 18,
       overflow: "hidden",
-      background: "linear-gradient(180deg, #0D1B2A 0%, #0A1421 100%)",
-      border: `1px solid ${isLatest ? "rgba(77,174,229,0.3)" : "rgba(255,255,255,0.06)"}`,
+      background: "#FFFFFF",
+      border: `1px solid ${isLatest ? "rgba(77,174,229,0.3)" : "rgba(13,27,42,0.08)"}`,
       boxShadow: isLatest
-        ? "0 20px 50px rgba(13,27,42,0.4), 0 0 0 1px rgba(77,174,229,0.15), 0 8px 32px rgba(77,174,229,0.18)"
-        : "0 12px 32px rgba(13,27,42,0.25)",
-      color: "#fff",
+        ? "0 4px 20px rgba(13,27,42,0.08), 0 0 0 1px rgba(90,144,186,0.25)"
+        : "0 1px 3px rgba(13,27,42,0.06)",
+      color: "#0D1B2A",
     }}>
       {/* Ambient glow */}
       <div style={{
         position: "absolute",
         top: -60, right: -60,
         width: 220, height: 220,
-        background: `radial-gradient(circle, ${rColor}1C 0%, transparent 70%)`,
+        background: `radial-gradient(circle, ${rColor}0C 0%, transparent 70%)`,
         pointerEvents: "none",
       }} />
 
@@ -239,18 +239,18 @@ function EvaluationCard({
                 <Zap size={11} /> Meest recent
               </div>
             )}
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#0D1B2A", letterSpacing: "-0.01em" }}>
               {formatDate(ev.evaluation_date)}
             </div>
             {ev.coach_name && (
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 3 }}>
-                door <span style={{ color: "rgba(255,255,255,0.7)" }}>{ev.coach_name}</span>
+              <div style={{ fontSize: 12, color: "#64748B", marginTop: 3 }}>
+                door <span style={{ color: "#334155" }}>{ev.coach_name}</span>
               </div>
             )}
             {ev.match_context && (
               <div style={{
                 fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
-                color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginTop: 6,
+                color: "#94A3B8", textTransform: "uppercase", marginTop: 6,
               }}>
                 {ev.match_context.replace(/_/g, " ")}
               </div>
@@ -270,7 +270,7 @@ function EvaluationCard({
             </div>
             <div style={{
               fontSize: 9, letterSpacing: "0.18em", fontWeight: 700,
-              color: "rgba(255,255,255,0.4)", marginTop: 4,
+              color: "#94A3B8", marginTop: 4,
               textTransform: "uppercase",
             }}>
               Totaalscore /10
@@ -291,9 +291,9 @@ function EvaluationCard({
                 display: "inline-flex", alignItems: "center", gap: 5,
                 fontSize: 11, fontWeight: 600,
                 padding: "5px 11px", borderRadius: 999,
-                background: "rgba(255,255,255,0.04)",
-                color: "rgba(255,255,255,0.8)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "rgba(13,27,42,0.04)",
+                color: "#334155",
+                border: "1px solid rgba(13,27,42,0.08)",
               }}>
                 <MapPin size={11} />
                 {positionLabel}
@@ -345,14 +345,14 @@ function EvaluationCard({
                     }}>
                       Coach analyse · Spelersprofiel
                     </div>
-                    <p style={{ fontSize: 14, lineHeight: 1.6, color: "rgba(255,255,255,0.88)" }}>
+                    <p style={{ fontSize: 14, lineHeight: 1.6, color: "#334155" }}>
                       {ev.player_type_description}
                     </p>
                   </div>
                 )}
                 {ev.position_description && (
                   <div style={ev.player_type_description ? {
-                    paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.05)",
+                    paddingTop: 14, borderTop: "1px solid rgba(13,27,42,0.05)",
                   } : {}}>
                     <div style={{
                       fontSize: 10, fontWeight: 700, letterSpacing: "0.14em",
@@ -360,7 +360,7 @@ function EvaluationCard({
                     }}>
                       Functioneren op positie
                     </div>
-                    <p style={{ fontSize: 14, lineHeight: 1.6, color: "rgba(255,255,255,0.88)" }}>
+                    <p style={{ fontSize: 14, lineHeight: 1.6, color: "#334155" }}>
                       {ev.position_description}
                     </p>
                   </div>
@@ -393,7 +393,7 @@ function EvaluationCard({
                     </div>
                     <p style={{
                       fontSize: 12.5, lineHeight: 1.6,
-                      color: "rgba(255,255,255,0.85)", whiteSpace: "pre-line",
+                      color: "#334155", whiteSpace: "pre-line",
                     }}>
                       {ev.strengths}
                     </p>
@@ -418,7 +418,7 @@ function EvaluationCard({
                     </div>
                     <p style={{
                       fontSize: 12.5, lineHeight: 1.6,
-                      color: "rgba(255,255,255,0.85)", whiteSpace: "pre-line",
+                      color: "#334155", whiteSpace: "pre-line",
                     }}>
                       {ev.improvement_points}
                     </p>
@@ -434,7 +434,7 @@ function EvaluationCard({
           <div>
             <div style={{
               fontSize: 10, fontWeight: 700, letterSpacing: "0.16em",
-              color: "rgba(255,255,255,0.4)", textTransform: "uppercase",
+              color: "#94A3B8", textTransform: "uppercase",
               marginBottom: 14,
             }}>
               Categoriscore analyse
@@ -466,10 +466,10 @@ function EvaluationCard({
                         key={s.category}
                         style={{
                           borderRadius: 12,
-                          border: `1px solid ${isOpen ? `${catColor}40` : "rgba(255,255,255,0.06)"}`,
+                          border: `1px solid ${isOpen ? `${catColor}40` : "rgba(13,27,42,0.08)"}`,
                           background: isOpen
                             ? `linear-gradient(180deg, ${catColor}10 0%, ${catColor}04 100%)`
-                            : "rgba(255,255,255,0.02)",
+                            : "#FFFFFF",
                           overflow: "hidden",
                           transition: "all 0.2s",
                         }}
@@ -484,7 +484,7 @@ function EvaluationCard({
                             background: "transparent",
                             border: "none",
                             cursor: "pointer",
-                            color: "#fff",
+                            color: "#0D1B2A",
                             textAlign: "left",
                           }}
                           onClick={() => setExpanded(isOpen ? null : s.category)}
@@ -492,7 +492,7 @@ function EvaluationCard({
                           <span style={{ fontSize: 16, flexShrink: 0 }}>{schema?.icon ?? "⚽"}</span>
                           <span style={{
                             flex: 1, fontSize: 13, fontWeight: 600,
-                            color: "rgba(255,255,255,0.92)",
+                            color: "#1F2937",
                             letterSpacing: "-0.01em",
                           }}>
                             {CATEGORY_LABELS[s.category as keyof typeof CATEGORY_LABELS]}
@@ -511,7 +511,7 @@ function EvaluationCard({
                           <div style={{
                             width: 72, height: 4,
                             borderRadius: 999,
-                            background: "rgba(255,255,255,0.06)",
+                            background: "rgba(13,27,42,0.08)",
                             overflow: "hidden", flexShrink: 0,
                           }} className="hidden sm:block">
                             <div
@@ -536,7 +536,7 @@ function EvaluationCard({
                               DETAIL
                             </span>
                           )}
-                          <span style={{ color: "rgba(255,255,255,0.4)", flexShrink: 0 }}>
+                          <span style={{ color: "#94A3B8", flexShrink: 0 }}>
                             {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                           </span>
                         </button>
@@ -575,7 +575,7 @@ function EvaluationCard({
             </div>
             <p style={{
               fontSize: 13.5, lineHeight: 1.6,
-              color: "rgba(255,255,255,0.85)",
+              color: "#334155",
               fontStyle: "italic",
             }}>
               &ldquo;{ev.notes}&rdquo;
@@ -605,7 +605,7 @@ export default function PlayerEvaluationsPage() {
   if (loading)
     return (
       <div style={{
-        minHeight: "calc(100vh - 52px)", background: "#0A0E14",
+        minHeight: "calc(100vh - 52px)", background: "#FFFFFF",
         margin: "-28px -28px -40px",
         display: "flex", alignItems: "center", justifyContent: "center",
       }}>
@@ -618,8 +618,8 @@ export default function PlayerEvaluationsPage() {
       <div style={{
         margin: "-28px -28px -40px",
         minHeight: "calc(100vh - 52px)",
-        background: "#0A0E14",
-        color: "#fff",
+        background: "#FFFFFF",
+        color: "#0D1B2A",
         padding: "40px 28px",
       }}>
         <div style={{ maxWidth: 460, margin: "60px auto 0", textAlign: "center" }}>
@@ -635,7 +635,7 @@ export default function PlayerEvaluationsPage() {
           <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>
             Profiel nog niet aangemaakt
           </h2>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", marginBottom: 22, lineHeight: 1.55 }}>
+          <p style={{ fontSize: 14, color: "#64748B", marginBottom: 22, lineHeight: 1.55 }}>
             Je spelersprofiel is nog niet ingesteld. Rond de onboarding af zodat
             je coach je kan vinden en evalueren.
           </p>
@@ -644,8 +644,8 @@ export default function PlayerEvaluationsPage() {
             style={{
               display: "inline-flex", alignItems: "center", gap: 6,
               padding: "10px 22px", borderRadius: 8,
-              background: "linear-gradient(180deg, #4DAEE5 0%, #1B6CA8 100%)",
-              color: "#fff", fontSize: 13, fontWeight: 700,
+              background: "#5A90BA",
+              color: "#FFFFFF", fontSize: 13, fontWeight: 700,
               textDecoration: "none",
               boxShadow: "0 4px 16px rgba(77,174,229,0.3)",
             }}
@@ -684,8 +684,8 @@ export default function PlayerEvaluationsPage() {
     <div className="eval-page" style={{
       margin: "-28px -28px -40px",
       minHeight: "calc(100vh - 52px)",
-      background: "#0A0E14",
-      color: "#fff",
+      background: "transparent",
+      color: "#0D1B2A",
       padding: "36px 28px 60px",
       fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
       position: "relative",
@@ -703,9 +703,9 @@ export default function PlayerEvaluationsPage() {
       <div style={{
         position: "absolute", inset: 0,
         background: `
-          radial-gradient(ellipse at 15% 0%, rgba(27,108,168,0.15), transparent 50%),
-          radial-gradient(ellipse at 85% 30%, rgba(240,165,0,0.06), transparent 55%),
-          radial-gradient(ellipse at 50% 100%, rgba(77,174,229,0.06), transparent 60%)
+          transparent 50%),
+          transparent 55%),
+          transparent 60%)
         `,
         pointerEvents: "none",
       }} />
@@ -731,11 +731,11 @@ export default function PlayerEvaluationsPage() {
             </div>
             <h1 style={{
               fontSize: 40, fontWeight: 800, letterSpacing: "-0.03em",
-              lineHeight: 1, marginBottom: 8, color: "#fff",
+              lineHeight: 1, marginBottom: 8, color: "#0D1B2A",
             }}>
               Mijn Evaluaties
             </h1>
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
+            <p style={{ fontSize: 14, color: "#64748B" }}>
               {evaluations.length > 0
                 ? `${evaluations.length} ${evaluations.length === 1 ? "evaluatie" : "evaluaties"} · van je coach`
                 : "Nog geen evaluaties beschikbaar"}
@@ -763,14 +763,14 @@ export default function PlayerEvaluationsPage() {
         {latestRadarData.length > 0 && (
           <div style={{
             padding: 32, borderRadius: 18,
-            background: "linear-gradient(180deg, #0D1B2A 0%, #0A1421 100%)",
-            border: "1px solid rgba(255,255,255,0.06)",
+            background: "#FFFFFF",
+            border: "1px solid rgba(13,27,42,0.08)",
             position: "relative", overflow: "hidden",
           }}>
             <div style={{
               position: "absolute", top: -60, right: -60,
               width: 240, height: 240,
-              background: `radial-gradient(circle, ${latestColor}1A 0%, transparent 70%)`,
+              background: `radial-gradient(circle, ${latestColor}0C 0%, transparent 70%)`,
               pointerEvents: "none",
             }} />
             <div style={{
@@ -779,7 +779,7 @@ export default function PlayerEvaluationsPage() {
             }}>
               Performance Radar
             </div>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 20 }}>
+            <p style={{ fontSize: 13, color: "#64748B", marginBottom: 20 }}>
               {latestEval ? formatDate(latestEval.evaluation_date) : ""}
               {latestEval?.overall_score !== undefined && (
                 <span style={{ marginLeft: 8, fontWeight: 700, color: latestColor }}>
@@ -798,12 +798,12 @@ export default function PlayerEvaluationsPage() {
         {progressData.length > 1 && (
           <div style={{
             padding: 24, borderRadius: 18,
-            background: "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.06)",
+            background: "#FFFFFF",
+            border: "1px solid rgba(13,27,42,0.08)",
           }}>
             <div style={{
               fontSize: 10, fontWeight: 700, letterSpacing: "0.16em",
-              color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 14,
+              color: "#94A3B8", textTransform: "uppercase", marginBottom: 14,
             }}>
               Progressie over tijd
             </div>
@@ -819,8 +819,8 @@ export default function PlayerEvaluationsPage() {
             <div style={{
               padding: "48px 32px",
               borderRadius: 18,
-              background: "rgba(255,255,255,0.02)",
-              border: "1px dashed rgba(255,255,255,0.1)",
+              background: "#FFFFFF",
+              border: "1px dashed rgba(13,27,42,0.10)",
               textAlign: "center",
               maxWidth: 560, margin: "0 auto",
               display: "flex", flexDirection: "column", gap: 12,
@@ -835,10 +835,10 @@ export default function PlayerEvaluationsPage() {
               }}>
                 <ClipboardList size={26} />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: "#0D1B2A" }}>
                 Nog geen evaluaties
               </h3>
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.55, maxWidth: 380 }}>
+              <p style={{ fontSize: 13, color: "#64748B", lineHeight: 1.55, maxWidth: 380 }}>
                 Je coach heeft nog geen beoordeling ingevuld. Zodra een evaluatie
                 is aangemaakt, verschijnt je rapport hier.
               </p>
@@ -846,13 +846,13 @@ export default function PlayerEvaluationsPage() {
                 marginTop: 12, padding: "14px 18px", borderRadius: 12,
                 background: "rgba(77,174,229,0.04)",
                 border: "1px solid rgba(77,174,229,0.15)",
-                fontSize: 11.5, color: "rgba(255,255,255,0.6)",
+                fontSize: 11.5, color: "#64748B",
                 lineHeight: 1.7, textAlign: "left",
               }}>
                 <p style={{ fontWeight: 700, color: "#4DAEE5", marginBottom: 4 }}>Hoe werkt het?</p>
                 <p>1. Coach logt in op Performance Hub</p>
-                <p>2. Gaat naar <strong style={{ color: "rgba(255,255,255,0.85)" }}>Spelers → jouw naam</strong></p>
-                <p>3. Klikt op <strong style={{ color: "rgba(255,255,255,0.85)" }}>Evaluatie aanmaken</strong></p>
+                <p>2. Gaat naar <strong style={{ color: "#334155" }}>Spelers → jouw naam</strong></p>
+                <p>3. Klikt op <strong style={{ color: "#334155" }}>Evaluatie aanmaken</strong></p>
                 <p>4. Jij ontvangt het rapport hier automatisch</p>
               </div>
             </div>
@@ -879,8 +879,8 @@ function StatBubble({ label, value, color, icon }: {
     <div style={{
       padding: "14px 18px",
       borderRadius: 12,
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.06)",
+      background: "rgba(13,27,42,0.03)",
+      border: "1px solid rgba(13,27,42,0.08)",
       textAlign: "center", minWidth: 90,
     }}>
       <div style={{
@@ -894,7 +894,7 @@ function StatBubble({ label, value, color, icon }: {
       </div>
       <div style={{
         fontSize: 9, fontWeight: 700, letterSpacing: "0.14em",
-        color: "rgba(255,255,255,0.4)", marginTop: 6,
+        color: "#94A3B8", marginTop: 6,
         textTransform: "uppercase",
       }}>
         {label}

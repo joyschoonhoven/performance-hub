@@ -485,26 +485,41 @@ export default function PlayerDetailPage() {
 
             {player.recent_scores && (
               <div className="hub-card p-5">
-                <div className="hub-label mb-4">Categorie Scores</div>
-                <div className="space-y-3">
-                  {Object.entries(player.recent_scores).map(([cat, score]) => {
-                    const sColor = getScoreColor(score);
-                    return (
-                      <div key={cat} className="flex items-center gap-3">
-                        <div className="w-24 text-xs text-slate-600 font-medium flex items-center gap-1.5">
-                          <span>{CATEGORY_ICONS[cat as keyof typeof CATEGORY_ICONS]}</span>
-                          {CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]}
+                <div className="club-h mb-4" style={{ fontSize: 13, color: "var(--text, #0D1B2A)" }}>Attributen</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+                  {/* Scores per categorie — FM-stijl rijen */}
+                  <div>
+                    {Object.entries(player.recent_scores).map(([cat, score]) => {
+                      const sColor = getScoreColor(score);
+                      return (
+                        <div key={cat} className="flex items-center justify-between py-2"
+                          style={{ borderBottom: "1px solid rgba(13,27,42,0.06)" }}>
+                          <span className="text-[13px] font-medium text-slate-600">
+                            {CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]}
+                          </span>
+                          <span className="display-font tabular-nums" style={{ fontSize: 17, fontWeight: 600, color: sColor }}>
+                            {score.toFixed(1)}
+                          </span>
                         </div>
-                        <div className="flex-1 h-2 bg-hub-border rounded-full overflow-hidden">
-                          <div className="h-full rounded-full transition-all duration-700"
-                            style={{ width: `${(score / 10) * 100}%`, backgroundColor: sColor }} />
-                        </div>
-                        <div className="text-sm font-bold w-8 tabular-nums text-right" style={{ color: sColor }}>
-                          {score.toFixed(1)}
-                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Spelersinfo — FM-stijl infopaneel */}
+                  <div>
+                    {[
+                      { k: "Positie", v: POSITION_LABELS[player.position] },
+                      { k: "Lengte", v: player.height_cm ? `${player.height_cm} cm` : "—" },
+                      { k: "Voorkeursvoet", v: player.dominant_foot === "left" ? "Links" : player.dominant_foot === "both" ? "Beide" : player.dominant_foot === "right" ? "Rechts" : "—" },
+                      { k: "Evaluaties", v: String(player.evaluations?.length ?? 0) },
+                      { k: "Persoonlijkheid", v: player.mbti_type ?? "Nog geen test" },
+                    ].map((row) => (
+                      <div key={row.k} className="flex items-center justify-between py-2"
+                        style={{ borderBottom: "1px solid rgba(13,27,42,0.06)" }}>
+                        <span className="text-[13px] font-medium text-slate-600">{row.k}</span>
+                        <span className="text-[13px] font-bold text-slate-900">{row.v}</span>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
