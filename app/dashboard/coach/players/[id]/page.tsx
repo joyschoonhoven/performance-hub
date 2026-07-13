@@ -379,13 +379,6 @@ export default function PlayerDetailPage() {
                 onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(22,163,74,0.08)"; }}>
                 <Flag size={13} /> Persoonlijk plan
               </Link>
-              <Link href={`/dashboard/coach/ai`}
-                className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all"
-                style={{ background: "rgba(79,169,230,0.08)", color: "#4FA9E6", border: "1px solid rgba(79,169,230,0.2)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(79,169,230,0.14)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(79,169,230,0.08)"; }}>
-                <Brain size={13} /> AI Analyse
-              </Link>
               <button onClick={() => setShowAnnounce(true)}
                 className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all"
                 style={{ background: "rgba(27,108,168,0.08)", color: "#1B6CA8", border: "1px solid rgba(27,108,168,0.25)", cursor: "pointer" }}
@@ -541,10 +534,7 @@ export default function PlayerDetailPage() {
             <div className="hub-card p-12 text-center space-y-4">
               <Brain size={40} className="text-slate-700 mx-auto" />
               <div className="text-slate-900 font-bold">Player DNA nog niet ingesteld</div>
-              <p className="text-slate-600 text-sm">Gebruik de AI engine om automatisch het DNA te bepalen, of stel het handmatig in via evaluaties.</p>
-              <Link href={`/dashboard/coach/ai?player=${player.id}`} className="hub-btn-primary inline-flex items-center gap-2">
-                <Brain size={16} /> AI Analyse starten
-              </Link>
+              <p className="text-slate-600 text-sm">Stel het DNA-profiel handmatig in via evaluaties.</p>
             </div>
           ) : (
             <>

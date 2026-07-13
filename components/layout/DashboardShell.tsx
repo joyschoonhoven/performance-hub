@@ -7,7 +7,7 @@ import type { UserRole } from "@/lib/types";
 import {
   X, LogOut, LayoutDashboard, HeartPulse, Star, Flag,
   Users, ClipboardList, BarChart3, ChevronRight, Menu,
-  Shield,
+  Shield, Moon, Sun,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { AmbientField } from "@/components/ui/AmbientField";
@@ -38,7 +38,6 @@ const ROUTE_LABELS: Record<string, string> = {
   "/dashboard/coach/players":      "Spelers",
   "/dashboard/coach/plans":        "Plannen",
   "/dashboard/coach/evaluations":  "Evaluaties",
-  "/dashboard/coach/ai":           "AI Scouting",
   "/dashboard/coach/analytics":    "Analytics",
   "/dashboard/coach/challenges":   "Challenges",
   "/dashboard/coach/settings":     "Instellingen",
@@ -81,9 +80,23 @@ function getMobileNavItems(role: UserRole): BottomNavItem[] {
 export function DashboardShell({ role, userName, userEmail, children }: DashboardShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [playerId, setPlayerId] = useState<string | null>(null);
+  const [darkMode, setDarkMode] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
+
+  useEffect(() => {
+    if (role !== "coach") return;
+    setDarkMode(localStorage.getItem("coach-dark-mode") === "1");
+  }, [role]);
+
+  function toggleDarkMode() {
+    setDarkMode((v) => {
+      const next = !v;
+      localStorage.setItem("coach-dark-mode", next ? "1" : "0");
+      return next;
+    });
+  }
 
   useEffect(() => {
     if (role !== "player") { setPlayerId(null); return; }
@@ -114,7 +127,10 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
   const mobileNavItems = getMobileNavItems(role);
 
   return (
-    <div style={{ display: "flex", height: "100dvh", overflow: "hidden", background: "var(--bg)" }}>
+    <div
+      className={role === "coach" ? `coach-theme${darkMode ? " dark" : ""}` : undefined}
+      style={{ display: "flex", height: "100dvh", overflow: "hidden", background: "var(--bg)" }}
+    >
 
       {/* ── DESKTOP SIDEBAR ── */}
       <div className="hidden lg:flex">
@@ -206,6 +222,21 @@ export function DashboardShell({ role, userName, userEmail, children }: Dashboar
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {role === "player" && playerId && (
               <NotificationBell playerId={playerId} />
+            )}
+
+            {role === "coach" && (
+              <button
+                onClick={toggleDarkMode}
+                title={darkMode ? "Lichte modus" : "Donkere modus"}
+                style={{
+                  width: 34, height: 34, borderRadius: 8,
+                  border: "1px solid var(--border)", background: "transparent",
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "var(--text-dim)",
+                }}
+              >
+                {darkMode ? <Sun size={14} /> : <Moon size={14} />}
+              </button>
             )}
 
             {/* User chip */}

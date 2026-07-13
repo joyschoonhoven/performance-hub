@@ -28,7 +28,6 @@ function getNavItems(role: UserRole): NavItem[] {
     { label: "Spelers",      href: "/dashboard/coach/players",     icon: <Users size={16} /> },
     { label: "Plannen",      href: "/dashboard/coach/plans",       icon: <Flag size={16} />, badge: "NEW" },
     { label: "Evaluaties",   href: "/dashboard/coach/evaluations", icon: <ClipboardList size={16} /> },
-    { label: "AI Scouting",  href: "/dashboard/coach/ai",          icon: <Brain size={16} />, badge: "AI" },
     { label: "Analytics",    href: "/dashboard/coach/analytics",   icon: <BarChart3 size={16} /> },
     { label: "Challenges",   href: "/dashboard/coach/challenges",  icon: <Trophy size={16} /> },
   ];
@@ -82,11 +81,12 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
   }
 
   const initials = userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+  const biz = role === "coach";
 
   return (
     <aside
       style={{
-        width: 72,
+        width: biz ? 64 : 72,
         flexShrink: 0,
         display: "flex",
         flexDirection: "column",
@@ -94,8 +94,8 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
         height: "100vh",
         position: "sticky",
         top: 0,
-        background: "linear-gradient(180deg, #0D1B2A 0%, #07101A 100%)",
-        borderRight: "1px solid rgba(77,174,229,0.08)",
+        background: biz ? "var(--surface)" : "linear-gradient(180deg, #0D1B2A 0%, #07101A 100%)",
+        borderRight: biz ? "1px solid var(--border)" : "1px solid rgba(77,174,229,0.08)",
         paddingTop: 16,
         paddingBottom: 16,
         gap: 0,
@@ -105,23 +105,23 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
       <Link href={`/dashboard/${role}`} onClick={onNavigate} style={{ display: "block", marginBottom: 8 }}>
         <div
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 10,
+            width: biz ? 34 : 40,
+            height: biz ? 34 : 40,
+            borderRadius: 8,
             overflow: "hidden",
-            background: "rgba(77,174,229,0.12)",
-            border: "1px solid rgba(77,174,229,0.28)",
+            background: biz ? "var(--surface-2)" : "rgba(77,174,229,0.12)",
+            border: biz ? "1px solid var(--border)" : "1px solid rgba(77,174,229,0.28)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <Image src="/logo.png" alt="Logo" width={32} height={32} style={{ objectFit: "contain" }} />
+          <Image src="/logo.png" alt="Logo" width={biz ? 24 : 32} height={biz ? 24 : 32} style={{ objectFit: "contain" }} />
         </div>
       </Link>
 
       {/* ── Divider ── */}
-      <div style={{ width: 32, height: 1, background: "rgba(255,255,255,0.08)", margin: "12px 0" }} />
+      <div style={{ width: 32, height: 1, background: biz ? "var(--border)" : "rgba(255,255,255,0.08)", margin: "12px 0" }} />
 
       {/* ── Nav items ── */}
       <nav style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: "100%", padding: "0 8px", overflowY: "auto", minHeight: 0 }}>
@@ -146,13 +146,13 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
                   padding: "8px 4px 6px",
                   borderRadius: 8,
                   gap: 4,
-                  background: isActive ? "rgba(77,174,229,0.14)" : "transparent",
+                  background: isActive ? (biz ? "var(--surface-2)" : "rgba(77,174,229,0.14)") : "transparent",
                   transition: "background 0.15s",
                   textDecoration: "none",
                   position: "relative",
                 }}
                 onMouseEnter={(e) => {
-                  if (!isActive) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)";
+                  if (!isActive) (e.currentTarget as HTMLElement).style.background = biz ? "var(--surface-2)" : "rgba(255,255,255,0.06)";
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) (e.currentTarget as HTMLElement).style.background = "transparent";
@@ -168,12 +168,12 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
                     width: 3,
                     height: 20,
                     borderRadius: "0 2px 2px 0",
-                    background: "#4DAEE5",
+                    background: biz ? "#5A90BA" : "#4DAEE5",
                   }} />
                 )}
 
                 {/* Icon */}
-                <span style={{ color: isActive ? "#4DAEE5" : "rgba(255,255,255,0.38)", display: "flex" }}>
+                <span style={{ color: isActive ? (biz ? "#5A90BA" : "#4DAEE5") : (biz ? "var(--text-dim)" : "rgba(255,255,255,0.38)"), display: "flex" }}>
                   {item.icon}
                 </span>
 
@@ -183,7 +183,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
                     fontSize: 9,
                     fontWeight: 500,
                     letterSpacing: "0.03em",
-                    color: isActive ? "#4DAEE5" : "rgba(255,255,255,0.28)",
+                    color: isActive ? (biz ? "#5A90BA" : "#4DAEE5") : (biz ? "var(--text-dim)" : "rgba(255,255,255,0.28)"),
                     lineHeight: 1,
                     textAlign: "center",
                     fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
@@ -193,7 +193,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
                 </span>
 
                 {/* Badge dot */}
-                {item.badge && (
+                {item.badge && !biz && (
                   <div style={{
                     position: "absolute",
                     top: 5,
@@ -237,7 +237,7 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
       </nav>
 
       {/* ── Divider ── */}
-      <div style={{ width: 32, height: 1, background: "rgba(255,255,255,0.08)", margin: "8px 0" }} />
+      <div style={{ width: 32, height: 1, background: biz ? "var(--border)" : "rgba(255,255,255,0.08)", margin: "8px 0" }} />
 
       {/* ── Bottom actions ── */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: "100%", padding: "0 8px" }}>
@@ -258,11 +258,11 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
               textDecoration: "none",
               transition: "background 0.15s",
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = biz ? "var(--surface-2)" : "rgba(255,255,255,0.06)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
           >
-            <Settings size={15} style={{ color: "rgba(255,255,255,0.28)" }} />
-            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.22)", fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>Inst.</span>
+            <Settings size={15} style={{ color: biz ? "var(--text-dim)" : "rgba(255,255,255,0.28)" }} />
+            <span style={{ fontSize: 9, color: biz ? "var(--text-dim)" : "rgba(255,255,255,0.22)", fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>Inst.</span>
           </Link>
           <div
             className="pointer-events-none opacity-0 group-hover:opacity-100"
@@ -305,11 +305,11 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
               cursor: "pointer",
               transition: "background 0.15s",
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(220,38,38,0.1)"; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(180,83,74,0.1)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
           >
-            <LogOut size={15} style={{ color: "rgba(255,255,255,0.28)" }} />
-            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.22)", fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>Uit</span>
+            <LogOut size={15} style={{ color: biz ? "var(--text-dim)" : "rgba(255,255,255,0.28)" }} />
+            <span style={{ fontSize: 9, color: biz ? "var(--text-dim)" : "rgba(255,255,255,0.22)", fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>Uit</span>
           </button>
           <div
             className="pointer-events-none opacity-0 group-hover:opacity-100"
@@ -343,12 +343,12 @@ export function Sidebar({ role, userName, userEmail, onNavigate }: SidebarProps)
             height: 32,
             borderRadius: "50%",
             overflow: "hidden",
-            border: "1.5px solid rgba(77,174,229,0.4)",
+            border: biz ? "1.5px solid var(--border-strong)" : "1.5px solid rgba(77,174,229,0.4)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: "linear-gradient(135deg, #4DAEE5, #1B6CA8)",
-            color: "#001B48",
+            background: biz ? "#5A90BA" : "linear-gradient(135deg, #4DAEE5, #1B6CA8)",
+            color: biz ? "#fff" : "#001B48",
             fontSize: 11,
             fontWeight: 700,
             letterSpacing: "0.02em",

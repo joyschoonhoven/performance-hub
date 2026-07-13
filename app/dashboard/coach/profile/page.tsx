@@ -322,7 +322,6 @@ export default function CoachProfilePage() {
                 { href: "/dashboard/coach/evaluations/new", icon: <ClipboardList size={15} />, label: "Nieuwe evaluatie" },
                 { href: "/dashboard/coach/players", icon: <Users size={15} />, label: "Alle spelers" },
                 { href: "/dashboard/coach/challenges", icon: <Target size={15} />, label: "Challenges beheren" },
-                { href: "/dashboard/coach/ai", icon: <BookOpen size={15} />, label: "AI Scouting Engine" },
                 { href: "/dashboard/coach/analytics", icon: <TrendingUp size={15} />, label: "Team analytics" },
               ].map((link) => (
                 <Link key={link.href} href={link.href}

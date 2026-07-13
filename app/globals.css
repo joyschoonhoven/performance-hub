@@ -82,6 +82,53 @@
 }
 
 /* ─────────────────────────────────────────────────────────
+   COACH THEME — compact, monochrome, business
+   White surfaces, single accent (#5A90BA). Scoped to coach
+   pages only so the player experience is untouched.
+   ───────────────────────────────────────────────────────── */
+.coach-theme {
+  --sfa-blue:       #5A90BA;
+  --sfa-sky:        #5A90BA;
+  --sfa-sky-light:  #EEF3F7;
+  --sfa-gold:       #5A90BA;
+  --sfa-navy:       #1F2937;
+  --sfa-navy-mid:   #374151;
+
+  --bg:             #FFFFFF;
+  --surface:        #FFFFFF;
+  --surface-2:      #F7F8FA;
+  --border:         #E5E7EB;
+  --border-strong:  #D1D5DB;
+
+  --text:           #1F2937;
+  --text-2:         #374151;
+  --text-muted:     #6B7280;
+  --text-dim:       #9CA3AF;
+
+  --green:          #3F7A5A;
+  --red:            #B4534A;
+  --amber:          #A67C3D;
+  --blue:           #5A90BA;
+}
+
+.coach-theme.dark {
+  --bg:             #14181D;
+  --surface:        #1B2027;
+  --surface-2:      #212730;
+  --border:         #2B323C;
+  --border-strong:  #3A4250;
+
+  --text:           #E8EAED;
+  --text-2:         #C6CBD3;
+  --text-muted:     #8A93A1;
+  --text-dim:       #626B79;
+
+  --sfa-navy:       #E8EAED;
+  --sfa-sky-light:  #232B34;
+}
+.coach-theme.dark img[src="/logo.png"] { filter: brightness(0) invert(1); opacity: 0.92; }
+
+/* ─────────────────────────────────────────────────────────
    BASE
    ───────────────────────────────────────────────────────── */
 @layer base {
