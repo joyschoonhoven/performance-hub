@@ -82,6 +82,47 @@ export function scoreMbti(answers: Record<string, number>): { code: MbtiCode; ax
   return { code, axisScores };
 }
 
+/* ── Persoonlijkheidsradar ──
+   Vertaalt de testscores naar vijf coachbare criteria (0–10).
+   Max per as = 8 stellingen × 3 = 24. Zonder opgeslagen scores
+   (oudere tests) benaderen we op basis van de vier letters. ── */
+export interface PersonalityAxis { label: string; value: number }
+
+const AXIS_MAX = 24;
+
+export function personalityRadar(
+  code: MbtiCode,
+  axisScores?: Partial<Record<Axis, number>> | null,
+): PersonalityAxis[] {
+  // pct → 0..10 richting de opgegeven pool
+  const toward = (axis: Axis, pole: string): number => {
+    const raw = axisScores?.[axis];
+    if (raw == null) {
+      // fallback: alleen de letter — duidelijk maar niet extreem
+      const letter = code[["EI", "SN", "TF", "JP"].indexOf(axis)];
+      return letter === pole ? 7 : 4;
+    }
+    const signed = pole === FIRST_POLE[axis] ? raw : -raw;
+    const pct = 0.5 + (signed / AXIS_MAX) * 0.5;           // 0..1
+    return Math.round(Math.min(Math.max(pct, 0.08), 0.96) * 100) / 10;
+  };
+
+  const E = toward("EI", "E");
+  const I = toward("EI", "I");
+  const N = toward("SN", "N");
+  const T = toward("TF", "T");
+  const F = toward("TF", "F");
+  const J = toward("JP", "J");
+
+  return [
+    { label: "Leiderschap",     value: E },
+    { label: "Creativiteit",    value: N },
+    { label: "Discipline",      value: J },
+    { label: "Teamgevoel",      value: F },
+    { label: "Rust onder druk", value: Math.round((T * 6 + I * 4)) / 10 },
+  ];
+}
+
 /* ── Type-profielen (voetbal-gericht) ── */
 /** Elk punt (kracht of valkuil) heeft een gekoppelde concrete handeling/tip. */
 export interface MbtiPoint { label: string; tip: string; }

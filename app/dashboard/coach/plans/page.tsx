@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Flag } from "lucide-react";
 import { CoachPlansOverview, resolveCoachContext } from "@/components/plan/CoachPlansOverview";
+import { CoachAgenda } from "@/components/plan/CoachAgenda";
 
 export default function CoachPlansPage() {
   const [coachName, setCoachName] = useState<string>("Coach");
@@ -21,19 +22,16 @@ export default function CoachPlansPage() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-3 sm:gap-4">
+    <div className="flex flex-col gap-4" style={{ maxWidth: 1080, margin: "0 auto", width: "100%" }}>
       <div>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "var(--sfa-blue)", textTransform: "uppercase" }}>
-          Persoonlijke plannen
-        </div>
-        <div className="text-lg sm:text-2xl" style={{ fontWeight: 900, color: "var(--text-2)", fontFamily: "Outfit, sans-serif", letterSpacing: "-0.01em" }}>
-          Alle afspraken in één overzicht
-        </div>
-        <div className="text-[11px] sm:text-xs" style={{ color: "var(--text-dim)", marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
-          <Flag size={11} className="shrink-0" />
-          <span>Sorteer op deadline, filter op speler of categorie, klik een afspraak voor details + chat.</span>
+        <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text)" }}>Plannen</h1>
+        <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 3, display: "flex", alignItems: "center", gap: 6 }}>
+          <Flag size={12} className="shrink-0" />
+          <span>Agenda, beschikbaarheid en persoonlijke plannen van je spelers.</span>
         </div>
       </div>
+
+      <CoachAgenda />
 
       <CoachPlansOverview coachName={coachName} viewerId={viewerId} />
     </div>

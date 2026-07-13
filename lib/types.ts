@@ -294,6 +294,7 @@ export interface Player {
   overall_rating: number;
   badge?: BadgeType;
   mbti_type?: string;
+  mbti_scores?: Record<string, number>;
   is_active: boolean;
   club?: string;
   team_name?: string;

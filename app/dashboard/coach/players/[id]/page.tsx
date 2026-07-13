@@ -19,7 +19,7 @@ import {
 import { EVALUATION_SCHEMA } from "@/lib/types";
 import { PlayerPhotoUpload } from "@/components/ui/PlayerPhotoUpload";
 import { sendCoachUpdate } from "@/lib/coach-notify";
-import { MBTI_PROFILES, situationalCues, type MbtiCode } from "@/lib/mbti";
+import { MBTI_PROFILES, situationalCues, personalityRadar, type MbtiCode, type Axis } from "@/lib/mbti";
 import { Mail, Send } from "lucide-react";
 
 function parseSubScores(subNotes?: string): Record<string, number> | null {
@@ -430,15 +430,41 @@ export default function PlayerDetailPage() {
           </div>
 
           <div className="lg:col-span-2 space-y-4">
-            <div className="hub-card p-5">
-              <div className="hub-label mb-4">Performance Radar</div>
-              {radarData.length > 0 ? (
-                <PlayerRadarChart data={radarData} color={rColor} size={250} />
-              ) : (
-                <div className="h-60 flex items-center justify-center text-slate-600 text-sm">
-                  Evalueer de speler voor radar data
-                </div>
-              )}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+              <div className="hub-card p-5">
+                <div className="hub-label mb-1">Voetbalprofiel</div>
+                <div className="text-xs text-slate-500 mb-3">Uit de laatste evaluaties</div>
+                {radarData.length > 0 ? (
+                  <div className="flex justify-center">
+                    <PlayerRadarChart data={radarData} color={rColor} size={220} />
+                  </div>
+                ) : (
+                  <div className="h-60 flex items-center justify-center text-slate-600 text-sm">
+                    Evalueer de speler voor radar data
+                  </div>
+                )}
+              </div>
+
+              <div className="hub-card p-5">
+                <div className="hub-label mb-1">Persoonlijkheidsprofiel</div>
+                <div className="text-xs text-slate-500 mb-3">Uit de persoonlijkheidstest</div>
+                {player.mbti_type && MBTI_PROFILES[player.mbti_type as MbtiCode] ? (
+                  <div className="flex justify-center">
+                    <PlayerRadarChart
+                      data={personalityRadar(
+                        player.mbti_type as MbtiCode,
+                        player.mbti_scores as Partial<Record<Axis, number>> | undefined,
+                      ).map((a) => ({ subject: a.label, value: a.value }))}
+                      color="#5A90BA"
+                      size={220}
+                    />
+                  </div>
+                ) : (
+                  <div className="h-60 flex items-center justify-center text-slate-600 text-sm text-center px-4">
+                    Nog geen test ingevuld — nodig de speler uit via de spelerspagina
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="hub-card p-5">

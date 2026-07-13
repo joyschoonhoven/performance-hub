@@ -7,6 +7,7 @@ import { getMyPlayerData } from "@/lib/supabase/queries";
 import type { PlayerWithDetails } from "@/lib/types";
 import { PlanView } from "@/components/plan/PlanView";
 import { TrainingCalendar } from "@/components/plan/TrainingCalendar";
+import { SlotBooking } from "@/components/plan/SlotBooking";
 
 export default function PlayerPlanPage() {
   const [player, setPlayer] = useState<PlayerWithDetails | null>(null);
@@ -69,6 +70,8 @@ export default function PlayerPlanPage() {
           <MapIcon size={11} className="shrink-0" /> <span>Verdien XP, bouw streaks op, klim levels — vink je missies af.</span>
         </div>
       </div>
+
+      <SlotBooking playerId={player.id} />
 
       <TrainingCalendar
         playerId={player.id}

@@ -38,9 +38,14 @@ export default function MbtiPage() {
 
   async function finish() {
     setSaving(true);
-    const { code } = scoreMbti(answers);
+    const { code, axisScores } = scoreMbti(answers);
     if (player?.id) {
-      try { await createClient().from("players").update({ mbti_type: code }).eq("id", player.id); } catch {}
+      try {
+        const supa = createClient();
+        // mbti_scores kan ontbreken als de migration nog niet is gedraaid — val dan terug op alleen het type
+        const { error } = await supa.from("players").update({ mbti_type: code, mbti_scores: axisScores }).eq("id", player.id);
+        if (error) await supa.from("players").update({ mbti_type: code }).eq("id", player.id);
+      } catch {}
     }
     setResult(code);
     setRetaking(false);
@@ -67,7 +72,11 @@ export default function MbtiPage() {
           <PremiumHeader
             eyebrow="Persoonlijkheid"
             title="Speler-DNA · MBTI"
-            subtitle={showResult ? "Jouw persoonlijkheidstype en hoe je speelt per situatie." : `Beantwoord ${total} vragen — kies telkens wat het meest bij jou past.`}
+            subtitle={showResult
+              ? "Jouw persoonlijkheidstype en hoe je speelt per situatie."
+              : player && !player.mbti_type
+                ? `Verplicht onderdeel van je aanmelding — beantwoord ${total} stellingen, daarna opent je dashboard.`
+                : `Beantwoord ${total} vragen — kies telkens wat het meest bij jou past.`}
             action={showResult ? (
               <button className="pv-btn" style={{ height: 40, background: "transparent", color: SFA.blue, border: `1px solid ${SFA.line}`, boxShadow: "none" }}
                 onClick={() => { setRetaking(true); setAnswers({}); }}>
