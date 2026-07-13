@@ -1,344 +1,368 @@
 "use client";
 
+// ============================================================
+//  PLAYER CARD — spelersprofiel in Football Manager-opzet,
+//  uitgevoerd in de SFA-huisstijl (wit, #5A90BA, condensed).
+//  Kolommen met attribuutscores uit de laatste evaluatie,
+//  posities op een minipitch, infopaneel en vormtegels.
+// ============================================================
+
 import Image from "next/image";
-import { Star } from "lucide-react";
-import { ARCHETYPES, SOCIOTYPES, CATEGORY_LABELS } from "@/lib/types";
-import { getRatingLabel } from "@/lib/utils";
+import { CATEGORY_LABELS, EVALUATION_SCHEMA, POSITION_LABELS, POTENTIAL_LEVELS, ARCHETYPES } from "@/lib/types";
+import { MBTI_PROFILES, type MbtiCode } from "@/lib/mbti";
 import { MbtiShield } from "@/components/ui/ShieldBadge";
-import type { EvaluationCategory, PlayerWithDetails } from "@/lib/types";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import type { EvaluationCategory, PlayerWithDetails, PositionType } from "@/lib/types";
 
-/* ═══════════════════════════════════════════════
-   SFA TOKENS
-═══════════════════════════════════════════════ */
-const T = {
-  bg:      "#071426",
-  panel:   "rgba(13,30,54,0.72)",
-  line:    "rgba(120,175,225,0.14)",
-  ink:     "#EAF2FB",
-  sub:     "#8FA8C6",
-  dim:     "#4E688A",
-  blue:    "#1B6CA8",
-  sky:     "#4DAEE5",
-  gold:    "#F0A500",
-  red:     "#D64045",
-  green:   "#33C481",
-} as const;
+const ACCENT = "#5A90BA";
+const INK = "#1F2937";
+const SUB = "#6B7280";
+const DIM = "#9CA3AF";
+const LINE = "#E5E7EB";
 
-const ATTR_ORDER: EvaluationCategory[] = ["techniek","fysiek","tactiek","mentaal","teamplay"];
-
-function valColor(v: number): string {
-  if (v >= 85) return T.sky;
-  if (v >= 75) return T.green;
-  if (v >= 65) return T.gold;
-  if (v >= 50) return "#E08A3C";
-  return T.red;
+/* Cijferkleur naar niveau — FM-conventie */
+function scoreColor(v: number): string {
+  if (v >= 8) return "#2E7D4F";
+  if (v >= 6.5) return "#C9A227";
+  if (v >= 5) return "#D07A2E";
+  return "#B4534A";
 }
 
-/* ═══════════════════════════════════════════════
-   VIEW
-═══════════════════════════════════════════════ */
-export function PlayerCardView({ player }: { player: PlayerWithDetails }) {
-  const ovr    = player.overall_rating;
-  const latest = player.evaluations?.[0];
-  const attrs = ATTR_ORDER.map(cat => ({
-    cat, label: CATEGORY_LABELS[cat],
-    val: Math.round((latest?.scores?.find(s=>s.category===cat)?.score ?? 0) * 10),
-  }));
-  const photo = player.photo_url ?? player.avatar_url ?? null;
-  const age = calcAge(player.date_of_birth);
-  const foot = player.dominant_foot === "left" ? "L" : player.dominant_foot === "both" ? "L/R" : "R";
-  const archetype = player.identity?.primary_archetype ? ARCHETYPES[player.identity.primary_archetype] : null;
-  const sociotype = player.identity?.primary_sociotype ? SOCIOTYPES[player.identity.primary_sociotype] : null;
-  const technique = latest?.scores?.find(s=>s.category==="techniek")?.score ?? 0;
-  const skillMoves = Math.max(1, Math.min(5, Math.round(technique/2)));
-  const posCount = 1 + (player.secondary_position?1:0);
-  const evalCount = player.evaluations?.length ?? 0;
-  const doneCh = player.challenges?.filter(c=>c.status==="completed").length ?? 0;
-  const playstyles = [...(archetype?.traits ?? []), ...(sociotype?.traits ?? [])].slice(0,6);
+function calcAge(dob?: string): number | null {
+  if (!dob) return null;
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  if (now.getMonth() < d.getMonth() || (now.getMonth() === d.getMonth() && now.getDate() < d.getDate())) age--;
+  return age;
+}
 
+function parseSubScores(subNotes?: string): Record<string, number> | null {
+  if (!subNotes) return null;
+  try { return JSON.parse(subNotes); } catch { return null; }
+}
+
+/* Positiecoördinaten op de minipitch (x 0-100, y 0-100; y=0 is eigen doel) */
+const POS_XY: Partial<Record<PositionType, [number, number]>> = {
+  GK: [50, 7], CB: [50, 22], LB: [16, 28], RB: [84, 28],
+  CDM: [50, 40], CM: [50, 54], CAM: [50, 68],
+  LW: [18, 78], RW: [82, 78], ST: [50, 88], SS: [50, 78],
+};
+
+function MiniPitch({ primary, secondary }: { primary: PositionType; secondary?: PositionType | null }) {
+  const p = POS_XY[primary] ?? [50, 55];
+  const s = secondary ? POS_XY[secondary] : null;
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: CSS }}/>
-      <div className="fc-root">
-        <div className="fc-streak fc-streak-1"/>
-        <div className="fc-streak fc-streak-2"/>
-
-        <div className="fc-stage">
-          {/* ══ PANEL ══ */}
-          <div className="fc-panel">
-            <div className="fc-head">
-              <div>
-                <div className="fc-ovrline">
-                  <span className="fc-ovr" style={{color: valColor(ovr)}}>{ovr}</span>
-                  <span className="fc-bar">|</span>
-                  <span className="fc-pos">{player.position}</span>
-                  {player.secondary_position && <span className="fc-pos fc-pos2">{player.secondary_position}</span>}
-                </div>
-                <div className="fc-first">{player.first_name}</div>
-                <div className="fc-last">
-                  <span className="fc-flag">{flag(player.nationality)}</span>
-                  {player.last_name}
-                </div>
-              </div>
-              <div className="fc-club">
-                <div className="fc-club-badge">
-                  <Image src="/logo.png" alt="" width={30} height={30} style={{objectFit:"contain"}}/>
-                </div>
-                <span className="fc-club-name">{clubAbbr(player.team_name || player.club)}</span>
-                {player.mbti_type && (
-                  <div style={{ marginTop: 8 }} title="Jouw speler-type">
-                    <MbtiShield code={player.mbti_type} size={40} />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="fc-meta">
-              <span>Leeftijd: <b>{age ?? "—"}</b></span>
-              <span className="fc-dot">|</span>
-              <span>Lengte <b>{player.height_cm?`${player.height_cm} cm`:"—"}</b></span>
-              <span className="fc-dot">|</span>
-              <span>Voet <b>{foot}</b></span>
-            </div>
-
-            <div className="fc-section-label">Samenvatting</div>
-            <div className="fc-summary">
-              <div className="fc-attrs">
-                {attrs.map(a=>(
-                  <div className="fc-attr" key={a.cat}>
-                    <span className="fc-attr-k">{a.label}</span>
-                    <span className="fc-attr-v" style={{color: a.val>0?valColor(a.val):T.dim}}>
-                      {a.val>0?a.val:"–"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="fc-rmeta">
-                <div className="fc-rrow">
-                  <span className="fc-attr-k">Posities</span>
-                  <span className="fc-rval">{posCount}</span>
-                </div>
-                <div className="fc-rrow">
-                  <span className="fc-attr-k">Skill Moves</span>
-                  <Stars n={skillMoves}/>
-                </div>
-                {archetype && (
-                  <div className="fc-rrow">
-                    <span className="fc-attr-k">Archetype</span>
-                    <span className="fc-rtag" style={{color:archetype.color}}>
-                      <span>{archetype.icon}</span>{archetype.label}
-                    </span>
-                  </div>
-                )}
-                {sociotype && (
-                  <div className="fc-rrow">
-                    <span className="fc-attr-k">Sociotype</span>
-                    <span className="fc-rtag" style={{color:sociotype.color_hex}}>
-                      <span>{sociotype.icon}</span>{sociotype.label}
-                    </span>
-                  </div>
-                )}
-                {playstyles.length>0 && (
-                  <div className="fc-rrow fc-rrow-ps">
-                    <span className="fc-attr-k">PlayStyles</span>
-                    <div className="fc-ps">
-                      {playstyles.map((p,i)=>(
-                        <span className="fc-diamond" key={i} title={p}>
-                          <span>{p[0]?.toUpperCase()}</span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="fc-divider"/>
-            <div className="fc-section-label">Ontwikkeling</div>
-            <div className="fc-fin">
-              <div className="fc-finrow"><span>Status</span><b style={{color:valColor(ovr)}}>{getRatingLabel(ovr)}</b></div>
-              <div className="fc-finrow"><span>Evaluaties</span><b>{evalCount}</b></div>
-              <div className="fc-finrow"><span>Challenges voltooid</span><b>{doneCh}</b></div>
-            </div>
-
-          </div>
-
-          {/* ══ RENDER ══ */}
-          <div className="fc-render">
-            {photo ? (
-              <div className="fc-photo">
-                <Image src={photo} alt="" fill unoptimized style={{objectFit:"cover",objectPosition:"top center"}}/>
-                <div className="fc-photo-fade"/>
-              </div>
-            ) : (
-              <div className="fc-nophoto">
-                <span className="fc-nophoto-num">{player.jersey_number ?? player.position}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </>
+    <svg viewBox="0 0 100 140" style={{ width: "100%", maxWidth: 170, display: "block" }}>
+      <rect x="1" y="1" width="98" height="138" rx="3" fill="#F4F8F6" stroke="#CBD8D0" strokeWidth="1.5" />
+      <line x1="1" y1="70" x2="99" y2="70" stroke="#CBD8D0" strokeWidth="1" />
+      <circle cx="50" cy="70" r="11" fill="none" stroke="#CBD8D0" strokeWidth="1" />
+      <rect x="28" y="1" width="44" height="16" fill="none" stroke="#CBD8D0" strokeWidth="1" />
+      <rect x="28" y="123" width="44" height="16" fill="none" stroke="#CBD8D0" strokeWidth="1" />
+      {s && (
+        <circle cx={s[0]} cy={140 - s[1] * 1.4 * 0.97 - 2} r="5" fill="#fff" stroke={ACCENT} strokeWidth="1.5" opacity={0.9} />
+      )}
+      <circle cx={p[0]} cy={140 - p[1] * 1.4 * 0.97 - 2} r="6.5" fill={ACCENT} stroke="#fff" strokeWidth="2" />
+    </svg>
   );
 }
 
-/* ═══ BITS ═══ */
-function Stars({ n }: { n:number }) {
+/* Eén attribuutrij: label + gekleurd cijfer */
+function AttrRow({ label, value, real }: { label: string; value: number; real: boolean }) {
   return (
-    <span style={{display:"inline-flex",gap:1}}>
-      {[1,2,3,4,5].map(i=>(
-        <Star key={i} size={13}
-          style={{color: i<=n ? T.gold : "rgba(143,168,198,0.3)"}}
-          fill={i<=n ? T.gold : "transparent"} strokeWidth={1.5}/>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "5px 0", borderBottom: `1px solid ${LINE}` }}>
+      <span style={{ fontSize: 12, color: SUB, lineHeight: 1.25 }}>{label}</span>
+      <span className="display-font" style={{
+        fontSize: 14.5, fontWeight: 600, minWidth: 26, textAlign: "right",
+        color: real ? scoreColor(value) : DIM,
+        fontFeatureSettings: '"tnum" 1',
+      }}>
+        {value > 0 ? value.toFixed(value % 1 ? 1 : 0) : "—"}
+      </span>
+    </div>
+  );
+}
+
+/* Kolomkop */
+function ColHead({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="display-font" style={{
+      fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", color: INK,
+      paddingBottom: 6, marginBottom: 2, borderBottom: `2px solid ${ACCENT}`,
+      display: "flex", alignItems: "center", gap: 7,
+    }}>
+      <span style={{ width: 3, height: 11, background: ACCENT, transform: "skewX(-12deg)" }} />
+      {children}
+    </div>
+  );
+}
+
+/* Attributenblok voor één categorie */
+function CategoryBlock({ catId, catScore, subScores }: {
+  catId: EvaluationCategory; catScore: number; subScores: Record<string, number> | null;
+}) {
+  const schema = EVALUATION_SCHEMA.find((c) => c.id === catId);
+  if (!schema) return null;
+  const hasReal = !!subScores && Object.keys(subScores).length > 0;
+  return (
+    <div>
+      <ColHead>{schema.label}</ColHead>
+      {schema.subcategories.map((sub) => (
+        <AttrRow key={sub.id}
+          label={sub.label}
+          value={hasReal ? (subScores![sub.id] ?? catScore) : catScore}
+          real={hasReal ? subScores![sub.id] != null : catScore > 0}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* Infopaneel-rij */
+function InfoRow({ k, v, color }: { k: string; v: string; color?: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${LINE}` }}>
+      <span style={{ fontSize: 12, color: SUB }}>{k}</span>
+      <span style={{ fontSize: 12.5, fontWeight: 700, color: color ?? INK, textAlign: "right" }}>{v}</span>
+    </div>
+  );
+}
+
+/* Voetsterkte-streepjes zoals FM */
+function FootDashes({ strength }: { strength: number }) {
+  return (
+    <span style={{ display: "inline-flex", gap: 2 }}>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <span key={i} style={{
+          width: 8, height: 3, transform: "skewX(-12deg)",
+          background: i < strength ? "#2E7D4F" : LINE,
+        }} />
       ))}
     </span>
   );
 }
 
-/* ═══ HELPERS ═══ */
-function calcAge(dob?: string): number | null {
-  if (!dob) return null;
-  const d = new Date(dob); if (isNaN(d.getTime())) return null;
-  const now = new Date();
-  let a = now.getFullYear()-d.getFullYear();
-  const m = now.getMonth()-d.getMonth();
-  if (m<0 || (m===0 && now.getDate()<d.getDate())) a--;
-  return a;
+export function PlayerCardView({ player }: { player: PlayerWithDetails }) {
+  const ovr = player.overall_rating;
+  const latest = player.evaluations?.[0];
+  const age = calcAge(player.date_of_birth);
+  const photo = player.photo_url ?? player.avatar_url ?? null;
+  const mbti = player.mbti_type && player.mbti_type in MBTI_PROFILES ? MBTI_PROFILES[player.mbti_type as MbtiCode] : null;
+  const archetype = player.identity?.primary_archetype ? ARCHETYPES[player.identity.primary_archetype] : null;
+
+  const catScore = (cat: EvaluationCategory) => latest?.scores?.find((s) => s.category === cat)?.score ?? 0;
+  const catSubs = (cat: EvaluationCategory) => parseSubScores(latest?.scores?.find((s) => s.category === cat)?.sub_notes);
+
+  const potential = latest?.potential_level ? POTENTIAL_LEVELS.find((p) => p.value === latest.potential_level)?.label : null;
+
+  // Vorm: laatste 5 evaluaties
+  const form = (player.evaluations ?? []).slice(0, 5).map((e) => e.overall_score ?? 0).reverse();
+  const trend = (player.evaluations?.length ?? 0) >= 2
+    ? (player.evaluations![0].overall_score ?? 0) - (player.evaluations![1].overall_score ?? 0)
+    : null;
+  const doneCh = player.challenges?.filter((c) => c.status === "completed").length ?? 0;
+  const totalCh = player.challenges?.length ?? 0;
+
+  const foot = player.dominant_foot;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 1180, margin: "0 auto" }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        .pcv-main { display: grid; grid-template-columns: 190px 1fr 1fr 1fr 200px; gap: 22px; }
+        .pcv-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        @media (max-width: 1100px) { .pcv-main { grid-template-columns: 1fr 1fr; } .pcv-side { grid-column: span 2; } }
+        @media (max-width: 640px)  { .pcv-main { grid-template-columns: 1fr; } .pcv-side { grid-column: span 1; } .pcv-tiles { grid-template-columns: repeat(2, 1fr); } }
+      ` }} />
+
+      {/* ══ KOP ══ */}
+      <div style={{ background: "#fff", border: `1px solid ${LINE}`, borderRadius: 12, overflow: "hidden" }}>
+        <div style={{ height: 4, background: ACCENT }} />
+        <div style={{ padding: "18px 22px", display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
+          {/* Foto */}
+          <div style={{
+            width: 84, height: 84, borderRadius: 10, overflow: "hidden", flexShrink: 0,
+            background: "#F7F8FA", border: `1px solid ${LINE}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            {photo
+              ? <Image src={photo} alt="" width={84} height={84} unoptimized style={{ objectFit: "cover", width: "100%", height: "100%" }} />
+              : <span className="display-font" style={{ fontSize: 26, fontWeight: 600, color: ACCENT }}>{player.first_name[0]}{player.last_name?.[0] ?? ""}</span>}
+          </div>
+
+          {/* Naam + chips */}
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: SUB, lineHeight: 1 }}>{player.first_name}</div>
+            <div className="display-font" style={{ fontSize: 30, fontWeight: 600, color: INK, lineHeight: 1.05, textTransform: "uppercase" }}>
+              {player.last_name || player.first_name}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+              <span className="cut-sm display-font" style={{ fontSize: 11, fontWeight: 600, padding: "4px 12px", background: ACCENT, color: "#fff" }}>
+                {POSITION_LABELS[player.position]}
+              </span>
+              {player.secondary_position && (
+                <span className="cut-sm display-font" style={{ fontSize: 11, fontWeight: 600, padding: "4px 12px", background: "#F7F8FA", color: SUB, border: `1px solid ${LINE}` }}>
+                  {POSITION_LABELS[player.secondary_position]}
+                </span>
+              )}
+              <span style={{ fontSize: 12, color: SUB }}>
+                {age !== null ? `${age} jaar` : ""}{age !== null && player.nationality ? " · " : ""}{player.nationality ?? ""}
+              </span>
+            </div>
+          </div>
+
+          {/* Club + type + rating */}
+          <div style={{ display: "flex", alignItems: "center", gap: 22, flexShrink: 0 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 9, background: "#F7F8FA", border: `1px solid ${LINE}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Image src="/logo.png" alt="" width={32} height={32} style={{ objectFit: "contain" }} />
+              </div>
+              <span className="display-font" style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.1em", color: SUB, maxWidth: 90, textAlign: "center" }}>
+                {player.team_name || player.club || "SFA"}
+              </span>
+            </div>
+            {mbti && <MbtiShield code={mbti.code} size={52} />}
+            <div style={{ textAlign: "right" }}>
+              <div className="display-font" style={{ fontSize: 54, fontWeight: 600, lineHeight: 1, color: scoreColor(ovr / 10), fontFeatureSettings: '"tnum" 1' }}>
+                {ovr}
+              </div>
+              <div className="display-font" style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.2em", color: DIM }}>RATING</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ══ HOOFDPANEEL ══ */}
+      <div style={{ background: "#fff", border: `1px solid ${LINE}`, borderRadius: 12, padding: 22 }}>
+        {!latest ? (
+          <div style={{ padding: "36px 20px", textAlign: "center" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: INK, marginBottom: 6 }}>Nog geen evaluatie</div>
+            <p style={{ fontSize: 12.5, color: SUB }}>Zodra je coach je evalueert, verschijnen hier je attribuutscores.</p>
+          </div>
+        ) : (
+          <div className="pcv-main">
+            {/* Posities */}
+            <div>
+              <ColHead>Posities</ColHead>
+              <div style={{ paddingTop: 10 }}>
+                <MiniPitch primary={player.position} secondary={player.secondary_position} />
+                <div style={{ marginTop: 10, fontSize: 12, color: SUB, lineHeight: 1.5 }}>
+                  <b style={{ color: INK }}>{POSITION_LABELS[player.position]}</b>
+                  {player.secondary_position && <><br />{POSITION_LABELS[player.secondary_position]}</>}
+                </div>
+                {archetype && (
+                  <div style={{ marginTop: 14 }}>
+                    <div className="display-font" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", color: DIM, marginBottom: 5 }}>SPEELSTIJL</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, color: INK }}>{archetype.label}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Attribuutkolommen */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+              <CategoryBlock catId="techniek" catScore={catScore("techniek")} subScores={catSubs("techniek")} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+              <CategoryBlock catId="tactiek" catScore={catScore("tactiek")} subScores={catSubs("tactiek")} />
+              <CategoryBlock catId="teamplay" catScore={catScore("teamplay")} subScores={catSubs("teamplay")} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+              <CategoryBlock catId="fysiek" catScore={catScore("fysiek")} subScores={catSubs("fysiek")} />
+              <CategoryBlock catId="mentaal" catScore={catScore("mentaal")} subScores={catSubs("mentaal")} />
+            </div>
+
+            {/* Info */}
+            <div className="pcv-side">
+              <ColHead>Info</ColHead>
+              <InfoRow k="Lengte" v={player.height_cm ? `${player.height_cm} cm` : "—"} />
+              <InfoRow k="Gewicht" v={player.weight_kg ? `${player.weight_kg} kg` : "—"} />
+              <InfoRow k="Leeftijd" v={age !== null ? `${age}` : "—"} />
+              {potential && <InfoRow k="Potentieel" v={potential} color={ACCENT} />}
+              <InfoRow k="Persoonlijkheid" v={mbti ? mbti.nickname : "Nog geen test"} color={mbti ? mbti.color : DIM} />
+              <InfoRow k="Evaluaties" v={String(player.evaluations?.length ?? 0)} />
+
+              <div style={{ marginTop: 16 }}>
+                <div className="display-font" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", color: DIM, marginBottom: 8 }}>VOETEN</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, color: SUB }}>Links</span>
+                    <FootDashes strength={foot === "left" ? 5 : foot === "both" ? 4 : 2} />
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, color: SUB }}>Rechts</span>
+                    <FootDashes strength={foot === "right" ? 5 : foot === "both" ? 4 : 2} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ══ TEGELS ══ */}
+      <div className="pcv-tiles">
+        {/* Vorm */}
+        <div style={{ background: "#fff", border: `1px solid ${LINE}`, borderRadius: 12, padding: 16 }}>
+          <div className="display-font" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: SUB, marginBottom: 10 }}>VORM</div>
+          {form.length ? (
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 5, height: 44 }}>
+              {form.map((v, i) => (
+                <div key={i} title={v.toFixed(1)} style={{
+                  flex: 1, height: `${Math.max(v * 10, 6)}%`,
+                  background: scoreColor(v), transform: "skewX(-6deg)", borderRadius: 1,
+                }} />
+              ))}
+            </div>
+          ) : <div style={{ fontSize: 12, color: DIM }}>Nog geen evaluaties</div>}
+          <div style={{ fontSize: 11, color: DIM, marginTop: 8 }}>Laatste {form.length || 0} evaluaties</div>
+        </div>
+
+        {/* Ontwikkeling */}
+        <div style={{ background: "#fff", border: `1px solid ${LINE}`, borderRadius: 12, padding: 16 }}>
+          <div className="display-font" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: SUB, marginBottom: 10 }}>ONTWIKKELING</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {trend === null ? <Minus size={18} style={{ color: DIM }} />
+              : trend >= 0 ? <TrendingUp size={18} style={{ color: "#2E7D4F" }} />
+              : <TrendingDown size={18} style={{ color: "#B4534A" }} />}
+            <span className="display-font" style={{ fontSize: 24, fontWeight: 600, color: trend === null ? DIM : trend >= 0 ? "#2E7D4F" : "#B4534A" }}>
+              {trend === null ? "—" : `${trend > 0 ? "+" : ""}${trend.toFixed(1)}`}
+            </span>
+          </div>
+          <div style={{ fontSize: 11, color: DIM, marginTop: 8 }}>t.o.v. vorige evaluatie</div>
+        </div>
+
+        {/* Challenges */}
+        <div style={{ background: "#fff", border: `1px solid ${LINE}`, borderRadius: 12, padding: 16 }}>
+          <div className="display-font" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: SUB, marginBottom: 10 }}>CHALLENGES</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
+            <span className="display-font" style={{ fontSize: 24, fontWeight: 600, color: INK }}>{doneCh}</span>
+            <span style={{ fontSize: 12, color: DIM }}>/ {totalCh} voltooid</span>
+          </div>
+          <div style={{ height: 5, background: "#EEF1F4", marginTop: 10, overflow: "hidden", transform: "skewX(-12deg)" }}>
+            <div style={{ width: totalCh ? `${(doneCh / totalCh) * 100}%` : 0, height: "100%", background: ACCENT }} />
+          </div>
+        </div>
+
+        {/* Persoonlijkheid */}
+        <div style={{ background: "#fff", border: `1px solid ${LINE}`, borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+          {mbti ? (
+            <>
+              <MbtiShield code={mbti.code} size={44} />
+              <div>
+                <div className="display-font" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: SUB }}>PERSOONLIJKHEID</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: INK, marginTop: 3 }}>{mbti.nickname}</div>
+                <div style={{ fontSize: 11, color: DIM }}>{mbti.code}</div>
+              </div>
+            </>
+          ) : (
+            <div>
+              <div className="display-font" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: SUB }}>PERSOONLIJKHEID</div>
+              <div style={{ fontSize: 12, color: DIM, marginTop: 4 }}>Nog geen test ingevuld</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
-function clubAbbr(name?: string): string {
-  if (!name) return "SFA";
-  const words = name.trim().split(/\s+/);
-  if (words.length === 1) return words[0].slice(0,3).toUpperCase();
-  return words.map(w=>w[0]).join("").slice(0,3).toUpperCase();
-}
-function flag(nat?: string): string {
-  const m: Record<string,string> = {
-    nederland:"🇳🇱",netherlands:"🇳🇱",nl:"🇳🇱",dutch:"🇳🇱",
-    belgië:"🇧🇪",belgium:"🇧🇪",be:"🇧🇪",duitsland:"🇩🇪",germany:"🇩🇪",
-    frankrijk:"🇫🇷",france:"🇫🇷",spanje:"🇪🇸",spain:"🇪🇸",portugal:"🇵🇹",
-    italië:"🇮🇹",italy:"🇮🇹",brazilië:"🇧🇷",brazil:"🇧🇷",marokko:"🇲🇦",
-    morocco:"🇲🇦",turkije:"🇹🇷",turkey:"🇹🇷",suriname:"🇸🇷",
-  };
-  return m[(nat??"").toLowerCase().trim()] ?? "🏳️";
-}
-
-/* ═══ CSS ═══ */
-const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Narrow:wght@600;700&display=swap');
-
-  .fc-root {
-    position:relative; overflow:hidden;
-    font-family:'Archivo',system-ui,sans-serif;
-    color:${T.ink};
-    min-height: calc(100dvh - 56px);
-    margin:-16px -12px -16px;
-    padding:0;
-    background:
-      radial-gradient(ellipse 90% 60% at 78% 40%, rgba(27,108,168,0.22), transparent 60%),
-      linear-gradient(120deg, #050F1D 0%, ${T.bg} 45%, #0A1E3A 100%);
-  }
-  @media (min-width:1024px){ .fc-root{ margin:-28px -28px -40px; } }
-  @media (min-width:641px) and (max-width:1023px){ .fc-root{ margin:-16px -20px -16px; } }
-
-  .fc-streak { position:absolute; top:-20%; height:150%; width:34%;
-    transform:skewX(-14deg); pointer-events:none; }
-  .fc-streak-1 { left:52%; background:linear-gradient(90deg, transparent, rgba(120,175,225,0.05), transparent);
-    animation: fcDrift1 15s ease-in-out infinite; }
-  .fc-streak-2 { left:70%; background:linear-gradient(90deg, transparent, rgba(120,175,225,0.07), transparent);
-    animation: fcDrift2 19s ease-in-out infinite; }
-  @keyframes fcDrift1 { 0%,100%{ transform:skewX(-14deg) translateX(0); } 50%{ transform:skewX(-14deg) translateX(26px); } }
-  @keyframes fcDrift2 { 0%,100%{ transform:skewX(-14deg) translateX(0); } 50%{ transform:skewX(-14deg) translateX(-22px); } }
-  @media (prefers-reduced-motion: reduce) { .fc-streak-1, .fc-streak-2 { animation: none; } }
-
-  .fc-stage {
-    position:relative; z-index:1;
-    display:flex; align-items:stretch; justify-content:center;
-    min-height: calc(100dvh - 56px);
-    max-width:1100px; margin:0 auto;
-  }
-
-  .fc-panel {
-    position:relative; z-index:2;
-    width:min(540px, 92vw);
-    align-self:center;
-    margin:28px 0 28px 24px;
-    padding:26px 28px;
-    background:${T.panel};
-    border:1px solid ${T.line};
-    border-radius:16px;
-    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 30px 80px -30px rgba(0,0,0,0.7);
-  }
-
-  .fc-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
-  .fc-ovrline { display:flex; align-items:center; gap:9px; }
-  .fc-ovr { font-family:'Archivo Narrow',sans-serif; font-size:30px; font-weight:700; line-height:1; }
-  .fc-bar { color:${T.dim}; font-weight:300; font-size:22px; }
-  .fc-pos { font-size:15px; font-weight:700; color:${T.ink}; letter-spacing:0.02em; }
-  .fc-pos2 { color:${T.sub}; }
-  .fc-first { font-size:15px; color:${T.sub}; font-weight:500; margin-top:10px; line-height:1; }
-  .fc-last { font-size:34px; font-weight:900; color:${T.ink}; letter-spacing:-0.02em; line-height:1.05; margin-top:2px;
-    display:flex; align-items:center; gap:9px; }
-  .fc-flag { font-size:22px; }
-
-  .fc-club { display:flex; flex-direction:column; align-items:center; gap:5px; flex-shrink:0; }
-  .fc-club-badge { width:46px; height:46px; border-radius:50%;
-    background:rgba(255,255,255,0.06); border:1px solid ${T.line};
-    display:flex; align-items:center; justify-content:center; }
-  .fc-club-name { font-size:11px; font-weight:700; letter-spacing:0.1em; color:${T.sub}; }
-
-  .fc-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-    margin-top:16px; padding-bottom:16px; border-bottom:1px solid ${T.line};
-    font-size:13px; color:${T.sub}; }
-  .fc-meta b { color:${T.ink}; font-weight:700; }
-  .fc-dot { color:${T.dim}; }
-
-  .fc-section-label { font-size:13px; font-weight:700; color:${T.sub}; margin:18px 0 12px; }
-
-  .fc-summary { display:grid; grid-template-columns:1fr 1fr; gap:8px 28px; }
-  .fc-attrs, .fc-rmeta { display:flex; flex-direction:column; gap:11px; }
-
-  .fc-attr, .fc-rrow { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .fc-attr-k { font-size:14px; color:${T.sub}; font-weight:500; }
-  .fc-attr-v { font-family:'Archivo Narrow',sans-serif; font-size:19px; font-weight:700; }
-  .fc-rval { font-family:'Archivo Narrow',sans-serif; font-size:17px; font-weight:700; color:${T.ink}; }
-  .fc-rtag { display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:700; text-align:right; max-width:130px; }
-  .fc-rrow-ps { align-items:flex-start; }
-  .fc-ps { display:flex; flex-wrap:wrap; gap:7px; justify-content:flex-end; max-width:150px; }
-  .fc-diamond { width:24px; height:24px; transform:rotate(45deg); border-radius:5px;
-    background:linear-gradient(135deg, rgba(77,174,229,0.22), rgba(27,108,168,0.28));
-    border:1px solid ${T.line}; display:flex; align-items:center; justify-content:center; }
-  .fc-diamond span { transform:rotate(-45deg); font-size:11px; font-weight:800; color:${T.sky}; }
-
-  .fc-divider { height:1px; background:${T.line}; margin:20px 0 0; }
-
-  .fc-fin { display:flex; flex-direction:column; gap:11px; }
-  .fc-finrow { display:flex; align-items:center; justify-content:space-between; font-size:14px; color:${T.sub}; }
-  .fc-finrow b { font-family:'Archivo Narrow',sans-serif; font-size:17px; color:${T.ink}; font-weight:700; }
-
-
-  .fc-render { position:relative; flex:1; align-self:stretch; min-width:0;
-    display:flex; align-items:flex-end; justify-content:center; }
-  .fc-photo { position:absolute; right:0; bottom:0; top:6%; width:min(460px, 46vw); }
-  .fc-photo-fade { position:absolute; inset:0;
-    background:linear-gradient(180deg, transparent 72%, ${T.bg} 99%),
-              linear-gradient(90deg, rgba(7,20,38,0.35), transparent 25%); }
-  .fc-nophoto { align-self:center; }
-  .fc-nophoto-num { font-family:'Archivo Narrow',sans-serif; font-size:180px; font-weight:700;
-    color:rgba(120,175,225,0.08); letter-spacing:-0.04em; }
-
-  @media (max-width: 860px) {
-    .fc-stage { flex-direction:column; }
-    .fc-panel { width:auto; margin:20px 16px; align-self:auto; order:2; }
-    .fc-render { order:1; min-height:300px; align-self:stretch; }
-    .fc-photo { position:relative; right:auto; top:auto; width:240px; height:300px; margin:0 auto; }
-    .fc-photo-fade { display:none; }
-    .fc-streak { display:none; }
-  }
-  @media (max-width: 480px) {
-    .fc-summary { grid-template-columns:1fr; gap:16px; }
-    .fc-ps { justify-content:flex-start; }
-    .fc-rtag { max-width:none; }
-  }
-`;
