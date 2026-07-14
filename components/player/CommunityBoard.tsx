@@ -74,14 +74,15 @@ function Avatar({ p, size = 34 }: { p: { avatar_url?: string | null; photo_url?:
   );
 }
 
-export function CommunityBoard({ currentPlayerId }: { currentPlayerId: string }) {
+export function CommunityBoard({ currentPlayerId, demoPlayers }: { currentPlayerId: string; demoPlayers?: PlayerWithDetails[] }) {
   const [players, setPlayers] = useState<PlayerWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [metric, setMetric] = useState<Metric>("rating");
 
   useEffect(() => {
+    if (demoPlayers) { setPlayers(demoPlayers); setLoading(false); return; }
     getAllPlayers().then((data) => { setPlayers(data); setLoading(false); }).catch(() => setLoading(false));
-  }, []);
+  }, [demoPlayers]);
 
   const completedCount = (p: PlayerWithDetails) => p.challenges?.filter((c) => c.status === "completed").length ?? 0;
   const latestForm = (p: PlayerWithDetails) => {
@@ -162,9 +163,25 @@ export function CommunityBoard({ currentPlayerId }: { currentPlayerId: string })
       : latestForm(p) ? latestForm(p).toFixed(1) : "—";
 
   if (loading) return null;
-  if (players.length === 0) return null;
 
   const rankColor = (i: number) => i === 0 ? S.gold : i === 1 ? "#9AA7B4" : i === 2 ? "#C08A57" : S.dim;
+
+  // Geen spelersdata (bijv. rechten of nog geen actieve spelers): toon toch de sectie.
+  if (players.length === 0) {
+    return (
+      <section style={{ padding: "24px 26px 0" }} className="comm-wrap-outer">
+        <h1 className="display-font" style={{ fontSize: 20, fontWeight: 600, letterSpacing: "0.02em", color: S.ink }}>
+          SCHOONHOVEN COMMUNITY
+        </h1>
+        <div style={{ marginTop: 14, background: S.card, border: `1px solid ${S.line}`, borderRadius: 12, padding: "28px 22px", textAlign: "center" }}>
+          <p style={{ fontSize: 13, color: S.sub, lineHeight: 1.5 }}>
+            Het klassement en de community-feed vullen zich zodra je teamgenoten actief worden —
+            challenges voltooien, evaluaties krijgen en de persoonlijkheidstest doen.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section style={{ padding: "24px 26px 0" }} className="comm-wrap-outer">
