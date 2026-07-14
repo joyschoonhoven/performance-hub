@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { AmbientField } from "@/components/ui/AmbientField";
 import { DashboardNotifications } from "@/components/player/DashboardNotifications";
 import { MbtiBadge } from "@/components/player/MbtiBadge";
+import { CommunityBoard } from "@/components/player/CommunityBoard";
 import { SORENESS_LOCATION_LABELS, CATEGORY_LABELS } from "@/lib/types";
 import { getRatingLabel } from "@/lib/utils";
 import type { PlayerWithDetails, DailyCheckin, SorenessLocation, EvaluationCategory } from "@/lib/types";
@@ -200,7 +201,12 @@ export default function PlayerDashboardPage() {
               <Reveal><FormCard series={formSeries}/></Reveal>
               <Reveal><KerncijfersCard evalCount={evals.length} bestCat={bestCat} doneCh={doneCh} streak={streak}/></Reveal>
             </motion.div>
+          </main>
 
+          {/* ═══ SCHOONHOVEN COMMUNITY ═══ */}
+          <CommunityBoard currentPlayerId={player.id} />
+
+          <main className="sfa-report" style={{ paddingTop: 4 }}>
             {/* ═══ HERSTELRAPPORT ═══ */}
             <div style={{ height: 28 }} />
             <motion.div className="sfa-report-head"
