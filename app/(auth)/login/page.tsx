@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 
@@ -51,36 +50,31 @@ export default function LoginPage() {
       boxShadow: isFocused ? `0 0 0 3px ${ACCENT}22` : "none",
       color: "#1F2937",
       caretColor: ACCENT,
-      borderRadius: 12,
+      borderRadius: 10,
     };
   }
+
+  const labelStyle: React.CSSProperties = {
+    color: "#6B7280", letterSpacing: "0.08em",
+    fontFamily: "'Oswald', sans-serif", fontWeight: 500, textTransform: "uppercase",
+  };
 
   return (
     <div className="space-y-5">
       {/* Kop */}
       <div className="space-y-1 mb-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
-            style={{ background: "#F7F8FA", border: "1px solid #E5E7EB" }}>
-            <Image src="/logo.png" alt="Logo" width={40} height={40} className="object-contain w-full h-full" />
-          </div>
-          <span className="text-xs uppercase tracking-widest font-semibold" style={{ color: "#9CA3AF" }}>
-            Performance Hub
-          </span>
-        </div>
-        <h1 className="text-3xl font-black" style={{ color: "#1F2937", letterSpacing: "-0.02em" }}>
+        <div style={{ width: 40, height: 4, background: ACCENT, transform: "skewX(-12deg)", marginBottom: 16 }} />
+        <h1 className="display-font" style={{ fontSize: 32, fontWeight: 600, color: "#1F2937", lineHeight: 1.05 }}>
           Welkom terug
         </h1>
-        <p className="text-sm" style={{ color: "#6B7280" }}>Log in op jouw dashboard</p>
+        <p className="text-sm" style={{ color: "#6B7280" }}>Log in op jouw omgeving</p>
       </div>
 
       {/* Formulier */}
-      <div className="p-6 rounded-2xl space-y-4" style={{ background: "#FFFFFF", border: "1px solid #E5E7EB" }}>
+      <div className="p-6 space-y-4" style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 14 }}>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold mb-2 uppercase tracking-widest" style={{ color: "#6B7280" }}>
-              E-mailadres
-            </label>
+            <label className="block text-xs mb-2" style={labelStyle}>E-mailadres</label>
             <input
               type="email"
               value={email}
@@ -96,9 +90,7 @@ export default function LoginPage() {
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs font-semibold uppercase tracking-widest" style={{ color: "#6B7280" }}>
-                Wachtwoord
-              </label>
+              <label className="block text-xs" style={labelStyle}>Wachtwoord</label>
               <Link href="/forgot-password" className="text-xs font-semibold hover:underline" style={{ color: ACCENT }}>
                 Wachtwoord vergeten?
               </Link>
@@ -124,14 +116,14 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="px-4 py-3 text-sm rounded-xl" style={{ background: "rgba(180,83,74,0.07)", border: "1px solid rgba(180,83,74,0.25)", color: "#B4534A" }}>
+            <div className="px-4 py-3 text-sm" style={{ background: "rgba(180,83,74,0.07)", border: "1px solid rgba(180,83,74,0.25)", color: "#B4534A", borderRadius: 10 }}>
               {error}
             </div>
           )}
 
           <button type="submit" disabled={loading}
-            className="w-full py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-bold disabled:opacity-50 hover:brightness-105 active:scale-[0.99]"
-            style={{ background: ACCENT, color: "#fff", border: "none", cursor: "pointer" }}>
+            className="cut-btn display-font w-full py-3.5 transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-[0.99]"
+            style={{ background: ACCENT, color: "#fff", fontWeight: 600, border: "none", cursor: "pointer" }}>
             {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Inloggen</span><ArrowRight size={15} /></>}
           </button>
         </form>
@@ -148,8 +140,8 @@ export default function LoginPage() {
         <div className="grid grid-cols-2 gap-2">
           {(["coach", "player"] as const).map((role) => (
             <button key={role} onClick={() => demoLogin(role)} disabled={loading}
-              className="rounded-xl py-2.5 text-xs font-semibold transition-all disabled:opacity-40 hover:brightness-95"
-              style={{ background: "#F7F8FA", border: "1px solid #E5E7EB", color: "#374151", cursor: "pointer" }}>
+              className="cut-sm display-font py-2.5 text-xs transition-all disabled:opacity-40"
+              style={{ background: "#F7F8FA", border: "1px solid #E5E7EB", color: "#374151", fontWeight: 600, cursor: "pointer" }}>
               {role === "coach" ? "Trainer" : "Speler"}
             </button>
           ))}

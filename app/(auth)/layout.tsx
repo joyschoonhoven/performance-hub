@@ -8,37 +8,34 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Links — brandingpaneel (desktop) */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-12 relative overflow-hidden"
         style={{ borderRight: "1px solid #E5E7EB", background: "#FFFFFF" }}>
-        {/* Subtiel raster */}
-        <div className="absolute inset-0" style={{
-          opacity: 0.4,
-          backgroundImage: "linear-gradient(#EEF2F6 1px, transparent 1px), linear-gradient(90deg, #EEF2F6 1px, transparent 1px)",
-          backgroundSize: "56px 56px",
-          maskImage: "radial-gradient(120% 100% at 30% 20%, #000 40%, transparent 100%)",
-          WebkitMaskImage: "radial-gradient(120% 100% at 30% 20%, #000 40%, transparent 100%)",
+        {/* Schuine accentvlakken (PSV-stijl) */}
+        <div style={{
+          position: "absolute", top: 0, right: -60, width: 220, height: "100%",
+          background: "linear-gradient(180deg, rgba(90,144,186,0.05), rgba(90,144,186,0.10))",
+          transform: "skewX(-12deg)",
         }} />
-        {/* Zachte glow */}
-        <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: ACCENT, opacity: 0.06, filter: "blur(90px)", transform: "translate(-30%, 30%)" }} />
+        <div style={{
+          position: "absolute", top: 0, right: 190, width: 22, height: "100%",
+          background: "rgba(90,144,186,0.10)", transform: "skewX(-12deg)",
+        }} />
 
         {/* Logo + wordmark */}
         <div className="relative flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center"
-            style={{ background: "#F7F8FA", border: "1px solid #E5E7EB" }}>
+          <div className="w-12 h-12 overflow-hidden flex items-center justify-center"
+            style={{ background: "#F7F8FA", border: "1px solid #E5E7EB", borderRadius: 10 }}>
             <Image src="/logo.png" alt="Schoonhoven Football Academy" width={44} height={44} className="object-contain" />
           </div>
           <div style={{ lineHeight: 1 }}>
-            <div className="font-black" style={{ fontSize: 16, color: "#1F2937", letterSpacing: "0.02em" }}>Performance Hub</div>
-            <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 3 }}>Schoonhoven Football Academy</div>
+            <div className="display-font" style={{ fontSize: 17, fontWeight: 600, color: "#1F2937", letterSpacing: "0.14em" }}>SCHOONHOVEN</div>
+            <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.46em", color: ACCENT, marginTop: 3 }}>FOOTBALL ACADEMY</div>
           </div>
         </div>
 
         {/* Kop */}
-        <div className="relative space-y-6" style={{ maxWidth: 420 }}>
+        <div className="relative space-y-6" style={{ maxWidth: 440 }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.16em", color: ACCENT, marginBottom: 14 }}>
-              Schoonhoven Football Academy
-            </div>
-            <h2 className="font-black" style={{ fontSize: 42, color: "#1F2937", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+            <div style={{ width: 44, height: 4, background: ACCENT, transform: "skewX(-12deg)", marginBottom: 18 }} />
+            <h2 className="display-font" style={{ fontSize: 44, fontWeight: 600, color: "#1F2937", lineHeight: 1.05 }}>
               Jouw spelers.<br />
               <span style={{ color: ACCENT }}>Jouw data.</span><br />
               Jouw succes.
@@ -50,8 +47,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </div>
           <div className="flex flex-wrap gap-2">
             {["Spelersontwikkeling", "Evaluaties", "Persoonlijk plan", "Challenges"].map((f) => (
-              <span key={f} className="rounded-full" style={{
-                fontSize: 12, fontWeight: 600, padding: "7px 15px",
+              <span key={f} className="cut-sm display-font" style={{
+                fontSize: 11, fontWeight: 600, padding: "7px 16px",
                 background: "#F7F8FA", color: "#374151", border: "1px solid #E5E7EB",
               }}>
                 {f}
@@ -68,7 +65,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             { value: "Live", label: "Progressie" },
           ].map((s) => (
             <div key={s.label}>
-              <div className="font-black" style={{ fontSize: 20, color: ACCENT, letterSpacing: "-0.01em" }}>{s.value}</div>
+              <div className="display-font" style={{ fontSize: 20, fontWeight: 600, color: ACCENT }}>{s.value}</div>
               <div className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>{s.label}</div>
             </div>
           ))}
@@ -79,11 +76,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="flex-1 flex items-center justify-center p-6 pt-24 lg:pt-6 relative" style={{ background: "#F7F8FA" }}>
         {/* Mobiel logo */}
         <div className="absolute top-6 left-6 flex items-center gap-3 lg:hidden">
-          <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center"
-            style={{ background: "#fff", border: "1px solid #E5E7EB" }}>
+          <div className="w-9 h-9 overflow-hidden flex items-center justify-center"
+            style={{ background: "#fff", border: "1px solid #E5E7EB", borderRadius: 8 }}>
             <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-contain" />
           </div>
-          <span className="font-bold text-sm" style={{ color: "#1F2937" }}>Performance Hub</span>
+          <span style={{ lineHeight: 1 }}>
+            <span className="display-font block" style={{ fontSize: 13, fontWeight: 600, color: "#1F2937", letterSpacing: "0.12em" }}>SCHOONHOVEN</span>
+            <span className="block" style={{ fontSize: 6.5, fontWeight: 700, letterSpacing: "0.4em", color: ACCENT, marginTop: 2 }}>FOOTBALL ACADEMY</span>
+          </span>
         </div>
 
         <div className="relative z-10 w-full max-w-sm">

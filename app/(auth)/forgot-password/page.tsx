@@ -37,18 +37,23 @@ export default function ForgotPasswordPage() {
     boxShadow: focused ? `0 0 0 3px ${ACCENT}22` : "none",
     color: "#1F2937",
     caretColor: ACCENT,
-    borderRadius: 12,
+    borderRadius: 10,
+  };
+
+  const labelStyle: React.CSSProperties = {
+    color: "#6B7280", letterSpacing: "0.08em",
+    fontFamily: "'Oswald', sans-serif", fontWeight: 500, textTransform: "uppercase",
   };
 
   if (sent) {
     return (
       <div className="space-y-6">
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center"
+        <div className="w-14 h-14 flex items-center justify-center cut-sm"
           style={{ background: `${ACCENT}14`, border: `1px solid ${ACCENT}33`, color: ACCENT }}>
           <MailCheck size={26} />
         </div>
         <div className="space-y-2">
-          <h1 className="text-2xl font-black" style={{ color: "#1F2937", letterSpacing: "-0.02em" }}>Check je e-mail</h1>
+          <h1 className="display-font" style={{ fontSize: 28, fontWeight: 600, color: "#1F2937" }}>Check je e-mail</h1>
           <p className="text-sm leading-relaxed" style={{ color: "#6B7280" }}>
             Als er een account bestaat voor <b style={{ color: "#1F2937" }}>{email}</b>, hebben we een link gestuurd
             om je wachtwoord opnieuw in te stellen. Kijk ook even in je spam-map.
@@ -64,14 +69,15 @@ export default function ForgotPasswordPage() {
   return (
     <div className="space-y-5">
       <div className="space-y-1 mb-8">
-        <h1 className="text-3xl font-black" style={{ color: "#1F2937", letterSpacing: "-0.02em" }}>Wachtwoord vergeten?</h1>
+        <div style={{ width: 40, height: 4, background: ACCENT, transform: "skewX(-12deg)", marginBottom: 16 }} />
+        <h1 className="display-font" style={{ fontSize: 30, fontWeight: 600, color: "#1F2937", lineHeight: 1.05 }}>Wachtwoord vergeten?</h1>
         <p className="text-sm" style={{ color: "#6B7280" }}>Vul je e-mailadres in en we sturen je een herstel-link.</p>
       </div>
 
-      <div className="p-6 rounded-2xl space-y-4" style={{ background: "#FFFFFF", border: "1px solid #E5E7EB" }}>
+      <div className="p-6 space-y-4" style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 14 }}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold mb-2 uppercase tracking-widest" style={{ color: "#6B7280" }}>
+            <label className="block text-xs mb-2" style={labelStyle}>
               E-mailadres
             </label>
             <input
@@ -88,15 +94,15 @@ export default function ForgotPasswordPage() {
           </div>
 
           {error && (
-            <div className="px-4 py-3 text-sm rounded-xl"
-              style={{ background: "rgba(180,83,74,0.07)", border: "1px solid rgba(180,83,74,0.25)", color: "#B4534A" }}>
+            <div className="px-4 py-3 text-sm"
+              style={{ background: "rgba(180,83,74,0.07)", border: "1px solid rgba(180,83,74,0.25)", color: "#B4534A", borderRadius: 10 }}>
               {error}
             </div>
           )}
 
           <button type="submit" disabled={loading}
-            className="w-full py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-bold disabled:opacity-50 hover:brightness-105 active:scale-[0.99]"
-            style={{ background: ACCENT, color: "#fff", border: "none", cursor: "pointer" }}>
+            className="cut-btn display-font w-full py-3.5 transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-[0.99]"
+            style={{ background: ACCENT, color: "#fff", fontWeight: 600, border: "none", cursor: "pointer" }}>
             {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Stuur herstel-link</span><ArrowRight size={15} /></>}
           </button>
         </form>
