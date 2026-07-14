@@ -74,7 +74,9 @@ function Avatar({ p, size = 34 }: { p: { avatar_url?: string | null; photo_url?:
   );
 }
 
-export function CommunityBoard({ currentPlayerId, demoPlayers }: { currentPlayerId: string; demoPlayers?: PlayerWithDetails[] }) {
+const COMMUNITY_HREF = "/dashboard/player/community";
+
+export function CommunityBoard({ currentPlayerId, demoPlayers, compact = false }: { currentPlayerId: string; demoPlayers?: PlayerWithDetails[]; compact?: boolean }) {
   const [players, setPlayers] = useState<PlayerWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [metric, setMetric] = useState<Metric>("rating");
@@ -190,6 +192,11 @@ export function CommunityBoard({ currentPlayerId, demoPlayers }: { currentPlayer
         <h1 className="display-font" style={{ fontSize: 20, fontWeight: 600, letterSpacing: "0.02em", color: S.ink }}>
           SCHOONHOVEN COMMUNITY
         </h1>
+        {compact && (
+          <Link href={COMMUNITY_HREF} style={{ fontSize: 12, fontWeight: 700, color: S.blue, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
+            Naar de community <ChevronRight size={13} />
+          </Link>
+        )}
       </div>
       <p style={{ fontSize: 12.5, color: S.sub, margin: "6px 0 20px", maxWidth: 660 }}>
         Klassement van de academie en alles wat je teamgenoten behalen — challenges, evaluaties en tips van de staf.
@@ -205,7 +212,7 @@ export function CommunityBoard({ currentPlayerId, demoPlayers }: { currentPlayer
               Community-kanaal
             </div>
             <div>
-              {feed.map((it) => (
+              {(compact ? feed.slice(0, 4) : feed).map((it) => (
                 <div key={it.id} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "12px 18px", borderBottom: `1px solid ${S.line}` }}>
                   {it.kind === "tip" ? (
                     <div style={{ width: 34, height: 34, borderRadius: 8, flexShrink: 0, background: `${it.accent}14`, border: `1px solid ${it.accent}30`, display: "flex", alignItems: "center", justifyContent: "center", color: it.accent }}>
@@ -232,6 +239,14 @@ export function CommunityBoard({ currentPlayerId, demoPlayers }: { currentPlayer
                   </div>
                 </div>
               ))}
+              {compact && (
+                <Link href={COMMUNITY_HREF} style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  padding: "13px", fontSize: 12, fontWeight: 700, color: S.blue, textDecoration: "none",
+                }}>
+                  Bekijk alle updates <ChevronRight size={13} />
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -259,7 +274,7 @@ export function CommunityBoard({ currentPlayerId, demoPlayers }: { currentPlayer
 
           {/* Rijen */}
           <div style={{ padding: "8px 8px 10px" }}>
-            {ranked.slice(0, 10).map((p, i) => {
+            {ranked.slice(0, compact ? 5 : 10).map((p, i) => {
               const isMe = p.id === currentPlayerId;
               return (
                 <div key={p.id} style={{

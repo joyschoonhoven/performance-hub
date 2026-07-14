@@ -203,8 +203,8 @@ export default function PlayerDashboardPage() {
             </motion.div>
           </main>
 
-          {/* ═══ SCHOONHOVEN COMMUNITY ═══ */}
-          <CommunityBoard currentPlayerId={player.id} />
+          {/* ═══ SCHOONHOVEN COMMUNITY (teaser) ═══ */}
+          <CommunityBoard currentPlayerId={player.id} compact />
 
           <main className="sfa-report" style={{ paddingTop: 4 }}>
             {/* ═══ HERSTELRAPPORT ═══ */}
